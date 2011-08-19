@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="net.Ox4a42.volksempfaenger"
+	  package="net.Ox4a42.volksempfaenger"
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="9" />
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name="net.Ox4a42.volksempfaenger.VolksempfaengerActivity"
-                  android:label="@string/app_name">
+    <application
+          android:icon="@drawable/icon"
+          android:label="@string/app_name">
+        <activity
+              android:name="net.Ox4a42.volksempfaenger.DownloadQueueActivity"
+              android:label="@string/app_name" />
+        <activity
+        	  android:name="net.Ox4a42.volksempfaenger.ListenQueueActivity"
+        	  android:label="@string/app_name" />
+        <activity
+        	  android:name="net.Ox4a42.volksempfaenger.SettingsActivity"
+        	  android:label="@string/app_name" />
+        <activity
+        	  android:name="net.Ox4a42.volksempfaenger.SubscriptionListActivity"
+        	  android:label="@string/app_name" />
+        <activity android:name="net.Ox4a42.volksempfaenger.VolksempfaengerActivity" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 </manifest>
