@@ -1,6 +1,5 @@
 package net.Ox4a42.volksempfaenger;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class VolksempfaengerActivity extends Activity implements OnClickListener {
+public class VolksempfaengerActivity extends BaseActivity implements OnClickListener {
     private Button buttonSubscriptionList;
     private Button buttonListenQueue;
     private Button buttonDownloadQueue;

@@ -6,6 +6,7 @@
     <uses-sdk android:minSdkVersion="9" />
 
     <application
+    	  android:name="net.Ox4a42.volksempfaenger.VolksempfaengerApplication"
           android:icon="@drawable/icon"
           android:label="@string/app_name">
         <activity

@@ -1,9 +1,8 @@
 package net.Ox4a42.volksempfaenger;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-public class ListenQueueActivity extends Activity {
+public class ListenQueueActivity extends BaseActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
