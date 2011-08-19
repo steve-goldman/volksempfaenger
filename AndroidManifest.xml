@@ -3,7 +3,7 @@
 	  package="net.Ox4a42.volksempfaenger"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="9" />
+    <uses-sdk android:minSdkVersion="10" />
 
     <application
     	  android:name="net.Ox4a42.volksempfaenger.VolksempfaengerApplication"
