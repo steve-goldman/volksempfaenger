@@ -1,5 +1,6 @@
-package net.Ox4a42.volksempfaenger;
+package net.Ox4a42.volksempfaenger.ui;
 
+import net.Ox4a42.volksempfaenger.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 

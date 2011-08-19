@@ -1,8 +1,9 @@
-package net.Ox4a42.volksempfaenger;
+package net.Ox4a42.volksempfaenger.ui;
 
+import net.Ox4a42.volksempfaenger.R;
 import android.os.Bundle;
 
-public class ListenQueueActivity extends BaseActivity {
+public class SubscriptionListActivity extends BaseActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
