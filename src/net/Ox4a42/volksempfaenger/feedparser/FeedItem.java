@@ -1,11 +1,16 @@
 package net.Ox4a42.volksempfaenger.feedparser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class FeedItem {
 	public String getTitle() {
 		return "E001 Example Episode";
+	}
+	
+	public Date getDate() {
+		return new Date(2011, 8, 19, 23, 58);
 	}
 	
 	public String getUrl() {
