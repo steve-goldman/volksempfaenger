@@ -9,6 +9,10 @@ public class FeedItem {
 		return "E001 Example Episode";
 	}
 	
+	public Feed getFeed() {
+		return new Feed();
+	}
+	
 	public Date getDate() {
 		return new Date(2011, 8, 19, 23, 58);
 	}
