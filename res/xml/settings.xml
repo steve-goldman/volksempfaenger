@@ -3,17 +3,25 @@
 	      android:title="Download Settings"
 		  android:summary="Summary">
 		<CheckBoxPreference
-              android:key="download"
-              android:title="Download"
-              android:summary="blah" />
+              android:key="download_auto"
+              android:title="Auto Download"
+              android:summary="Automatically download new episodes" />
+        <CheckBoxPreference 
+        	  android:key="download_wifi"
+        	  android:title="Only on WiFi"
+        	  android:summary="Only download new episode while connected to a WiFi network" />
+       	<CheckBoxPreference
+       		  android:key="download_charging"
+       		  android:title="Only while charging"
+       		  android:summary="Only download new episodes while connected to a power source"/>
 	</PreferenceScreen>
 	<PreferenceScreen
 	      android:title="Storage Settings"
 		  android:summary="Summary">
-		<CheckBoxPreference
-              android:key="storage"
-              android:title="Storage"
-              android:summary="blah" />
+		<EditTextPreference
+			  android:key="storage_location"
+			  android:title="Storage Location"
+			  android:defaultValue="/mnt/sdcard/Podcasts" />
 	</PreferenceScreen>
 	<PreferenceScreen
 	      android:title="About Volksempfänger"
@@ -21,9 +29,12 @@
 		<Preference
 			  android:title="Version"
 			  android:summary="0.1-alpha0" />
-		<CheckBoxPreference
-              android:key="about"
-              android:title="About"
-              android:summary="blah" />
+		<Preference
+              android:title="Website"
+              android:summary="https://bitbucket.org/julianbrost/volksempfaenger/">
+            <intent
+            	  android:action="android.intent.action.VIEW"
+                  android:data="https://bitbucket.org/julianbrost/volksempfaenger/" />
+        </Preference>
 	</PreferenceScreen>
 </PreferenceScreen>
