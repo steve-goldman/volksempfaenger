@@ -16,7 +16,7 @@
         	  android:name=".ui.ListenQueueActivity"
         	  android:label="@string/app_name" />
         <activity
-        	  android:name=".ui.SettingsActivitytiv"
+        	  android:name=".ui.SettingsActivity"
         	  android:label="@string/app_name" />
         <activity
         	  android:name=".ui.SubscriptionListActivity"
