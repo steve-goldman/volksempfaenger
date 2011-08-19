@@ -1,7 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceScreen
-	      android:title="Download Settings"
-		  android:summary="Summary">
+	      android:title="@string/settings_download"
+		  android:summary="@string/settings_summary_download">
+		<ListPreference
+			  android:key="download_interval"
+			  android:title="@string/settings_download_interval"
+			  android:entries="@array/settings_interval_choices"
+			  android:entryValues="@array/settings_interval_values" />
 		<CheckBoxPreference
               android:key="download_auto"
               android:title="Auto Download"
@@ -16,16 +21,16 @@
        		  android:summary="Only download new episodes while connected to a power source"/>
 	</PreferenceScreen>
 	<PreferenceScreen
-	      android:title="Storage Settings"
-		  android:summary="Summary">
+	      android:title="@string/settings_storage"
+		  android:summary="@string/settings_summary_storage">
 		<EditTextPreference
 			  android:key="storage_location"
 			  android:title="Storage Location"
 			  android:defaultValue="/mnt/sdcard/Podcasts" />
 	</PreferenceScreen>
 	<PreferenceScreen
-	      android:title="About Volksempfänger"
-		  android:summary="Summary">
+	      android:title="@string/settings_about"
+		  android:summary="@string/settings_summary_about">
 		<Preference
 			  android:title="Version"
 			  android:summary="0.1-alpha0" />

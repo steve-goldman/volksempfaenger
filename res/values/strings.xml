@@ -2,4 +2,17 @@
 <resources>
     <string name="hello">Hello World, VolksempfaengerActivity!</string>
     <string name="app_name">Volksempfänger</string>
+    <string name="settings_download">Download</string>
+    <string name="settings_download_interval">Refresh interval</string>
+    <string name="settings_download_auto">Auto Download</string>
+    <string name="settings_download_wifi">Only on WiFi</string>
+    <string name="settings_download_charging">Only while charging</string>
+    <string name="settings_storage">Storage</string>
+    <string name="settings_about">About</string>
+    <string name="settings_summary_download">Podcast download settings</string>
+    <string name="settings_summary_download_auto">Automatically download new episodes</string>
+    <string name="settings_summary_download_wifi">Only download new episodes while connected to a WiFi network</string>
+    <string name="settings_summary_download_charging">Only download new episodes while connected to a power source</string>
+    <string name="settings_summary_storage">Local podcast storage settings</string>
+    <string name="settings_summary_about">Information about Volksempfänger</string>
 </resources>
