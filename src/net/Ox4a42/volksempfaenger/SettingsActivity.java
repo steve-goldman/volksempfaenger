@@ -1,11 +1,13 @@
 package net.Ox4a42.volksempfaenger;
 
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends BaseActivity {
-	@Override
+public class SettingsActivity extends PreferenceActivity {
+    @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-	}
+        super.onCreate(savedInstanceState);  
+
+        addPreferencesFromResource(R.xml.settings);
+    }
 }

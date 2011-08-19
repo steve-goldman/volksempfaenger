@@ -1,0 +1,29 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceScreen
+	      android:title="Download Settings"
+		  android:summary="Summary">
+		<CheckBoxPreference
+              android:key="download"
+              android:title="Download"
+              android:summary="blah" />
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="Storage Settings"
+		  android:summary="Summary">
+		<CheckBoxPreference
+              android:key="storage"
+              android:title="Storage"
+              android:summary="blah" />
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="About Volksempfänger"
+		  android:summary="Summary">
+		<Preference
+			  android:title="Version"
+			  android:summary="0.1-alpha0" />
+		<CheckBoxPreference
+              android:key="about"
+              android:title="About"
+              android:summary="blah" />
+	</PreferenceScreen>
+</PreferenceScreen>
