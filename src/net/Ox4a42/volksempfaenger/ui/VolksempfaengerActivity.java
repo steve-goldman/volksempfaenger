@@ -36,18 +36,14 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		buttonAddSubscription = (Button) findViewById(R.id.button_addsubscription);
 		buttonSubscriptionList = (Button) findViewById(R.id.button_subscriptionlist);
 		buttonListenQueue = (Button) findViewById(R.id.button_listenqueue);
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
-		buttonSettings = (Button) findViewById(R.id.button_settings);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
 
-		buttonAddSubscription.setOnClickListener(this);
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
-		buttonSettings.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
 	}
 
@@ -55,10 +51,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		Intent intent;
 
 		switch (v.getId()) {
-		case R.id.button_addsubscription:
-			intent = new Intent(this, AddSubscriptionActivity.class);
-			startActivity(intent);
-			break;
 		case R.id.button_subscriptionlist:
 			intent = new Intent(this, SubscriptionListActivity.class);
 			startActivity(intent);
@@ -69,10 +61,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			break;
 		case R.id.button_downloadqueue:
 			intent = new Intent(this, DownloadQueueActivity.class);
-			startActivity(intent);
-			break;
-		case R.id.button_settings:
-			intent = new Intent(this, SettingsActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.button_testfeed:
