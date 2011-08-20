@@ -101,7 +101,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		try {
 			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
 					.openRawResource(R.raw.atom_test)));
-			Log.d(getClass().getCanonicalName(), "Title: " + feed.getTitle());
+			Log.d(TAG, "Title: " + feed.getTitle());
 			for (FeedItem item : feed.getItems()) {
 				Log.d(TAG, "Item title: " + item.getTitle());
 				for(Enclosure enc : item.getEnclosures()) {
