@@ -1,7 +1,7 @@
-package net.Ox4a42.volksempfaenger.ui;
+package net.x4a42.volksempfaenger.ui;
 
-import net.Ox4a42.volksempfaenger.R;
-import net.Ox4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;

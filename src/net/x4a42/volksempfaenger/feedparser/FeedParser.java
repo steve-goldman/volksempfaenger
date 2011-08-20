@@ -1,4 +1,4 @@
-package net.Ox4a42.volksempfaenger.feedparser;
+package net.x4a42.volksempfaenger.feedparser;
 
 import java.io.IOException;
 import java.io.Reader;

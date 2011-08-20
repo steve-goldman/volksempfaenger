@@ -1,9 +1,9 @@
-package net.Ox4a42.volksempfaenger.ui;
+package net.x4a42.volksempfaenger.ui;
 
-import net.Ox4a42.volksempfaenger.PreferenceKeys;
-import net.Ox4a42.volksempfaenger.R;
-import net.Ox4a42.volksempfaenger.VolksempfaengerApplication;
-import net.Ox4a42.volksempfaenger.VolksempfaengerUrls;
+import net.x4a42.volksempfaenger.PreferenceKeys;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.VolksempfaengerUrls;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

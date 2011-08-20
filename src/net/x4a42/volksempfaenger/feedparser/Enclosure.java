@@ -1,4 +1,4 @@
-package net.Ox4a42.volksempfaenger.feedparser;
+package net.x4a42.volksempfaenger.feedparser;
 
 public class Enclosure {
 	private String title, url, mime;

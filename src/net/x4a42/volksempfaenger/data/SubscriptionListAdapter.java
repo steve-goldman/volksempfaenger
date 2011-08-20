@@ -1,6 +1,6 @@
-package net.Ox4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data;
 
-import net.Ox4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.R;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;

@@ -1,6 +1,6 @@
-package net.Ox4a42.volksempfaenger.ui;
+package net.x4a42.volksempfaenger.ui;
 
-import net.Ox4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.R;
 import android.os.Bundle;
 
 public class ListenQueueActivity extends BaseActivity {
