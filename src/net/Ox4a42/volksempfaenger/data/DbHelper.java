@@ -23,7 +23,7 @@ public class DbHelper extends SQLiteOpenHelper {
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT UNIQUE,\n"
 					+ "  \"%s\" TEXT\n"
 					+ ")", _TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
 		}
