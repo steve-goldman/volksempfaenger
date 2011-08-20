@@ -45,6 +45,11 @@ public class FeedParser {
 		private final String ATOM_PUBLISHED = ATOM_NS + ":published";
 		private final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
 
+		private final String ATOM_ATTR_HREF = "href";
+		private final String ATOM_ATTR_REL = "rel";
+		private final String ATOM_ATTR_TYPE = "type";
+		private final String ATOM_ATTR_LENGTH = "length";
+
 		private final String ATOM_REL_ENCLOSURE = "enclosure";
 		private final String ATOM_REL_ALTERNATE = "alternate";
 		private final String ATOM_REL_SELF = "self";
@@ -83,45 +88,49 @@ public class FeedParser {
 				feedItem.setFeed(feed);
 				currentItemHasSummary = false;
 			} else if (fullName.equals(ATOM_LINK)) {
-				String rel = parser.getAttributeValue("", "rel");
+				String rel = parser.getAttributeValue("", ATOM_ATTR_REL);
 				if (rel == null) {
 				} else if (rel.equals(ATOM_REL_ENCLOSURE)) {
 					if (parents.peek().equals(ATOM_ENTRY)) {
 						Enclosure enclosure = new Enclosure();
 						enclosure.setFeedItem(feedItem);
-						enclosure.setUrl(parser.getAttributeValue("", "href"));
-						enclosure.setMime(parser.getAttributeValue("", "type"));
+						enclosure.setUrl(parser.getAttributeValue("",
+								ATOM_ATTR_HREF));
+						enclosure.setMime(parser.getAttributeValue("",
+								ATOM_ATTR_TYPE));
 						enclosure.setTitle(parser
 								.getAttributeValue("", "title"));
 
-						String length = parser.getAttributeValue("", "length");
+						String length = parser.getAttributeValue("",
+								ATOM_ATTR_LENGTH);
 						if (length != null) {
 							enclosure.setSize(Long.parseLong(length));
 						}
 						feedItem.getEnclosures().add(enclosure);
 					}
 				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
-					String type = parser.getAttributeValue("", "type");
+					String type = parser.getAttributeValue("", ATOM_ATTR_TYPE);
 					if (parents.peek().equals(ATOM_ENTRY)) {
 						if (type == null || type.equals(MIME_HTML)
 								|| type.equals(MIME_XHTML)) {
 							// actually there can be multiple "alternate links"
 							// this uses the LAST alternate link as the URL for
 							// the FeedItem
-							feedItem.setUrl(parser
-									.getAttributeValue("", "href"));
+							feedItem.setUrl(parser.getAttributeValue("",
+									ATOM_ATTR_HREF));
 						}
 					} else if (parents.peek().equals(ATOM_FEED)) {
 						if (type == null || type.equals(MIME_HTML)
 								|| type.equals(MIME_XHTML)) {
 							// same issue as above with multiple alternate links
-							feed.setWebsite(parser
-									.getAttributeValue("", "href"));
+							feed.setWebsite(parser.getAttributeValue("",
+									ATOM_ATTR_HREF));
 						}
 					}
 				} else if (rel.equals(ATOM_REL_SELF)) {
 					if (parents.peek().equals(ATOM_FEED)) {
-						feed.setUrl(parser.getAttributeValue("", "href"));
+						feed.setUrl(parser
+								.getAttributeValue("", ATOM_ATTR_HREF));
 					}
 				}
 			}
