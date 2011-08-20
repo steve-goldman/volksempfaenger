@@ -7,24 +7,29 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SubscriptionListActivity extends BaseActivity implements
-		OnItemClickListener, OnItemLongClickListener {
+		OnItemClickListener {
+	private static final int CONTEXT_EDIT = 0;
+	private static final int CONTEXT_DELETE = 1;
+
 	DbHelper dbHelper;
 	Cursor cursor;
 	ListView subscriptionList;
 	SubscriptionListAdapter adapter;
 
 	@Override
+	// TODO Auto-generated method stub
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscription_list);
@@ -33,7 +38,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
 		subscriptionList.setOnItemClickListener(this);
-		subscriptionList.setOnItemLongClickListener(this);
+		subscriptionList.setOnCreateContextMenuListener(this);
 	}
 
 	@Override
@@ -74,15 +79,34 @@ public class SubscriptionListActivity extends BaseActivity implements
 		return true;
 	}
 
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO Auto-generated method stub
-		Log.d(getClass().getSimpleName(), "onItemLongClick");
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+		TextView podcastTitle = (TextView) info.targetView
+				.findViewById(R.id.podcast_title);
+		String title = podcastTitle.getText().toString();
+		menu.setHeaderTitle(title);
+
+		menu.add(0, CONTEXT_EDIT, 0, R.string.context_edit);
+		menu.add(0, CONTEXT_DELETE, 0, R.string.context_delete);
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
+				.getMenuInfo();
+		switch (item.getItemId()) {
+		case CONTEXT_DELETE:
+			return true;
+		}
 		return false;
 	}
 
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
 		// TODO Auto-generated method stub
-		Log.d(getClass().getSimpleName(), "onItemClick");
+		Log.d(getClass().getSimpleName(), String.format("onItemClick(%d)", id));
 	}
 }
