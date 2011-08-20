@@ -1,0 +1,45 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceScreen
+	      android:title="@string/settings_download"
+		  android:summary="@string/settings_summary_download">
+		<ListPreference
+			  android:key="download_interval"
+			  android:title="@string/settings_download_interval"
+			  android:entries="@array/settings_interval_choices"
+			  android:entryValues="@array/settings_interval_values" />
+		<CheckBoxPreference
+              android:key="download_auto"
+              android:title="Auto Download"
+              android:summary="Automatically download new episodes" />
+        <CheckBoxPreference 
+        	  android:key="download_wifi"
+        	  android:title="Only on WiFi"
+        	  android:summary="Only download new episode while connected to a WiFi network" />
+       	<CheckBoxPreference
+       		  android:key="download_charging"
+       		  android:title="Only while charging"
+       		  android:summary="Only download new episodes while connected to a power source"/>
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="@string/settings_storage"
+		  android:summary="@string/settings_summary_storage">
+		<EditTextPreference
+			  android:key="storage_location"
+			  android:title="Storage Location"
+			  android:defaultValue="/mnt/sdcard/Podcasts" />
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="@string/settings_about"
+		  android:summary="@string/settings_summary_about">
+		<Preference
+			  android:title="Version"
+			  android:summary="0.1-alpha0" />
+		<Preference
+              android:title="Website"
+              android:summary="https://bitbucket.org/julianbrost/volksempfaenger/">
+            <intent
+            	  android:action="android.intent.action.VIEW"
+                  android:data="https://bitbucket.org/julianbrost/volksempfaenger/" />
+        </Preference>
+	</PreferenceScreen>
+</PreferenceScreen>
