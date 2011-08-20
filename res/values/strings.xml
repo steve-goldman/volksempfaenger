@@ -2,6 +2,11 @@
 <resources>
     <string name="hello">Hello World, VolksempfaengerActivity!</string>
     <string name="app_name">Volksempfänger</string>
+    <string name="title_add_subscription">Add Subscription</string>
+    <string name="description_add_subscription">Enter the URL of the podcast feed in order to subscribe to it</string>
+    <string name="hint_http">http://</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
     <string name="settings_download">Download</string>
     <string name="settings_download_interval">Refresh interval</string>
     <string name="settings_download_auto">Auto Download</string>
