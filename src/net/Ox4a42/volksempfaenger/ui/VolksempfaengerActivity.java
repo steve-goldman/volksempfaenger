@@ -92,6 +92,11 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			Log.d(TAG, "Title: " + feed.getTitle());
 			for (FeedItem item : feed.getItems()) {
 				Log.d(TAG, "Item title: " + item.getTitle());
+				Log.d(TAG, item.getDate().toString());
+				if(item.getUrl() != null) {
+					Log.d(TAG, item.getUrl());
+				}
+				Log.d(TAG, item.getDescription());
 				for(Enclosure enc : item.getEnclosures()) {
 					Log.d(TAG, "Enclosure");
 					if(enc.getTitle() != null) {
