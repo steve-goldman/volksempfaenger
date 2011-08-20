@@ -9,6 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class BaseActivity extends Activity {
+	protected final String TAG = getClass().getSimpleName();
+
 	public VolksempfaengerApplication getApp() {
 		return (VolksempfaengerApplication) super.getApplication();
 	}

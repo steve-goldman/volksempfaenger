@@ -11,7 +11,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.util.Log;
 
 public class FeedParser {
-	private final String TAG = "FeedParser";
+	private final String TAG = getClass().getSimpleName();
 
 	public static Feed parse(Reader reader) throws XmlPullParserException, IOException { 
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -36,6 +36,8 @@ public class FeedParser {
 		private final String ATOM_FEED = ATOM_NS + ":feed";
 		private final String ATOM_TITLE = ATOM_NS + ":title";
 		private final String ATOM_ENTRY = ATOM_NS + ":entry";
+		private final String ATOM_LINK = ATOM_NS + ":link";
+		private final String ATOM_REL_ENCLOSURE = "enclosure";
 
 		public ParserHelper(XmlPullParser parser) throws XmlPullParserException, IOException {
 			this.parser = parser;
@@ -64,6 +66,25 @@ public class FeedParser {
 			String fullName = parser.getNamespace() + ":" + parser.getName();
 			if(fullName.equals(ATOM_ENTRY)) {
 				feedItem = new FeedItem();
+			}
+			else if(fullName.equals(ATOM_LINK)) {
+				String rel = parser.getAttributeValue("", "rel");
+				if(rel == null) {
+					Log.d(TAG, "foo");
+				}
+				else if(rel.equals(ATOM_REL_ENCLOSURE)) {
+					Log.d(TAG, "bar");
+					Enclosure enclosure = new Enclosure();
+					enclosure.setUrl(parser.getAttributeValue("", "href"));
+					enclosure.setMime(parser.getAttributeValue("", "type"));
+					enclosure.setTitle(parser.getAttributeValue("", "title"));
+
+					String length = parser.getAttributeValue("", "length");
+					if(length != null) {
+						enclosure.setSize(Long.parseLong(length));
+					}
+					feedItem.getEnclosures().add(enclosure);
+				}
 			}
 			
 			parents.push(fullName);
