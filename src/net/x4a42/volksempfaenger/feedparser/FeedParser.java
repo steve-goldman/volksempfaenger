@@ -43,9 +43,11 @@ public class FeedParser {
 		private final String ATOM_SUMMARY = ATOM_NS + ":summary";
 		private final String ATOM_CONTENT = ATOM_NS + ":content";
 		private final String ATOM_PUBLISHED = ATOM_NS + ":published";
+		private final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
 
 		private final String ATOM_REL_ENCLOSURE = "enclosure";
 		private final String ATOM_REL_ALTERNATE = "alternate";
+		private final String ATOM_REL_SELF = "self";
 
 		private final String MIME_HTML = "text/html";
 		private final String MIME_XHTML = "text/xhtml";
@@ -99,8 +101,8 @@ public class FeedParser {
 						feedItem.getEnclosures().add(enclosure);
 					}
 				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
+					String type = parser.getAttributeValue("", "type");
 					if (parents.peek().equals(ATOM_ENTRY)) {
-						String type = parser.getAttributeValue("", "type");
 						if (type == null || type.equals(MIME_HTML)
 								|| type.equals(MIME_XHTML)) {
 							// actually there can be multiple "alternate links"
@@ -109,6 +111,17 @@ public class FeedParser {
 							feedItem.setUrl(parser
 									.getAttributeValue("", "href"));
 						}
+					} else if (parents.peek().equals(ATOM_FEED)) {
+						if (type == null || type.equals(MIME_HTML)
+								|| type.equals(MIME_XHTML)) {
+							// same issue as above with multiple alternate links
+							feed.setWebsite(parser
+									.getAttributeValue("", "href"));
+						}
+					}
+				} else if (rel.equals(ATOM_REL_SELF)) {
+					if (parents.peek().equals(ATOM_FEED)) {
+						feed.setUrl(parser.getAttributeValue("", "href"));
 					}
 				}
 			}
@@ -153,6 +166,8 @@ public class FeedParser {
 					}
 				}
 				parents.push(copy);
+			} else if (parents.peek().equals(ATOM_SUBTITLE)) {
+				feed.setDescription(parser.getText());
 			}
 		}
 

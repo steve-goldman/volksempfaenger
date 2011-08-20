@@ -90,26 +90,37 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
 					.openRawResource(R.raw.atom_test)));
 			Log.d(TAG, "Title: " + feed.getTitle());
+			if (feed.getUrl() != null) {
+				Log.d(TAG, "URL: " + feed.getUrl());
+			}
+			if (feed.getWebsite() != null) {
+				Log.d(TAG, "Website: " + feed.getWebsite());
+			}
+			if (feed.getDescription() != null) {
+				Log.d(TAG, "Description: " + feed.getDescription());
+			}
+
 			for (FeedItem item : feed.getItems()) {
 				Log.d(TAG, "Item title: " + item.getTitle());
 				Log.d(TAG, item.getDate().toString());
-				if(item.getUrl() != null) {
+				if (item.getUrl() != null) {
 					Log.d(TAG, item.getUrl());
 				}
 				Log.d(TAG, item.getDescription());
-				for(Enclosure enc : item.getEnclosures()) {
+				for (Enclosure enc : item.getEnclosures()) {
 					Log.d(TAG, "Enclosure");
-					if(enc.getTitle() != null) {
+					if (enc.getTitle() != null) {
 						Log.d(TAG, enc.getTitle());
 					}
-					if(enc.getUrl() != null) {
+					if (enc.getUrl() != null) {
 						Log.d(TAG, enc.getUrl());
 					}
-					if(enc.getMime() != null) {
+					if (enc.getMime() != null) {
 						Log.d(TAG, enc.getMime());
 					}
-					if(enc.getSize() != 0) {
-						Log.d(TAG, "Size: " + (new Long(enc.getSize())).toString());
+					if (enc.getSize() != 0) {
+						Log.d(TAG,
+								"Size: " + (new Long(enc.getSize())).toString());
 					}
 				}
 			}
