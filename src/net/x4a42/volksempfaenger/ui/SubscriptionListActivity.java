@@ -45,18 +45,20 @@ public class SubscriptionListActivity extends BaseActivity implements
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
+		
 		cursor = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE,
 				null, null, null, null, null, DbHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);
 		subscriptionList.setAdapter(adapter);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		cursor.requery();
 	}
 
 	@Override
@@ -106,6 +108,9 @@ public class SubscriptionListActivity extends BaseActivity implements
 				.getMenuInfo();
 		switch (item.getItemId()) {
 		case CONTEXT_EDIT:
+			Intent intent = new Intent(this, EditSubscriptionActivity.class);
+			intent.putExtra("id", currentMenuInfo.id);
+			startActivity(intent);
 			return true;
 		case CONTEXT_DELETE:
 			deleteSubscription();
