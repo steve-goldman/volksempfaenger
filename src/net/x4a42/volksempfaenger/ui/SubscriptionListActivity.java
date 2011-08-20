@@ -135,8 +135,9 @@ public class SubscriptionListActivity extends BaseActivity implements
 	}
 
 	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
-		// TODO Auto-generated method stub
-		Log.d(getClass().getSimpleName(), String.format("onItemClick(%d)", id));
+		Intent intent = new Intent(this, ViewSubscriptionActivity.class);
+		intent.putExtra("id", id);
+		startActivity(intent);
 	}
 
 	public void onClick(DialogInterface dialog, int which) {
