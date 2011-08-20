@@ -2,7 +2,7 @@ package net.Ox4a42.volksempfaenger.feedparser;
 
 public class Enclosure {
 	private String title, url, mime;
-	private Integer length;
+	private int size;
 	private FeedItem feedItem;
 
 	public String getTitle() {
@@ -17,8 +17,8 @@ public class Enclosure {
 		return mime;
 	}
 	
-	public Integer getLength() {
-		return length;
+	public int getSize() {
+		return size;
 	}
 	
 	public FeedItem getFeedItem() {
@@ -38,8 +38,8 @@ public class Enclosure {
 		this.mime = mime;
 	}
 	
-	public void setLength(Integer length) {
-		this.length = length;
+	public void setSize(int size) {
+		this.size = size;
 	}
 	
 	public void setFeedItem(FeedItem feedItem) {
