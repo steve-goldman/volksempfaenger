@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import org.xmlpull.v1.XmlPullParserException;
 
 import net.Ox4a42.volksempfaenger.R;
+import net.Ox4a42.volksempfaenger.feedparser.Enclosure;
 import net.Ox4a42.volksempfaenger.feedparser.Feed;
 import net.Ox4a42.volksempfaenger.feedparser.FeedItem;
 import net.Ox4a42.volksempfaenger.feedparser.FeedParser;
@@ -102,8 +103,22 @@ public class VolksempfaengerActivity extends BaseActivity implements
 					.openRawResource(R.raw.atom_test)));
 			Log.d(getClass().getCanonicalName(), "Title: " + feed.getTitle());
 			for (FeedItem item : feed.getItems()) {
-				Log.d(getClass().getCanonicalName(),
-						"Item title: " + item.getTitle());
+				Log.d(TAG, "Item title: " + item.getTitle());
+				for(Enclosure enc : item.getEnclosures()) {
+					Log.d(TAG, "Enclosure");
+					if(enc.getTitle() != null) {
+						Log.d(TAG, enc.getTitle());
+					}
+					if(enc.getUrl() != null) {
+						Log.d(TAG, enc.getUrl());
+					}
+					if(enc.getMime() != null) {
+						Log.d(TAG, enc.getMime());
+					}
+					if(enc.getSize() != 0) {
+						Log.d(TAG, "Size: " + (new Long(enc.getSize())).toString());
+					}
+				}
 			}
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
