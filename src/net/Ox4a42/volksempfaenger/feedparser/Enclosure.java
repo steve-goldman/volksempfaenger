@@ -9,11 +9,11 @@ public class Enclosure {
 		return "EP001.mp3";
 	}
 	
-	public String getURL() {
+	public String getUrl() {
 		return "http://example.org/podcast/ep001.mp3";
 	}
 	
-	public String getMIME() {
+	public String getMime() {
 		return "audio/mpeg";
 	}
 	
