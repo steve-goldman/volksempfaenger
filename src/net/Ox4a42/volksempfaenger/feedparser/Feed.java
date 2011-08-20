@@ -17,6 +17,10 @@ public class Feed {
 		return "http://example.com/";
 	}
 	
+	public String getDescription() {
+		return "Example Podcast is a very funny Podcast about foo and bar.";
+	}
+	
 	public List<FeedItem> getItems() {
 		List<FeedItem> l = new ArrayList<FeedItem>();
 		l.add(new FeedItem());
