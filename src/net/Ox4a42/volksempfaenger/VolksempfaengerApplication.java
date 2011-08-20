@@ -5,11 +5,12 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class VolksempfaengerApplication extends Application {
 	private SharedPreferences settings;
-	private DbHelper dbhelper;
+	private DbHelper dbHelper;
 	private PackageInfo packageinfo;
 
 	@Override
@@ -24,18 +25,19 @@ public class VolksempfaengerApplication extends Application {
 		// get shared preferences
 		settings = getSharedPreferences(null, MODE_PRIVATE);
 		// open database
-		dbhelper = new DbHelper(this);
-		// Just to ensure that the database gets created.
-		// TODO: Remove this later
-		dbhelper.getReadableDatabase();
+		dbHelper = new DbHelper(this);
 	}
 
 	public SharedPreferences getSharedPreferences() {
 		return settings;
 	}
-
-	public DbHelper getDbHelper() {
-		return dbhelper;
+	
+	public SQLiteDatabase getReadableDatabase() {
+		return dbHelper.getReadableDatabase();
+	}
+	
+	public SQLiteDatabase getWritableDatabase() {
+		return dbHelper.getWritableDatabase();
 	}
 	
 	public int getVersion() {
