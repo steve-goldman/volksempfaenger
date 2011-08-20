@@ -6,7 +6,8 @@
 			  android:key="download_interval"
 			  android:title="@string/settings_download_interval"
 			  android:entries="@array/settings_interval_choices"
-			  android:entryValues="@array/settings_interval_values" />
+			  android:entryValues="@array/settings_interval_values"
+			  android:defaultValue="0" />
 		<CheckBoxPreference
               android:key="download_auto"
               android:title="Auto Download"
@@ -32,14 +33,11 @@
 	      android:title="@string/settings_about"
 		  android:summary="@string/settings_summary_about">
 		<Preference
+			  android:key="about_version"
 			  android:title="Version"
-			  android:summary="0.1-alpha0" />
+			  android:summary="unknown" />
 		<Preference
-              android:title="Website"
-              android:summary="https://bitbucket.org/julianbrost/volksempfaenger/">
-            <intent
-            	  android:action="android.intent.action.VIEW"
-                  android:data="https://bitbucket.org/julianbrost/volksempfaenger/" />
-        </Preference>
+			  android:key="about_website"
+              android:title="Website" />
 	</PreferenceScreen>
 </PreferenceScreen>
