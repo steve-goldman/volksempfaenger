@@ -7,69 +7,87 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class DbHelper extends SQLiteOpenHelper {
-	static final String DB_NAME = "podcast.db";
-	static final int DB_VERSION = 1;
+	private static final String DB_NAME = "podcast.db";
+	private static final int DB_VERSION = 1;
 	
 	public static class Podcast {
-		static final String _TABLE = "podcast";
-		static final String ID = BaseColumns._ID;
-		static final String TITLE = "title";
-		static final String DESCRIPTION = "description";
-		static final String URL = "url";
-		static final String WEBSITE = "website";
+		public static final String _TABLE = "podcast";
+		public static final String ID = BaseColumns._ID;
+		public static final String TITLE = "title";
+		public static final String DESCRIPTION = "description";
+		public static final String URL = "url";
+		public static final String WEBSITE = "website";
 		
-		static String createSql() {
-			return String.format("CREATE TABLE %s (\n"
-					+ "  %s INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT\n"
+		private static String createSql() {
+			return String.format("CREATE TABLE \"%s\" (\n"
+					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT\n"
 					+ ")", _TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
 		}
 	}
 	
 	public static class Episode {
-		static final String _TABLE = "episode";
-		static final String ID = BaseColumns._ID;
-		static final String PODCAST = "podcast_id";
-		static final String TITLE = "title";
-		static final String DATE = "date";
-		static final String URL = "url";
-		static final String DESCRIPTION = "description";
+		public static final String _TABLE = "episode";
+		public static final String ID = BaseColumns._ID;
+		public static final String PODCAST = "podcast_id";
+		public static final String TITLE = "title";
+		public static final String DATE = "date";
+		public static final String URL = "url";
+		public static final String DESCRIPTION = "description";
 		
-		static String createSql() {
-			return String.format("CREATE TABLE %s (\n"
-					+ "  %s INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  %s INTEGER REFERENCES %s (%s) ON DELETE CASCADE,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s INTEGER,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT\n"
+		private static String createSql() {
+			return String.format("CREATE TABLE \"%s\" (\n"
+					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" INTEGER,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT\n"
 					+ ")", _TABLE, ID, PODCAST, Podcast._TABLE,
 					Podcast.ID, TITLE, DATE, URL, DESCRIPTION);
 		}
 	}
 	
 	public static class Enclosure {
-		static final String _TABLE = "enclosure";
-		static final String ID = BaseColumns._ID;
-		static final String EPISODE = "episode_id";
-		static final String TITLE = "title";
-		static final String URL = "url";
-		static final String MIME = "mime";
-		static final String LENGTH = "length";
+		public static final String _TABLE = "enclosure";
+		public static final String ID = BaseColumns._ID;
+		public static final String EPISODE = "episode_id";
+		public static final String TITLE = "title";
+		public static final String URL = "url";
+		public static final String MIME = "mime"; // mime type
+		public static final String FILE = "file"; // path to file
+		public static final String SIZE = "size"; // file size
+		public static final String STATE = "state"; // see state constants below
+		public static final String DURATION_TOTAL = "duration_total"; // total duration in seconds
+		public static final String DURATION_LISTENED = "duration_listened"; // listened time in seconds
 		
-		static String createSql() {
-			return String.format("CREATE TABLE %s (\n"
-					+ "  %s INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  %s INTEGER REFERENCES %s (%s) ON DELETE CASCADE,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s TEXT,\n"
-					+ "  %s INTEGER\n"
-					+ ")", _TABLE, ID, EPISODE,
-					Episode._TABLE, Episode.ID, TITLE, URL, MIME, LENGTH);
+		public static final int STATE_NEW = 0;
+		public static final int STATE_DOWNLOAD_QUEUED = 1;
+		public static final int STATE_DOWNLOADING = 2;
+		public static final int STATE_DOWNLOADED = 3;
+		public static final int STATE_LISTEN_QUEUED = 4;
+		public static final int STATE_LISTENING = 5;
+		public static final int STATE_LISTENED = 6;
+		public static final int STATE_DELETED = 7;
+		
+		private static String createSql() {
+			return String.format("CREATE TABLE \"%s\" (\n"
+					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" INTEGER,\n"
+					+ "  \"%s\" INTEGER,\n"
+					+ "  \"%s\" INTEGER,\n"
+					+ "  \"%s\" INTEGER\n"
+					+ ")", _TABLE, ID,
+					EPISODE, Episode._TABLE, Episode.ID, TITLE, URL, MIME,
+					FILE, SIZE, STATE, DURATION_TOTAL, DURATION_LISTENED);
 		}
 	}
 	
