@@ -5,26 +5,43 @@ import java.util.List;
 
 
 public class Feed {
+	private String url, title, website, description;
+	private List<FeedItem> items = new ArrayList<FeedItem>();
+	
 	public String getUrl() {
-		return "http://example.com/feed.xml";
+		return url;
 	}
 	
 	public String getTitle() {
-		return "Example Podcast Feed";
+		return title;
 	}
 	
 	public String getWebsite() {
-		return "http://example.com/";
+		return website;
 	}
 	
 	public String getDescription() {
-		return "Example Podcast is a very funny Podcast about foo and bar.";
+		return description;
 	}
 	
 	public List<FeedItem> getItems() {
-		List<FeedItem> l = new ArrayList<FeedItem>();
-		l.add(new FeedItem());
-		l.add(new FeedItem());
-		return l;
+		return items;
+	}
+
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

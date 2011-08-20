@@ -1,8 +1,18 @@
 package net.Ox4a42.volksempfaenger.ui;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.xmlpull.v1.XmlPullParserException;
+
 import net.Ox4a42.volksempfaenger.R;
+import net.Ox4a42.volksempfaenger.feedparser.Feed;
+import net.Ox4a42.volksempfaenger.feedparser.FeedItem;
+import net.Ox4a42.volksempfaenger.feedparser.FeedParser;
 import android.content.Intent;
+import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,6 +22,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class VolksempfaengerActivity extends BaseActivity implements OnClickListener {
+	private static String TAG = "VolksempfaengerActivity";
 	private Button buttonAddSubscription;
     private Button buttonSubscriptionList;
     private Button buttonListenQueue;
@@ -34,6 +45,23 @@ public class VolksempfaengerActivity extends BaseActivity implements OnClickList
         buttonListenQueue.setOnClickListener(this);
         buttonDownloadQueue.setOnClickListener(this);
         buttonSettings.setOnClickListener(this);
+        
+        try {
+			Feed feed = FeedParser.parse(new InputStreamReader(getResources().openRawResource(R.raw.atom_test)));
+			Log.d(TAG, "Title: " + feed.getTitle());
+			for(FeedItem item: feed.getItems()) {
+				Log.d(TAG, "Item title: " + item.getTitle());
+			}
+        } catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	public void onClick(View v) {

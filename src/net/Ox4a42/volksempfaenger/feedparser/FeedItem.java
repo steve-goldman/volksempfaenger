@@ -5,29 +5,53 @@ import java.util.Date;
 import java.util.List;
 
 public class FeedItem {
+	private String title, url, description;
+	private Feed feed;
+	private Date date;
+	private List<Enclosure> enclosures = new ArrayList<Enclosure>();
+	
 	public String getTitle() {
-		return "E001 Example Episode";
+		return title;
 	}
 	
 	public Feed getFeed() {
-		return new Feed();
+		return feed;
 	}
 	
 	public Date getDate() {
-		return new Date(2011, 8, 19, 23, 58);
+		return date;
 	}
 	
 	public String getUrl() {
-		return "http://example.com/E001/";
+		return url;
 	}
 	
 	public String getDescription() {
-		return "This is the first example episode";
+		return description;
 	}
 	
 	public List<Enclosure> getEnclosures() {
-		List<Enclosure> l = new ArrayList<Enclosure>();
-		l.add(new Enclosure());
-		return l;
+		return enclosures;
+	}
+
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setFeed(Feed feed) {
+		this.feed = feed;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }
