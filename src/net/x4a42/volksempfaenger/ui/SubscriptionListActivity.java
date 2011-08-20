@@ -1,8 +1,8 @@
-package net.Ox4a42.volksempfaenger.ui;
+package net.x4a42.volksempfaenger.ui;
 
-import net.Ox4a42.volksempfaenger.R;
-import net.Ox4a42.volksempfaenger.data.DbHelper;
-import net.Ox4a42.volksempfaenger.data.SubscriptionListAdapter;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;

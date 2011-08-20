@@ -1,4 +1,4 @@
-package net.Ox4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
