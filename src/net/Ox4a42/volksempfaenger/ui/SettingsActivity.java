@@ -17,7 +17,8 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
-public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceClickListener {
+public class SettingsActivity extends PreferenceActivity implements
+		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 	private ListPreference prefDownloadInterval;
 	private CheckBoxPreference prefDownloadAuto;
 	private CheckBoxPreference prefDownloadWifi;
@@ -25,36 +26,61 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	private EditTextPreference prefStorageLocation;
 	private Preference prefAboutVersion;
 	private Preference prefAboutWebsite;
-	
+
 	private VolksempfaengerApplication app;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);  
-        addPreferencesFromResource(R.xml.settings);
-        
-        app = (VolksempfaengerApplication) getApplication();
-        
-        PreferenceScreen prefscreen = getPreferenceScreen();
-        prefscreen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        prefDownloadInterval = (ListPreference) prefscreen.findPreference(PreferenceKeys.DOWNLOAD_INTERVAL);
-        prefDownloadAuto = (CheckBoxPreference) prefscreen.findPreference(PreferenceKeys.DOWNLOAD_AUTO);
-        prefDownloadWifi = (CheckBoxPreference) prefscreen.findPreference(PreferenceKeys.DOWNLOAD_WIFI);
-        prefDownloadCharging = (CheckBoxPreference) prefscreen.findPreference(PreferenceKeys.DOWNLOAD_CHARGING);
-        prefStorageLocation = (EditTextPreference) prefscreen.findPreference(PreferenceKeys.STORAGE_LOCATION);
-        prefAboutVersion = prefscreen.findPreference(PreferenceKeys.ABOUT_VERSION);
-        prefAboutWebsite = prefscreen.findPreference(PreferenceKeys.ABOUT_WEBSITE);
-        
-        prefDownloadInterval.setSummary(prefDownloadInterval.getEntry().toString());
-        prefStorageLocation.setSummary(prefStorageLocation.getText());
-        prefAboutVersion.setSummary(app.getVersionName());
-        prefAboutWebsite.setSummary(VolksempfaengerUrls.WEBSITE);
-        prefAboutWebsite.setOnPreferenceClickListener(this);
-    }
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.settings);
+
+		app = (VolksempfaengerApplication) getApplication();
+
+		PreferenceScreen prefscreen = getPreferenceScreen();
+		prefDownloadInterval = (ListPreference) prefscreen
+				.findPreference(PreferenceKeys.DOWNLOAD_INTERVAL);
+		prefDownloadAuto = (CheckBoxPreference) prefscreen
+				.findPreference(PreferenceKeys.DOWNLOAD_AUTO);
+		prefDownloadWifi = (CheckBoxPreference) prefscreen
+				.findPreference(PreferenceKeys.DOWNLOAD_WIFI);
+		prefDownloadCharging = (CheckBoxPreference) prefscreen
+				.findPreference(PreferenceKeys.DOWNLOAD_CHARGING);
+		prefStorageLocation = (EditTextPreference) prefscreen
+				.findPreference(PreferenceKeys.STORAGE_LOCATION);
+		prefAboutVersion = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_VERSION);
+		prefAboutWebsite = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_WEBSITE);
+
+		prefAboutVersion.setSummary(app.getVersionName());
+		prefAboutWebsite.setSummary(VolksempfaengerUrls.WEBSITE);
+		prefAboutWebsite.setOnPreferenceClickListener(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		getPreferenceScreen().getSharedPreferences()
+				.registerOnSharedPreferenceChangeListener(this);
+
+		prefDownloadInterval.setSummary(prefDownloadInterval.getEntry()
+				.toString());
+		prefStorageLocation.setSummary(prefStorageLocation.getText());
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		getPreferenceScreen().getSharedPreferences()
+				.unregisterOnSharedPreferenceChangeListener(this);
+	}
 
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 		if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
-	        prefDownloadInterval.setSummary(prefDownloadInterval.getEntry().toString());
+			prefDownloadInterval.setSummary(prefDownloadInterval.getEntry()
+					.toString());
 		} else if (key.equals(PreferenceKeys.STORAGE_LOCATION)) {
 			prefStorageLocation.setSummary(prefStorageLocation.getText());
 		}
@@ -62,7 +88,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
 	public boolean onPreferenceClick(Preference pref) {
 		if (pref == prefAboutWebsite) {
-			startActivity(new Intent("android.intent.action.VIEW", Uri.parse(VolksempfaengerUrls.WEBSITE)));
+			startActivity(new Intent("android.intent.action.VIEW",
+					Uri.parse(VolksempfaengerUrls.WEBSITE)));
 			return true;
 		}
 		return false;

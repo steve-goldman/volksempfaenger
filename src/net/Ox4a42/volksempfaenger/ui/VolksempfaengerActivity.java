@@ -57,7 +57,6 @@ public class VolksempfaengerActivity extends BaseActivity implements OnClickList
 			startActivity(intent);
 			break;
 		case R.id.button_settings:
-			Toast.makeText(this, "SettingsActivity", Toast.LENGTH_SHORT).show();
 			intent = new Intent(this, SettingsActivity.class);
 			startActivity(intent);
 			break;
