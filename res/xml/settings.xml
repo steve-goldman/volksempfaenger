@@ -39,5 +39,11 @@
 		<Preference
 			  android:key="about_website"
               android:title="Website" />
+		<Preference
+			  android:key="about_wiki"
+              android:title="Wiki" />
+		<Preference
+			  android:key="about_bugtracker"
+              android:title="Bugtracker" />
 	</PreferenceScreen>
 </PreferenceScreen>

@@ -26,6 +26,8 @@ public class SettingsActivity extends PreferenceActivity implements
 	private EditTextPreference prefStorageLocation;
 	private Preference prefAboutVersion;
 	private Preference prefAboutWebsite;
+	private Preference prefAboutWiki;
+	private Preference prefAboutBugtracker;
 
 	private VolksempfaengerApplication app;
 
@@ -51,10 +53,18 @@ public class SettingsActivity extends PreferenceActivity implements
 				.findPreference(PreferenceKeys.ABOUT_VERSION);
 		prefAboutWebsite = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_WEBSITE);
+		prefAboutWiki = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_WIKI);
+		prefAboutBugtracker = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_BUGTRACKER);
 
 		prefAboutVersion.setSummary(app.getVersionName());
 		prefAboutWebsite.setSummary(VolksempfaengerUrls.WEBSITE);
 		prefAboutWebsite.setOnPreferenceClickListener(this);
+		prefAboutWiki.setSummary(VolksempfaengerUrls.WIKI);
+		prefAboutWiki.setOnPreferenceClickListener(this);
+		prefAboutBugtracker.setSummary(VolksempfaengerUrls.BUGTRACKER);
+		prefAboutBugtracker.setOnPreferenceClickListener(this);
 	}
 
 	@Override
@@ -90,6 +100,14 @@ public class SettingsActivity extends PreferenceActivity implements
 		if (pref == prefAboutWebsite) {
 			startActivity(new Intent("android.intent.action.VIEW",
 					Uri.parse(VolksempfaengerUrls.WEBSITE)));
+			return true;
+		} else if (pref == prefAboutWiki) {
+			startActivity(new Intent("android.intent.action.VIEW",
+					Uri.parse(VolksempfaengerUrls.WIKI)));
+			return true;
+		} else if (pref == prefAboutBugtracker) {
+			startActivity(new Intent("android.intent.action.VIEW",
+					Uri.parse(VolksempfaengerUrls.BUGTRACKER)));
 			return true;
 		}
 		return false;
