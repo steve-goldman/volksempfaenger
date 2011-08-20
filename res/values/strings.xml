@@ -11,6 +11,8 @@
 	<string name="add">Add</string>
 	<string name="cancel">Cancel</string>
 	<string name="unknown">unknown</string>
+	<string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
+	<string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>

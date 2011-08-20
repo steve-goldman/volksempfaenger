@@ -1,8 +1,13 @@
 package net.Ox4a42.volksempfaenger.ui;
 
 import net.Ox4a42.volksempfaenger.R;
-import android.app.Activity;
+import net.Ox4a42.volksempfaenger.data.DbHelper;
+import android.content.ContentValues;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -10,7 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class AddSubscriptionActivity extends Activity implements
+public class AddSubscriptionActivity extends BaseActivity implements
 		OnClickListener {
 	private EditText editTextUrl;
 	private Button buttonAdd;
@@ -23,7 +28,7 @@ public class AddSubscriptionActivity extends Activity implements
 
 		LayoutParams params = getWindow().getAttributes();
 		params.width = LayoutParams.FILL_PARENT;
-		//params.flags = LayoutParams.FLAG_BLUR_BEHIND;
+		// params.flags = LayoutParams.FLAG_BLUR_BEHIND;
 		getWindow().setAttributes(params);
 
 		editTextUrl = (EditText) findViewById(R.id.edittext_url);
@@ -46,9 +51,39 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private void subscribeToFeed() {
-		// TODO: subscribe to feed
-		Toast.makeText(this, "Successfully subscribed to feed (haha)",
-				Toast.LENGTH_SHORT).show();
-		finish();
+		String feedUrl = editTextUrl.getText().toString();
+		
+		// TODO: check feed url and fetch real data
+
+		// Open database
+		DbHelper dbHelper = new DbHelper(this);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(DbHelper.Podcast.TITLE, feedUrl);
+		values.put(DbHelper.Podcast.DESCRIPTION, "Dummy description");
+		values.put(DbHelper.Podcast.URL, feedUrl);
+		values.put(DbHelper.Podcast.WEBSITE, "http://example.com/");
+		
+		try {
+			// Try to add the podcast to the database
+			db.insertOrThrow(DbHelper.Podcast._TABLE, null, values);
+			// Succeeded. Display message and exit
+			Toast.makeText(this, R.string.message_podcast_successfully_added,
+					Toast.LENGTH_SHORT).show();
+			finish();
+		} catch (SQLException e) {
+			// Something failed
+			if (e instanceof SQLiteConstraintException) {
+				// UNIQUE contraint on column url failed
+				Toast.makeText(this, R.string.message_podcast_already_added,
+						Toast.LENGTH_LONG).show();
+			} else {
+				// Some terrible failure happended
+				Log.wtf(getClass().getName(), e);
+			}
+		} finally {
+			dbHelper.close();
+		}
 	}
 }
