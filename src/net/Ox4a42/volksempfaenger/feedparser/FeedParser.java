@@ -28,8 +28,14 @@ public class FeedParser {
 		private static String TAG = "ParserHelper";
 		private XmlPullParser parser;
 		private Feed feed = new Feed();
+		private FeedItem feedItem;
 		Stack<String> parents = new Stack<String>();
+
 		private final String ATOM_NS = "http://www.w3.org/2005/Atom";
+
+		private final String ATOM_FEED = ATOM_NS + ":feed";
+		private final String ATOM_TITLE = ATOM_NS + ":title";
+		private final String ATOM_ENTRY = ATOM_NS + ":entry";
 
 		public ParserHelper(XmlPullParser parser) throws XmlPullParserException, IOException {
 			this.parser = parser;
@@ -56,24 +62,34 @@ public class FeedParser {
 		
 		private void onStartTag() {
 			String fullName = parser.getNamespace() + ":" + parser.getName();
+			if(fullName.equals(ATOM_ENTRY)) {
+				feedItem = new FeedItem();
+			}
+			
 			parents.push(fullName);
 		}
 		
 		private void onText() {
-			if(parents.peek() == ATOM_NS + ":title") {
+			if(parents.peek().equals(ATOM_TITLE)) {
 				String copy = parents.pop();
-				if(parents.peek() == ATOM_NS + ":feed") {
+				if(parents.peek().equals(ATOM_FEED)) {
 					// feed title
+					feed.setTitle(parser.getText());
 				}
-				else if(parents.peek() == ATOM_NS + ":entry") {
+				else if(parents.peek().equals(ATOM_ENTRY)) {
 					// entry title
+					feedItem.setTitle(parser.getText());
 				}
 				parents.push(copy);
 			}
 		}
 		
 		private void onEndTag() {
-			parents.pop();
+			String fullName = parents.pop();
+			if(fullName.equals(ATOM_ENTRY)) {
+				feed.getItems().add(feedItem);
+				feedItem = null;
+			}
 		}
 	}
 }
