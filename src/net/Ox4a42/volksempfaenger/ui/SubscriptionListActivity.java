@@ -14,7 +14,6 @@ import android.widget.ListView;
 
 public class SubscriptionListActivity extends BaseActivity {
 	DbHelper dbHelper;
-	SQLiteDatabase db;
 	Cursor cursor;
 	ListView listTimeline;
 	SubscriptionListAdapter adapter;
@@ -24,26 +23,27 @@ public class SubscriptionListActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscription_list);
 
-		db = getApp().getReadableDatabase();
-		listTimeline = (ListView) findViewById(R.id.subscription_list);
-	}
+		dbHelper = new DbHelper(this);
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		db.close();
+		listTimeline = (ListView) findViewById(R.id.subscription_list);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		cursor = db.query(DbHelper.Podcast._TABLE, null, null, null, null,
-				null, DbHelper.Podcast.TITLE);
+		cursor = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE,
+				null, null, null, null, null, DbHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);
 		listTimeline.setAdapter(adapter);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		dbHelper.close();
 	}
 
 	@Override
