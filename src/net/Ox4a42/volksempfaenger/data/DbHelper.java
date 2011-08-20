@@ -93,7 +93,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	
 	Context context;
 
-	public DbHelper(Context context) { //
+	public DbHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		this.context = context;
 	}
@@ -107,7 +107,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { //
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Nothing to do here
 	}
 }
