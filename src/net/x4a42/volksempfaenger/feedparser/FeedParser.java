@@ -84,17 +84,19 @@ public class FeedParser {
 				String rel = parser.getAttributeValue("", "rel");
 				if (rel == null) {
 				} else if (rel.equals(ATOM_REL_ENCLOSURE)) {
-					Enclosure enclosure = new Enclosure();
-					enclosure.setFeedItem(feedItem);
-					enclosure.setUrl(parser.getAttributeValue("", "href"));
-					enclosure.setMime(parser.getAttributeValue("", "type"));
-					enclosure.setTitle(parser.getAttributeValue("", "title"));
-
-					String length = parser.getAttributeValue("", "length");
-					if (length != null) {
-						enclosure.setSize(Long.parseLong(length));
+					if(feedItem != null) {
+						Enclosure enclosure = new Enclosure();
+						enclosure.setFeedItem(feedItem);
+						enclosure.setUrl(parser.getAttributeValue("", "href"));
+						enclosure.setMime(parser.getAttributeValue("", "type"));
+						enclosure.setTitle(parser.getAttributeValue("", "title"));
+	
+						String length = parser.getAttributeValue("", "length");
+						if (length != null) {
+							enclosure.setSize(Long.parseLong(length));
+						}
+						feedItem.getEnclosures().add(enclosure);
 					}
-					feedItem.getEnclosures().add(enclosure);
 				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
 					if (feedItem != null) {
 						String type = parser.getAttributeValue("", "type");
@@ -119,27 +121,31 @@ public class FeedParser {
 				if (parents.peek().equals(ATOM_FEED)) {
 					// feed title
 					feed.setTitle(parser.getText());
-				} else if (parents.peek().equals(ATOM_ENTRY)) {
+				} else if (feedItem != null) {
 					// entry title
 					feedItem.setTitle(parser.getText());
 				}
 				parents.push(copy);
 			} else if (parents.peek().equals(ATOM_SUMMARY)) {
-				currentItemHasSummary = true;
-				feedItem.setDescription(parser.getText());
+				if (feedItem != null) {
+					currentItemHasSummary = true;
+					feedItem.setDescription(parser.getText());
+				}
 			} else if (parents.peek().equals(ATOM_CONTENT)) {
-				if (!currentItemHasSummary) {
+				if (!currentItemHasSummary && (feedItem != null)) {
 					feedItem.setDescription(parser.getText());
 				}
 			} else if (parents.peek().equals(ATOM_PUBLISHED)) {
-				try {
-					feedItem.setDate(parseDate(parser.getText()));
-				} catch (IndexOutOfBoundsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (feedItem != null) {
+					try {
+						feedItem.setDate(parseDate(parser.getText()));
+					} catch (IndexOutOfBoundsException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
