@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 public class VolksempfaengerActivity extends BaseActivity implements OnClickListener {
 	private static String TAG = "VolksempfaengerActivity";
+	private Button buttonAddSubscription;
     private Button buttonSubscriptionList;
     private Button buttonListenQueue;
     private Button buttonDownloadQueue;
@@ -33,11 +34,13 @@ public class VolksempfaengerActivity extends BaseActivity implements OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        buttonAddSubscription = (Button) findViewById(R.id.button_addsubscription);
         buttonSubscriptionList = (Button) findViewById(R.id.button_subscriptionlist);
         buttonListenQueue = (Button) findViewById(R.id.button_listenqueue);
         buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
         buttonSettings = (Button) findViewById(R.id.button_settings);
         
+        buttonAddSubscription.setOnClickListener(this);
         buttonSubscriptionList.setOnClickListener(this);
         buttonListenQueue.setOnClickListener(this);
         buttonDownloadQueue.setOnClickListener(this);
@@ -65,23 +68,23 @@ public class VolksempfaengerActivity extends BaseActivity implements OnClickList
 		Intent intent;
 		
 		switch (v.getId()) {
+		case R.id.button_addsubscription:
+			intent = new Intent(this, AddSubscriptionActivity.class);
+			startActivity(intent);
+			break;
 		case R.id.button_subscriptionlist:
-			Toast.makeText(this, "SubscriptionListActivity", Toast.LENGTH_SHORT).show();
 			intent = new Intent(this, SubscriptionListActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.button_listenqueue:
-			Toast.makeText(this, "ListenQueueActivity", Toast.LENGTH_SHORT).show();
 			intent = new Intent(this, ListenQueueActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.button_downloadqueue:
-			Toast.makeText(this, "DownloadQueueActivity", Toast.LENGTH_SHORT).show();
 			intent = new Intent(this, DownloadQueueActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.button_settings:
-			Toast.makeText(this, "SettingsActivity", Toast.LENGTH_SHORT).show();
 			intent = new Intent(this, SettingsActivity.class);
 			startActivity(intent);
 			break;
@@ -90,17 +93,15 @@ public class VolksempfaengerActivity extends BaseActivity implements OnClickList
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu);
+		addGlobalMenu(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-		case R.id.itemSettings:
-			startActivity(new Intent(this, SettingsActivity.class));
-			break;
+		default:
+			handleGlobalMenu(item);
 		}
 		return true;
 	}
