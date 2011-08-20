@@ -5,17 +5,23 @@ import net.Ox4a42.volksempfaenger.data.DbHelper;
 import net.Ox4a42.volksempfaenger.data.SubscriptionListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 
-public class SubscriptionListActivity extends BaseActivity {
+public class SubscriptionListActivity extends BaseActivity implements
+		OnItemClickListener, OnItemLongClickListener {
 	DbHelper dbHelper;
 	Cursor cursor;
-	ListView listTimeline;
+	ListView subscriptionList;
 	SubscriptionListAdapter adapter;
 
 	@Override
@@ -25,7 +31,9 @@ public class SubscriptionListActivity extends BaseActivity {
 
 		dbHelper = new DbHelper(this);
 
-		listTimeline = (ListView) findViewById(R.id.subscription_list);
+		subscriptionList = (ListView) findViewById(R.id.subscription_list);
+		subscriptionList.setOnItemClickListener(this);
+		subscriptionList.setOnItemLongClickListener(this);
 	}
 
 	@Override
@@ -37,7 +45,7 @@ public class SubscriptionListActivity extends BaseActivity {
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);
-		listTimeline.setAdapter(adapter);
+		subscriptionList.setAdapter(adapter);
 	}
 
 	@Override
@@ -64,5 +72,17 @@ public class SubscriptionListActivity extends BaseActivity {
 			handleGlobalMenu(item);
 		}
 		return true;
+	}
+
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
+		Log.d(getClass().getSimpleName(), "onItemLongClick");
+		return false;
+	}
+
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		// TODO Auto-generated method stub
+		Log.d(getClass().getSimpleName(), "onItemClick");
 	}
 }

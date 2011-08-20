@@ -16,7 +16,7 @@
 			android:layout_width="match_parent" android:layout_height="wrap_content"
 			android:text="Podcast Description. Long text. Very long text."
 			android:ellipsize="marquee" android:scrollHorizontally="true"
-			android:focusable="true" android:focusableInTouchMode="true" />
+			android:singleLine="true" />
 	</LinearLayout>
 	<TextView android:layout_width="wrap_content" android:text="4"
 		android:textSize="24sp" android:layout_gravity="center_vertical|center_horizontal"
