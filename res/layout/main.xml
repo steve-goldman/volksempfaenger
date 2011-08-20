@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_height="wrap_content" android:layout_width="fill_parent">
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/hello"
+    />
+<Button android:text="SubscriptionListActivity" android:id="@+id/button_subscriptionlist" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+<Button android:text="ListenQueueActivity" android:id="@+id/button_listenqueue" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+<Button android:text="DownloadQueueActivity" android:id="@+id/button_downloadqueue" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+<Button android:text="SettingsActivity" android:id="@+id/button_settings" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+</LinearLayout>
