@@ -27,6 +27,7 @@ public class EnclosureDownloader {
 
 	public void downloadEnclosure(String url) {
 		Request request = new Request(Uri.parse(url));
+		//request.setDestinationUri(uri);
 		dm.enqueue(request);
 
 		// registerReceiver(receiver, new IntentFilter(
