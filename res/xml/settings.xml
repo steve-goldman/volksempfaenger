@@ -1,0 +1,52 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceScreen
+	      android:title="@string/settings_download"
+		  android:summary="@string/settings_summary_download">
+		<ListPreference
+			  android:key="download_interval"
+			  android:title="@string/settings_download_interval"
+			  android:entries="@array/settings_interval_choices"
+			  android:entryValues="@array/settings_interval_values"
+			  android:defaultValue="@string/settings_default_download_interval" />
+		<CheckBoxPreference
+              android:key="download_auto"
+              android:title="@string/settings_download_auto"
+              android:summary="@string/settings_summary_download_auto"
+              android:defaultValue="@string/settings_default_download_auto" />
+        <CheckBoxPreference 
+        	  android:key="download_wifi"
+        	  android:title="@string/settings_download_wifi"
+        	  android:summary="@string/settings_summary_download_wifi"
+        	  android:defaultValue="@string/settings_default_download_wifi" />
+       	<CheckBoxPreference
+       		  android:key="download_charging"
+       		  android:title="@string/settings_download_charging"
+       		  android:summary="@string/settings_summary_download_charging"
+       		  android:defaultValue="@string/settings_default_download_charging" />
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="@string/settings_storage"
+		  android:summary="@string/settings_summary_storage">
+		<EditTextPreference
+			  android:key="storage_location"
+			  android:title="@string/settings_storage_location"
+			  android:defaultValue="@string/settings_default_storage_location" />
+	</PreferenceScreen>
+	<PreferenceScreen
+	      android:title="@string/settings_about"
+		  android:summary="@string/settings_summary_about">
+		<Preference
+			  android:key="about_version"
+			  android:title="@string/settings_about_version"
+			  android:summary="@string/unknown" />
+		<Preference
+			  android:key="about_website"
+              android:title="@string/settings_about_website" />
+		<Preference
+			  android:key="about_wiki"
+              android:title="@string/settings_about_wiki" />
+		<Preference
+			  android:key="about_bugtracker"
+              android:title="@string/settings_about_bugtracker" />
+	</PreferenceScreen>
+</PreferenceScreen>
