@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Stack;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -36,24 +39,23 @@ public class FeedParser {
 	}
 
 	private static class ParserHelper {
+		private static enum Namespace {
+			NONE, ATOM, RSS, UNKNOWN
+		}
+
+		private static enum Tag {
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE
+		}
+
 		private static final String TAG = "ParserHelper";
 		private XmlPullParser parser;
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
-		Stack<String> parents = new Stack<String>();
+		Stack<Tag> parents = new Stack<Tag>();
 		private boolean currentItemHasSummary = false;
-		private String currentNamespace = "";
 		private boolean isFeed = false;
+		Namespace currentNS = Namespace.NONE;
 
-		private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
-		private static final String ATOM_FEED = ATOM_NS + ":feed";
-		private static final String ATOM_TITLE = ATOM_NS + ":title";
-		private static final String ATOM_ENTRY = ATOM_NS + ":entry";
-		private static final String ATOM_LINK = ATOM_NS + ":link";
-		private static final String ATOM_SUMMARY = ATOM_NS + ":summary";
-		private static final String ATOM_CONTENT = ATOM_NS + ":content";
-		private static final String ATOM_PUBLISHED = ATOM_NS + ":published";
-		private static final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
 		private static final String ATOM_ATTR_HREF = "href";
 		private static final String ATOM_ATTR_REL = "rel";
 		private static final String ATOM_ATTR_TYPE = "type";
@@ -63,15 +65,6 @@ public class FeedParser {
 		private static final String ATOM_REL_ALTERNATE = "alternate";
 		private static final String ATOM_REL_SELF = "self";
 
-		private static final String RSS_NS = "http://backend.userland.com/RSS2";
-		private static final String RSS_TOPLEVEL = "rss";
-		private static final String RSS_CHANNEL = "channel";
-		private static final String RSS_ITEM = "item";
-		private static final String RSS_TITLE = "title";
-		private static final String RSS_LINK = "link";
-		private static final String RSS_DESCRIPTION = "description";
-		private static final String RSS_ENCLOSURE = "enclosure";
-		private static final String RSS_PUB_DATE = "pubDate";
 		private static final String RSS_ATTR_URL = "url";
 		private static final String RSS_ATTR_TYPE = "type";
 		private static final String RSS_ATTR_LENGTH = "length";
@@ -108,39 +101,40 @@ public class FeedParser {
 		}
 
 		private void onStartTag() {
-			currentNamespace = parser.getNamespace();
-			String fullName;
-			if (currentNamespace.equals("")) {
-				fullName = parser.getName();
-			} else {
-				fullName = currentNamespace + ":" + parser.getName();
-			}
+			String nsString = parser.getNamespace();
+			currentNS = getNamespace(nsString);
+			Tag tag = getTag(nsString + ":" + parser.getName());
 
-			if (!isFeed
-					&& (fullName.equals(ATOM_FEED)
-							|| fullName.equals(RSS_TOPLEVEL) || fullName
-								.equals(RSS_NS + ":" + RSS_TOPLEVEL))) {
+			if (!isFeed) {
+				// is current element one of the toplevel elements
+				if (((currentNS == Namespace.ATOM) && tag == Tag.ATOM_FEED)
+						|| ((currentNS == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
+						|| ((currentNS == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
+
+				}
 				isFeed = true;
 			}
 
-			if (currentNamespace.equals(ATOM_NS)) {
-				onStartTagAtom(fullName);
+			if (currentNS == Namespace.ATOM) {
+				onStartTagAtom(tag);
 			} else {
-				onStartTagRss(fullName);
+				onStartTagRss(tag);
 			}
-			parents.push(fullName);
+			parents.push(tag);
 		}
 
-		private void onStartTagAtom(String fullName) {
-			if (fullName.equals(ATOM_ENTRY)) {
+		private void onStartTagAtom(Tag tag) {
+			switch (tag) {
+			case ATOM_ENTRY:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
 				currentItemHasSummary = false;
-			} else if (fullName.equals(ATOM_LINK)) {
+				break;
+			case ATOM_LINK:
 				String rel = parser.getAttributeValue("", ATOM_ATTR_REL);
 				if (rel == null) {
 				} else if (rel.equals(ATOM_REL_ENCLOSURE)) {
-					if (parents.peek().equals(ATOM_ENTRY)) {
+					if (parents.peek() == Tag.ATOM_ENTRY) {
 						Enclosure enclosure = new Enclosure();
 						enclosure.setFeedItem(feedItem);
 						enclosure.setUrl(parser.getAttributeValue("",
@@ -159,7 +153,7 @@ public class FeedParser {
 					}
 				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
 					String type = parser.getAttributeValue("", ATOM_ATTR_TYPE);
-					if (parents.peek().equals(ATOM_ENTRY)) {
+					if (parents.peek() == Tag.ATOM_ENTRY) {
 						if (type == null || type.equals(MIME_HTML)
 								|| type.equals(MIME_XHTML)) {
 							// actually there can be multiple "alternate links"
@@ -168,7 +162,7 @@ public class FeedParser {
 							feedItem.setUrl(parser.getAttributeValue("",
 									ATOM_ATTR_HREF));
 						}
-					} else if (parents.peek().equals(ATOM_FEED)) {
+					} else if (parents.peek() == Tag.ATOM_FEED) {
 						if (type == null || type.equals(MIME_HTML)
 								|| type.equals(MIME_XHTML)) {
 							// same issue as above with multiple alternate links
@@ -177,21 +171,24 @@ public class FeedParser {
 						}
 					}
 				} else if (rel.equals(ATOM_REL_SELF)) {
-					if (parents.peek().equals(ATOM_FEED)) {
+					if (parents.peek() == Tag.ATOM_FEED) {
 						feed.setUrl(parser
 								.getAttributeValue("", ATOM_ATTR_HREF));
 					}
 				}
+				break;
 			}
 
 		}
 
-		private void onStartTagRss(String fullName) {
-			if (equalsRssTag(fullName, RSS_ITEM)) {
+		private void onStartTagRss(Tag tag) {
+			switch (tag) {
+			case RSS_ITEM:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
-			} else if (equalsRssTag(fullName, RSS_ENCLOSURE)) {
-				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+				break;
+			case RSS_ENCLOSURE:
+				if (parents.peek() == Tag.RSS_ITEM) {
 					Enclosure enclosure = new Enclosure();
 					enclosure.setFeedItem(feedItem);
 					enclosure
@@ -206,43 +203,49 @@ public class FeedParser {
 					}
 					feedItem.getEnclosures().add(enclosure);
 				}
+				break;
 			}
 		}
 
 		private void onText() {
-			if (currentNamespace.equals(ATOM_NS)) {
+			if (currentNS == Namespace.ATOM) {
 				onTextAtom();
-			} else {
+			} else if (currentNS == Namespace.NONE
+					|| currentNS == Namespace.RSS) {
 				onTextRss();
 			}
 		}
 
 		private void onTextAtom() {
-			if (parents.peek().equals(ATOM_TITLE)) {
-				String copy = parents.pop();
-				if (parents.peek().equals(ATOM_FEED)) {
+			switch (parents.peek()) {
+			case ATOM_TITLE:
+				Tag copy = parents.pop();
+				if (parents.peek() == Tag.ATOM_FEED) {
 					// feed title
 					feed.setTitle(parser.getText());
-				} else if (parents.peek().equals(ATOM_ENTRY)) {
+				} else if (parents.peek() == Tag.ATOM_ENTRY) {
 					// entry title
 					feedItem.setTitle(parser.getText());
 				}
 				parents.push(copy);
-			} else if (parents.peek().equals(ATOM_SUMMARY)) {
-				String copy = parents.pop();
-				if (parents.peek().equals(ATOM_ENTRY)) {
+				break;
+			case ATOM_SUMMARY:
+				Tag copy1 = parents.pop();
+				if (parents.peek() == Tag.ATOM_ENTRY) {
 					currentItemHasSummary = true;
 					feedItem.setDescription(parser.getText());
 				}
-				parents.push(copy);
-			} else if (parents.peek().equals(ATOM_CONTENT)) {
+				parents.push(copy1);
+				break;
+			case ATOM_CONTENT:
 				if (!currentItemHasSummary
-						&& (parents.peek().equals(ATOM_ENTRY))) {
+						&& (parents.peek() == Tag.ATOM_ENTRY)) {
 					feedItem.setDescription(parser.getText());
 				}
-			} else if (parents.peek().equals(ATOM_PUBLISHED)) {
-				String copy = parents.pop();
-				if (parents.peek().equals(ATOM_ENTRY)) {
+				break;
+			case ATOM_PUBLISHED:
+				Tag copy2 = parents.pop();
+				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
 						feedItem.setDate(parseAtomDate(parser.getText()));
 					} catch (IndexOutOfBoundsException e) {
@@ -253,82 +256,85 @@ public class FeedParser {
 						e.printStackTrace();
 					}
 				}
-				parents.push(copy);
-			} else if (parents.peek().equals(ATOM_SUBTITLE)) {
+				parents.push(copy2);
+				break;
+			case ATOM_SUBTITLE:
 				feed.setDescription(parser.getText());
+				break;
 			}
 		}
 
 		private void onTextRss() {
-			if (equalsRssTag(parents.peek(), RSS_TITLE)) {
-				String copy = parents.pop();
-				if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+			switch (parents.peek()) {
+			case RSS_TITLE:
+				Tag copy1 = parents.pop();
+				switch (parents.peek()) {
+				case RSS_CHANNEL:
 					feed.setTitle(parser.getText());
+					break;
 
-				} else if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+				case RSS_ITEM:
 					feedItem.setTitle(parser.getText());
+					break;
 				}
-				parents.push(copy);
-			} else if (equalsRssTag(parents.peek(), RSS_PUB_DATE)) {
-				String copy = parents.pop();
-				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+				parents.push(copy1);
+				break;
+			case RSS_PUB_DATE:
+				Tag copy2 = parents.pop();
+				if (parents.peek() == Tag.RSS_ITEM) {
 					feedItem.setDate(parseRssDate(parser.getText()));
 				}
-				parents.push(copy);
-			} else if (equalsRssTag(parents.peek(), RSS_LINK)) {
-				String copy = parents.pop();
-				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+				parents.push(copy2);
+				break;
+			case RSS_LINK:
+				Tag copy3 = parents.pop();
+				switch (parents.peek()) {
+				case RSS_ITEM:
 					feedItem.setUrl(parser.getText());
-				} else if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+					break;
+				case RSS_CHANNEL:
 					feed.setWebsite(parser.getText());
+					break;
 				}
-				parents.push(copy);
-			} else if (equalsRssTag(parents.peek(), RSS_DESCRIPTION)) {
-				String copy = parents.pop();
-				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+				parents.push(copy3);
+				break;
+			case RSS_DESCRIPTION:
+				Tag copy4 = parents.pop();
+				switch (parents.peek()) {
+				case RSS_ITEM:
 					feedItem.setDescription(parser.getText());
-				} else if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+					break;
+				case RSS_CHANNEL:
 					feed.setDescription(parser.getText());
+					break;
 				}
-				parents.push(copy);
+				parents.push(copy4);
+				break;
 			}
 		}
 
 		private void onEndTag() {
-			currentNamespace = parser.getNamespace();
-			String fullName = parents.pop();
-			if (currentNamespace.equals(ATOM_NS)) {
-				onEndTagAtom(fullName);
-			} else {
-				onEndTagRss(fullName);
+			currentNS = getNamespace(parser.getNamespace());
+			Tag tag = parents.pop();
+			if (currentNS == Namespace.ATOM) {
+				onEndTagAtom(tag);
+			} else if (currentNS == Namespace.NONE
+					|| currentNS == Namespace.RSS) {
+				onEndTagRss(tag);
 			}
 		}
 
-		private void onEndTagAtom(String fullName) {
-			if (fullName.equals(ATOM_ENTRY)) {
+		private void onEndTagAtom(Tag tag) {
+			if (tag == Tag.ATOM_ENTRY) {
 				feed.getItems().add(feedItem);
 				feedItem = null;
 			}
 		}
 
-		private void onEndTagRss(String fullName) {
-			if (equalsRssTag(fullName, RSS_ITEM)) {
+		private void onEndTagRss(Tag tag) {
+			if (tag == Tag.RSS_ITEM) {
 				feed.getItems().add(feedItem);
 				feedItem = null;
-			}
-
-		}
-
-		private boolean equalsRssTag(String fullName, String rssName) {
-			// the RSS namespace is optional, but if it is set, the parser
-			// should ONLY match those elements which are in the namespace
-			if (currentNamespace.equals(RSS_NS)
-					&& fullName.equals(RSS_NS + ":" + rssName)) {
-				return true;
-			} else if (currentNamespace.equals("") && fullName.equals(rssName)) {
-				return true;
-			} else {
-				return false;
 			}
 
 		}
@@ -404,38 +410,31 @@ public class FeedParser {
 			// dirty version - write a new one TODO
 			Date date = null;
 			SimpleDateFormat format;
-			if(datestring.charAt(4) == ' ') {
-				if(datestring.charAt(13) == ' ') {
-					if(datestring.charAt(19) != ' ') {
+			if (datestring.charAt(4) == ' ') {
+				if (datestring.charAt(13) == ' ') {
+					if (datestring.charAt(19) != ' ') {
 						format = formats[0];
-					}
-					else {
+					} else {
 						format = formats[1];
 					}
-				}
-				else {
-					if(datestring.charAt(21) != ' ') {
+				} else {
+					if (datestring.charAt(21) != ' ') {
 						format = formats[2];
-					}
-					else {
+					} else {
 						format = formats[3];
 					}
 				}
-			}
-			else {
-				if(datestring.charAt(8) == ' ') {
-					if(datestring.charAt(14) == ' ') {
+			} else {
+				if (datestring.charAt(8) == ' ') {
+					if (datestring.charAt(14) == ' ') {
 						format = formats[4];
-					}
-					else {
+					} else {
 						format = formats[5];
 					}
-				}
-				else {
-					if(datestring.charAt(16) == ' ') {
+				} else {
+					if (datestring.charAt(16) == ' ') {
 						format = formats[6];
-					}
-					else {
+					} else {
 						format = formats[7];
 					}
 				}
@@ -447,6 +446,61 @@ public class FeedParser {
 			}
 			// date can be null here
 			return date;
+		}
+
+		static final String ATOM_NS = "http://www.w3.org/2005/Atom";
+		static final String RSS_NS = "http://backend.userland.com/RSS2";
+
+		private static Namespace getNamespace(String nsString) {
+			if (nsString.equals("")) {
+				return Namespace.NONE;
+			} else if (nsString.equals(ATOM_NS)) {
+				return Namespace.ATOM;
+			} else if (nsString.equals(RSS_NS)) {
+				return Namespace.RSS;
+			} else {
+				return Namespace.UNKNOWN;
+			}
+		}
+
+		static final Map<String, Tag> lookupTable;
+		static {
+			Map<String, Tag> temp = new HashMap<String, Tag>();
+			temp.put(ATOM_NS + ":feed", Tag.ATOM_FEED);
+			temp.put(ATOM_NS + ":title", Tag.ATOM_TITLE);
+			temp.put(ATOM_NS + ":entry", Tag.ATOM_ENTRY);
+			temp.put(ATOM_NS + ":link", Tag.ATOM_LINK);
+			temp.put(ATOM_NS + ":summary", Tag.ATOM_SUMMARY);
+			temp.put(ATOM_NS + ":content", Tag.ATOM_CONTENT);
+			temp.put(ATOM_NS + ":published", Tag.ATOM_PUBLISHED);
+			temp.put(ATOM_NS + ":subtitle", Tag.ATOM_SUBTITLE);
+
+			temp.put(RSS_NS + ":rss", Tag.RSS_TOPLEVEL);
+			temp.put(RSS_NS + ":channel", Tag.RSS_CHANNEL);
+			temp.put(RSS_NS + ":item", Tag.RSS_ITEM);
+			temp.put(RSS_NS + ":title", Tag.RSS_TITLE);
+			temp.put(RSS_NS + ":link", Tag.RSS_LINK);
+			temp.put(RSS_NS + ":description", Tag.RSS_DESCRIPTION);
+			temp.put(RSS_NS + ":enclosure", Tag.RSS_ENCLOSURE);
+			temp.put(RSS_NS + ":pubDate", Tag.RSS_PUB_DATE);
+
+			temp.put(":rss", Tag.RSS_TOPLEVEL);
+			temp.put(":channel", Tag.RSS_CHANNEL);
+			temp.put(":item", Tag.RSS_ITEM);
+			temp.put(":title", Tag.RSS_TITLE);
+			temp.put(":link", Tag.RSS_LINK);
+			temp.put(":description", Tag.RSS_DESCRIPTION);
+			temp.put(":enclosure", Tag.RSS_ENCLOSURE);
+			temp.put(":pubDate", Tag.RSS_PUB_DATE);
+			lookupTable = Collections.unmodifiableMap(temp);
+		};
+
+		private static Tag getTag(String fullName) {
+			Tag tag = lookupTable.get(fullName);
+			if (tag == null) {
+				tag = Tag.UNKNOWN;
+			}
+			return tag;
 		}
 	}
 }
