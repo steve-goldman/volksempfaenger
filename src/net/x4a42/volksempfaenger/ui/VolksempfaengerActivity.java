@@ -1,21 +1,25 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import org.xmlpull.v1.XmlPullParserException;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
+import net.x4a42.volksempfaenger.net.FeedDownloader;
+import net.x4a42.volksempfaenger.net.NetException;
+
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +34,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonDownloadQueue;
 	private Button buttonSettings;
 	private Button buttonTestFeed;
+	private Button buttonTestHttp;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,13 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonListenQueue = (Button) findViewById(R.id.button_listenqueue);
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
+		buttonTestHttp = (Button) findViewById(R.id.button_testhttp);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
+		buttonTestHttp.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -54,19 +61,22 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_subscriptionlist:
 			intent = new Intent(this, SubscriptionListActivity.class);
 			startActivity(intent);
-			break;
+			return;
 		case R.id.button_listenqueue:
 			intent = new Intent(this, ListenQueueActivity.class);
 			startActivity(intent);
-			break;
+			return;
 		case R.id.button_downloadqueue:
 			intent = new Intent(this, DownloadQueueActivity.class);
 			startActivity(intent);
-			break;
+			return;
 		case R.id.button_testfeed:
 			Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 			testFeedParser();
-			break;
+			return;
+		case R.id.button_testhttp:
+			testFeedDownloader();
+			return;
 		}
 	}
 
@@ -134,5 +144,35 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void testFeedDownloader() {
+		new AsyncTask<String, String, String>() {
+			@Override
+			protected String doInBackground(String... params) {
+				FeedDownloader d = new FeedDownloader(
+						VolksempfaengerActivity.this);
+				try {
+					BufferedReader rd = d.fetchFeed(params[0]);
+					String line;
+					try {
+						while ((line = rd.readLine()) != null) {
+							publishProgress(line);
+						}
+					} catch (IOException e) {
+						publishProgress(e.getMessage());
+					}
+				} catch (NetException e) {
+					publishProgress(e.getMessage());
+				}
+				return null;
+			}
+
+			@Override
+			protected void onProgressUpdate(String... values) {
+				Toast.makeText(VolksempfaengerActivity.this, values[0],
+						Toast.LENGTH_SHORT).show();
+			}
+		}.execute("http://vschuessler.org/");
 	}
 }
