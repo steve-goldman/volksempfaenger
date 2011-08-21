@@ -7,6 +7,8 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
+import net.x4a42.volksempfaenger.feedparser.FeedParserException;
+import net.x4a42.volksempfaenger.feedparser.NotAFeedException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 
@@ -86,7 +88,7 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			} catch (NetException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
 				return RESULT_DOWNLOAD_FAILED;
-			} catch (XmlPullParserException e) {
+			} catch (FeedParserException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
 				return RESULT_XML_EXCEPTION;
 			} catch (IOException e) {

@@ -17,16 +17,22 @@ import android.util.Log;
 public class FeedParser {
 	private final String TAG = getClass().getSimpleName();
 
-	public static Feed parse(Reader reader) throws XmlPullParserException,
+	public static Feed parse(Reader reader) throws FeedParserException,
 			IOException {
-		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-		XmlPullParser parser = factory.newPullParser();
+		XmlPullParserFactory factory;
+		try {
+			factory = XmlPullParserFactory.newInstance();
 
-		parser.setInput(reader);
+			factory.setNamespaceAware(true);
+			XmlPullParser parser = factory.newPullParser();
 
-		ParserHelper parserHelper = new ParserHelper(parser);
-		return parserHelper.getFeed();
+			parser.setInput(reader);
+			ParserHelper parserHelper;
+			parserHelper = new ParserHelper(parser);
+			return parserHelper.getFeed();
+		} catch (XmlPullParserException e) {
+			throw new FeedParserException();
+		}
 	}
 
 	private static class ParserHelper {
@@ -74,7 +80,7 @@ public class FeedParser {
 		private static final String MIME_XHTML = "text/xhtml";
 
 		public ParserHelper(XmlPullParser parser)
-				throws XmlPullParserException, IOException {
+				throws XmlPullParserException, IOException, NotAFeedException {
 			this.parser = parser;
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -91,8 +97,10 @@ public class FeedParser {
 				}
 				eventType = parser.next();
 			}
-			
-			
+			if (!isFeed) {
+				throw new NotAFeedException();
+			}
+
 		}
 
 		public Feed getFeed() {
@@ -107,8 +115,11 @@ public class FeedParser {
 			} else {
 				fullName = currentNamespace + ":" + parser.getName();
 			}
-			
-			if(!isFeed && (fullName.equals(ATOM_FEED) || fullName.equals(RSS_TOPLEVEL) || fullName.equals(RSS_NS + ":" + RSS_TOPLEVEL) )) {
+
+			if (!isFeed
+					&& (fullName.equals(ATOM_FEED)
+							|| fullName.equals(RSS_TOPLEVEL) || fullName
+								.equals(RSS_NS + ":" + RSS_TOPLEVEL))) {
 				isFeed = true;
 			}
 
