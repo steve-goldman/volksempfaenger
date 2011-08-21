@@ -337,6 +337,7 @@ public class FeedParser {
 				throws java.text.ParseException, IndexOutOfBoundsException {
 			// original version by Chad Okere (ceothrow1 at gmail dotcom)
 			// http://cokere.com/RFC3339Date.txt
+			// dirty version - write a new one TODO
 
 			Date d = new Date();
 
@@ -389,25 +390,60 @@ public class FeedParser {
 			return d;
 		}
 
-		private Date parseRssDate(String datestring) {
-			SimpleDateFormat formats[] = new SimpleDateFormat[] {
-					new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US),
-					new SimpleDateFormat("EEE, d MMM yy HH:mm z", Locale.US),
-					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z",
-							Locale.US),
-					new SimpleDateFormat("EEE, d MMM yyyy HH:mm z", Locale.US),
-					new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
-					new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
-					new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
-					new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
+		private static final SimpleDateFormat formats[] = new SimpleDateFormat[] {
+				new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US),
+				new SimpleDateFormat("EEE, d MMM yy HH:mm z", Locale.US),
+				new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.US),
+				new SimpleDateFormat("EEE, d MMM yyyy HH:mm z", Locale.US),
+				new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
+				new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
+				new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
+				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
 
+		private Date parseRssDate(String datestring) {
+			// dirty version - write a new one TODO
 			Date date = null;
-			for (SimpleDateFormat format : formats) {
-				try {
-					date = format.parse(datestring);
-				} catch (ParseException e) {
-					continue;
+			SimpleDateFormat format;
+			if(datestring.charAt(4) == ' ') {
+				if(datestring.charAt(13) == ' ') {
+					if(datestring.charAt(19) != ' ') {
+						format = formats[0];
+					}
+					else {
+						format = formats[1];
+					}
 				}
+				else {
+					if(datestring.charAt(21) != ' ') {
+						format = formats[2];
+					}
+					else {
+						format = formats[3];
+					}
+				}
+			}
+			else {
+				if(datestring.charAt(8) == ' ') {
+					if(datestring.charAt(14) == ' ') {
+						format = formats[4];
+					}
+					else {
+						format = formats[5];
+					}
+				}
+				else {
+					if(datestring.charAt(16) == ' ') {
+						format = formats[6];
+					}
+					else {
+						format = formats[7];
+					}
+				}
+			}
+			try {
+				date = format.parse(datestring);
+			} catch (ParseException e) {
+				date = null;
 			}
 			// date can be null here
 			return date;
