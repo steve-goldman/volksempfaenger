@@ -18,6 +18,9 @@
               android:name=".ui.DownloadQueueActivity"
               android:label="@string/app_name" />
         <activity
+              android:name=".ui.EditSubscriptionActivity"
+              android:label="@string/app_name" />
+        <activity
         	  android:name=".ui.ListenQueueActivity"
         	  android:label="@string/app_name" />
         <activity
@@ -27,6 +30,9 @@
         	  android:name=".ui.SubscriptionListActivity"
         	  android:label="@string/title_subscription_list" />
         <activity
+              android:name=".ui.ViewSubscriptionActivity"
+              android:label="@string/app_name" />
+        <activity
         	  android:name=".ui.VolksempfaengerActivity"
         	  android:label="@string/app_name">
             <intent-filter>
@@ -34,5 +40,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+        	  android:exported="true" android:name=".net.DownloadCompleteReceiver">
+        	<intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+		</receiver>
     </application>
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

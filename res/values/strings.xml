@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Volksempfänger</string>
+	<string name="app_name_ascii">Volksempfaenger</string>
 	<string name="title_add_subscription">Add Subscription</string>
 	<string name="title_subscription_list">Volksempfänger Subscriptions</string>
 	<string name="title_settings">Volksempfänger Settings</string>
@@ -14,12 +15,16 @@
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	<string name="add">Add</string>
+	<string name="save">Save</string>
 	<string name="cancel">Cancel</string>
 	<string name="unknown">unknown</string>
 	<string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
 	<string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
 	<string name="message_podcast_confirm_delete">Do you want to delete \"%s\"?</string>
 	<string name="message_podcast_successfully_deleted">Podcast was successfully deleted</string>
+	<string name="message_podcast_feed_download_failed">Unable to download podcast</string>
+	<string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
+	<string name="message_podcast_feed_io_exception">IOException</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>
