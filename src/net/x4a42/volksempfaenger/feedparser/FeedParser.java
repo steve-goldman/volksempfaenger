@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Stack;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -263,6 +264,30 @@ public class FeedParser {
 				d = s.parse(datestring);
 			}
 			return d;
+		}
+
+		private Date parseRssDate(String datestring) {
+			SimpleDateFormat formats[] = new SimpleDateFormat[] {
+					new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US),
+					new SimpleDateFormat("EEE, d MMM yy HH:mm z", Locale.US),
+					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z",
+							Locale.US),
+					new SimpleDateFormat("EEE, d MMM yyyy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
+					new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
+
+			Date date = null;
+			for(SimpleDateFormat format : formats) {
+				try {
+					date = format.parse(datestring);
+				} catch (ParseException e) {
+					continue;
+				}
+			}
+			// date can be null here
+			return date;
 		}
 	}
 }
