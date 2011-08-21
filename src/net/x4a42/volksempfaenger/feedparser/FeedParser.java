@@ -27,35 +27,32 @@ public class FeedParser {
 	}
 
 	private static class ParserHelper {
-		private static String TAG = "ParserHelper";
+		private static final String TAG = "ParserHelper";
 		private XmlPullParser parser;
 		private Feed feed = new Feed();
 		private FeedItem feedItem;
 		Stack<String> parents = new Stack<String>();
 		private boolean currentItemHasSummary;
 
-		private final String ATOM_NS = "http://www.w3.org/2005/Atom";
-
-		private final String ATOM_FEED = ATOM_NS + ":feed";
-		private final String ATOM_TITLE = ATOM_NS + ":title";
-		private final String ATOM_ENTRY = ATOM_NS + ":entry";
-		private final String ATOM_LINK = ATOM_NS + ":link";
-		private final String ATOM_SUMMARY = ATOM_NS + ":summary";
-		private final String ATOM_CONTENT = ATOM_NS + ":content";
-		private final String ATOM_PUBLISHED = ATOM_NS + ":published";
-		private final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
-
-		private final String ATOM_ATTR_HREF = "href";
-		private final String ATOM_ATTR_REL = "rel";
-		private final String ATOM_ATTR_TYPE = "type";
-		private final String ATOM_ATTR_LENGTH = "length";
-
-		private final String ATOM_REL_ENCLOSURE = "enclosure";
-		private final String ATOM_REL_ALTERNATE = "alternate";
-		private final String ATOM_REL_SELF = "self";
-
-		private final String MIME_HTML = "text/html";
-		private final String MIME_XHTML = "text/xhtml";
+		private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
+		private static final String ATOM_FEED = ATOM_NS + ":feed";
+		private static final String ATOM_TITLE = ATOM_NS + ":title";
+		private static final String ATOM_ENTRY = ATOM_NS + ":entry";
+		private static final String ATOM_LINK = ATOM_NS + ":link";
+		private static final String ATOM_SUMMARY = ATOM_NS + ":summary";
+		private static final String ATOM_CONTENT = ATOM_NS + ":content";
+		private static final String ATOM_PUBLISHED = ATOM_NS + ":published";
+		private static final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
+		private static final String ATOM_ATTR_HREF = "href";
+		private static final String ATOM_ATTR_REL = "rel";
+		private static final String ATOM_ATTR_TYPE = "type";
+		private static final String ATOM_ATTR_LENGTH = "length";
+		private static final String ATOM_REL_ENCLOSURE = "enclosure";
+		private static final String ATOM_REL_ALTERNATE = "alternate";
+		private static final String ATOM_REL_SELF = "self";
+		
+		private static final String MIME_HTML = "text/html";
+		private static final String MIME_XHTML = "text/xhtml";
 
 		public ParserHelper(XmlPullParser parser)
 				throws XmlPullParserException, IOException {
