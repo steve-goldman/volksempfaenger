@@ -95,17 +95,13 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			FeedDownloader fd = new FeedDownloader(AddSubscriptionActivity.this);
 			Feed feed;
 			try {
-				BufferedReader rd = fd.fetchFeed(feedUrl);
-				feed = FeedParser.parse(rd);
+				feed = fd.fetchFeed(feedUrl);
 			} catch (NetException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
 				return RESULT_DOWNLOAD_FAILED;
 			} catch (FeedParserException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
 				return RESULT_XML_EXCEPTION;
-			} catch (IOException e) {
-				Log.i(getClass().getSimpleName(), "Exception handled", e);
-				return RESULT_IO_EXCEPTION;
 			}
 
 			// Open database

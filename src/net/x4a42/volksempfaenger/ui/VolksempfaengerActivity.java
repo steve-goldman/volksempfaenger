@@ -36,7 +36,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonDownloadQueue;
 	private Button buttonSettings;
 	private Button buttonTestFeed;
-	private Button buttonTestHttp;
 	private Button buttonTestEncdl;
 
 	@Override
@@ -48,14 +47,12 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonListenQueue = (Button) findViewById(R.id.button_listenqueue);
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
-		buttonTestHttp = (Button) findViewById(R.id.button_testhttp);
 		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
-		buttonTestHttp.setOnClickListener(this);
 		buttonTestEncdl.setOnClickListener(this);
 	}
 
@@ -78,9 +75,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_testfeed:
 			Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 			testFeedParser();
-			return;
-		case R.id.button_testhttp:
-			testFeedDownloader();
 			return;
 		case R.id.button_testencdl:
 			testEnclosureDownloader();
@@ -156,36 +150,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void testFeedDownloader() {
-		new AsyncTask<String, String, String>() {
-			@Override
-			protected String doInBackground(String... params) {
-				FeedDownloader d = new FeedDownloader(
-						VolksempfaengerActivity.this);
-				try {
-					BufferedReader rd = d.fetchFeed(params[0]);
-					String line;
-					try {
-						while ((line = rd.readLine()) != null) {
-							publishProgress(line);
-						}
-					} catch (IOException e) {
-						publishProgress(e.getMessage());
-					}
-				} catch (NetException e) {
-					publishProgress(e.getMessage());
-				}
-				return null;
-			}
-
-			@Override
-			protected void onProgressUpdate(String... values) {
-				Toast.makeText(VolksempfaengerActivity.this, values[0],
-						Toast.LENGTH_SHORT).show();
-			}
-		}.execute("http://vschuessler.org/");
 	}
 
 	public void testEnclosureDownloader() {

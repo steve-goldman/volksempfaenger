@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.feedparser.Feed;
+import net.x4a42.volksempfaenger.feedparser.FeedParser;
+import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -31,7 +34,7 @@ public class FeedDownloader {
 		return AndroidHttpClient.newInstance(getUserAgent(), context);
 	}
 
-	public BufferedReader fetchFeed(String url) throws NetException {
+	public Feed fetchFeed(String url) throws NetException, FeedParserException {
 		AndroidHttpClient client = getHttpClient();
 		HttpGet request;
 		try {
@@ -43,9 +46,11 @@ public class FeedDownloader {
 		request.addHeader("Accept", "application/atom+xml, application/rss+xml");
 		try {
 			HttpResponse response = client.execute(request);
-			client.close();
-			return new BufferedReader(new InputStreamReader(response
+			BufferedReader rd = new BufferedReader(new InputStreamReader(response
 					.getEntity().getContent()));
+			Feed feed =  FeedParser.parse(rd);
+			client.close();
+			return feed;
 		} catch (IllegalStateException e) {
 			Log.w(getClass().getSimpleName(), e);
 			throw new NetException(e);
