@@ -1,0 +1,405 @@
+package net.x4a42.volksempfaenger.feedparser;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Stack;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import android.util.Log;
+
+public class FeedParser {
+	private final String TAG = getClass().getSimpleName();
+
+	public static Feed parse(Reader reader) throws XmlPullParserException,
+			IOException {
+		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+		factory.setNamespaceAware(true);
+		XmlPullParser parser = factory.newPullParser();
+
+		parser.setInput(reader);
+
+		ParserHelper parserHelper = new ParserHelper(parser);
+		return parserHelper.getFeed();
+	}
+
+	private static class ParserHelper {
+		private static final String TAG = "ParserHelper";
+		private XmlPullParser parser;
+		private Feed feed = new Feed();
+		private FeedItem feedItem = null;
+		Stack<String> parents = new Stack<String>();
+		private boolean currentItemHasSummary = false;
+		private String currentNamespace = "";
+		private boolean isFeed = false;
+
+		private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
+		private static final String ATOM_FEED = ATOM_NS + ":feed";
+		private static final String ATOM_TITLE = ATOM_NS + ":title";
+		private static final String ATOM_ENTRY = ATOM_NS + ":entry";
+		private static final String ATOM_LINK = ATOM_NS + ":link";
+		private static final String ATOM_SUMMARY = ATOM_NS + ":summary";
+		private static final String ATOM_CONTENT = ATOM_NS + ":content";
+		private static final String ATOM_PUBLISHED = ATOM_NS + ":published";
+		private static final String ATOM_SUBTITLE = ATOM_NS + ":subtitle";
+		private static final String ATOM_ATTR_HREF = "href";
+		private static final String ATOM_ATTR_REL = "rel";
+		private static final String ATOM_ATTR_TYPE = "type";
+		private static final String ATOM_ATTR_LENGTH = "length";
+		private static final String ATOM_ATTR_TITLE = "title";
+		private static final String ATOM_REL_ENCLOSURE = "enclosure";
+		private static final String ATOM_REL_ALTERNATE = "alternate";
+		private static final String ATOM_REL_SELF = "self";
+
+		private static final String RSS_NS = "http://backend.userland.com/RSS2";
+		private static final String RSS_TOPLEVEL = "rss";
+		private static final String RSS_CHANNEL = "channel";
+		private static final String RSS_ITEM = "item";
+		private static final String RSS_TITLE = "title";
+		private static final String RSS_LINK = "link";
+		private static final String RSS_DESCRIPTION = "description";
+		private static final String RSS_ENCLOSURE = "enclosure";
+		private static final String RSS_PUB_DATE = "pubDate";
+		private static final String RSS_ATTR_URL = "url";
+		private static final String RSS_ATTR_TYPE = "type";
+		private static final String RSS_ATTR_LENGTH = "length";
+
+		private static final String MIME_HTML = "text/html";
+		private static final String MIME_XHTML = "text/xhtml";
+
+		public ParserHelper(XmlPullParser parser)
+				throws XmlPullParserException, IOException {
+			this.parser = parser;
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType) {
+				case XmlPullParser.START_TAG:
+					onStartTag();
+					break;
+				case XmlPullParser.TEXT:
+					onText();
+					break;
+				case XmlPullParser.END_TAG:
+					onEndTag();
+					break;
+				}
+				eventType = parser.next();
+			}
+			
+			
+		}
+
+		public Feed getFeed() {
+			return feed;
+		}
+
+		private void onStartTag() {
+			currentNamespace = parser.getNamespace();
+			String fullName;
+			if (currentNamespace.equals("")) {
+				fullName = parser.getName();
+			} else {
+				fullName = currentNamespace + ":" + parser.getName();
+			}
+			
+			if(!isFeed && (fullName.equals(ATOM_FEED) || fullName.equals(RSS_TOPLEVEL) || fullName.equals(RSS_NS + ":" + RSS_TOPLEVEL) )) {
+				isFeed = true;
+			}
+
+			if (currentNamespace.equals(ATOM_NS)) {
+				onStartTagAtom(fullName);
+			} else {
+				onStartTagRss(fullName);
+			}
+			parents.push(fullName);
+		}
+
+		private void onStartTagAtom(String fullName) {
+			if (fullName.equals(ATOM_ENTRY)) {
+				feedItem = new FeedItem();
+				feedItem.setFeed(feed);
+				currentItemHasSummary = false;
+			} else if (fullName.equals(ATOM_LINK)) {
+				String rel = parser.getAttributeValue("", ATOM_ATTR_REL);
+				if (rel == null) {
+				} else if (rel.equals(ATOM_REL_ENCLOSURE)) {
+					if (parents.peek().equals(ATOM_ENTRY)) {
+						Enclosure enclosure = new Enclosure();
+						enclosure.setFeedItem(feedItem);
+						enclosure.setUrl(parser.getAttributeValue("",
+								ATOM_ATTR_HREF));
+						enclosure.setMime(parser.getAttributeValue("",
+								ATOM_ATTR_TYPE));
+						enclosure.setTitle(parser.getAttributeValue("",
+								ATOM_ATTR_TITLE));
+
+						String length = parser.getAttributeValue("",
+								ATOM_ATTR_LENGTH);
+						if (length != null) {
+							enclosure.setSize(Long.parseLong(length));
+						}
+						feedItem.getEnclosures().add(enclosure);
+					}
+				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
+					String type = parser.getAttributeValue("", ATOM_ATTR_TYPE);
+					if (parents.peek().equals(ATOM_ENTRY)) {
+						if (type == null || type.equals(MIME_HTML)
+								|| type.equals(MIME_XHTML)) {
+							// actually there can be multiple "alternate links"
+							// this uses the LAST alternate link as the URL for
+							// the FeedItem
+							feedItem.setUrl(parser.getAttributeValue("",
+									ATOM_ATTR_HREF));
+						}
+					} else if (parents.peek().equals(ATOM_FEED)) {
+						if (type == null || type.equals(MIME_HTML)
+								|| type.equals(MIME_XHTML)) {
+							// same issue as above with multiple alternate links
+							feed.setWebsite(parser.getAttributeValue("",
+									ATOM_ATTR_HREF));
+						}
+					}
+				} else if (rel.equals(ATOM_REL_SELF)) {
+					if (parents.peek().equals(ATOM_FEED)) {
+						feed.setUrl(parser
+								.getAttributeValue("", ATOM_ATTR_HREF));
+					}
+				}
+			}
+
+		}
+
+		private void onStartTagRss(String fullName) {
+			if (equalsRssTag(fullName, RSS_ITEM)) {
+				feedItem = new FeedItem();
+				feedItem.setFeed(feed);
+			} else if (equalsRssTag(fullName, RSS_ENCLOSURE)) {
+				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+					Enclosure enclosure = new Enclosure();
+					enclosure.setFeedItem(feedItem);
+					enclosure
+							.setUrl(parser.getAttributeValue("", RSS_ATTR_URL));
+					enclosure.setMime(parser.getAttributeValue("",
+							RSS_ATTR_TYPE));
+
+					String length = parser.getAttributeValue("",
+							RSS_ATTR_LENGTH);
+					if (length != null) {
+						enclosure.setSize(Long.parseLong(length));
+					}
+					feedItem.getEnclosures().add(enclosure);
+				}
+			}
+		}
+
+		private void onText() {
+			if (currentNamespace.equals(ATOM_NS)) {
+				onTextAtom();
+			} else {
+				onTextRss();
+			}
+		}
+
+		private void onTextAtom() {
+			if (parents.peek().equals(ATOM_TITLE)) {
+				String copy = parents.pop();
+				if (parents.peek().equals(ATOM_FEED)) {
+					// feed title
+					feed.setTitle(parser.getText());
+				} else if (parents.peek().equals(ATOM_ENTRY)) {
+					// entry title
+					feedItem.setTitle(parser.getText());
+				}
+				parents.push(copy);
+			} else if (parents.peek().equals(ATOM_SUMMARY)) {
+				String copy = parents.pop();
+				if (parents.peek().equals(ATOM_ENTRY)) {
+					currentItemHasSummary = true;
+					feedItem.setDescription(parser.getText());
+				}
+				parents.push(copy);
+			} else if (parents.peek().equals(ATOM_CONTENT)) {
+				if (!currentItemHasSummary
+						&& (parents.peek().equals(ATOM_ENTRY))) {
+					feedItem.setDescription(parser.getText());
+				}
+			} else if (parents.peek().equals(ATOM_PUBLISHED)) {
+				String copy = parents.pop();
+				if (parents.peek().equals(ATOM_ENTRY)) {
+					try {
+						feedItem.setDate(parseAtomDate(parser.getText()));
+					} catch (IndexOutOfBoundsException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				parents.push(copy);
+			} else if (parents.peek().equals(ATOM_SUBTITLE)) {
+				feed.setDescription(parser.getText());
+			}
+		}
+
+		private void onTextRss() {
+			if (equalsRssTag(parents.peek(), RSS_TITLE)) {
+				String copy = parents.pop();
+				if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+					feed.setTitle(parser.getText());
+
+				} else if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+					feedItem.setTitle(parser.getText());
+				}
+				parents.push(copy);
+			} else if (equalsRssTag(parents.peek(), RSS_PUB_DATE)) {
+				String copy = parents.pop();
+				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+					feedItem.setDate(parseRssDate(parser.getText()));
+				}
+				parents.push(copy);
+			} else if (equalsRssTag(parents.peek(), RSS_LINK)) {
+				String copy = parents.pop();
+				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+					feedItem.setUrl(parser.getText());
+				} else if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+					feed.setWebsite(parser.getText());
+				}
+				parents.push(copy);
+			} else if (equalsRssTag(parents.peek(), RSS_DESCRIPTION)) {
+				String copy = parents.pop();
+				if (equalsRssTag(parents.peek(), RSS_ITEM)) {
+					feedItem.setDescription(parser.getText());
+				} else if (equalsRssTag(parents.peek(), RSS_CHANNEL)) {
+					feed.setDescription(parser.getText());
+				}
+				parents.push(copy);
+			}
+		}
+
+		private void onEndTag() {
+			currentNamespace = parser.getNamespace();
+			String fullName = parents.pop();
+			if (currentNamespace.equals(ATOM_NS)) {
+				onEndTagAtom(fullName);
+			} else {
+				onEndTagRss(fullName);
+			}
+		}
+
+		private void onEndTagAtom(String fullName) {
+			if (fullName.equals(ATOM_ENTRY)) {
+				feed.getItems().add(feedItem);
+				feedItem = null;
+			}
+		}
+
+		private void onEndTagRss(String fullName) {
+			if (equalsRssTag(fullName, RSS_ITEM)) {
+				feed.getItems().add(feedItem);
+				feedItem = null;
+			}
+
+		}
+
+		private boolean equalsRssTag(String fullName, String rssName) {
+			// the RSS namespace is optional, but if it is set, the parser
+			// should ONLY match those elements which are in the namespace
+			if (currentNamespace.equals(RSS_NS)
+					&& fullName.equals(RSS_NS + ":" + rssName)) {
+				return true;
+			} else if (currentNamespace.equals("") && fullName.equals(rssName)) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+
+		private Date parseAtomDate(String datestring)
+				throws java.text.ParseException, IndexOutOfBoundsException {
+			// original version by Chad Okere (ceothrow1 at gmail dotcom)
+			// http://cokere.com/RFC3339Date.txt
+
+			Date d = new Date();
+
+			// if there is no time zone, we don't need to do any special
+			// parsing.
+			if (datestring.endsWith("Z")) {
+				try {
+					SimpleDateFormat s = new SimpleDateFormat(
+							"yyyy-MM-dd'T'HH:mm:ss'Z'");// spec for RFC3339
+					d = s.parse(datestring);
+				} catch (java.text.ParseException pe) {// try again with
+														// optional decimals
+					SimpleDateFormat s = new SimpleDateFormat(
+							"yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");// spec for
+																// RFC3339 (with
+																// fractional
+																// seconds)
+					s.setLenient(true);
+					d = s.parse(datestring);
+				}
+				return d;
+			}
+
+			// step one, split off the timezone.
+			String firstpart = datestring.substring(0,
+					datestring.lastIndexOf('-'));
+			String secondpart = datestring.substring(datestring
+					.lastIndexOf('-'));
+
+			// step two, remove the colon from the timezone offset
+			secondpart = secondpart.substring(0, secondpart.indexOf(':'))
+					+ secondpart.substring(secondpart.indexOf(':') + 1);
+			datestring = firstpart + secondpart;
+			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");// spec
+																				// for
+																				// RFC3339
+			try {
+				d = s.parse(datestring);
+			} catch (java.text.ParseException pe) { // try again with optional
+													// decimals
+				s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"); // spec
+																			// for
+																			// RFC3339
+																			// (with
+																			// fractional
+																			// seconds)
+				s.setLenient(true);
+				d = s.parse(datestring);
+			}
+			return d;
+		}
+
+		private Date parseRssDate(String datestring) {
+			SimpleDateFormat formats[] = new SimpleDateFormat[] {
+					new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US),
+					new SimpleDateFormat("EEE, d MMM yy HH:mm z", Locale.US),
+					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z",
+							Locale.US),
+					new SimpleDateFormat("EEE, d MMM yyyy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
+					new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
+					new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
+
+			Date date = null;
+			for (SimpleDateFormat format : formats) {
+				try {
+					date = format.parse(datestring);
+				} catch (ParseException e) {
+					continue;
+				}
+			}
+			// date can be null here
+			return date;
+		}
+	}
+}
