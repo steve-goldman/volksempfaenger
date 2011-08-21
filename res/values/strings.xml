@@ -22,6 +22,9 @@
 	<string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
 	<string name="message_podcast_confirm_delete">Do you want to delete \"%s\"?</string>
 	<string name="message_podcast_successfully_deleted">Podcast was successfully deleted</string>
+	<string name="message_podcast_feed_download_failed">Unable to download podcast</string>
+	<string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
+	<string name="message_podcast_feed_io_exception">IOException</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>
