@@ -101,9 +101,8 @@ public class FeedParser {
 		}
 
 		private void onStartTag() {
-			String nsString = parser.getNamespace();
-			currentNS = getNamespace(nsString);
-			Tag tag = getTag(nsString + ":" + parser.getName());
+			currentNS = getNamespace(parser.getNamespace());
+			Tag tag = getTag(currentNS, parser.getName());
 
 			if (!isFeed) {
 				// is current element one of the toplevel elements
@@ -463,40 +462,41 @@ public class FeedParser {
 			}
 		}
 
-		static final Map<String, Tag> lookupTable;
+		static final Map<String, Tag> atomTable;
+		static final Map<String, Tag> rssTable;
 		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put(ATOM_NS + ":feed", Tag.ATOM_FEED);
-			temp.put(ATOM_NS + ":title", Tag.ATOM_TITLE);
-			temp.put(ATOM_NS + ":entry", Tag.ATOM_ENTRY);
-			temp.put(ATOM_NS + ":link", Tag.ATOM_LINK);
-			temp.put(ATOM_NS + ":summary", Tag.ATOM_SUMMARY);
-			temp.put(ATOM_NS + ":content", Tag.ATOM_CONTENT);
-			temp.put(ATOM_NS + ":published", Tag.ATOM_PUBLISHED);
-			temp.put(ATOM_NS + ":subtitle", Tag.ATOM_SUBTITLE);
+			Map<String, Tag> temp1 = new HashMap<String, Tag>();
+			temp1.put("feed", Tag.ATOM_FEED);
+			temp1.put("title", Tag.ATOM_TITLE);
+			temp1.put("entry", Tag.ATOM_ENTRY);
+			temp1.put("link", Tag.ATOM_LINK);
+			temp1.put("summary", Tag.ATOM_SUMMARY);
+			temp1.put("content", Tag.ATOM_CONTENT);
+			temp1.put("published", Tag.ATOM_PUBLISHED);
+			temp1.put("subtitle", Tag.ATOM_SUBTITLE);
+			atomTable = Collections.unmodifiableMap(temp1);
 
-			temp.put(RSS_NS + ":rss", Tag.RSS_TOPLEVEL);
-			temp.put(RSS_NS + ":channel", Tag.RSS_CHANNEL);
-			temp.put(RSS_NS + ":item", Tag.RSS_ITEM);
-			temp.put(RSS_NS + ":title", Tag.RSS_TITLE);
-			temp.put(RSS_NS + ":link", Tag.RSS_LINK);
-			temp.put(RSS_NS + ":description", Tag.RSS_DESCRIPTION);
-			temp.put(RSS_NS + ":enclosure", Tag.RSS_ENCLOSURE);
-			temp.put(RSS_NS + ":pubDate", Tag.RSS_PUB_DATE);
-
-			temp.put(":rss", Tag.RSS_TOPLEVEL);
-			temp.put(":channel", Tag.RSS_CHANNEL);
-			temp.put(":item", Tag.RSS_ITEM);
-			temp.put(":title", Tag.RSS_TITLE);
-			temp.put(":link", Tag.RSS_LINK);
-			temp.put(":description", Tag.RSS_DESCRIPTION);
-			temp.put(":enclosure", Tag.RSS_ENCLOSURE);
-			temp.put(":pubDate", Tag.RSS_PUB_DATE);
-			lookupTable = Collections.unmodifiableMap(temp);
+			Map<String, Tag> temp2 = new HashMap<String, Tag>();
+			temp2.put("rss", Tag.RSS_TOPLEVEL);
+			temp2.put("channel", Tag.RSS_CHANNEL);
+			temp2.put("item", Tag.RSS_ITEM);
+			temp2.put("title", Tag.RSS_TITLE);
+			temp2.put("link", Tag.RSS_LINK);
+			temp2.put("description", Tag.RSS_DESCRIPTION);
+			temp2.put("enclosure", Tag.RSS_ENCLOSURE);
+			temp2.put("pubDate", Tag.RSS_PUB_DATE);
+			rssTable = Collections.unmodifiableMap(temp2);
 		};
 
-		private static Tag getTag(String fullName) {
-			Tag tag = lookupTable.get(fullName);
+		private static Tag getTag(Namespace ns, String tagString) {
+			Tag tag = null;
+			if(ns == Namespace.ATOM) {
+				tag= atomTable.get(tagString);
+			}
+			else if(ns == Namespace.RSS || ns == Namespace.NONE) {
+				tag = rssTable.get(tagString);
+			}
+
 			if (tag == null) {
 				tag = Tag.UNKNOWN;
 			}
