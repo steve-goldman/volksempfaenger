@@ -12,8 +12,10 @@ import net.x4a42.volksempfaenger.net.NetException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -162,8 +164,27 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			if (message != null) {
-				Toast.makeText(AddSubscriptionActivity.this, message,
-						Toast.LENGTH_SHORT).show();
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						AddSubscriptionActivity.this);
+				builder.setTitle(R.string.dialog_error_title)
+						.setMessage(message)
+						.setCancelable(false)
+						.setPositiveButton(R.string.ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								})
+						.setNegativeButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										AddSubscriptionActivity.this.finish();
+									}
+								});
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
 		}
 
