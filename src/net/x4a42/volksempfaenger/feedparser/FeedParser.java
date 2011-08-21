@@ -12,6 +12,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import android.util.Log;
+
 public class FeedParser {
 	private final String TAG = getClass().getSimpleName();
 
@@ -31,9 +33,10 @@ public class FeedParser {
 		private static final String TAG = "ParserHelper";
 		private XmlPullParser parser;
 		private Feed feed = new Feed();
-		private FeedItem feedItem;
+		private FeedItem feedItem = null;
 		Stack<String> parents = new Stack<String>();
-		private boolean currentItemHasSummary;
+		private boolean currentItemHasSummary = false;
+		private String currentNamespace = "";
 
 		private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 		private static final String ATOM_FEED = ATOM_NS + ":feed";
@@ -48,6 +51,7 @@ public class FeedParser {
 		private static final String ATOM_ATTR_REL = "rel";
 		private static final String ATOM_ATTR_TYPE = "type";
 		private static final String ATOM_ATTR_LENGTH = "length";
+		private static final String ATOM_ATTR_TITLE = "title";
 		private static final String ATOM_REL_ENCLOSURE = "enclosure";
 		private static final String ATOM_REL_ALTERNATE = "alternate";
 		private static final String ATOM_REL_SELF = "self";
@@ -61,19 +65,18 @@ public class FeedParser {
 		private static final String RSS_ENCLOSURE = "enclosure";
 		private static final String RSS_PUB_DATE = "pubDate";
 
-		private static final String RSS2_NS = "http://backend.userland.com/RSS2";
-		private static final String RSS_TOPLEVEL_NS = RSS2_NS + ":"
+		private static final String RSS_NS = "http://backend.userland.com/RSS2";
+		private static final String RSS_TOPLEVEL_NS = RSS_NS + ":"
 				+ RSS_TOPLEVEL;
-		private static final String RSS_CHANNEL_NS = RSS2_NS + ":"
-				+ RSS_CHANNEL;
-		private static final String RSS_ITEM_NS = RSS2_NS + ":" + RSS_ITEM;
-		private static final String RSS_TITLE_NS = RSS2_NS + ":" + RSS_TITLE;
-		private static final String RSS_LINK_NS = RSS2_NS + ":" + RSS_LINK;
-		private static final String RSS_DESCRIPTION_NS = RSS2_NS + ":"
+		private static final String RSS_CHANNEL_NS = RSS_NS + ":" + RSS_CHANNEL;
+		private static final String RSS_ITEM_NS = RSS_NS + ":" + RSS_ITEM;
+		private static final String RSS_TITLE_NS = RSS_NS + ":" + RSS_TITLE;
+		private static final String RSS_LINK_NS = RSS_NS + ":" + RSS_LINK;
+		private static final String RSS_DESCRIPTION_NS = RSS_NS + ":"
 				+ RSS_DESCRIPTION;
-		private static final String RSS_ENCLOSURE_NS = RSS2_NS + ":"
+		private static final String RSS_ENCLOSURE_NS = RSS_NS + ":"
 				+ RSS_ENCLOSURE;
-		private static final String RSS_PUB_DATE_NS = RSS2_NS + ":"
+		private static final String RSS_PUB_DATE_NS = RSS_NS + ":"
 				+ RSS_PUB_DATE;
 
 		private static final String MIME_HTML = "text/html";
@@ -104,8 +107,16 @@ public class FeedParser {
 		}
 
 		private void onStartTag() {
-			String fullName = parser.getNamespace() + ":" + parser.getName();
-			if (parser.getNamespace().equals(ATOM_NS)) {
+			currentNamespace = parser.getNamespace();
+			String fullName;
+			if(currentNamespace.equals("")) {
+				fullName = parser.getName();
+			}
+			else {
+				fullName = currentNamespace + ":" + parser.getName();
+			}
+
+			if (currentNamespace.equals(ATOM_NS)) {
 				onStartTagAtom(fullName);
 			} else {
 				onStartTagRss(fullName);
@@ -130,7 +141,7 @@ public class FeedParser {
 						enclosure.setMime(parser.getAttributeValue("",
 								ATOM_ATTR_TYPE));
 						enclosure.setTitle(parser
-								.getAttributeValue("", "title"));
+								.getAttributeValue("", ATOM_ATTR_TITLE));
 
 						String length = parser.getAttributeValue("",
 								ATOM_ATTR_LENGTH);
@@ -169,11 +180,14 @@ public class FeedParser {
 		}
 
 		private void onStartTagRss(String fullName) {
-
+			if(equalsRssTag(fullName, RSS_ITEM, RSS_ITEM_NS)) {
+				feedItem = new FeedItem();
+				feedItem.setFeed(feed);
+			}
 		}
 
 		private void onText() {
-			if (parents.peek().startsWith(ATOM_NS + ":")) {
+			if (currentNamespace.equals(ATOM_NS)) {
 				onTextAtom();
 			} else {
 				onTextRss();
@@ -223,12 +237,22 @@ public class FeedParser {
 		}
 
 		private void onTextRss() {
+			if (equalsRssTag(parents.peek(), RSS_TITLE, RSS_TITLE_NS)) {
+				String copy = parents.pop();
+				if (equalsRssTag(parents.peek(), RSS_CHANNEL, RSS_CHANNEL_NS)) {
+					feed.setTitle(parser.getText());
 
+				} else if (equalsRssTag(parents.peek(), RSS_ITEM, RSS_ITEM_NS)) {
+					feedItem.setTitle(parser.getText());
+				}
+				parents.push(copy);
+			}
 		}
 
 		private void onEndTag() {
+			currentNamespace = parser.getNamespace();
 			String fullName = parents.pop();
-			if (parser.getNamespace().equals(ATOM_NS)) {
+			if (currentNamespace.equals(ATOM_NS)) {
 				onEndTagAtom(fullName);
 			} else {
 				onEndTagRss(fullName);
@@ -243,6 +267,24 @@ public class FeedParser {
 		}
 
 		private void onEndTagRss(String fullName) {
+			if (equalsRssTag(fullName, RSS_ITEM, RSS_ITEM_NS)) {
+				feed.getItems().add(feedItem);
+				feedItem = null;
+			}
+
+		}
+
+		private boolean equalsRssTag(String fullName, String rssName,
+				String rssNameNs) {
+			// the RSS namespace is optional, but if it is set, the parser
+			// should ONLY match those elements which are in the namespace
+			if (currentNamespace.equals(RSS_NS) && fullName.equals(rssNameNs)) {
+				return true;
+			} else if (currentNamespace.equals("") && fullName.equals(rssName)) {
+				return true;
+			} else {
+				return false;
+			}
 
 		}
 
