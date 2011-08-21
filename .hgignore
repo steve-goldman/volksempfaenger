@@ -3,3 +3,6 @@ syntax: glob
 bin/*
 gen/*
 .settings/*
+*.bak
+*.orig
+*~
