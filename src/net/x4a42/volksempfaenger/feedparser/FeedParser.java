@@ -37,6 +37,7 @@ public class FeedParser {
 		Stack<String> parents = new Stack<String>();
 		private boolean currentItemHasSummary = false;
 		private String currentNamespace = "";
+		private boolean isFeed = false;
 
 		private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 		private static final String ATOM_FEED = ATOM_NS + ":feed";
@@ -90,6 +91,8 @@ public class FeedParser {
 				}
 				eventType = parser.next();
 			}
+			
+			
 		}
 
 		public Feed getFeed() {
@@ -103,6 +106,10 @@ public class FeedParser {
 				fullName = parser.getName();
 			} else {
 				fullName = currentNamespace + ":" + parser.getName();
+			}
+			
+			if(!isFeed && (fullName.equals(ATOM_FEED) || fullName.equals(RSS_TOPLEVEL) || fullName.equals(RSS_NS + ":" + RSS_TOPLEVEL) )) {
+				isFeed = true;
 			}
 
 			if (currentNamespace.equals(ATOM_NS)) {
@@ -305,7 +312,7 @@ public class FeedParser {
 			// the RSS namespace is optional, but if it is set, the parser
 			// should ONLY match those elements which are in the namespace
 			if (currentNamespace.equals(RSS_NS)
-					&& fullName.equals(RSS_NS + rssName)) {
+					&& fullName.equals(RSS_NS + ":" + rssName)) {
 				return true;
 			} else if (currentNamespace.equals("") && fullName.equals(rssName)) {
 				return true;
