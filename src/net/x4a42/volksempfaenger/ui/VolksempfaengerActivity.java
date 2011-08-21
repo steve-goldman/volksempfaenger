@@ -105,7 +105,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	public void testFeedParser() {
 		try {
 			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
-					.openRawResource(R.raw.atom_test)));
+					.openRawResource(R.raw.rss2_test)));
 			Log.d(TAG, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
 				Log.d(TAG, "URL: " + feed.getUrl());
@@ -119,11 +119,15 @@ public class VolksempfaengerActivity extends BaseActivity implements
 
 			for (FeedItem item : feed.getItems()) {
 				Log.d(TAG, "Item title: " + item.getTitle());
-				Log.d(TAG, item.getDate().toString());
+				if (item.getDate() != null) {
+					Log.d(TAG, item.getDate().toString());
+				}
 				if (item.getUrl() != null) {
 					Log.d(TAG, item.getUrl());
 				}
-				Log.d(TAG, item.getDescription());
+				if (item.getDescription() != null) {
+					Log.d(TAG, item.getDescription());
+				}
 				for (Enclosure enc : item.getEnclosures()) {
 					Log.d(TAG, "Enclosure");
 					if (enc.getTitle() != null) {
