@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Volksempfänger</string>
+	<string name="app_name_ascii">Volksempfaenger</string>
 	<string name="title_add_subscription">Add Subscription</string>
 	<string name="title_subscription_list">Volksempfänger Subscriptions</string>
 	<string name="title_settings">Volksempfänger Settings</string>
