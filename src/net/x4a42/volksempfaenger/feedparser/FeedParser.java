@@ -50,7 +50,7 @@ public class FeedParser {
 		private static final String ATOM_REL_ENCLOSURE = "enclosure";
 		private static final String ATOM_REL_ALTERNATE = "alternate";
 		private static final String ATOM_REL_SELF = "self";
-		
+
 		private static final String RSS_TOPLEVEL = "rss";
 		private static final String RSS_CHANNEL = "channel";
 		private static final String RSS_ITEM = "item";
@@ -59,17 +59,22 @@ public class FeedParser {
 		private static final String RSS_DESCRIPTION = "description";
 		private static final String RSS_ENCLOSURE = "enclosure";
 		private static final String RSS_PUB_DATE = "pubDate";
-		
+
 		private static final String RSS2_NS = "http://backend.userland.com/RSS2";
-		private static final String RSS_TOPLEVEL_NS = RSS2_NS + ":" + RSS_TOPLEVEL;
-		private static final String RSS_CHANNEL_NS = RSS2_NS + ":" + RSS_CHANNEL;
+		private static final String RSS_TOPLEVEL_NS = RSS2_NS + ":"
+				+ RSS_TOPLEVEL;
+		private static final String RSS_CHANNEL_NS = RSS2_NS + ":"
+				+ RSS_CHANNEL;
 		private static final String RSS_ITEM_NS = RSS2_NS + ":" + RSS_ITEM;
 		private static final String RSS_TITLE_NS = RSS2_NS + ":" + RSS_TITLE;
-		private static final String RSS_LINK_NS = RSS2_NS +  ":" + RSS_LINK;
-		private static final String RSS_DESCRIPTION_NS = RSS2_NS + ":" + RSS_DESCRIPTION;
-		private static final String RSS_ENCLOSURE_NS = RSS2_NS + ":" + RSS_ENCLOSURE;
-		private static final String RSS_PUB_DATE_NS = RSS2_NS + ":" + RSS_PUB_DATE;
-		
+		private static final String RSS_LINK_NS = RSS2_NS + ":" + RSS_LINK;
+		private static final String RSS_DESCRIPTION_NS = RSS2_NS + ":"
+				+ RSS_DESCRIPTION;
+		private static final String RSS_ENCLOSURE_NS = RSS2_NS + ":"
+				+ RSS_ENCLOSURE;
+		private static final String RSS_PUB_DATE_NS = RSS2_NS + ":"
+				+ RSS_PUB_DATE;
+
 		private static final String MIME_HTML = "text/html";
 		private static final String MIME_XHTML = "text/xhtml";
 
@@ -181,7 +186,7 @@ public class FeedParser {
 				String copy = parents.pop();
 				if (parents.peek().equals(ATOM_ENTRY)) {
 					try {
-						feedItem.setDate(parseDate(parser.getText()));
+						feedItem.setDate(parseAtomDate(parser.getText()));
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -204,7 +209,7 @@ public class FeedParser {
 			}
 		}
 
-		private Date parseDate(String datestring)
+		private Date parseAtomDate(String datestring)
 				throws java.text.ParseException, IndexOutOfBoundsException {
 			// original version by Chad Okere (ceothrow1 at gmail dotcom)
 			// http://cokere.com/RFC3339Date.txt
