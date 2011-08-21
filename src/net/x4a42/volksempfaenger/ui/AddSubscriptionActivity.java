@@ -14,7 +14,10 @@ import net.x4a42.volksempfaenger.net.NetException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -77,6 +80,15 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 	public class AddFeedTask extends AsyncTask<String, Void, Integer> {
 
+		private ProgressDialog dialog;
+
+		@Override
+		protected void onPreExecute() {
+			dialog = ProgressDialog.show(AddSubscriptionActivity.this,
+					getString(R.string.dialog_add_progress_title),
+					getString(R.string.dialog_add_progress_message), true);
+		}
+
 		@Override
 		protected Integer doInBackground(String... params) {
 			String feedUrl = params[0];
@@ -128,7 +140,7 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			// TODO Auto-generated method stub
+			dialog.dismiss();
 
 			String message = null;
 
@@ -154,9 +166,33 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			if (message != null) {
-				Toast.makeText(AddSubscriptionActivity.this, message,
-						Toast.LENGTH_SHORT).show();
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						AddSubscriptionActivity.this);
+				builder.setTitle(R.string.dialog_error_title)
+						.setMessage(message)
+						.setCancelable(false)
+						.setPositiveButton(R.string.ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								})
+						.setNegativeButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										AddSubscriptionActivity.this.finish();
+									}
+								});
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			dialog.dismiss();
 		}
 
 	}
