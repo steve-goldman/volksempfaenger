@@ -40,6 +40,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+        	  android:exported="true" android:name=".net.DownloadCompleteReceiver">
+        	<intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+		</receiver>
     </application>
     
     <uses-permission android:name="android.permission.INTERNET"/>

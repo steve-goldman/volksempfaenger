@@ -9,6 +9,7 @@ import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
+import net.x4a42.volksempfaenger.net.EnclosureDownloader;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 
@@ -35,6 +36,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonSettings;
 	private Button buttonTestFeed;
 	private Button buttonTestHttp;
+	private Button buttonTestEncdl;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,14 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
 		buttonTestHttp = (Button) findViewById(R.id.button_testhttp);
+		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
 		buttonTestHttp.setOnClickListener(this);
+		buttonTestEncdl.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -76,6 +80,9 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			return;
 		case R.id.button_testhttp:
 			testFeedDownloader();
+			return;
+		case R.id.button_testencdl:
+			testEnclosureDownloader();
 			return;
 		}
 	}
@@ -174,5 +181,13 @@ public class VolksempfaengerActivity extends BaseActivity implements
 						Toast.LENGTH_SHORT).show();
 			}
 		}.execute("http://vschuessler.org/");
+	}
+
+	public void testEnclosureDownloader() {
+		String url = "http://upload.wikimedia.org/wikipedia/commons/3/3c/Podcastlogo.jpg";
+		EnclosureDownloader d = new EnclosureDownloader(this);
+		d.downloadEnclosure(url);
+		Toast.makeText(this, String.format("Queued %s", url),
+				Toast.LENGTH_SHORT).show();
 	}
 }
