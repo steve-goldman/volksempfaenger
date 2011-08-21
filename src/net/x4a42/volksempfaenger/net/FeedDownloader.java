@@ -33,7 +33,13 @@ public class FeedDownloader {
 
 	public BufferedReader fetchFeed(String url) throws NetException {
 		AndroidHttpClient client = getHttpClient();
-		HttpGet request = new HttpGet(url);
+		HttpGet request;
+		try {
+			request = new HttpGet(url);
+		} catch (IllegalArgumentException e) {
+			Log.w(getClass().getSimpleName(), e);
+			throw new NetException(e);
+		}
 		request.addHeader("Accept", "application/atom+xml, application/rss+xml");
 		try {
 			HttpResponse response = client.execute(request);
