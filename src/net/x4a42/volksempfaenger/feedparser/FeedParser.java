@@ -105,6 +105,15 @@ public class FeedParser {
 
 		private void onStartTag() {
 			String fullName = parser.getNamespace() + ":" + parser.getName();
+			if (parser.getNamespace().equals(ATOM_NS)) {
+				onStartTagAtom(fullName);
+			} else {
+				onStartTagRss(fullName);
+			}
+			parents.push(fullName);
+		}
+
+		private void onStartTagAtom(String fullName) {
 			if (fullName.equals(ATOM_ENTRY)) {
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
@@ -157,10 +166,21 @@ public class FeedParser {
 				}
 			}
 
-			parents.push(fullName);
+		}
+
+		private void onStartTagRss(String fullName) {
+
 		}
 
 		private void onText() {
+			if (parents.peek().startsWith(ATOM_NS + ":")) {
+				onTextAtom();
+			} else {
+				onTextRss();
+			}
+		}
+
+		private void onTextAtom() {
 			if (parents.peek().equals(ATOM_TITLE)) {
 				String copy = parents.pop();
 				if (parents.peek().equals(ATOM_FEED)) {
@@ -202,12 +222,28 @@ public class FeedParser {
 			}
 		}
 
+		private void onTextRss() {
+
+		}
+
 		private void onEndTag() {
 			String fullName = parents.pop();
+			if (parser.getNamespace().equals(ATOM_NS)) {
+				onEndTagAtom(fullName);
+			} else {
+				onEndTagRss(fullName);
+			}
+		}
+
+		private void onEndTagAtom(String fullName) {
 			if (fullName.equals(ATOM_ENTRY)) {
 				feed.getItems().add(feedItem);
 				feedItem = null;
 			}
+		}
+
+		private void onEndTagRss(String fullName) {
+
 		}
 
 		private Date parseAtomDate(String datestring)
@@ -279,7 +315,7 @@ public class FeedParser {
 					new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
 
 			Date date = null;
-			for(SimpleDateFormat format : formats) {
+			for (SimpleDateFormat format : formats) {
 				try {
 					date = format.parse(datestring);
 				} catch (ParseException e) {
