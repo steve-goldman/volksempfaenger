@@ -92,7 +92,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	public void testFeedParser() {
 		try {
 			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
-					.openRawResource(R.raw.atom_xhtml_test)));
+					.openRawResource(R.raw.atom_test)));
 			Log.d(TAG, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
 				Log.d(TAG, "URL: " + feed.getUrl());
@@ -106,6 +106,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 
 			for (FeedItem item : feed.getItems()) {
 				Log.d(TAG, "Item title: " + item.getTitle());
+				Log.d(TAG, "Item ID: " + item.getItemId());
 				if (item.getDate() != null) {
 					Log.d(TAG, item.getDate().toString());
 				}

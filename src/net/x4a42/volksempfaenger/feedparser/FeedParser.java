@@ -50,7 +50,7 @@ public class FeedParser {
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID
 		}
 
 		private static enum AtomRel {
@@ -172,7 +172,7 @@ public class FeedParser {
 				feedItem.setFeed(feed);
 				break;
 			case ATOM_CONTENT:
-				if(atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
+				if (atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
 					xhtmlMode = true;
 				}
 			case ATOM_LINK:
@@ -272,7 +272,7 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_CONTENT:
-				if(xhtmlMode) {
+				if (xhtmlMode) {
 					xhtmlMode = false;
 				}
 				if (parents.peek() == Tag.ATOM_ENTRY) {
@@ -296,9 +296,15 @@ public class FeedParser {
 				feed.setDescription(buffer.toString().trim());
 				break;
 			case ATOM_ENTRY:
-				feed.getItems().add(feedItem);
+				if(feedItem.getItemId() != null) {
+					feed.getItems().add(feedItem);
+				}
 				feedItem = null;
 				break;
+			case ATOM_ID:
+				if (parents.peek() == Tag.ATOM_ENTRY) {
+					feedItem.setItemId(buffer.toString().trim());
+				}
 			}
 		}
 
@@ -354,10 +360,16 @@ public class FeedParser {
 				}
 				break;
 			case RSS_ITEM:
-				feed.getItems().add(feedItem);
+				if(feedItem.getItemId() != null) {
+					feed.getItems().add(feedItem);	
+				}
 				feedItem = null;
 				currentItemHasHtml = false;
 				break;
+			case RSS_GUID:
+				if (parents.peek() == Tag.RSS_ITEM) {
+					feedItem.setItemId(buffer.toString().trim());
+				}
 			}
 
 		}
@@ -509,6 +521,7 @@ public class FeedParser {
 			temp.put("content", Tag.ATOM_CONTENT);
 			temp.put("published", Tag.ATOM_PUBLISHED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
+			temp.put("id", Tag.ATOM_ID);
 			atomTable = Collections.unmodifiableMap(temp);
 		}
 
@@ -522,6 +535,7 @@ public class FeedParser {
 			temp.put("description", Tag.RSS_DESCRIPTION);
 			temp.put("enclosure", Tag.RSS_ENCLOSURE);
 			temp.put("pubDate", Tag.RSS_PUB_DATE);
+			temp.put("guid", Tag.RSS_GUID);
 			rssTable = Collections.unmodifiableMap(temp);
 		}
 
