@@ -5,6 +5,7 @@ import net.x4a42.volksempfaenger.data.DbHelper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,26 +37,38 @@ public class ViewSubscriptionActivity extends BaseActivity {
 		setContentView(R.layout.view_subscription);
 
 		dbHelper = new DbHelper(this);
+
+		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
+		podcastTitle = (TextView) findViewById(R.id.podcast_title);
+		podcastDescription = (TextView) findViewById(R.id.podcast_description);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
 		Cursor c = dbHelper.getReadableDatabase().query(
 				DbHelper.Podcast._TABLE, null,
 				String.format("%s = ?", DbHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
-		if (c.getCount() <= 0) {
+		Log.d(getClass().getSimpleName(), "count: "+c.getCount());
+		Log.d(getClass().getSimpleName(), "columnCount: "+c.getColumnCount());
+		
+		if (c.getCount() == 0) {
 			// ID does not exist
 			finish();
+			return;
 		}
 
-		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
-		podcastTitle = (TextView) findViewById(R.id.podcast_title);
-		podcastDescription = (TextView) findViewById(R.id.podcast_description);
-
 		c.moveToFirst();
+
 		podcastTitle.setText(c.getString(c
 				.getColumnIndex(DbHelper.Podcast.TITLE)));
-		// podcastUrl.setText(c.getString(c.getColumnIndex(DbHelper.Podcast.URL)));
 		podcastDescription.setText(c.getString(c
 				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
+
+		c.close();
 	}
 
 	@Override
@@ -68,14 +81,17 @@ public class ViewSubscriptionActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.item_edit:
-			Intent intent = new Intent(this, EditSubscriptionActivity.class);
+			intent = new Intent(this, EditSubscriptionActivity.class);
 			intent.putExtra("id", id);
 			startActivity(intent);
 			return true;
 		case R.id.item_delete:
-			// TODO
+			intent = new Intent(this, DeleteSubscriptionActivity.class);
+			intent.putExtra("id", id);
+			startActivity(intent);
 			return true;
 		default:
 			return handleGlobalMenu(item);
