@@ -39,16 +39,18 @@ public class FeedParser {
 			throw new FeedParserException();
 		} catch (SAXException e) {
 			throw new FeedParserException();
+		} catch (NullPointerException e) {
+			throw new FeedParserException("NullPointerException inside Parser");
 		}
 	}
 
 	private static class FeedHandler extends DefaultHandler {
 		private static enum Namespace {
-			NONE, ATOM, RSS, UNKNOWN
+			NONE, ATOM, RSS, RSS_CONTENT, UNKNOWN, XHTML
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED
 		}
 
 		private static enum AtomRel {
@@ -63,9 +65,10 @@ public class FeedParser {
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
 		private Stack<Tag> parents = new Stack<Tag>();
-		private boolean currentItemHasSummary = false;
 		private boolean isFeed = false;
 		private boolean skipMode = false;
+		private boolean xhtmlMode = false;
+		private boolean currentItemHasHtml = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
 
@@ -83,13 +86,95 @@ public class FeedParser {
 			return feed;
 		}
 
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes atts) throws SAXException {
+			if (skipMode) {
+				skipDepth++;
+			} else {
+				Namespace ns = getNamespace(uri);
+				Tag tag = getTag(ns, localName);
+
+				if (!isFeed) {
+					// is current element one of the toplevel elements
+					if (((ns == Namespace.ATOM) && tag == Tag.ATOM_FEED)
+							|| ((ns == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
+							|| ((ns == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
+
+					}
+					isFeed = true;
+				}
+
+				if (ns == Namespace.ATOM) {
+					onStartTagAtom(tag, atts);
+				} else if (ns == Namespace.NONE || ns == Namespace.RSS
+						|| ns == Namespace.RSS_CONTENT) {
+					onStartTagRss(tag, atts);
+				} else if (ns == Namespace.XHTML && xhtmlMode) {
+					onStartTagXHtml(localName, atts);
+				} else {
+					skipMode = true;
+					skipDepth = 0;
+					return;
+				}
+				parents.push(tag);
+			}
+		}
+
+		@Override
+		public void characters(char[] ch, int start, int length)
+				throws SAXException {
+			if (skipMode) {
+				return;
+			}
+			if (parents.peek() != Tag.UNKNOWN || xhtmlMode) {
+				if (parents.peek() == Tag.RSS_DESCRIPTION && currentItemHasHtml) {
+					// we already have an HTML version of this, so just ignore
+					// the plaintext
+					return;
+				}
+				buffer.append(ch, start, length);
+			}
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+			if (skipMode) {
+				if (skipDepth == 0) {
+					skipMode = false;
+				} else {
+					skipDepth--;
+				}
+			} else {
+				Namespace ns = getNamespace(uri);
+				Tag tag = parents.pop();
+
+				if (ns == Namespace.ATOM) {
+					onEndTagAtom(tag);
+				} else if (ns == Namespace.NONE || ns == Namespace.RSS
+						|| ns == Namespace.RSS_CONTENT) {
+					onEndTagRss(tag);
+				} else if (ns == Namespace.XHTML && xhtmlMode) {
+					onEndTagXHtml(localName);
+				}
+				if (tag != Tag.UNKNOWN) {
+					// clear buffer
+					buffer.setLength(0);
+				}
+			}
+		}
+
 		private void onStartTagAtom(Tag tag, Attributes atts) {
 			switch (tag) {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
-				currentItemHasSummary = false;
 				break;
+			case ATOM_CONTENT:
+				if(atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
+					xhtmlMode = true;
+				}
 			case ATOM_LINK:
 				AtomRel rel = getAtomRel(atts.getValue(ATOM_ATTR_REL));
 				switch (rel) {
@@ -142,6 +227,7 @@ public class FeedParser {
 			case RSS_ITEM:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
+				currentItemHasHtml = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
@@ -160,6 +246,20 @@ public class FeedParser {
 			}
 		}
 
+		private void onStartTagXHtml(String name, Attributes atts) {
+			buffer.append("<");
+			buffer.append(name);
+			for (int i = 0; i < atts.getLength(); i++) {
+				buffer.append(" ");
+				buffer.append(atts.getLocalName(i));
+				buffer.append("=\"");
+				// escape double quotes (hope this works)
+				buffer.append(atts.getValue(i).replaceAll("\"", "\\\""));
+				buffer.append("\"");
+			}
+			buffer.append(">");
+		}
+
 		private void onEndTagAtom(Tag tag) {
 			switch (tag) {
 			case ATOM_TITLE:
@@ -171,15 +271,11 @@ public class FeedParser {
 					feedItem.setTitle(buffer.toString().trim());
 				}
 				break;
-			case ATOM_SUMMARY:
-				if (parents.peek() == Tag.ATOM_ENTRY) {
-					currentItemHasSummary = true;
-					feedItem.setDescription(buffer.toString().trim());
-				}
-				break;
 			case ATOM_CONTENT:
-				if (!currentItemHasSummary
-						&& (parents.peek() == Tag.ATOM_ENTRY)) {
+				if(xhtmlMode) {
+					xhtmlMode = false;
+				}
+				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setDescription(buffer.toString().trim());
 				}
 				break;
@@ -235,6 +331,19 @@ public class FeedParser {
 				}
 				break;
 			case RSS_DESCRIPTION:
+				if (!currentItemHasHtml) {
+					switch (parents.peek()) {
+					case RSS_ITEM:
+						feedItem.setDescription(buffer.toString().trim());
+						break;
+					case RSS_CHANNEL:
+						feed.setDescription(buffer.toString().trim());
+						break;
+					}
+				}
+				break;
+			case RSS_CONTENT_ENCODED:
+				currentItemHasHtml = true;
 				switch (parents.peek()) {
 				case RSS_ITEM:
 					feedItem.setDescription(buffer.toString().trim());
@@ -247,9 +356,16 @@ public class FeedParser {
 			case RSS_ITEM:
 				feed.getItems().add(feedItem);
 				feedItem = null;
+				currentItemHasHtml = false;
 				break;
 			}
 
+		}
+
+		private void onEndTagXHtml(String name) {
+			buffer.append("</");
+			buffer.append(name);
+			buffer.append(">");
 		}
 
 		private Date parseAtomDate(String datestring)
@@ -366,6 +482,9 @@ public class FeedParser {
 			Map<String, Namespace> temp = new HashMap<String, Namespace>();
 			temp.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
 			temp.put("http://backend.userland.com/RSS2", Namespace.RSS);
+			temp.put("http://purl.org/rss/1.0/modules/content/",
+					Namespace.RSS_CONTENT);
+			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
 			temp.put("", Namespace.NONE);
 			nsTable = Collections.unmodifiableMap(temp);
 		}
@@ -387,7 +506,6 @@ public class FeedParser {
 			temp.put("title", Tag.ATOM_TITLE);
 			temp.put("entry", Tag.ATOM_ENTRY);
 			temp.put("link", Tag.ATOM_LINK);
-			temp.put("summary", Tag.ATOM_SUMMARY);
 			temp.put("content", Tag.ATOM_CONTENT);
 			temp.put("published", Tag.ATOM_PUBLISHED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
@@ -413,6 +531,10 @@ public class FeedParser {
 				tag = atomTable.get(tagString);
 			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
 				tag = rssTable.get(tagString);
+			} else if (ns == Namespace.RSS_CONTENT) {
+				if (tagString.equals("encoded")) {
+					tag = Tag.RSS_CONTENT_ENCODED;
+				}
 			}
 
 			if (tag == null) {
@@ -456,76 +578,6 @@ public class FeedParser {
 			}
 			return mime;
 
-		}
-
-		@Override
-		public void startElement(String uri, String localName, String qName,
-				Attributes atts) throws SAXException {
-			if (skipMode) {
-				skipDepth++;
-			} else {
-				Namespace ns = getNamespace(uri);
-				Tag tag = getTag(ns, localName);
-				if (tag == Tag.UNKNOWN) {
-					skipMode = true;
-					skipDepth = 0;
-					return;
-				}
-
-				if (!isFeed) {
-					// is current element one of the toplevel elements
-					if (((ns == Namespace.ATOM) && tag == Tag.ATOM_FEED)
-							|| ((ns == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
-							|| ((ns == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
-
-					}
-					isFeed = true;
-				}
-
-				if (ns == Namespace.ATOM) {
-					onStartTagAtom(tag, atts);
-				} else {
-					onStartTagRss(tag, atts);
-				}
-				parents.push(tag);
-			}
-		}
-
-		@Override
-		public void characters(char[] ch, int start, int length)
-				throws SAXException {
-			if (skipMode) {
-				return;
-			}
-			// probably this doesn't handle (X)HTML content correctly TODO
-			if (parents.peek() != Tag.UNKNOWN) {
-				buffer.append(ch, start, length);
-			}
-		}
-
-		@Override
-		public void endElement(String uri, String localName, String qName)
-				throws SAXException {
-			if (skipMode) {
-				if (skipDepth == 0) {
-					skipMode = false;
-				} else {
-					skipDepth--;
-				}
-			} else {
-				Namespace ns = getNamespace(uri);
-				Tag tag = parents.pop();
-
-				if (ns == Namespace.ATOM) {
-					onEndTagAtom(tag);
-				} else if (ns == Namespace.NONE || ns == Namespace.RSS) {
-					onEndTagRss(tag);
-				}
-				if (tag != Tag.UNKNOWN) {
-					// clear buffer
-					buffer.setLength(0);
-				}
-			}
 		}
 
 		public boolean isFeed() {
