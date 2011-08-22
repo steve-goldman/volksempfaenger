@@ -1,6 +1,4 @@
 package net.x4a42.volksempfaenger.ui;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -11,14 +9,8 @@ import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.EnclosureDownloader;
-import net.x4a42.volksempfaenger.net.FeedDownloader;
-import net.x4a42.volksempfaenger.net.NetException;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
