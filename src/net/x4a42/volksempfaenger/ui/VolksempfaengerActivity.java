@@ -1,4 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -29,6 +30,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonSettings;
 	private Button buttonTestFeed;
 	private Button buttonTestEncdl;
+	private Button buttonViewEpisode;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,12 +42,14 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
 		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
+		buttonViewEpisode = (Button) findViewById(R.id.button_viewepisode);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
 		buttonTestEncdl.setOnClickListener(this);
+		buttonViewEpisode.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -70,6 +74,10 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			return;
 		case R.id.button_testencdl:
 			testEnclosureDownloader();
+			return;
+		case R.id.button_viewepisode:
+			intent = new Intent(this, ViewEpisodeActivity.class);
+			startActivity(intent);
 			return;
 		}
 	}
