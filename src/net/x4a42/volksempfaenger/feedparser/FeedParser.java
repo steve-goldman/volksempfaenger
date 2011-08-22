@@ -11,6 +11,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -22,23 +32,24 @@ public class FeedParser {
 
 	public static Feed parse(Reader reader) throws FeedParserException,
 			IOException {
-		XmlPullParserFactory factory;
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser;
+		FeedHandler handler = new FeedHandler();
 		try {
-			factory = XmlPullParserFactory.newInstance();
-
-			factory.setNamespaceAware(true);
-			XmlPullParser parser = factory.newPullParser();
-
-			parser.setInput(reader);
-			ParserHelper parserHelper;
-			parserHelper = new ParserHelper(parser);
-			return parserHelper.getFeed();
-		} catch (XmlPullParserException e) {
+			parser = factory.newSAXParser();
+			parser.parse(new InputSource(reader), handler);
+			if (!handler.isFeed()) {
+				throw new NotAFeedException();
+			}
+			return handler.getFeed();
+		} catch (ParserConfigurationException e) {
+			throw new FeedParserException();
+		} catch (SAXException e) {
 			throw new FeedParserException();
 		}
 	}
 
-	private static class ParserHelper {
+	private static class FeedHandler extends DefaultHandler {
 		private static enum Namespace {
 			NONE, ATOM, RSS, UNKNOWN
 		}
@@ -47,82 +58,37 @@ public class FeedParser {
 			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE
 		}
 
+		private static enum AtomRel {
+			ENCLOSURE, ALTERNATE, SELF, UNKNOWN
+		}
+
+		private static enum Mime {
+			HTML, XHTML, UNKNOWN
+		}
+
 		private static final String TAG = "ParserHelper";
-		private XmlPullParser parser;
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
 		Stack<Tag> parents = new Stack<Tag>();
 		private boolean currentItemHasSummary = false;
 		private boolean isFeed = false;
-		Namespace currentNS = Namespace.NONE;
+		private StringBuilder buffer = new StringBuilder();
 
 		private static final String ATOM_ATTR_HREF = "href";
 		private static final String ATOM_ATTR_REL = "rel";
 		private static final String ATOM_ATTR_TYPE = "type";
 		private static final String ATOM_ATTR_LENGTH = "length";
 		private static final String ATOM_ATTR_TITLE = "title";
-		private static final String ATOM_REL_ENCLOSURE = "enclosure";
-		private static final String ATOM_REL_ALTERNATE = "alternate";
-		private static final String ATOM_REL_SELF = "self";
 
 		private static final String RSS_ATTR_URL = "url";
 		private static final String RSS_ATTR_TYPE = "type";
 		private static final String RSS_ATTR_LENGTH = "length";
 
-		private static final String MIME_HTML = "text/html";
-		private static final String MIME_XHTML = "text/xhtml";
-
-		public ParserHelper(XmlPullParser parser)
-				throws XmlPullParserException, IOException, NotAFeedException {
-			this.parser = parser;
-			int eventType = parser.getEventType();
-			while (eventType != XmlPullParser.END_DOCUMENT) {
-				switch (eventType) {
-				case XmlPullParser.START_TAG:
-					onStartTag();
-					break;
-				case XmlPullParser.TEXT:
-					onText();
-					break;
-				case XmlPullParser.END_TAG:
-					onEndTag();
-					break;
-				}
-				eventType = parser.next();
-			}
-			if (!isFeed) {
-				throw new NotAFeedException();
-			}
-
-		}
-
 		public Feed getFeed() {
 			return feed;
 		}
 
-		private void onStartTag() {
-			currentNS = getNamespace(parser.getNamespace());
-			Tag tag = getTag(currentNS, parser.getName());
-
-			if (!isFeed) {
-				// is current element one of the toplevel elements
-				if (((currentNS == Namespace.ATOM) && tag == Tag.ATOM_FEED)
-						|| ((currentNS == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
-						|| ((currentNS == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
-
-				}
-				isFeed = true;
-			}
-
-			if (currentNS == Namespace.ATOM) {
-				onStartTagAtom(tag);
-			} else {
-				onStartTagRss(tag);
-			}
-			parents.push(tag);
-		}
-
-		private void onStartTagAtom(Tag tag) {
+		private void onStartTagAtom(Tag tag, Attributes atts) {
 			switch (tag) {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
@@ -130,57 +96,53 @@ public class FeedParser {
 				currentItemHasSummary = false;
 				break;
 			case ATOM_LINK:
-				String rel = parser.getAttributeValue("", ATOM_ATTR_REL);
-				if (rel == null) {
-				} else if (rel.equals(ATOM_REL_ENCLOSURE)) {
+				AtomRel rel = getAtomRel(atts.getValue(ATOM_ATTR_REL));
+				switch (rel) {
+				case ENCLOSURE:
 					if (parents.peek() == Tag.ATOM_ENTRY) {
 						Enclosure enclosure = new Enclosure();
 						enclosure.setFeedItem(feedItem);
-						enclosure.setUrl(parser.getAttributeValue("",
-								ATOM_ATTR_HREF));
-						enclosure.setMime(parser.getAttributeValue("",
-								ATOM_ATTR_TYPE));
-						enclosure.setTitle(parser.getAttributeValue("",
-								ATOM_ATTR_TITLE));
+						enclosure.setUrl(atts.getValue(ATOM_ATTR_HREF));
+						enclosure.setMime(atts.getValue(ATOM_ATTR_TYPE));
+						enclosure.setTitle(atts.getValue(ATOM_ATTR_TITLE));
 
-						String length = parser.getAttributeValue("",
-								ATOM_ATTR_LENGTH);
+						String length = atts.getValue(ATOM_ATTR_LENGTH);
 						if (length != null) {
 							enclosure.setSize(Long.parseLong(length));
 						}
 						feedItem.getEnclosures().add(enclosure);
 					}
-				} else if (rel.equals(ATOM_REL_ALTERNATE)) {
-					String type = parser.getAttributeValue("", ATOM_ATTR_TYPE);
+					break;
+				case ALTERNATE:
+					Mime type = getMime(atts.getValue(ATOM_ATTR_TYPE));
 					if (parents.peek() == Tag.ATOM_ENTRY) {
-						if (type == null || type.equals(MIME_HTML)
-								|| type.equals(MIME_XHTML)) {
+						if (type == Mime.UNKNOWN || type == Mime.HTML
+								|| type == Mime.XHTML) {
 							// actually there can be multiple "alternate links"
 							// this uses the LAST alternate link as the URL for
 							// the FeedItem
-							feedItem.setUrl(parser.getAttributeValue("",
-									ATOM_ATTR_HREF));
+							feedItem.setUrl(atts.getValue(ATOM_ATTR_HREF));
 						}
 					} else if (parents.peek() == Tag.ATOM_FEED) {
-						if (type == null || type.equals(MIME_HTML)
-								|| type.equals(MIME_XHTML)) {
+						if (type == Mime.UNKNOWN || type == Mime.HTML
+								|| type == Mime.XHTML) {
 							// same issue as above with multiple alternate links
-							feed.setWebsite(parser.getAttributeValue("",
-									ATOM_ATTR_HREF));
+							feed.setWebsite(atts.getValue(ATOM_ATTR_HREF));
 						}
 					}
-				} else if (rel.equals(ATOM_REL_SELF)) {
+					break;
+				case SELF:
 					if (parents.peek() == Tag.ATOM_FEED) {
-						feed.setUrl(parser
-								.getAttributeValue("", ATOM_ATTR_HREF));
+						feed.setUrl(atts.getValue(ATOM_ATTR_HREF));
 					}
+					break;
 				}
 				break;
 			}
 
 		}
 
-		private void onStartTagRss(Tag tag) {
+		private void onStartTagRss(Tag tag, Attributes atts) {
 			switch (tag) {
 			case RSS_ITEM:
 				feedItem = new FeedItem();
@@ -190,13 +152,10 @@ public class FeedParser {
 				if (parents.peek() == Tag.RSS_ITEM) {
 					Enclosure enclosure = new Enclosure();
 					enclosure.setFeedItem(feedItem);
-					enclosure
-							.setUrl(parser.getAttributeValue("", RSS_ATTR_URL));
-					enclosure.setMime(parser.getAttributeValue("",
-							RSS_ATTR_TYPE));
+					enclosure.setUrl(atts.getValue(RSS_ATTR_URL));
+					enclosure.setMime(atts.getValue(RSS_ATTR_TYPE));
 
-					String length = parser.getAttributeValue("",
-							RSS_ATTR_LENGTH);
+					String length = atts.getValue(RSS_ATTR_LENGTH);
 					if (length != null) {
 						enclosure.setSize(Long.parseLong(length));
 					}
@@ -206,47 +165,33 @@ public class FeedParser {
 			}
 		}
 
-		private void onText() {
-			if (currentNS == Namespace.ATOM) {
-				onTextAtom();
-			} else if (currentNS == Namespace.NONE
-					|| currentNS == Namespace.RSS) {
-				onTextRss();
-			}
-		}
-
-		private void onTextAtom() {
-			switch (parents.peek()) {
+		private void onEndTagAtom(Tag tag) {
+			switch (tag) {
 			case ATOM_TITLE:
-				Tag copy = parents.pop();
 				if (parents.peek() == Tag.ATOM_FEED) {
 					// feed title
-					feed.setTitle(parser.getText());
+					feed.setTitle(buffer.toString().trim());
 				} else if (parents.peek() == Tag.ATOM_ENTRY) {
 					// entry title
-					feedItem.setTitle(parser.getText());
+					feedItem.setTitle(buffer.toString().trim());
 				}
-				parents.push(copy);
 				break;
 			case ATOM_SUMMARY:
-				Tag copy1 = parents.pop();
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					currentItemHasSummary = true;
-					feedItem.setDescription(parser.getText());
+					feedItem.setDescription(buffer.toString().trim());
 				}
-				parents.push(copy1);
 				break;
 			case ATOM_CONTENT:
 				if (!currentItemHasSummary
 						&& (parents.peek() == Tag.ATOM_ENTRY)) {
-					feedItem.setDescription(parser.getText());
+					feedItem.setDescription(buffer.toString().trim());
 				}
 				break;
 			case ATOM_PUBLISHED:
-				Tag copy2 = parents.pop();
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
-						feedItem.setDate(parseAtomDate(parser.getText()));
+						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -255,85 +200,59 @@ public class FeedParser {
 						e.printStackTrace();
 					}
 				}
-				parents.push(copy2);
 				break;
 			case ATOM_SUBTITLE:
-				feed.setDescription(parser.getText());
+				feed.setDescription(buffer.toString().trim());
 				break;
-			}
-		}
-
-		private void onTextRss() {
-			switch (parents.peek()) {
-			case RSS_TITLE:
-				Tag copy1 = parents.pop();
-				switch (parents.peek()) {
-				case RSS_CHANNEL:
-					feed.setTitle(parser.getText());
-					break;
-
-				case RSS_ITEM:
-					feedItem.setTitle(parser.getText());
-					break;
-				}
-				parents.push(copy1);
-				break;
-			case RSS_PUB_DATE:
-				Tag copy2 = parents.pop();
-				if (parents.peek() == Tag.RSS_ITEM) {
-					feedItem.setDate(parseRssDate(parser.getText()));
-				}
-				parents.push(copy2);
-				break;
-			case RSS_LINK:
-				Tag copy3 = parents.pop();
-				switch (parents.peek()) {
-				case RSS_ITEM:
-					feedItem.setUrl(parser.getText());
-					break;
-				case RSS_CHANNEL:
-					feed.setWebsite(parser.getText());
-					break;
-				}
-				parents.push(copy3);
-				break;
-			case RSS_DESCRIPTION:
-				Tag copy4 = parents.pop();
-				switch (parents.peek()) {
-				case RSS_ITEM:
-					feedItem.setDescription(parser.getText());
-					break;
-				case RSS_CHANNEL:
-					feed.setDescription(parser.getText());
-					break;
-				}
-				parents.push(copy4);
-				break;
-			}
-		}
-
-		private void onEndTag() {
-			currentNS = getNamespace(parser.getNamespace());
-			Tag tag = parents.pop();
-			if (currentNS == Namespace.ATOM) {
-				onEndTagAtom(tag);
-			} else if (currentNS == Namespace.NONE
-					|| currentNS == Namespace.RSS) {
-				onEndTagRss(tag);
-			}
-		}
-
-		private void onEndTagAtom(Tag tag) {
-			if (tag == Tag.ATOM_ENTRY) {
+			case ATOM_ENTRY:
 				feed.getItems().add(feedItem);
 				feedItem = null;
+				break;
 			}
 		}
 
 		private void onEndTagRss(Tag tag) {
-			if (tag == Tag.RSS_ITEM) {
+			switch (tag) {
+			case RSS_TITLE:
+				switch (parents.peek()) {
+				case RSS_CHANNEL:
+					feed.setTitle(buffer.toString());
+					break;
+
+				case RSS_ITEM:
+					feedItem.setTitle(buffer.toString().trim());
+					break;
+				}
+				break;
+			case RSS_PUB_DATE:
+				if (parents.peek() == Tag.RSS_ITEM) {
+					feedItem.setDate(parseRssDate(buffer.toString().trim()));
+				}
+				break;
+			case RSS_LINK:
+				switch (parents.peek()) {
+				case RSS_ITEM:
+					feedItem.setUrl(buffer.toString().trim());
+					break;
+				case RSS_CHANNEL:
+					feed.setWebsite(buffer.toString().trim());
+					break;
+				}
+				break;
+			case RSS_DESCRIPTION:
+				switch (parents.peek()) {
+				case RSS_ITEM:
+					feedItem.setDescription(buffer.toString().trim());
+					break;
+				case RSS_CHANNEL:
+					feed.setDescription(buffer.toString().trim());
+					break;
+				}
+				break;
+			case RSS_ITEM:
 				feed.getItems().add(feedItem);
 				feedItem = null;
+				break;
 			}
 
 		}
@@ -447,53 +366,57 @@ public class FeedParser {
 			return date;
 		}
 
-		static final String ATOM_NS = "http://www.w3.org/2005/Atom";
-		static final String RSS_NS = "http://backend.userland.com/RSS2";
+		static final Map<String, Namespace> nsTable;
+		static {
+			Map<String, Namespace> temp = new HashMap<String, Namespace>();
+			temp.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
+			temp.put("http://backend.userland.com/RSS2", Namespace.RSS);
+			temp.put("", Namespace.NONE);
+			nsTable = Collections.unmodifiableMap(temp);
+		}
 
 		private static Namespace getNamespace(String nsString) {
-			if (nsString.equals("")) {
-				return Namespace.NONE;
-			} else if (nsString.equals(ATOM_NS)) {
-				return Namespace.ATOM;
-			} else if (nsString.equals(RSS_NS)) {
-				return Namespace.RSS;
-			} else {
-				return Namespace.UNKNOWN;
+			Namespace ns = nsTable.get(nsString);
+
+			if (ns == null) {
+				ns = Namespace.UNKNOWN;
 			}
+			return ns;
 		}
 
 		static final Map<String, Tag> atomTable;
 		static final Map<String, Tag> rssTable;
 		static {
-			Map<String, Tag> temp1 = new HashMap<String, Tag>();
-			temp1.put("feed", Tag.ATOM_FEED);
-			temp1.put("title", Tag.ATOM_TITLE);
-			temp1.put("entry", Tag.ATOM_ENTRY);
-			temp1.put("link", Tag.ATOM_LINK);
-			temp1.put("summary", Tag.ATOM_SUMMARY);
-			temp1.put("content", Tag.ATOM_CONTENT);
-			temp1.put("published", Tag.ATOM_PUBLISHED);
-			temp1.put("subtitle", Tag.ATOM_SUBTITLE);
-			atomTable = Collections.unmodifiableMap(temp1);
+			Map<String, Tag> temp = new HashMap<String, Tag>();
+			temp.put("feed", Tag.ATOM_FEED);
+			temp.put("title", Tag.ATOM_TITLE);
+			temp.put("entry", Tag.ATOM_ENTRY);
+			temp.put("link", Tag.ATOM_LINK);
+			temp.put("summary", Tag.ATOM_SUMMARY);
+			temp.put("content", Tag.ATOM_CONTENT);
+			temp.put("published", Tag.ATOM_PUBLISHED);
+			temp.put("subtitle", Tag.ATOM_SUBTITLE);
+			atomTable = Collections.unmodifiableMap(temp);
+		}
 
-			Map<String, Tag> temp2 = new HashMap<String, Tag>();
-			temp2.put("rss", Tag.RSS_TOPLEVEL);
-			temp2.put("channel", Tag.RSS_CHANNEL);
-			temp2.put("item", Tag.RSS_ITEM);
-			temp2.put("title", Tag.RSS_TITLE);
-			temp2.put("link", Tag.RSS_LINK);
-			temp2.put("description", Tag.RSS_DESCRIPTION);
-			temp2.put("enclosure", Tag.RSS_ENCLOSURE);
-			temp2.put("pubDate", Tag.RSS_PUB_DATE);
-			rssTable = Collections.unmodifiableMap(temp2);
-		};
+		static {
+			Map<String, Tag> temp = new HashMap<String, Tag>();
+			temp.put("rss", Tag.RSS_TOPLEVEL);
+			temp.put("channel", Tag.RSS_CHANNEL);
+			temp.put("item", Tag.RSS_ITEM);
+			temp.put("title", Tag.RSS_TITLE);
+			temp.put("link", Tag.RSS_LINK);
+			temp.put("description", Tag.RSS_DESCRIPTION);
+			temp.put("enclosure", Tag.RSS_ENCLOSURE);
+			temp.put("pubDate", Tag.RSS_PUB_DATE);
+			rssTable = Collections.unmodifiableMap(temp);
+		}
 
 		private static Tag getTag(Namespace ns, String tagString) {
 			Tag tag = null;
-			if(ns == Namespace.ATOM) {
-				tag= atomTable.get(tagString);
-			}
-			else if(ns == Namespace.RSS || ns == Namespace.NONE) {
+			if (ns == Namespace.ATOM) {
+				tag = atomTable.get(tagString);
+			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
 				tag = rssTable.get(tagString);
 			}
 
@@ -501,6 +424,98 @@ public class FeedParser {
 				tag = Tag.UNKNOWN;
 			}
 			return tag;
+		}
+
+		static final Map<String, AtomRel> atomRelTable;
+		static {
+			Map<String, AtomRel> temp = new HashMap<String, AtomRel>();
+			temp.put("enclosure", AtomRel.SELF);
+			temp.put("alternate", AtomRel.ALTERNATE);
+			temp.put("self", AtomRel.SELF);
+			atomRelTable = Collections.unmodifiableMap(temp);
+		}
+
+		private static AtomRel getAtomRel(String relString) {
+			AtomRel rel = atomRelTable.get(relString);
+
+			if (rel == null) {
+				rel = AtomRel.UNKNOWN;
+			}
+			return rel;
+
+		}
+
+		static final Map<String, Mime> mimeTable;
+		static {
+			Map<String, Mime> temp = new HashMap<String, Mime>();
+			temp.put("text/html", Mime.HTML);
+			temp.put("text/xhtml", Mime.XHTML);
+			mimeTable = Collections.unmodifiableMap(temp);
+		}
+
+		private static Mime getMime(String mimeString) {
+			Mime mime = mimeTable.get(mimeString);
+
+			if (mime == null) {
+				mime = Mime.UNKNOWN;
+			}
+			return mime;
+
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes atts) throws SAXException {
+			Namespace ns = getNamespace(uri);
+			Tag tag = getTag(ns, localName);
+
+			if (!isFeed) {
+				// is current element one of the toplevel elements
+				if (((ns == Namespace.ATOM) && tag == Tag.ATOM_FEED)
+						|| ((ns == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
+						|| ((ns == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
+
+				}
+				isFeed = true;
+			}
+
+			if (ns == Namespace.ATOM) {
+				onStartTagAtom(tag, atts);
+			} else {
+				onStartTagRss(tag, atts);
+			}
+			parents.push(tag);
+
+		}
+
+		@Override
+		public void characters(char[] ch, int start, int length)
+				throws SAXException {
+			// probably this doesn't handle (X)HTML content correctly TODO
+			if (parents.peek() != Tag.UNKNOWN) {
+				buffer.append(ch, start, length);
+			}
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName)
+				throws SAXException {
+			Namespace ns = getNamespace(uri);
+			Tag tag = parents.pop();
+
+			if (ns == Namespace.ATOM) {
+				onEndTagAtom(tag);
+			} else if (ns == Namespace.NONE || ns == Namespace.RSS) {
+				onEndTagRss(tag);
+			}
+			if (tag != Tag.UNKNOWN) {
+				// clear buffer
+				buffer.setLength(0);
+			}
+		}
+
+		public boolean isFeed() {
+			return isFeed;
 		}
 	}
 }
