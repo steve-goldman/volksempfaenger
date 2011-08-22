@@ -63,7 +63,6 @@ public class FeedParser {
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
 		private Stack<Tag> parents = new Stack<Tag>();
-		private boolean currentItemHasSummary = false;
 		private boolean isFeed = false;
 		private boolean skipMode = false;
 		private int skipDepth = 0;
@@ -88,7 +87,6 @@ public class FeedParser {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
-				currentItemHasSummary = false;
 				break;
 			case ATOM_LINK:
 				AtomRel rel = getAtomRel(atts.getValue(ATOM_ATTR_REL));
@@ -171,15 +169,8 @@ public class FeedParser {
 					feedItem.setTitle(buffer.toString().trim());
 				}
 				break;
-			case ATOM_SUMMARY:
-				if (parents.peek() == Tag.ATOM_ENTRY) {
-					currentItemHasSummary = true;
-					feedItem.setDescription(buffer.toString().trim());
-				}
-				break;
 			case ATOM_CONTENT:
-				if (!currentItemHasSummary
-						&& (parents.peek() == Tag.ATOM_ENTRY)) {
+				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setDescription(buffer.toString().trim());
 				}
 				break;
@@ -387,7 +378,6 @@ public class FeedParser {
 			temp.put("title", Tag.ATOM_TITLE);
 			temp.put("entry", Tag.ATOM_ENTRY);
 			temp.put("link", Tag.ATOM_LINK);
-			temp.put("summary", Tag.ATOM_SUMMARY);
 			temp.put("content", Tag.ATOM_CONTENT);
 			temp.put("published", Tag.ATOM_PUBLISHED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
