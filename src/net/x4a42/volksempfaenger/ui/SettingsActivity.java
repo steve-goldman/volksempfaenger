@@ -53,8 +53,7 @@ public class SettingsActivity extends PreferenceActivity implements
 				.findPreference(PreferenceKeys.ABOUT_VERSION);
 		prefAboutWebsite = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_WEBSITE);
-		prefAboutWiki = prefscreen
-				.findPreference(PreferenceKeys.ABOUT_WIKI);
+		prefAboutWiki = prefscreen.findPreference(PreferenceKeys.ABOUT_WIKI);
 		prefAboutBugtracker = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_BUGTRACKER);
 
@@ -74,9 +73,28 @@ public class SettingsActivity extends PreferenceActivity implements
 		getPreferenceScreen().getSharedPreferences()
 				.registerOnSharedPreferenceChangeListener(this);
 
-		prefDownloadInterval.setSummary(prefDownloadInterval.getEntry()
-				.toString());
-		prefStorageLocation.setSummary(prefStorageLocation.getText());
+		CharSequence downloadInterval = prefDownloadInterval.getEntry();
+		if (downloadInterval == null) {
+			downloadInterval = getString(R.string.settings_default_download_interval);
+
+			String[] choices = getResources().getStringArray(
+					R.array.settings_interval_values);
+			for (int i = 0; i < choices.length; i++) {
+				if (downloadInterval.equals(choices)) {
+					downloadInterval = getResources().getStringArray(
+							R.array.settings_interval_choices)[i];
+					break;
+				}
+			}
+		}
+
+		CharSequence storageLocation = prefStorageLocation.getText();
+		if (storageLocation == null) {
+			storageLocation = getString(R.string.settings_default_storage_location);
+		}
+
+		prefDownloadInterval.setSummary(downloadInterval);
+		prefStorageLocation.setSummary(storageLocation);
 	}
 
 	@Override
