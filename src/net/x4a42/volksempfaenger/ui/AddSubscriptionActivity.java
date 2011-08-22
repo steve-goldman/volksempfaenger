@@ -140,16 +140,16 @@ public class AddSubscriptionActivity extends BaseActivity implements
 				return;
 			case RESULT_DOWNLOAD_FAILED:
 				message = getString(R.string.message_podcast_feed_download_failed);
-				return;
+				break;
 			case RESULT_XML_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_parsing_failed);
-				return;
+				break;
 			case RESULT_IO_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_io_exception);
-				return;
+				break;
 			case RESULT_DUPLICATE:
 				message = getString(R.string.message_podcast_already_added);
-				return;
+				break;
 			}
 
 			if (message != null) {
