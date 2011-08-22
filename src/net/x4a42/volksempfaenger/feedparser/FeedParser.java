@@ -44,11 +44,11 @@ public class FeedParser {
 
 	private static class FeedHandler extends DefaultHandler {
 		private static enum Namespace {
-			NONE, ATOM, RSS, UNKNOWN
+			NONE, ATOM, RSS, RSS_CONTENT, UNKNOWN
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED
 		}
 
 		private static enum AtomRel {
@@ -65,6 +65,7 @@ public class FeedParser {
 		private Stack<Tag> parents = new Stack<Tag>();
 		private boolean isFeed = false;
 		private boolean skipMode = false;
+		private boolean currentItemHasHtml = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
 
@@ -140,6 +141,7 @@ public class FeedParser {
 			case RSS_ITEM:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
+				currentItemHasHtml = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
@@ -226,6 +228,19 @@ public class FeedParser {
 				}
 				break;
 			case RSS_DESCRIPTION:
+				if (!currentItemHasHtml) {
+					switch (parents.peek()) {
+					case RSS_ITEM:
+						feedItem.setDescription(buffer.toString().trim());
+						break;
+					case RSS_CHANNEL:
+						feed.setDescription(buffer.toString().trim());
+						break;
+					}
+				}
+				break;
+			case RSS_CONTENT_ENCODED:
+				currentItemHasHtml = true;
 				switch (parents.peek()) {
 				case RSS_ITEM:
 					feedItem.setDescription(buffer.toString().trim());
@@ -238,6 +253,7 @@ public class FeedParser {
 			case RSS_ITEM:
 				feed.getItems().add(feedItem);
 				feedItem = null;
+				currentItemHasHtml = false;
 				break;
 			}
 
@@ -357,6 +373,8 @@ public class FeedParser {
 			Map<String, Namespace> temp = new HashMap<String, Namespace>();
 			temp.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
 			temp.put("http://backend.userland.com/RSS2", Namespace.RSS);
+			temp.put("http://purl.org/rss/1.0/modules/content/",
+					Namespace.RSS_CONTENT);
 			temp.put("", Namespace.NONE);
 			nsTable = Collections.unmodifiableMap(temp);
 		}
@@ -403,6 +421,10 @@ public class FeedParser {
 				tag = atomTable.get(tagString);
 			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
 				tag = rssTable.get(tagString);
+			} else if (ns == Namespace.RSS_CONTENT) {
+				if (tagString.equals("encoded")) {
+					tag = Tag.RSS_CONTENT_ENCODED;
+				}
 			}
 
 			if (tag == null) {
@@ -474,7 +496,8 @@ public class FeedParser {
 
 				if (ns == Namespace.ATOM) {
 					onStartTagAtom(tag, atts);
-				} else {
+				} else if (ns == Namespace.NONE || ns == Namespace.RSS
+						|| ns == Namespace.RSS_CONTENT) {
 					onStartTagRss(tag, atts);
 				}
 				parents.push(tag);
@@ -487,8 +510,13 @@ public class FeedParser {
 			if (skipMode) {
 				return;
 			}
-			// probably this doesn't handle (X)HTML content correctly TODO
+			// probably this doesn't handle XHTML content in Atom correctly TODO
 			if (parents.peek() != Tag.UNKNOWN) {
+				if (parents.peek() == Tag.RSS_DESCRIPTION && currentItemHasHtml) {
+					// we already have an HTML version of this, so just ignore
+					// the plaintext
+					return;
+				}
 				buffer.append(ch, start, length);
 			}
 		}
@@ -508,7 +536,8 @@ public class FeedParser {
 
 				if (ns == Namespace.ATOM) {
 					onEndTagAtom(tag);
-				} else if (ns == Namespace.NONE || ns == Namespace.RSS) {
+				} else if (ns == Namespace.NONE || ns == Namespace.RSS
+						|| ns == Namespace.RSS_CONTENT) {
 					onEndTagRss(tag);
 				}
 				if (tag != Tag.UNKNOWN) {

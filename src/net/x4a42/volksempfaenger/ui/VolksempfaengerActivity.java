@@ -92,7 +92,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	public void testFeedParser() {
 		try {
 			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
-					.openRawResource(R.raw.atom_test)));
+					.openRawResource(R.raw.rss2_test)));
 			Log.d(TAG, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
 				Log.d(TAG, "URL: " + feed.getUrl());
