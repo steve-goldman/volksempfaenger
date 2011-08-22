@@ -45,7 +45,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
-		
+
 		cursor = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE,
 				null, null, null, null, null, DbHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
@@ -64,6 +64,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		dbHelper.close();
 	}
 

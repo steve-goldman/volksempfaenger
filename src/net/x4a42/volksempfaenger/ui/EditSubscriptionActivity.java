@@ -55,6 +55,12 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		buttonCancel.setOnClickListener(this);
 
 		dbHelper = new DbHelper(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
 		Cursor c = dbHelper.getReadableDatabase().query(
 				DbHelper.Podcast._TABLE, null,
 				String.format("%s = ?", DbHelper.Podcast.ID),
@@ -67,23 +73,36 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		}
 
 		c.moveToFirst();
+
 		podcastTitle.setText(c.getString(c
 				.getColumnIndex(DbHelper.Podcast.TITLE)));
 		podcastUrl.setText(c.getString(c.getColumnIndex(DbHelper.Podcast.URL)));
 		podcastDescription.setText(c.getString(c
 				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
+
+		c.close();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		dbHelper.close();
 	}
 
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button_save:
 			ContentValues values = new ContentValues();
-			values.put(DbHelper.Podcast.TITLE, podcastTitle.getText().toString());
+			values.put(DbHelper.Podcast.TITLE, podcastTitle.getText()
+					.toString());
 			values.put(DbHelper.Podcast.URL, podcastUrl.getText().toString());
-			values.put(DbHelper.Podcast.DESCRIPTION, podcastDescription.getText().toString());
+			values.put(DbHelper.Podcast.DESCRIPTION, podcastDescription
+					.getText().toString());
 			try {
-				int result = dbHelper.getWritableDatabase().update(DbHelper.Podcast._TABLE,
-						values, String.format("%s = ?", DbHelper.Podcast.ID),
+				int result = dbHelper.getWritableDatabase().update(
+						DbHelper.Podcast._TABLE, values,
+						String.format("%s = ?", DbHelper.Podcast.ID),
 						new String[] { String.valueOf(id) });
 				if (result > 0) {
 					finish();
@@ -93,7 +112,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 				// Something failed
 				if (e instanceof SQLiteConstraintException) {
 					// UNIQUE contraint on column url failed
-					Toast.makeText(this, R.string.message_podcast_already_added,
+					Toast.makeText(this,
+							R.string.message_podcast_already_added,
 							Toast.LENGTH_LONG).show();
 				} else {
 					// Some terrible failure happended
@@ -105,11 +125,5 @@ public class EditSubscriptionActivity extends BaseActivity implements
 			finish();
 			return;
 		}
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		dbHelper.close();
 	}
 }

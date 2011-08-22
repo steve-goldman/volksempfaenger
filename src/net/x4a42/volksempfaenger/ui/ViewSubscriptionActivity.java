@@ -54,9 +54,6 @@ public class ViewSubscriptionActivity extends BaseActivity {
 				String.format("%s = ?", DbHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
-		Log.d(getClass().getSimpleName(), "count: "+c.getCount());
-		Log.d(getClass().getSimpleName(), "columnCount: "+c.getColumnCount());
-		
 		if (c.getCount() == 0) {
 			// ID does not exist
 			finish();
@@ -71,6 +68,13 @@ public class ViewSubscriptionActivity extends BaseActivity {
 				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
 
 		c.close();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		dbHelper.close();
 	}
 
 	@Override
