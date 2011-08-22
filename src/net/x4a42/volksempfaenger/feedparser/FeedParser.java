@@ -296,7 +296,7 @@ public class FeedParser {
 				feed.setDescription(buffer.toString().trim());
 				break;
 			case ATOM_ENTRY:
-				if(feedItem.getItemId() != null) {
+				if (feedItem.getItemId() != null) {
 					feed.getItems().add(feedItem);
 				}
 				feedItem = null;
@@ -360,8 +360,8 @@ public class FeedParser {
 				}
 				break;
 			case RSS_ITEM:
-				if(feedItem.getItemId() != null) {
-					feed.getItems().add(feedItem);	
+				if (feedItem.getItemId() != null) {
+					feed.getItems().add(feedItem);
 				}
 				feedItem = null;
 				currentItemHasHtml = false;
