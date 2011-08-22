@@ -34,10 +34,12 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
 			finish();
+			return;
 		}
 		id = extras.getLong("id");
 		if (id <= 0) {
 			finish();
+			return;
 		}
 
 		setContentView(R.layout.edit_subscription);
@@ -61,6 +63,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		if (c.getCount() <= 0) {
 			// ID does not exist
 			finish();
+			return;
 		}
 
 		c.moveToFirst();
@@ -84,6 +87,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 						new String[] { String.valueOf(id) });
 				if (result > 0) {
 					finish();
+					return;
 				}
 			} catch (Exception e) {
 				// Something failed

@@ -1,19 +1,11 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
-import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
-import net.x4a42.volksempfaenger.feedparser.NotAFeedException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -65,10 +57,10 @@ public class AddSubscriptionActivity extends BaseActivity implements
 		switch (v.getId()) {
 		case R.id.button_add:
 			subscribeToFeed();
-			break;
+			return;
 		case R.id.button_cancel:
 			finish();
-			break;
+			return;
 		}
 	}
 
@@ -149,16 +141,16 @@ public class AddSubscriptionActivity extends BaseActivity implements
 				return;
 			case RESULT_DOWNLOAD_FAILED:
 				message = getString(R.string.message_podcast_feed_download_failed);
-				break;
+				return;
 			case RESULT_XML_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_parsing_failed);
-				break;
+				return;
 			case RESULT_IO_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_io_exception);
-				break;
+				return;
 			case RESULT_DUPLICATE:
 				message = getString(R.string.message_podcast_already_added);
-				break;
+				return;
 			}
 
 			if (message != null) {
