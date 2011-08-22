@@ -80,11 +80,10 @@ public class SubscriptionListActivity extends BaseActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_add:
 			startActivity(new Intent(this, AddSubscriptionActivity.class));
-			break;
+			return true;
 		default:
-			handleGlobalMenu(item);
+			return handleGlobalMenu(item);
 		}
-		return true;
 	}
 
 	@Override
