@@ -211,7 +211,7 @@ public class FeedParser {
 			case RSS_TITLE:
 				switch (parents.peek()) {
 				case RSS_CHANNEL:
-					feed.setTitle(buffer.toString());
+					feed.setTitle(buffer.toString().trim());
 					break;
 
 				case RSS_ITEM:
