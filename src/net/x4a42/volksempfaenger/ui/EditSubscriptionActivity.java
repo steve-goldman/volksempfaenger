@@ -66,7 +66,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 				String.format("%s = ?", DbHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
-		if (c.getCount() <= 0) {
+		if (c.getCount() == 0) {
 			// ID does not exist
 			finish();
 			return;
