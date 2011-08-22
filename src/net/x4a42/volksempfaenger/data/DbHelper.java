@@ -33,6 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		public static final String _TABLE = "episode";
 		public static final String ID = BaseColumns._ID;
 		public static final String PODCAST = "podcast_id";
+		public static final String ITEM_ID = "item_id";
 		public static final String TITLE = "title";
 		public static final String DATE = "date";
 		public static final String URL = "url";
@@ -42,12 +43,13 @@ public class DbHelper extends SQLiteOpenHelper {
 			return String.format("CREATE TABLE \"%s\" (\n"
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+					+ "  \"%s\" TEXT UNIQUE,\n"
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" INTEGER,\n"
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" TEXT\n"
-					+ ")", _TABLE, ID, PODCAST, Podcast._TABLE,
-					Podcast.ID, TITLE, DATE, URL, DESCRIPTION);
+					+ ")", _TABLE, ID, PODCAST,	Podcast._TABLE,
+					Podcast.ID, ITEM_ID, TITLE, DATE, URL, DESCRIPTION);
 		}
 	}
 	
