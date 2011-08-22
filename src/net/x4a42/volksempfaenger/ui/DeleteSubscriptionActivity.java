@@ -28,10 +28,12 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
 			finish();
+			return;
 		}
 		id = extras.getLong("id");
 		if (id <= 0) {
 			finish();
+			return;
 		}
 
 		dbHelper = new DbHelper(this);
@@ -44,6 +46,7 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 		if (c.getCount() <= 0) {
 			// ID does not exist
 			finish();
+			return;
 		}
 
 		c.moveToFirst();

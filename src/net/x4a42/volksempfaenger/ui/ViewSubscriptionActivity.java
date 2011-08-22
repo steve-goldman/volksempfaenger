@@ -28,10 +28,12 @@ public class ViewSubscriptionActivity extends BaseActivity {
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
 			finish();
+			return;
 		}
 		id = extras.getLong("id");
 		if (id <= 0) {
 			finish();
+			return;
 		}
 
 		setContentView(R.layout.view_subscription);
