@@ -11,13 +11,14 @@
     </string-array>
     <!-- We need to use a string-array here as ListPreference breaks otherwise -->
     <string-array name="settings_interval_values">
+    	<!-- in milliseconds -->
         <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>4</item>
-        <item>8</item>
-        <item>12</item>
-        <item>24</item>
+        <item>3600000</item>
+        <item>7200000</item>
+        <item>14400000</item>
+        <item>28800000</item>
+        <item>43200000</item>
+        <item>86400000</item>
     </string-array>
     
 </resources>
