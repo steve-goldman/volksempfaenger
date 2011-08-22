@@ -67,6 +67,7 @@ public class FeedParser {
 		private Stack<Tag> parents = new Stack<Tag>();
 		private boolean isFeed = false;
 		private boolean skipMode = false;
+		private boolean xhtmlMode = false;
 		private boolean currentItemHasHtml = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
@@ -93,11 +94,6 @@ public class FeedParser {
 			} else {
 				Namespace ns = getNamespace(uri);
 				Tag tag = getTag(ns, localName);
-				if (tag == Tag.UNKNOWN) {
-					skipMode = true;
-					skipDepth = 0;
-					return;
-				}
 
 				if (!isFeed) {
 					// is current element one of the toplevel elements
@@ -114,6 +110,12 @@ public class FeedParser {
 				} else if (ns == Namespace.NONE || ns == Namespace.RSS
 						|| ns == Namespace.RSS_CONTENT) {
 					onStartTagRss(tag, atts);
+				} else if (ns == Namespace.XHTML && xhtmlMode) {
+					onStartTagXHtml(localName, atts);
+				} else {
+					skipMode = true;
+					skipDepth = 0;
+					return;
 				}
 				parents.push(tag);
 			}
@@ -125,8 +127,7 @@ public class FeedParser {
 			if (skipMode) {
 				return;
 			}
-			// probably this doesn't handle XHTML content in Atom correctly TODO
-			if (parents.peek() != Tag.UNKNOWN) {
+			if (parents.peek() != Tag.UNKNOWN || xhtmlMode) {
 				if (parents.peek() == Tag.RSS_DESCRIPTION && currentItemHasHtml) {
 					// we already have an HTML version of this, so just ignore
 					// the plaintext
@@ -154,6 +155,8 @@ public class FeedParser {
 				} else if (ns == Namespace.NONE || ns == Namespace.RSS
 						|| ns == Namespace.RSS_CONTENT) {
 					onEndTagRss(tag);
+				} else if (ns == Namespace.XHTML && xhtmlMode) {
+					onEndTagXHtml(localName);
 				}
 				if (tag != Tag.UNKNOWN) {
 					// clear buffer
@@ -168,6 +171,10 @@ public class FeedParser {
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
 				break;
+			case ATOM_CONTENT:
+				if(atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
+					xhtmlMode = true;
+				}
 			case ATOM_LINK:
 				AtomRel rel = getAtomRel(atts.getValue(ATOM_ATTR_REL));
 				switch (rel) {
@@ -239,6 +246,20 @@ public class FeedParser {
 			}
 		}
 
+		private void onStartTagXHtml(String name, Attributes atts) {
+			buffer.append("<");
+			buffer.append(name);
+			for (int i = 0; i < atts.getLength(); i++) {
+				buffer.append(" ");
+				buffer.append(atts.getLocalName(i));
+				buffer.append("=\"");
+				// escape double quotes (hope this works)
+				buffer.append(atts.getValue(i).replaceAll("\"", "\\\""));
+				buffer.append("\"");
+			}
+			buffer.append(">");
+		}
+
 		private void onEndTagAtom(Tag tag) {
 			switch (tag) {
 			case ATOM_TITLE:
@@ -251,6 +272,9 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_CONTENT:
+				if(xhtmlMode) {
+					xhtmlMode = false;
+				}
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setDescription(buffer.toString().trim());
 				}
@@ -336,6 +360,12 @@ public class FeedParser {
 				break;
 			}
 
+		}
+
+		private void onEndTagXHtml(String name) {
+			buffer.append("</");
+			buffer.append(name);
+			buffer.append(">");
 		}
 
 		private Date parseAtomDate(String datestring)
