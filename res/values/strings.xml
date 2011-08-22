@@ -8,6 +8,8 @@
 	<string name="title_confirm_delete">Are you sure?</string>
 	<string name="description_add_subscription">Enter the URL of the podcast feed in order to subscribe to it</string>
 	<string name="menu_add">Add</string>
+	<string name="menu_edit">Edit</string>
+	<string name="menu_delete">Delete</string>
 	<string name="menu_settings">Settings</string>
 	<string name="context_edit">Edit</string>
 	<string name="context_delete">Delete</string>

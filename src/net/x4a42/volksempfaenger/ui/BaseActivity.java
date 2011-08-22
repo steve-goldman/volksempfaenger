@@ -20,11 +20,13 @@ public class BaseActivity extends Activity {
 		inflater.inflate(R.menu.global, menu);
 	}
 
-	public void handleGlobalMenu(MenuItem item) {
+	public boolean handleGlobalMenu(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_settings:
 			startActivity(new Intent(this, SettingsActivity.class));
-			break;
+			return true;
+		default:
+			return false;
 		}
 	}
 }
