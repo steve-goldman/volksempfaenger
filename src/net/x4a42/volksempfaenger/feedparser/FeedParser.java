@@ -62,9 +62,11 @@ public class FeedParser {
 		private static final String TAG = "ParserHelper";
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
-		Stack<Tag> parents = new Stack<Tag>();
+		private Stack<Tag> parents = new Stack<Tag>();
 		private boolean currentItemHasSummary = false;
 		private boolean isFeed = false;
+		private boolean skipMode = false;
+		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
 
 		private static final String ATOM_ATTR_HREF = "href";
@@ -459,31 +461,42 @@ public class FeedParser {
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes atts) throws SAXException {
-			Namespace ns = getNamespace(uri);
-			Tag tag = getTag(ns, localName);
-
-			if (!isFeed) {
-				// is current element one of the toplevel elements
-				if (((ns == Namespace.ATOM) && tag == Tag.ATOM_FEED)
-						|| ((ns == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
-						|| ((ns == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
-
-				}
-				isFeed = true;
-			}
-
-			if (ns == Namespace.ATOM) {
-				onStartTagAtom(tag, atts);
+			if (skipMode) {
+				skipDepth++;
 			} else {
-				onStartTagRss(tag, atts);
-			}
-			parents.push(tag);
+				Namespace ns = getNamespace(uri);
+				Tag tag = getTag(ns, localName);
+				if (tag == Tag.UNKNOWN) {
+					skipMode = true;
+					skipDepth = 0;
+					return;
+				}
 
+				if (!isFeed) {
+					// is current element one of the toplevel elements
+					if (((ns == Namespace.ATOM) && tag == Tag.ATOM_FEED)
+							|| ((ns == Namespace.NONE) && tag == Tag.RSS_TOPLEVEL)
+							|| ((ns == Namespace.RSS) && tag == Tag.RSS_TOPLEVEL)) {
+
+					}
+					isFeed = true;
+				}
+
+				if (ns == Namespace.ATOM) {
+					onStartTagAtom(tag, atts);
+				} else {
+					onStartTagRss(tag, atts);
+				}
+				parents.push(tag);
+			}
 		}
 
 		@Override
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
+			if (skipMode) {
+				return;
+			}
 			// probably this doesn't handle (X)HTML content correctly TODO
 			if (parents.peek() != Tag.UNKNOWN) {
 				buffer.append(ch, start, length);
@@ -493,17 +506,25 @@ public class FeedParser {
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
-			Namespace ns = getNamespace(uri);
-			Tag tag = parents.pop();
+			if (skipMode) {
+				if (skipDepth == 0) {
+					skipMode = false;
+				} else {
+					skipDepth--;
+				}
+			} else {
+				Namespace ns = getNamespace(uri);
+				Tag tag = parents.pop();
 
-			if (ns == Namespace.ATOM) {
-				onEndTagAtom(tag);
-			} else if (ns == Namespace.NONE || ns == Namespace.RSS) {
-				onEndTagRss(tag);
-			}
-			if (tag != Tag.UNKNOWN) {
-				// clear buffer
-				buffer.setLength(0);
+				if (ns == Namespace.ATOM) {
+					onEndTagAtom(tag);
+				} else if (ns == Namespace.NONE || ns == Namespace.RSS) {
+					onEndTagRss(tag);
+				}
+				if (tag != Tag.UNKNOWN) {
+					// clear buffer
+					buffer.setLength(0);
+				}
 			}
 		}
 
