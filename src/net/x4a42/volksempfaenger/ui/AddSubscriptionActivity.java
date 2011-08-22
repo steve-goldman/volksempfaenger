@@ -42,7 +42,6 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 		LayoutParams params = getWindow().getAttributes();
 		params.width = LayoutParams.FILL_PARENT;
-		// params.flags = LayoutParams.FLAG_BLUR_BEHIND;
 		getWindow().setAttributes(params);
 
 		editTextUrl = (EditText) findViewById(R.id.edittext_url);
