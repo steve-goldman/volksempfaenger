@@ -16,16 +16,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.util.Log;
 
 public class FeedParser {
 	private final String TAG = getClass().getSimpleName();
