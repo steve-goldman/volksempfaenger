@@ -76,11 +76,14 @@ public class VolksempfaengerApplication extends Application implements
 
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-		Log.d(getClass().getSimpleName(), "setUpdateAlarm("+interval+")");
-		
 		if (interval == 0) {
+			Log.d(getClass().getSimpleName(), "setUpdateAlarm(): disabled");
+
 			am.cancel(pending);
 		} else {
+			Log.d(getClass().getSimpleName(), "setUpdateAlarm(): " + interval
+					+ "ms");
+
 			long next;
 			long last = UpdateService.getLastRun();
 
@@ -95,9 +98,6 @@ public class VolksempfaengerApplication extends Application implements
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences settings, String key) {
-		Log.d(getClass().getSimpleName(), "onSharedPreferenceChanged(" + key
-				+ ")");
-
 		if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
 			setUpdateAlarm();
 		}
