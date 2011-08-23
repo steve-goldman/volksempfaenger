@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger;
 
+import java.io.File;
 import java.util.Date;
 
 public class Utils {
@@ -29,5 +30,16 @@ public class Utils {
 
 	public static String normalizeString(String string) {
 		return string.replaceAll("\\s+", " ");
+	}
+
+	public static File joinPath(File base, String... children) {
+		for (String child : children) {
+			base = new File(base, child);
+		}
+		return base;
+	}
+
+	public static File joinPath(String base, String... children) {
+		return joinPath(new File(base), children);
 	}
 }

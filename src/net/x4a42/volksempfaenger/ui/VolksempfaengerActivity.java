@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.StorageException;
 import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
@@ -11,8 +12,11 @@ import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.EnclosureDownloader;
+import net.x4a42.volksempfaenger.net.LogoDownloader;
+import net.x4a42.volksempfaenger.net.NetException;
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -33,6 +37,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonTestEncdl;
 	private Button buttonViewEpisode;
 	private Button buttonStartUpdate;
+	private Button buttonLogoDownloader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
 		buttonViewEpisode = (Button) findViewById(R.id.button_viewepisode);
 		buttonStartUpdate = (Button) findViewById(R.id.button_startupdate);
+		buttonLogoDownloader = (Button) findViewById(R.id.button_logodown);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
@@ -54,6 +60,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonTestEncdl.setOnClickListener(this);
 		buttonViewEpisode.setOnClickListener(this);
 		buttonStartUpdate.setOnClickListener(this);
+		buttonLogoDownloader.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -86,6 +93,42 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_startupdate:
 			intent = new Intent(this, UpdateService.class);
 			startService(intent);
+			return;
+		case R.id.button_logodown:
+			new AsyncTask<String, Void, Boolean>() {
+
+				@Override
+				protected void onPreExecute() {
+					Toast.makeText(VolksempfaengerActivity.this,
+							"Download started", Toast.LENGTH_SHORT).show();
+				}
+
+				@Override
+				protected Boolean doInBackground(String... params) {
+					LogoDownloader ld = new LogoDownloader(
+							VolksempfaengerActivity.this);
+					try {
+						ld.fetchLogo(params[0], 42);
+						return true;
+					} catch (NetException e) {
+						return false;
+					} catch (StorageException e) {
+						return false;
+					}
+				}
+
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if (result) {
+						Toast.makeText(VolksempfaengerActivity.this,
+								"Download finished", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(VolksempfaengerActivity.this,
+								"Download failed", Toast.LENGTH_SHORT).show();
+					}
+				}
+
+			}.execute("http://upload.wikimedia.org/wikipedia/commons/3/3c/Podcastlogo.jpg");
 			return;
 		}
 	}
