@@ -8,12 +8,12 @@
 		android:padding="4dp" android:layout_weight="1">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="match_parent" android:orientation="horizontal">
-			<ImageView android:id="@+id/podcast_logo" style="@style/podcastLogoSmall"
+			<ImageView android:id="@+id/podcast_logo" style="@style/podcastLogoLarge"
 				android:layout_gravity="center_vertical|center_horizontal"
-				android:layout_margin="8dp" />
+				android:layout_margin="4dp" />
 			<LinearLayout android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:orientation="vertical"
-				android:layout_weight="1">
+				android:layout_weight="1" android:layout_margin="4dp">
 				<EditText android:layout_height="wrap_content" android:id="@+id/podcast_title"
 					android:layout_width="match_parent" />
 				<EditText android:layout_height="wrap_content" android:id="@+id/podcast_url"
