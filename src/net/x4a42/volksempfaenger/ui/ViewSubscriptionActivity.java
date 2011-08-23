@@ -67,13 +67,6 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		adapter = new EpisodeListAdapter(this, cursor);
 		episodeList.setAdapter(adapter);
-
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
-		if (podcastLogoFile.isFile()) {
-			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-			podcastLogo.setImageBitmap(podcastLogoBitmap);
-		}
 	}
 
 	@Override
@@ -100,6 +93,13 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
 
 		c.close();
+
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
+		if (podcastLogoFile.isFile()) {
+			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
+					.getAbsolutePath());
+			podcastLogo.setImageBitmap(podcastLogoBitmap);
+		}
 
 		// Update episode list
 		cursor.requery();
