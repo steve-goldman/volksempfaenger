@@ -46,11 +46,11 @@ public class FeedParser {
 
 	private static class FeedHandler extends DefaultHandler {
 		private static enum Namespace {
-			NONE, ATOM, RSS, RSS_CONTENT, UNKNOWN, XHTML
+			NONE, ATOM, RSS, RSS_CONTENT, UNKNOWN, XHTML, ITUNES
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE
 		}
 
 		private static enum AtomRel {
@@ -112,6 +112,10 @@ public class FeedParser {
 					onStartTagRss(tag, atts);
 				} else if (ns == Namespace.XHTML && xhtmlMode) {
 					onStartTagXHtml(localName, atts);
+				} else if(ns == Namespace.ITUNES) {
+					if(parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED) {
+						feed.setImage(atts.getValue("href"));
+					}
 				} else {
 					skipMode = true;
 					skipDepth = 0;
@@ -305,6 +309,12 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setItemId(buffer.toString().trim());
 				}
+				break;
+			case ATOM_ICON:
+				if (parents.peek() == Tag.ATOM_FEED) {
+					feed.setImage(buffer.toString().trim());
+				}
+				break;
 			}
 		}
 
@@ -369,6 +379,15 @@ public class FeedParser {
 			case RSS_GUID:
 				if (parents.peek() == Tag.RSS_ITEM) {
 					feedItem.setItemId(buffer.toString().trim());
+				}
+				break;
+			case RSS_URL:
+				if(parents.peek() == Tag.RSS_IMAGE) {
+					Tag copy = parents.pop();
+					if(parents.peek() == Tag.RSS_CHANNEL) {
+						feed.setImage(buffer.toString().trim());
+					}
+					parents.push(copy);
 				}
 			}
 
@@ -497,6 +516,7 @@ public class FeedParser {
 			temp.put("http://purl.org/rss/1.0/modules/content/",
 					Namespace.RSS_CONTENT);
 			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
+			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd", Namespace.ITUNES);
 			temp.put("", Namespace.NONE);
 			nsTable = Collections.unmodifiableMap(temp);
 		}
@@ -522,6 +542,7 @@ public class FeedParser {
 			temp.put("published", Tag.ATOM_PUBLISHED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
 			temp.put("id", Tag.ATOM_ID);
+			temp.put("icon", Tag.ATOM_ICON);
 			atomTable = Collections.unmodifiableMap(temp);
 		}
 
@@ -536,6 +557,8 @@ public class FeedParser {
 			temp.put("enclosure", Tag.RSS_ENCLOSURE);
 			temp.put("pubDate", Tag.RSS_PUB_DATE);
 			temp.put("guid", Tag.RSS_GUID);
+			temp.put("image", Tag.RSS_IMAGE);
+			temp.put("url", Tag.RSS_URL);
 			rssTable = Collections.unmodifiableMap(temp);
 		}
 
@@ -548,6 +571,11 @@ public class FeedParser {
 			} else if (ns == Namespace.RSS_CONTENT) {
 				if (tagString.equals("encoded")) {
 					tag = Tag.RSS_CONTENT_ENCODED;
+				}
+			}
+			else if (ns == Namespace.ITUNES) {
+				if(tagString.equals("image")) {
+					tag = Tag.ITUNES_IMAGE;
 				}
 			}
 
