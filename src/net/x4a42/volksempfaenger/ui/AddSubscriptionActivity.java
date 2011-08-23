@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
-import net.x4a42.volksempfaenger.data.StorageException;
+import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -111,6 +112,10 @@ public class AddSubscriptionActivity extends BaseActivity implements
 				// Try to add the podcast to the database
 				long podcastId = db.insertOrThrow(DbHelper.Podcast._TABLE,
 						null, values);
+				Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
+						UpdateService.class);
+				updatePodcast.putExtra("id", new long[] { podcastId });
+				startService(updatePodcast);
 				// Succeeded
 				String feedImage = feed.getImage();
 				if (feedImage != null) {
