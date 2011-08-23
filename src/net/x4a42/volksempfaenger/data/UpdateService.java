@@ -23,6 +23,9 @@ public class UpdateService extends Service {
 			Cursor cursor;
 
 			if (params == null) {
+				// All podcasts get updated as no IDs were passed
+				lastRun = System.currentTimeMillis();
+
 				cursor = dbHelper.getReadableDatabase().query(
 						DbHelper.Podcast._TABLE, null, null, null, null, null,
 						null);
@@ -65,15 +68,15 @@ public class UpdateService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		lastRun = System.currentTimeMillis();
-
 		Long[] id = null;
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
 			long[] extraId = extras.getLongArray("id");
-			id = new Long[extraId.length];
-			for (int i = 0; i < id.length; i++) {
-				id[i] = extraId[i];
+			if (extraId.length != 0) {
+				id = new Long[extraId.length];
+				for (int i = 0; i < id.length; i++) {
+					id[i] = extraId[i];
+				}
 			}
 		}
 
