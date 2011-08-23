@@ -1,10 +1,15 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
+
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,6 +67,13 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		adapter = new EpisodeListAdapter(this, cursor);
 		episodeList.setAdapter(adapter);
+
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
+		if (podcastLogoFile.isFile()) {
+			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
+					.getAbsolutePath());
+			podcastLogo.setImageBitmap(podcastLogoBitmap);
+		}
 	}
 
 	@Override

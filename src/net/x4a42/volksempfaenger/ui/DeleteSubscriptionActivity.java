@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -100,6 +101,8 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 			Toast.makeText(this, R.string.message_podcast_successfully_deleted,
 					Toast.LENGTH_LONG).show();
 		}
+		// delete podcast logo
+		Utils.getPodcastLogoFile(this, id).delete();
 		finish();
 	}
 }
