@@ -132,10 +132,9 @@ public class UpdateService extends Service {
 						values.put(DbHelper.Enclosure.MIME, enclosure.getMime());
 						values.put(DbHelper.Enclosure.SIZE, enclosure.getSize());
 
-						long enclosureId;
 						try {
-							enclosureId = db.insertOrThrow(
-									DbHelper.Enclosure._TABLE, null, values);
+							db.insertOrThrow(DbHelper.Enclosure._TABLE, null,
+									values);
 						} catch (SQLException e) {
 							if (e instanceof SQLiteConstraintException) {
 								db.update(DbHelper.Enclosure._TABLE, values,
