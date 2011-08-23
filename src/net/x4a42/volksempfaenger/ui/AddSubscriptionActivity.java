@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
@@ -99,18 +99,18 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			// Open database
-			DbHelper dbHelper = new DbHelper(AddSubscriptionActivity.this);
+			DatabaseHelper dbHelper = new DatabaseHelper(AddSubscriptionActivity.this);
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 			ContentValues values = new ContentValues();
-			values.put(DbHelper.Podcast.TITLE, feed.getTitle());
-			values.put(DbHelper.Podcast.DESCRIPTION, feed.getDescription());
-			values.put(DbHelper.Podcast.URL, feedUrl);
-			values.put(DbHelper.Podcast.WEBSITE, feed.getWebsite());
+			values.put(DatabaseHelper.Podcast.TITLE, feed.getTitle());
+			values.put(DatabaseHelper.Podcast.DESCRIPTION, feed.getDescription());
+			values.put(DatabaseHelper.Podcast.URL, feedUrl);
+			values.put(DatabaseHelper.Podcast.WEBSITE, feed.getWebsite());
 
 			try {
 				// Try to add the podcast to the database
-				long podcastId = db.insertOrThrow(DbHelper.Podcast._TABLE,
+				long podcastId = db.insertOrThrow(DatabaseHelper.Podcast._TABLE,
 						null, values);
 				Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
 						UpdateService.class);

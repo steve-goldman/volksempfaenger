@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-public class DbHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "podcast.db";
 	private static final int DB_VERSION = 1;
 
@@ -21,8 +21,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		private static String createSql() {
 			return String.format("CREATE TABLE \"%s\" (\n"
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT UNIQUE,\n" + "  \"%s\" TEXT\n" + ")",
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT UNIQUE,\n"
+					+ "  \"%s\" TEXT\n"
+					+ ")",
 					_TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
 		}
 	}
@@ -42,10 +45,13 @@ public class DbHelper extends SQLiteOpenHelper {
 					.format("CREATE TABLE \"%s\" (\n"
 							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" INTEGER,\n" + "  \"%s\" TEXT,\n"
 							+ "  \"%s\" TEXT,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
+							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" INTEGER,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  UNIQUE (\"%s\", \"%s\")\n"
+							+ ")", _TABLE, ID,
 							PODCAST, Podcast._TABLE, Podcast.ID, ITEM_ID,
 							TITLE, DATE, URL, DESCRIPTION, PODCAST, ITEM_ID);
 		}
@@ -84,12 +90,16 @@ public class DbHelper extends SQLiteOpenHelper {
 					.format("CREATE TABLE \"%s\" (\n"
 							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
 							+ "  \"%s\" INTEGER,\n"
 							+ "  \"%s\" INTEGER DEFAULT %d,\n"
-							+ "  \"%s\" INTEGER,\n" + "  \"%s\" INTEGER,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
+							+ "  \"%s\" INTEGER,\n"
+							+ "  \"%s\" INTEGER,\n"
+							+ "  UNIQUE (\"%s\", \"%s\")\n"
+							+ ")", _TABLE, ID,
 							EPISODE, Episode._TABLE, Episode.ID, TITLE, URL,
 							MIME, FILE, SIZE, STATE, STATE_NEW, DURATION_TOTAL,
 							DURATION_LISTENED, EPISODE, URL);
@@ -98,7 +108,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	Context context;
 
-	public DbHelper(Context context) {
+	public DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		this.context = context;
 	}

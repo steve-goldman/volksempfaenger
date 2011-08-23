@@ -4,7 +4,7 @@ import java.io.File;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,7 +24,7 @@ import android.widget.TextView;
 public class ViewSubscriptionActivity extends BaseActivity implements
 		OnItemClickListener {
 	private long id;
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
@@ -51,7 +51,7 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		setContentView(R.layout.view_subscription);
 
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -59,10 +59,10 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(DbHelper.Episode._TABLE,
-				null, String.format("%s = ?", DbHelper.Episode.PODCAST),
+		cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.Episode._TABLE,
+				null, String.format("%s = ?", DatabaseHelper.Episode.PODCAST),
 				new String[] { String.valueOf(id) }, null, null,
-				String.format("%s DESC", DbHelper.Episode.DATE));
+				String.format("%s DESC", DatabaseHelper.Episode.DATE));
 		startManagingCursor(cursor);
 
 		adapter = new EpisodeListAdapter(this, cursor);
@@ -75,8 +75,8 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		// Update podcast information
 		Cursor c = dbHelper.getReadableDatabase().query(
-				DbHelper.Podcast._TABLE, null,
-				String.format("%s = ?", DbHelper.Podcast.ID),
+				DatabaseHelper.Podcast._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
 		if (c.getCount() == 0) {
@@ -88,9 +88,9 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 		c.moveToFirst();
 
 		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.TITLE)));
+				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
 		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
+				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
 		c.close();
 

@@ -11,8 +11,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class EpisodeListAdapter extends SimpleCursorAdapter {
-	static final String[] FROM = { DbHelper.Episode.TITLE,
-			DbHelper.Episode.DATE };
+	static final String[] FROM = { DatabaseHelper.Episode.TITLE,
+			DatabaseHelper.Episode.DATE };
 	static final int[] TO = { R.id.episode_title, R.id.episode_date };
 
 	public EpisodeListAdapter(Context context, Cursor cursor) {
@@ -24,7 +24,7 @@ public class EpisodeListAdapter extends SimpleCursorAdapter {
 		super.bindView(row, context, cursor);
 
 		Date date = new Date(cursor.getLong(cursor
-				.getColumnIndex(DbHelper.Episode.DATE)) * 1000);
+				.getColumnIndex(DatabaseHelper.Episode.DATE)) * 1000);
 
 		TextView episodeDate = (TextView) row.findViewById(R.id.episode_date);
 		episodeDate.setText(DateFormat.getDateInstance().format(date));

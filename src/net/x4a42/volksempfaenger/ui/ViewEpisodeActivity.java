@@ -4,7 +4,7 @@ import java.io.File;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +18,7 @@ import android.widget.TextView;
 public class ViewEpisodeActivity extends BaseActivity {
 
 	private long id;
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
@@ -44,7 +44,7 @@ public class ViewEpisodeActivity extends BaseActivity {
 
 		setContentView(R.layout.view_episode);
 
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -64,8 +64,8 @@ public class ViewEpisodeActivity extends BaseActivity {
 
 		// Update episode information
 
-		c = dbHelper.getReadableDatabase().query(DbHelper.Episode._TABLE, null,
-				String.format("%s = ?", DbHelper.Episode.ID),
+		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Episode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Episode.ID),
 				new String[] { String.valueOf(id) }, null, null, null);
 
 		if (!c.moveToFirst()) {
@@ -74,11 +74,11 @@ public class ViewEpisodeActivity extends BaseActivity {
 			return;
 		}
 
-		long podcastId = c.getLong(c.getColumnIndex(DbHelper.Episode.PODCAST));
+		long podcastId = c.getLong(c.getColumnIndex(DatabaseHelper.Episode.PODCAST));
 		episodeTitle.setText(c.getString(c
-				.getColumnIndex(DbHelper.Episode.TITLE)));
+				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
 		String description = Utils.normalizeString(c.getString(c
-				.getColumnIndex(DbHelper.Episode.DESCRIPTION)));
+				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION)));
 		Log.d(getClass().getSimpleName(),
 				"description length: " + description.length());
 		episodeDescription.setText(Html.fromHtml(description));
@@ -93,8 +93,8 @@ public class ViewEpisodeActivity extends BaseActivity {
 		}
 
 		// Update podcast information
-		c = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE, null,
-				String.format("%s = ?", DbHelper.Podcast.ID),
+		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Podcast.ID),
 				new String[] { String.valueOf(podcastId) }, null, null, null,
 				"1");
 
@@ -105,9 +105,9 @@ public class ViewEpisodeActivity extends BaseActivity {
 		}
 
 		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.TITLE)));
+				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
 		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
+				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
 		c.close();
 	}

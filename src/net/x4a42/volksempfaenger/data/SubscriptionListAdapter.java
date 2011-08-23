@@ -14,8 +14,8 @@ import android.widget.SimpleCursorAdapter;
 
 public class SubscriptionListAdapter extends SimpleCursorAdapter {
 
-	static final String[] FROM = { DbHelper.Podcast.TITLE,
-			DbHelper.Podcast.DESCRIPTION };
+	static final String[] FROM = { DatabaseHelper.Podcast.TITLE,
+			DatabaseHelper.Podcast.DESCRIPTION };
 	static final int[] TO = { R.id.podcast_title, R.id.podcast_description };
 
 	public SubscriptionListAdapter(Context context, Cursor cursor) {
@@ -28,7 +28,7 @@ public class SubscriptionListAdapter extends SimpleCursorAdapter {
 		super.bindView(view, context, cursor);
 
 		File podcastLogoFile = Utils.getPodcastLogoFile(context,
-				cursor.getLong(cursor.getColumnIndex(DbHelper.Podcast.ID)));
+				cursor.getLong(cursor.getColumnIndex(DatabaseHelper.Podcast.ID)));
 		ImageView podcastLogo = (ImageView) view
 				.findViewById(R.id.podcast_logo);
 		if (podcastLogoFile.isFile()) {
