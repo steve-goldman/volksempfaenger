@@ -39,8 +39,12 @@ public class ViewEpisodeActivity extends BaseActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		description = total.toString();
+		description = normalizeString(total.toString());
 		textView.setText(Html.fromHtml(description));
+	}
+
+	private String normalizeString(String string) {
+		return string.replaceAll("\\s+", " ");
 	}
 
 }
