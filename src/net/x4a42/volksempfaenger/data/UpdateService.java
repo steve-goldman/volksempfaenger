@@ -14,19 +14,7 @@ public class UpdateService extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 
-		lastRun = System.currentTimeMillis();
-
 		Log.d(getClass().getSimpleName(), "onCreate()");
-	}
-
-	@Override
-	public void onStart(Intent intent, int startId) {
-		// TODO Auto-generated method stub
-		super.onStart(intent, startId);
-
-		Log.d(getClass().getSimpleName(), "onStart()");
-
-		stopSelf();
 	}
 
 	@Override
@@ -34,31 +22,14 @@ public class UpdateService extends Service {
 		// TODO Auto-generated method stub
 		Log.d(getClass().getSimpleName(), "onStartCommand()");
 
-		return super.onStartCommand(intent, flags, startId);
+		lastRun = System.currentTimeMillis();
+
+		return START_NOT_STICKY;
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		Log.d(getClass().getSimpleName(), "onBind()");
-
 		return null;
-	}
-
-	@Override
-	public boolean onUnbind(Intent intent) {
-		// TODO Auto-generated method stub
-		Log.d(getClass().getSimpleName(), "onUnbind()");
-
-		return super.onUnbind(intent);
-	}
-
-	@Override
-	public void onRebind(Intent intent) {
-		// TODO Auto-generated method stub
-		super.onRebind(intent);
-
-		Log.d(getClass().getSimpleName(), "onRebind()");
 	}
 
 	@Override
