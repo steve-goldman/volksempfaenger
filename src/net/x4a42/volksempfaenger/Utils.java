@@ -3,6 +3,9 @@ package net.x4a42.volksempfaenger;
 import java.io.File;
 import java.util.Date;
 
+import android.content.Context;
+import android.os.Environment;
+
 public class Utils {
 	public static String joinArray(Object[] objects, CharSequence sep) {
 		if (objects == null) {
@@ -41,5 +44,12 @@ public class Utils {
 
 	public static File joinPath(String base, String... children) {
 		return joinPath(new File(base), children);
+	}
+
+	public static File getPodcastLogoFile(Context context, long podcastId) {
+		return Utils.joinPath(Environment.getExternalStorageDirectory(),
+				"Android", "data",
+				VolksempfaengerApplication.getPackageInfo(context).packageName,
+				"files", "logos", String.valueOf(podcastId));
 	}
 }

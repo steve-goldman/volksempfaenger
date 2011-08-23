@@ -98,13 +98,6 @@ public class LogoDownloader extends Downloader {
 
 	public void fetchLogo(String url, long podcastId) throws NetException,
 			StorageException {
-		fetchLogo(
-				url,
-				Utils.joinPath(
-						Environment.getExternalStorageDirectory(),
-						"Android",
-						"data",
-						VolksempfaengerApplication.getPackageInfo(getContext()).packageName,
-						"files", "logos", String.valueOf(podcastId)));
+		fetchLogo(url, Utils.getPodcastLogoFile(getContext(), podcastId));
 	}
 }
