@@ -138,24 +138,12 @@ public class UpdateService extends Service {
 									DbHelper.Enclosure._TABLE, null, values);
 						} catch (SQLException e) {
 							if (e instanceof SQLiteConstraintException) {
-								Cursor c = db.query(DbHelper.Enclosure._TABLE,
-										new String[] { DbHelper.Enclosure.ID },
+								db.update(DbHelper.Enclosure._TABLE, values,
 										String.format("%s = ? AND %s = ?",
 												DbHelper.Enclosure.EPISODE,
 												DbHelper.Enclosure.URL),
 										new String[] { String.valueOf(itemId),
-												enclosure.getUrl() }, null,
-										null, null);
-								if (!c.moveToFirst()) {
-									continue;
-								}
-								enclosureId = c.getLong(c
-										.getColumnIndex(DbHelper.Enclosure.ID));
-								db.update(DbHelper.Enclosure._TABLE, values,
-										String.format("%s = ?",
-												DbHelper.Enclosure.ID),
-										new String[] { String
-												.valueOf(enclosureId) });
+												enclosure.getUrl() });
 							} else {
 								Log.wtf(getClass().getSimpleName(), e);
 								continue;
