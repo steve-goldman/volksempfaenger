@@ -43,13 +43,15 @@ public class DbHelper extends SQLiteOpenHelper {
 			return String.format("CREATE TABLE \"%s\" (\n"
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-					+ "  \"%s\" TEXT UNIQUE,\n"
+					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" INTEGER,\n"
 					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT\n"
-					+ ")", _TABLE, ID, PODCAST,	Podcast._TABLE,
-					Podcast.ID, ITEM_ID, TITLE, DATE, URL, DESCRIPTION);
+					+ "  \"%s\" TEXT,\n"
+					+ "  UNIQUE (\"%s\", \"%s\")\n"
+					+ ")", _TABLE, ID,
+							PODCAST, Podcast._TABLE, Podcast.ID, ITEM_ID,
+							TITLE, DATE, URL, DESCRIPTION, PODCAST, ITEM_ID);
 		}
 	}
 	
@@ -84,12 +86,14 @@ public class DbHelper extends SQLiteOpenHelper {
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" TEXT,\n"
 					+ "  \"%s\" INTEGER,\n"
+					+ "  \"%s\" INTEGER DEFAULT %d,\n"
 					+ "  \"%s\" INTEGER,\n"
 					+ "  \"%s\" INTEGER,\n"
-					+ "  \"%s\" INTEGER\n"
+					+ "  UNIQUE (\"%s\", \"%s\")\n"
 					+ ")", _TABLE, ID,
 					EPISODE, Episode._TABLE, Episode.ID, TITLE, URL, MIME,
-					FILE, SIZE, STATE, DURATION_TOTAL, DURATION_LISTENED);
+					FILE, SIZE, STATE, STATE_NEW, DURATION_TOTAL,
+					DURATION_LISTENED, EPISODE, URL);
 		}
 	}
 	
