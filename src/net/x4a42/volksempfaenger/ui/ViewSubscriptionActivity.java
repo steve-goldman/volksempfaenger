@@ -2,22 +2,32 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
+import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-public class ViewSubscriptionActivity extends BaseActivity {
+public class ViewSubscriptionActivity extends BaseActivity implements
+		OnItemClickListener {
 	private long id;
 	private DbHelper dbHelper;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
 	private TextView podcastDescription;
+	private ListView episodeList;
+	private Cursor cursor;
+	private EpisodeListAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,12 +52,24 @@ public class ViewSubscriptionActivity extends BaseActivity {
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
+		episodeList = (ListView) findViewById(R.id.episode_list);
+		episodeList.setOnItemClickListener(this);
+
+		cursor = dbHelper.getReadableDatabase().query(DbHelper.Episode._TABLE,
+				null, String.format("%s = ?", DbHelper.Episode.PODCAST),
+				new String[] { String.valueOf(id) }, null, null,
+				String.format("%s DESC", DbHelper.Episode.DATE));
+		startManagingCursor(cursor);
+
+		adapter = new EpisodeListAdapter(this, cursor);
+		episodeList.setAdapter(adapter);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
+		// Update podcast information
 		Cursor c = dbHelper.getReadableDatabase().query(
 				DbHelper.Podcast._TABLE, null,
 				String.format("%s = ?", DbHelper.Podcast.ID),
@@ -67,6 +89,9 @@ public class ViewSubscriptionActivity extends BaseActivity {
 				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
 
 		c.close();
+
+		// Update episode list
+		cursor.requery();
 	}
 
 	@Override
@@ -101,5 +126,11 @@ public class ViewSubscriptionActivity extends BaseActivity {
 		default:
 			return handleGlobalMenu(item);
 		}
+	}
+
+	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
+		Intent intent = new Intent(this, ViewEpisodeActivity.class);
+		intent.putExtra("id", id);
+		startActivity(intent);
 	}
 }
