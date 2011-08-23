@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
@@ -15,9 +17,9 @@ import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
-public class FeedDownloader extends Downloader {
+public class LogoDownloader extends Downloader {
 
-	public FeedDownloader(Context context) {
+	public LogoDownloader(Context context) {
 		super(context);
 	}
 
@@ -25,7 +27,7 @@ public class FeedDownloader extends Downloader {
 		return AndroidHttpClient.newInstance(getUserAgent(), getContext());
 	}
 
-	public Feed fetchFeed(String url) throws NetException, FeedParserException {
+	public void fetchLogo(String url, String target) throws NetException {
 		AndroidHttpClient client = getHttpClient();
 		HttpGet request;
 		try {
@@ -34,20 +36,8 @@ public class FeedDownloader extends Downloader {
 			Log.w(getClass().getSimpleName(), e);
 			throw new NetException(e);
 		}
-		request.addHeader("Accept", "application/atom+xml, application/rss+xml");
-		try {
-			HttpResponse response = client.execute(request);
-			BufferedReader rd = new BufferedReader(new InputStreamReader(
-					response.getEntity().getContent()));
-			Feed feed = FeedParser.parse(rd);
-			client.close();
-			return feed;
-		} catch (IllegalStateException e) {
-			Log.w(getClass().getSimpleName(), e);
-			throw new NetException(e);
-		} catch (IOException e) {
-			Log.w(getClass().getSimpleName(), e);
-			throw new NetException(e);
-		}
+		request.addHeader("Accept", "image/*");
+		//HttpResponse response = client.execute(request);
+		//response.getEntity().getContent();
 	}
 }
