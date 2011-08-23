@@ -3,7 +3,6 @@ package net.x4a42.volksempfaenger.ui;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
-import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
