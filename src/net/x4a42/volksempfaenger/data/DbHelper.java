@@ -9,7 +9,7 @@ import android.util.Log;
 public class DbHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "podcast.db";
 	private static final int DB_VERSION = 1;
-	
+
 	public static class Podcast {
 		public static final String _TABLE = "podcast";
 		public static final String ID = BaseColumns._ID;
@@ -17,18 +17,16 @@ public class DbHelper extends SQLiteOpenHelper {
 		public static final String DESCRIPTION = "description";
 		public static final String URL = "url";
 		public static final String WEBSITE = "website";
-		
+
 		private static String createSql() {
 			return String.format("CREATE TABLE \"%s\" (\n"
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT UNIQUE,\n"
-					+ "  \"%s\" TEXT\n"
-					+ ")", _TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
+					+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT UNIQUE,\n" + "  \"%s\" TEXT\n" + ")",
+					_TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
 		}
 	}
-	
+
 	public static class Episode {
 		public static final String _TABLE = "episode";
 		public static final String ID = BaseColumns._ID;
@@ -38,23 +36,21 @@ public class DbHelper extends SQLiteOpenHelper {
 		public static final String DATE = "date";
 		public static final String URL = "url";
 		public static final String DESCRIPTION = "description";
-		
+
 		private static String createSql() {
-			return String.format("CREATE TABLE \"%s\" (\n"
-					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" INTEGER,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  UNIQUE (\"%s\", \"%s\")\n"
-					+ ")", _TABLE, ID,
+			return String
+					.format("CREATE TABLE \"%s\" (\n"
+							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" INTEGER,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n"
+							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
 							PODCAST, Podcast._TABLE, Podcast.ID, ITEM_ID,
 							TITLE, DATE, URL, DESCRIPTION, PODCAST, ITEM_ID);
 		}
 	}
-	
+
 	public static class Enclosure {
 		public static final String _TABLE = "enclosure";
 		public static final String ID = BaseColumns._ID;
@@ -65,9 +61,15 @@ public class DbHelper extends SQLiteOpenHelper {
 		public static final String FILE = "file"; // path to file
 		public static final String SIZE = "size"; // file size
 		public static final String STATE = "state"; // see state constants below
-		public static final String DURATION_TOTAL = "duration_total"; // total duration in seconds
-		public static final String DURATION_LISTENED = "duration_listened"; // listened time in seconds
-		
+		public static final String DURATION_TOTAL = "duration_total"; // total
+																		// duration
+																		// in
+																		// seconds
+		public static final String DURATION_LISTENED = "duration_listened"; // listened
+																			// time
+																			// in
+																			// seconds
+
 		public static final int STATE_NEW = 0;
 		public static final int STATE_DOWNLOAD_QUEUED = 1;
 		public static final int STATE_DOWNLOADING = 2;
@@ -76,32 +78,37 @@ public class DbHelper extends SQLiteOpenHelper {
 		public static final int STATE_LISTENING = 5;
 		public static final int STATE_LISTENED = 6;
 		public static final int STATE_DELETED = 7;
-		
+
 		private static String createSql() {
-			return String.format("CREATE TABLE \"%s\" (\n"
-					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" INTEGER,\n"
-					+ "  \"%s\" INTEGER DEFAULT %d,\n"
-					+ "  \"%s\" INTEGER,\n"
-					+ "  \"%s\" INTEGER,\n"
-					+ "  UNIQUE (\"%s\", \"%s\")\n"
-					+ ")", _TABLE, ID,
-					EPISODE, Episode._TABLE, Episode.ID, TITLE, URL, MIME,
-					FILE, SIZE, STATE, STATE_NEW, DURATION_TOTAL,
-					DURATION_LISTENED, EPISODE, URL);
+			return String
+					.format("CREATE TABLE \"%s\" (\n"
+							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" INTEGER,\n"
+							+ "  \"%s\" INTEGER DEFAULT %d,\n"
+							+ "  \"%s\" INTEGER,\n" + "  \"%s\" INTEGER,\n"
+							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
+							EPISODE, Episode._TABLE, Episode.ID, TITLE, URL,
+							MIME, FILE, SIZE, STATE, STATE_NEW, DURATION_TOTAL,
+							DURATION_LISTENED, EPISODE, URL);
 		}
 	}
-	
+
 	Context context;
 
 	public DbHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		this.context = context;
+	}
+
+	@Override
+	public void onOpen(SQLiteDatabase db) {
+		super.onOpen(db);
+		if (!db.isReadOnly()) {
+			db.execSQL("PRAGMA foreign_keys=ON;");
+		}
 	}
 
 	@Override
