@@ -53,5 +53,4 @@
 	<string name="settings_default_download_auto">true</string>
 	<string name="settings_default_download_wifi">true</string>
 	<string name="settings_default_download_charging">false</string>
-	<string name="settings_default_storage_location">/mnt/sdcard/Podcasts</string>
 </resources>

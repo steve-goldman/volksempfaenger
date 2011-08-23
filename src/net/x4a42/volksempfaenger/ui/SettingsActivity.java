@@ -90,7 +90,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
 		CharSequence storageLocation = prefStorageLocation.getText();
 		if (storageLocation == null) {
-			storageLocation = getString(R.string.settings_default_storage_location);
+			storageLocation = VolksempfaengerApplication.getDefaultStorageLocation();
 		}
 
 		prefDownloadInterval.setSummary(downloadInterval);
