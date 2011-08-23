@@ -2,9 +2,11 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.StorageException;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
+import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -107,8 +109,20 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 			try {
 				// Try to add the podcast to the database
-				db.insertOrThrow(DbHelper.Podcast._TABLE, null, values);
-				// Succeeded. Display message and exit
+				long podcastId = db.insertOrThrow(DbHelper.Podcast._TABLE,
+						null, values);
+				// Succeeded
+				String feedImage = feed.getImage();
+				if (feedImage != null) {
+					// Try to download podcast logo
+					LogoDownloader ld = new LogoDownloader(
+							AddSubscriptionActivity.this);
+					try {
+						ld.fetchLogo(feedImage, podcastId);
+					} catch (Exception e) {
+						// Who cares?
+					}
+				}
 				return RESULT_SUCCEEDED;
 			} catch (SQLException e) {
 				// Something failed
