@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/scrollView1" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:orientation="horizontal"
+			android:padding="8dp">
+			<ImageView android:layout_height="96dp" android:id="@+id/podcast_logo"
+				android:layout_width="96dp" android:src="#ccc" />
+			<LinearLayout android:layout_height="match_parent"
+				android:layout_width="wrap_content" android:orientation="vertical"
+				android:layout_weight="1" android:paddingLeft="8dp">
+				<TextView android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					android:layout_width="match_parent" android:id="@+id/podcast_title" />
+				<TextView android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:layout_width="match_parent" android:id="@+id/podcast_description" />
+			</LinearLayout>
+		</LinearLayout>
+		<TextView android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:layout_width="match_parent" android:id="@+id/episode_title" />
+		<TextView android:id="@+id/episode_description"
+			android:layout_height="wrap_content" android:layout_width="match_parent"
+			android:layout_weight="1"></TextView>
+	</LinearLayout>
+</ScrollView>
