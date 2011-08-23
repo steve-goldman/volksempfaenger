@@ -3,23 +3,29 @@
 	android:id="@+id/scrollView1" android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<TableLayout android:orientation="vertical"
-		android:layout_width="match_parent" android:layout_height="match_parent">
-		<TableRow android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<ImageView android:src="@drawable/icon" android:id="@+id/imageView1"
-				android:layout_width="96dp" android:layout_height="96dp"
-				android:layout_gravity="center_vertical"></ImageView>
-			<TextView android:id="@+id/textView1"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:text="NSFW028 In Übereinstimmung mit der Prophezeiung"
-				android:layout_gravity="center_vertical" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:layout_weight="1"></TextView>
-		</TableRow>
-		<TableRow android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<TextView android:id="@+id/textView2" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:layout_span="2" android:layout_weight="1"></TextView>
-		</TableRow>
-	</TableLayout>
+	<LinearLayout android:orientation="vertical"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:orientation="horizontal"
+			android:padding="8dp">
+			<ImageView android:layout_height="96dp" android:id="@+id/podcast_logo"
+				android:layout_width="96dp" android:src="#ccc" />
+			<LinearLayout android:layout_height="match_parent"
+				android:layout_width="wrap_content" android:orientation="vertical"
+				android:layout_weight="1" android:paddingLeft="8dp">
+				<TextView android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					android:layout_width="match_parent" android:id="@+id/podcast_title" />
+				<TextView android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:layout_width="match_parent" android:id="@+id/podcast_description" />
+			</LinearLayout>
+		</LinearLayout>
+		<TextView android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:layout_width="match_parent" android:id="@+id/episode_title" />
+		<TextView android:id="@+id/episode_description"
+			android:layout_height="wrap_content" android:layout_width="match_parent"
+			android:layout_weight="1"></TextView>
+	</LinearLayout>
 </ScrollView>
