@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -37,6 +38,11 @@ public class VolksempfaengerApplication extends Application implements
 			Log.wtf(VolksempfaengerApplication.class.getName(), e);
 			return null;
 		}
+	}
+
+	public static String getDefaultStorageLocation() {
+		return Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_PODCASTS).getAbsolutePath();
 	}
 
 	public SharedPreferences getSharedPreferences() {
