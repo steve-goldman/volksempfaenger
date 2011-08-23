@@ -26,4 +26,8 @@ public class Utils {
 	public static long toUnixTimestamp(Date date) {
 		return date.getTime() / 1000L;
 	}
+
+	public static String normalizeString(String string) {
+		return string.replaceAll("\\s+", " ");
+	}
 }
