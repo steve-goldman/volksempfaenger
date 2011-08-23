@@ -13,6 +13,8 @@
 	<string name="menu_settings">Settings</string>
 	<string name="context_edit">Edit</string>
 	<string name="context_delete">Delete</string>
+	<string name="context_reload">Reload</string>
+	<string name="context_choose">Choose...</string>
 	<string name="hint_http">http://</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
@@ -22,8 +24,11 @@
 	<string name="cancel">Cancel</string>
 	<string name="unknown">unknown</string>
 	<string name="dialog_error_title">An error occurred</string>
-	<string name="dialog_add_progress_title">Adding subscription</string>
+	<string name="dialog_add_progress_title">Adding Subscription</string>
 	<string name="dialog_add_progress_message">Please wait...</string>
+	<string name="dialog_reload_logo_progress_title">Reloading Logo</string>
+	<string name="dialog_reload_logo_progress_message">Please wait...</string>
+	<string name="message_error">Something went wrong</string>
 	<string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
 	<string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
 	<string name="message_podcast_confirm_delete">Do you want to delete \"%s\"?</string>
