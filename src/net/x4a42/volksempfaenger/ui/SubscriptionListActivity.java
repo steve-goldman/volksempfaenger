@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,7 +22,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
 
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 	private Cursor cursor;
 	private ListView subscriptionList;
 	private SubscriptionListAdapter adapter;
@@ -34,14 +34,14 @@ public class SubscriptionListActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscription_list);
 
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE,
-				null, null, null, null, null, DbHelper.Podcast.TITLE);
+		cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE,
+				null, null, null, null, null, DatabaseHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);

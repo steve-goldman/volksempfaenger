@@ -24,7 +24,7 @@ public class UpdateService extends Service {
 
 	private static long lastRun = 0;
 
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 
 	private class UpdateTask extends AsyncTask<Long, Long, Void> {
 
@@ -40,13 +40,13 @@ public class UpdateService extends Service {
 				lastRun = System.currentTimeMillis();
 
 				cursor = dbHelper.getReadableDatabase().query(
-						DbHelper.Podcast._TABLE, null, null, null, null, null,
+						DatabaseHelper.Podcast._TABLE, null, null, null, null, null,
 						null);
 			} else {
 				cursor = dbHelper.getReadableDatabase().query(
-						DbHelper.Podcast._TABLE,
+						DatabaseHelper.Podcast._TABLE,
 						null,
-						String.format("%s in (%s)", DbHelper.Podcast.ID,
+						String.format("%s in (%s)", DatabaseHelper.Podcast.ID,
 								Utils.joinArray(params, ",")), null, null,
 						null, null);
 			}
@@ -62,10 +62,10 @@ public class UpdateService extends Service {
 
 			while (cursor.moveToNext()) {
 				long podcastId = cursor.getLong(cursor
-						.getColumnIndex(DbHelper.Podcast.ID));
+						.getColumnIndex(DatabaseHelper.Podcast.ID));
 
 				String podcastUrl = cursor.getString(cursor
-						.getColumnIndex(DbHelper.Podcast.URL));
+						.getColumnIndex(DatabaseHelper.Podcast.URL));
 
 				Feed feed = null;
 
@@ -86,26 +86,26 @@ public class UpdateService extends Service {
 
 				for (FeedItem item : feed.getItems()) {
 					values.clear();
-					values.put(DbHelper.Episode.PODCAST, podcastId);
-					values.put(DbHelper.Episode.ITEM_ID, item.getItemId());
-					values.put(DbHelper.Episode.TITLE, item.getTitle());
-					values.put(DbHelper.Episode.DATE,
+					values.put(DatabaseHelper.Episode.PODCAST, podcastId);
+					values.put(DatabaseHelper.Episode.ITEM_ID, item.getItemId());
+					values.put(DatabaseHelper.Episode.TITLE, item.getTitle());
+					values.put(DatabaseHelper.Episode.DATE,
 							Utils.toUnixTimestamp(item.getDate()));
-					values.put(DbHelper.Episode.URL, item.getUrl());
-					values.put(DbHelper.Episode.DESCRIPTION,
+					values.put(DatabaseHelper.Episode.URL, item.getUrl());
+					values.put(DatabaseHelper.Episode.DESCRIPTION,
 							item.getDescription());
 
 					long itemId;
 					try {
-						itemId = db.insertOrThrow(DbHelper.Episode._TABLE,
+						itemId = db.insertOrThrow(DatabaseHelper.Episode._TABLE,
 								null, values);
 					} catch (SQLException e) {
 						if (e instanceof SQLiteConstraintException) {
-							Cursor c = db.query(DbHelper.Episode._TABLE,
-									new String[] { DbHelper.Episode.ID },
+							Cursor c = db.query(DatabaseHelper.Episode._TABLE,
+									new String[] { DatabaseHelper.Episode.ID },
 									String.format("%s = ? AND %s = ?",
-											DbHelper.Episode.PODCAST,
-											DbHelper.Episode.ITEM_ID),
+											DatabaseHelper.Episode.PODCAST,
+											DatabaseHelper.Episode.ITEM_ID),
 									new String[] { String.valueOf(podcastId),
 											item.getItemId() }, null, null,
 									null);
@@ -113,9 +113,9 @@ public class UpdateService extends Service {
 								continue;
 							}
 							itemId = c.getLong(c
-									.getColumnIndex(DbHelper.Episode.ID));
-							db.update(DbHelper.Episode._TABLE, values, String
-									.format("%s = ?", DbHelper.Episode.ID),
+									.getColumnIndex(DatabaseHelper.Episode.ID));
+							db.update(DatabaseHelper.Episode._TABLE, values, String
+									.format("%s = ?", DatabaseHelper.Episode.ID),
 									new String[] { String.valueOf(itemId) });
 						} else {
 							Log.wtf(getClass().getSimpleName(), e);
@@ -125,22 +125,22 @@ public class UpdateService extends Service {
 
 					for (Enclosure enclosure : item.getEnclosures()) {
 						values.clear();
-						values.put(DbHelper.Enclosure.EPISODE, itemId);
-						values.put(DbHelper.Enclosure.TITLE,
+						values.put(DatabaseHelper.Enclosure.EPISODE, itemId);
+						values.put(DatabaseHelper.Enclosure.TITLE,
 								enclosure.getTitle());
-						values.put(DbHelper.Enclosure.URL, enclosure.getUrl());
-						values.put(DbHelper.Enclosure.MIME, enclosure.getMime());
-						values.put(DbHelper.Enclosure.SIZE, enclosure.getSize());
+						values.put(DatabaseHelper.Enclosure.URL, enclosure.getUrl());
+						values.put(DatabaseHelper.Enclosure.MIME, enclosure.getMime());
+						values.put(DatabaseHelper.Enclosure.SIZE, enclosure.getSize());
 
 						try {
-							db.insertOrThrow(DbHelper.Enclosure._TABLE, null,
+							db.insertOrThrow(DatabaseHelper.Enclosure._TABLE, null,
 									values);
 						} catch (SQLException e) {
 							if (e instanceof SQLiteConstraintException) {
-								db.update(DbHelper.Enclosure._TABLE, values,
+								db.update(DatabaseHelper.Enclosure._TABLE, values,
 										String.format("%s = ? AND %s = ?",
-												DbHelper.Enclosure.EPISODE,
-												DbHelper.Enclosure.URL),
+												DatabaseHelper.Enclosure.EPISODE,
+												DatabaseHelper.Enclosure.URL),
 										new String[] { String.valueOf(itemId),
 												enclosure.getUrl() });
 							} else {
@@ -172,7 +172,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public void onCreate() {
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.io.File;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
@@ -43,7 +43,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 	private Button buttonCancel;
 
 	private long id;
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		buttonSave.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 	}
 
 	@Override
@@ -82,8 +82,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		super.onResume();
 
 		Cursor c = dbHelper.getReadableDatabase().query(
-				DbHelper.Podcast._TABLE, null,
-				String.format("%s = ?", DbHelper.Podcast.ID),
+				DatabaseHelper.Podcast._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
 		if (c.getCount() == 0) {
@@ -95,10 +95,10 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		c.moveToFirst();
 
 		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.TITLE)));
-		podcastUrl.setText(c.getString(c.getColumnIndex(DbHelper.Podcast.URL)));
+				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
+		podcastUrl.setText(c.getString(c.getColumnIndex(DatabaseHelper.Podcast.URL)));
 		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DbHelper.Podcast.DESCRIPTION)));
+				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
 		registerForContextMenu(podcastLogo);
 		reloadLogo();
@@ -164,15 +164,15 @@ public class EditSubscriptionActivity extends BaseActivity implements
 			return;
 		case R.id.button_save:
 			ContentValues values = new ContentValues();
-			values.put(DbHelper.Podcast.TITLE, podcastTitle.getText()
+			values.put(DatabaseHelper.Podcast.TITLE, podcastTitle.getText()
 					.toString());
-			values.put(DbHelper.Podcast.URL, podcastUrl.getText().toString());
-			values.put(DbHelper.Podcast.DESCRIPTION, podcastDescription
+			values.put(DatabaseHelper.Podcast.URL, podcastUrl.getText().toString());
+			values.put(DatabaseHelper.Podcast.DESCRIPTION, podcastDescription
 					.getText().toString());
 			try {
 				int result = dbHelper.getWritableDatabase().update(
-						DbHelper.Podcast._TABLE, values,
-						String.format("%s = ?", DbHelper.Podcast.ID),
+						DatabaseHelper.Podcast._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Podcast.ID),
 						new String[] { String.valueOf(id) });
 				if (result > 0) {
 					finish();

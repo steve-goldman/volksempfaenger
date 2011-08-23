@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DbHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class DeleteSubscriptionActivity extends BaseActivity implements
 		OnClickListener {
-	private DbHelper dbHelper;
+	private DatabaseHelper dbHelper;
 	private long id;
 
 	private TextView textMessage;
@@ -37,7 +37,7 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 			return;
 		}
 
-		dbHelper = new DbHelper(this);
+		dbHelper = new DatabaseHelper(this);
 
 		setContentView(R.layout.delete_subscription);
 
@@ -55,8 +55,8 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 		super.onResume();
 
 		Cursor c = dbHelper.getReadableDatabase().query(
-				DbHelper.Podcast._TABLE, null,
-				String.format("%s = ?", DbHelper.Podcast.ID),
+				DatabaseHelper.Podcast._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Podcast.ID),
 				new String[] { String.valueOf(id) }, null, null, null, "1");
 
 		if (c.getCount() == 0) {
@@ -68,7 +68,7 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 		c.moveToFirst();
 
 		textMessage.setText(getString(R.string.message_podcast_confirm_delete,
-				c.getString(c.getColumnIndex(DbHelper.Podcast.TITLE))));
+				c.getString(c.getColumnIndex(DatabaseHelper.Podcast.TITLE))));
 		buttonOk.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 	}
@@ -93,8 +93,8 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 
 	public void deletePodcast() {
 		int result = dbHelper.getWritableDatabase().delete(
-				DbHelper.Podcast._TABLE,
-				String.format("%s = ?", DbHelper.Podcast.ID),
+				DatabaseHelper.Podcast._TABLE,
+				String.format("%s = ?", DatabaseHelper.Podcast.ID),
 				new String[] { String.valueOf(id) });
 		if (result > 0) {
 			// row was deleted
