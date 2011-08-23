@@ -112,7 +112,7 @@ public class FeedParser {
 					onStartTagRss(tag, atts);
 				} else if (ns == Namespace.XHTML && xhtmlMode) {
 					onStartTagXHtml(localName, atts);
-				} else if(ns == Namespace.ITUNES) {
+				} else if(ns == Namespace.ITUNES && tag == Tag.ITUNES_IMAGE) {
 					if(parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED) {
 						feed.setImage(atts.getValue("href"));
 					}
