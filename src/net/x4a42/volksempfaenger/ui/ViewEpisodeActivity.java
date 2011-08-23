@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import net.x4a42.volksempfaenger.R;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 public class ViewEpisodeActivity extends BaseActivity {
@@ -19,7 +20,7 @@ public class ViewEpisodeActivity extends BaseActivity {
 		setContentView(R.layout.view_episode);
 
 		TextView textView = (TextView) findViewById(R.id.textView2);
-
+		textView.setMovementMethod(LinkMovementMethod.getInstance());
 		InputStream ins = getResources().openRawResource(R.raw.description);
 		BufferedReader r = null;
 		try {
