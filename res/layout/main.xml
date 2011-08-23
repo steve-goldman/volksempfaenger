@@ -14,4 +14,6 @@
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Test EnclosureDownloader" android:id="@+id/button_testencdl"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="Start UpdateService" android:id="@+id/button_startupdate"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 </LinearLayout>

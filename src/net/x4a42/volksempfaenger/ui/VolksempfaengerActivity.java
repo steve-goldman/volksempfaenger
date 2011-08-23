@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
@@ -31,6 +32,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonTestFeed;
 	private Button buttonTestEncdl;
 	private Button buttonViewEpisode;
+	private Button buttonStartUpdate;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
 		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
 		buttonViewEpisode = (Button) findViewById(R.id.button_viewepisode);
+		buttonStartUpdate = (Button) findViewById(R.id.button_startupdate);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
@@ -50,6 +53,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonTestFeed.setOnClickListener(this);
 		buttonTestEncdl.setOnClickListener(this);
 		buttonViewEpisode.setOnClickListener(this);
+		buttonStartUpdate.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -78,6 +82,10 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_viewepisode:
 			intent = new Intent(this, ViewEpisodeActivity.class);
 			startActivity(intent);
+			return;
+		case R.id.button_startupdate:
+			intent = new Intent(this, UpdateService.class);
+			startService(intent);
 			return;
 		}
 	}
