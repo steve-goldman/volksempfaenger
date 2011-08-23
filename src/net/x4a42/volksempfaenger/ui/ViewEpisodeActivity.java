@@ -1,9 +1,13 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
+
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DbHelper;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -80,6 +84,13 @@ public class ViewEpisodeActivity extends BaseActivity {
 		episodeDescription.setText(Html.fromHtml(description));
 
 		c.close();
+
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, podcastId);
+		if (podcastLogoFile.isFile()) {
+			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
+					.getAbsolutePath());
+			podcastLogo.setImageBitmap(podcastLogoBitmap);
+		}
 
 		// Update podcast information
 		c = dbHelper.getReadableDatabase().query(DbHelper.Podcast._TABLE, null,
