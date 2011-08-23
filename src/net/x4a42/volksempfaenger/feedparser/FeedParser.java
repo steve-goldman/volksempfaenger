@@ -50,7 +50,7 @@ public class FeedParser {
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON
 		}
 
 		private static enum AtomRel {
@@ -305,6 +305,12 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setItemId(buffer.toString().trim());
 				}
+				break;
+			case ATOM_ICON:
+				if (parents.peek() == Tag.ATOM_FEED) {
+					feed.setImage(buffer.toString().trim());
+				}
+				break;
 			}
 		}
 
@@ -369,6 +375,15 @@ public class FeedParser {
 			case RSS_GUID:
 				if (parents.peek() == Tag.RSS_ITEM) {
 					feedItem.setItemId(buffer.toString().trim());
+				}
+				break;
+			case RSS_URL:
+				if(parents.peek() == Tag.RSS_IMAGE) {
+					Tag copy = parents.pop();
+					if(parents.peek() == Tag.RSS_CHANNEL) {
+						feed.setImage(buffer.toString().trim());
+					}
+					parents.push(copy);
 				}
 			}
 
@@ -522,6 +537,7 @@ public class FeedParser {
 			temp.put("published", Tag.ATOM_PUBLISHED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
 			temp.put("id", Tag.ATOM_ID);
+			temp.put("icon", Tag.ATOM_ICON);
 			atomTable = Collections.unmodifiableMap(temp);
 		}
 
@@ -536,6 +552,8 @@ public class FeedParser {
 			temp.put("enclosure", Tag.RSS_ENCLOSURE);
 			temp.put("pubDate", Tag.RSS_PUB_DATE);
 			temp.put("guid", Tag.RSS_GUID);
+			temp.put("image", Tag.RSS_IMAGE);
+			temp.put("url", Tag.RSS_URL);
 			rssTable = Collections.unmodifiableMap(temp);
 		}
 
