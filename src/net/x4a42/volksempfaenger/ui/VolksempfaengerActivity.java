@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.StorageException;
-import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
@@ -14,6 +13,7 @@ import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.EnclosureDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.os.AsyncTask;
