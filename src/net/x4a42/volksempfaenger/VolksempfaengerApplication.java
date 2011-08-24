@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger;
 
+import net.x4a42.volksempfaenger.data.CleanCacheService;
 import net.x4a42.volksempfaenger.data.UpdateService;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -29,6 +30,8 @@ public class VolksempfaengerApplication extends Application implements
 		settings.registerOnSharedPreferenceChangeListener(this);
 		// set update alarm
 		setUpdateAlarm();
+		// setCleanCacheAlarm
+		setCleanCacheAlarm();
 	}
 
 	public static PackageInfo getPackageInfo(Context c) {
@@ -101,6 +104,15 @@ public class VolksempfaengerApplication extends Application implements
 
 			am.setInexactRepeating(AlarmManager.RTC, next, interval, pending);
 		}
+	}
+
+	public void setCleanCacheAlarm() {
+		Intent intent = new Intent(this, CleanCacheService.class);
+		PendingIntent pending = PendingIntent.getService(this, 0, intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		am.setInexactRepeating(AlarmManager.RTC, 0,
+				AlarmManager.INTERVAL_HALF_DAY, pending);
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences settings, String key) {
