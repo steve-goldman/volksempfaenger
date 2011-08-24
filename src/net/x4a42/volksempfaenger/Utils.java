@@ -1,10 +1,14 @@
 package net.x4a42.volksempfaenger;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 public class Utils {
 	public static String joinArray(Object[] objects, CharSequence sep) {
@@ -51,5 +55,55 @@ public class Utils {
 				"Android", "data",
 				VolksempfaengerApplication.getPackageInfo(context).packageName,
 				"files", "logos", String.valueOf(podcastId));
+	}
+	
+	public static File getDescriptionImageFile(Context context, String url) {
+		return Utils.joinPath(Environment.getExternalStorageDirectory(),
+				"Android", "data",
+				VolksempfaengerApplication.getPackageInfo(context).packageName,
+				"cache", "images", sha1.hash(url));
+	}
+
+	public static class sha1 {
+		// http://stackoverflow.com/questions/5980658/how-to-sha1-hash-a-string-in-android/5980789#5980789
+		private static String convertToHex(byte[] data) {
+			StringBuffer buf = new StringBuffer();
+			for (int i = 0; i < data.length; i++) {
+				int halfbyte = (data[i] >>> 4) & 0x0F;
+				int two_halfs = 0;
+				do {
+					if ((0 <= halfbyte) && (halfbyte <= 9))
+						buf.append((char) ('0' + halfbyte));
+					else
+						buf.append((char) ('a' + (halfbyte - 10)));
+					halfbyte = data[i] & 0x0F;
+				} while (two_halfs++ < 1);
+			}
+			return buf.toString();
+		}
+
+		public static String hash(String text) {
+			MessageDigest md;
+			try {
+				md = MessageDigest.getInstance("SHA-1");
+			} catch (NoSuchAlgorithmException e) {
+				Log.wtf(Utils.class.getName(), e);
+				return null;
+			}
+			byte[] sha1hash = new byte[40];
+			try {
+				md.update(text.getBytes("utf8"), 0, text.length());
+			} catch (UnsupportedEncodingException e) {
+				Log.w(Utils.class.getName(), e);
+				try {
+					md.update(text.getBytes("iso-8859-1"), 0, text.length());
+				} catch (UnsupportedEncodingException e1) {
+					Log.wtf(Utils.class.getName(), e);
+					return null;
+				}
+			}
+			sha1hash = md.digest();
+			return convertToHex(sha1hash);
+		}
 	}
 }
