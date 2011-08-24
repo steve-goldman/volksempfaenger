@@ -21,10 +21,14 @@ public class CleanCacheService extends Service {
 
 			long minTime = System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000;
 
-			for (File f : images.listFiles()) {
-				if (f.lastModified() < minTime) {
-					f.delete();
+			File[] imageFiles = images.listFiles();
+			if (imageFiles != null) {
+				for (File f : imageFiles) {
+					if (f.lastModified() < minTime) {
+						f.delete();
+					}
 				}
+
 			}
 
 			return null;
