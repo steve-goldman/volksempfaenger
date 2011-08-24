@@ -48,11 +48,12 @@ Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming 
 			android:id="@+id/linearLayout1" android:layout_gravity="center"
 			android:layout_weight="1" android:layout_height="0dp">
 			<ImageButton android:id="@+id/imageButton3" android:src="@android:drawable/ic_media_rew"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageButton>
-			<ImageButton android:id="@+id/imageButton1" android:src="@android:drawable/ic_media_play"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageButton>
+				android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical"></ImageButton>
+			<ImageButton android:id="@+id/button_play" android:src="@android:drawable/ic_media_play"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical"></ImageButton>
 			<ImageButton android:id="@+id/imageButton2" android:src="@android:drawable/ic_media_ff"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageButton>
+				android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical"></ImageButton>
+			<TextView android:text="00:00:00/00:00:00" android:id="@+id/text_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical"></TextView>
 		</LinearLayout>
 		<SeekBar android:id="@+id/seekBar1" android:layout_width="match_parent"
 			android:layout_weight="1" android:layout_height="0dp"></SeekBar>
