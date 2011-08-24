@@ -35,6 +35,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonStartUpdate;
 	private Button buttonStartClean;
 	private Button buttonStartDownload;
+	private Button buttonPlayer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonStartUpdate = (Button) findViewById(R.id.button_startupdate);
 		buttonStartClean = (Button) findViewById(R.id.button_startclean);
 		buttonStartDownload = (Button) findViewById(R.id.button_startdownload);
+		buttonPlayer = (Button) findViewById(R.id.button_player);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
@@ -60,6 +62,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonStartUpdate.setOnClickListener(this);
 		buttonStartClean.setOnClickListener(this);
 		buttonStartDownload.setOnClickListener(this);
+		buttonPlayer.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -100,6 +103,10 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_startdownload:
 			intent = new Intent(this, DownloadService.class);
 			startService(intent);
+			return;
+		case R.id.button_player:
+			intent = new Intent(this, PlayerActivity.class);
+			startActivity(intent);
 			return;
 		}
 	}
