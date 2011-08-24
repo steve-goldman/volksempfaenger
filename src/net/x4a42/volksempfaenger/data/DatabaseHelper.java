@@ -67,6 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final String FILE = "file"; // path to file
 		public static final String SIZE = "size"; // file size
 		public static final String STATE = "state"; // see state constants below
+		public static final String DOWNLOAD_ID = "download_id"; // DownloadManager id
 		public static final String DURATION_TOTAL = "duration_total"; // total
 																		// duration
 																		// in
@@ -98,11 +99,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 							+ "  \"%s\" INTEGER DEFAULT %d,\n"
 							+ "  \"%s\" INTEGER,\n"
 							+ "  \"%s\" INTEGER,\n"
+							+ "  \"%s\" INTEGER,\n"
 							+ "  UNIQUE (\"%s\", \"%s\")\n"
 							+ ")", _TABLE, ID,
 							EPISODE, Episode._TABLE, Episode.ID, TITLE, URL,
-							MIME, FILE, SIZE, STATE, STATE_NEW, DURATION_TOTAL,
-							DURATION_LISTENED, EPISODE, URL);
+							MIME, FILE, SIZE, STATE, STATE_NEW, DOWNLOAD_ID,
+							DURATION_TOTAL, DURATION_LISTENED, EPISODE, URL);
 		}
 	}
 

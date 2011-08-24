@@ -102,4 +102,8 @@ public class Utils {
 			return convertToHex(sha1hash);
 		}
 	}
+
+	public static boolean stringBoolean(String str) {
+		return str.equals("true") || str.equals("yes");
+	}
 }

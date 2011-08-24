@@ -2,12 +2,12 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
-import net.x4a42.volksempfaenger.data.UpdateService;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;

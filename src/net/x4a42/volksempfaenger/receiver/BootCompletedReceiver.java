@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
