@@ -1,11 +1,18 @@
 package net.x4a42.volksempfaenger.service;
 
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+
+import net.x4a42.volksempfaenger.PreferenceKeys;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -15,41 +22,71 @@ import android.util.Log;
 
 public class DownloadService extends Service {
 
+	private VolksempfaengerApplication app;
 	private DatabaseHelper dbHelper;
 	private int phonePlugged;
 
-	private static final int FLAG_CHARGING = 1; // 0001
-	private static final int FLAG_WIFI = 2; // 0010
-	private static final int FLAG_MOBILE = 4; // 0100
-	private static final int FLAGS_NETWORK = 6; // 0110
+	private static final int NETWORK_WIFI = 1;
+	private static final int NETWORK_MOBILE = 2;
 
 	private class DownloadTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... params) {
 
+			SharedPreferences prefs = app.getSharedPreferences();
+
+			if (!prefs
+					.getBoolean(
+							PreferenceKeys.DOWNLOAD_AUTO,
+							Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
+				// automatic downloading is disabled
+				return null;
+			}
+
+			if (phonePlugged == 0
+					&& prefs.getBoolean(
+							PreferenceKeys.DOWNLOAD_CHARGING,
+							Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
+				// downloading is only allowed while charging but phone is not
+				// plugged in
+				return null;
+			}
+
+			int networkAllowd = 0;
+
+			// if automatic downloading is enabled, downloading via WiFi is
+			// enabled
+			networkAllowd |= NETWORK_WIFI;
+
+			if (!prefs
+					.getBoolean(
+							PreferenceKeys.DOWNLOAD_WIFI,
+							Utils.stringBoolean(getString(R.string.settings_default_download_wifi)))) {
+				// downloading is not restricted to WiFi
+				networkAllowd |= NETWORK_MOBILE;
+			}
+
+			int networkType = 0;
+
 			// get network state
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			int status = 0;
 			if (netInfo != null
 					&& netInfo.getState() == NetworkInfo.State.CONNECTED) {
 				switch (netInfo.getType()) {
 				case ConnectivityManager.TYPE_WIFI:
-					status |= FLAG_WIFI;
+					networkType = NETWORK_WIFI;
 					break;
 				case ConnectivityManager.TYPE_MOBILE:
-					status |= FLAG_MOBILE;
+					networkType = NETWORK_MOBILE;
 				}
 			}
 
-			// get charging state
-			if (phonePlugged > 0) {
-				status |= FLAG_CHARGING;
+			if ((networkType & networkAllowd) == 0) {
+				// no allowed network connection
+				return null;
 			}
-
-			// TODO
-			Log.d(getClass().getSimpleName(), "status=" + status);
 
 			return null;
 
@@ -81,6 +118,8 @@ public class DownloadService extends Service {
 	public void onCreate() {
 
 		super.onCreate();
+
+		app = (VolksempfaengerApplication) getApplication();
 		dbHelper = new DatabaseHelper(this);
 
 	}
