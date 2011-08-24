@@ -49,6 +49,7 @@
             </intent-filter>
 		</activity>
 		
+		<service android:name=".data.CleanCacheService" />
 		<service android:name=".data.UpdateService" />
 		
         <receiver android:name=".data.BootCompletedReceiver">
