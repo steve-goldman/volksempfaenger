@@ -182,9 +182,8 @@ public class UpdateService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		Long[] id = null;
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			long[] extraId = extras.getLongArray("id");
+		long[] extraId = intent.getLongArrayExtra("id");
+		if (extraId != null && extraId.length > 0) {
 			if (extraId.length != 0) {
 				id = new Long[extraId.length];
 				for (int i = 0; i < id.length; i++) {
