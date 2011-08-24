@@ -51,17 +51,13 @@ public class Utils {
 	}
 
 	public static File getPodcastLogoFile(Context context, long podcastId) {
-		return Utils.joinPath(Environment.getExternalStorageDirectory(),
-				"Android", "data",
-				VolksempfaengerApplication.getPackageInfo(context).packageName,
-				"files", "logos", String.valueOf(podcastId));
+		return Utils.joinPath(context.getExternalFilesDir(null), "logos",
+				String.valueOf(podcastId));
 	}
-	
+
 	public static File getDescriptionImageFile(Context context, String url) {
-		return Utils.joinPath(Environment.getExternalStorageDirectory(),
-				"Android", "data",
-				VolksempfaengerApplication.getPackageInfo(context).packageName,
-				"cache", "images", sha1.hash(url));
+		return Utils.joinPath(context.getExternalCacheDir(), "images",
+				sha1.hash(url));
 	}
 
 	public static class sha1 {
