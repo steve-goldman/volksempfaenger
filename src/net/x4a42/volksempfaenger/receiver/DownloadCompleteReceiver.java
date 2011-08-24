@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.net;
+package net.x4a42.volksempfaenger.receiver;
 
 import android.app.Activity;
 import android.app.DownloadManager;

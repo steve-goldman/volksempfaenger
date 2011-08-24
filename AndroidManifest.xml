@@ -52,22 +52,24 @@
             </intent-filter>
 		</activity>
 		
-		<service android:name=".data.CleanCacheService" />
-		<service android:name=".data.UpdateService" />
+		<service android:name=".service.CleanCacheService" />
+		<service android:name=".service.DownloadService" />
+		<service android:name=".service.UpdateService" />
 		
-        <receiver android:name=".data.BootCompletedReceiver">
+        <receiver android:name=".receiver.BootCompletedReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
-        <receiver android:name=".net.DownloadCompleteReceiver">
+        <receiver android:name=".receiver.DownloadCompleteReceiver">
         	<intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
 		</receiver>
     </application>
     
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>
