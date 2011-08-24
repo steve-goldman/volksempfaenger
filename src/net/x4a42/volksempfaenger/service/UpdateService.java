@@ -1,6 +1,9 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.service;
 
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper.Episode;
+import net.x4a42.volksempfaenger.data.DatabaseHelper.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
