@@ -18,4 +18,6 @@
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Test LogoDownloader" android:id="@+id/button_logodown"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:id="@+id/button_player" android:text="Player"
+		android:layout_width="match_parent" android:layout_height="wrap_content"></Button>
 </LinearLayout>

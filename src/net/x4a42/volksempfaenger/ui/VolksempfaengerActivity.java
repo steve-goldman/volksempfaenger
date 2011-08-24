@@ -38,6 +38,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonViewEpisode;
 	private Button buttonStartUpdate;
 	private Button buttonLogoDownloader;
+	private Button buttonPlayer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonViewEpisode = (Button) findViewById(R.id.button_viewepisode);
 		buttonStartUpdate = (Button) findViewById(R.id.button_startupdate);
 		buttonLogoDownloader = (Button) findViewById(R.id.button_logodown);
+		buttonPlayer = (Button) findViewById(R.id.button_player);
 
 		buttonSubscriptionList.setOnClickListener(this);
 		buttonListenQueue.setOnClickListener(this);
@@ -61,6 +63,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonViewEpisode.setOnClickListener(this);
 		buttonStartUpdate.setOnClickListener(this);
 		buttonLogoDownloader.setOnClickListener(this);
+		buttonPlayer.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -129,6 +132,10 @@ public class VolksempfaengerActivity extends BaseActivity implements
 				}
 
 			}.execute("http://upload.wikimedia.org/wikipedia/commons/3/3c/Podcastlogo.jpg");
+			return;
+		case R.id.button_player:
+			intent = new Intent(this, PlayerActivity.class);
+			startActivity(intent);
 			return;
 		}
 	}

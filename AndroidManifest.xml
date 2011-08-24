@@ -41,6 +41,9 @@
         	  android:name=".ui.ViewEpisodeActivity"
         	  android:label="@string/app_name" />
         <activity
+        	  android:name=".ui.PlayerActivity"
+        	  android:label="@string/app_name" />
+        <activity
         	  android:name=".ui.VolksempfaengerActivity"
         	  android:label="@string/app_name">
             <intent-filter>
