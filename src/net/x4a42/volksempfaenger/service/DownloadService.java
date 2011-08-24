@@ -1,7 +1,5 @@
 package net.x4a42.volksempfaenger.service;
 
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
@@ -25,6 +23,7 @@ public class DownloadService extends Service {
 	private VolksempfaengerApplication app;
 	private DatabaseHelper dbHelper;
 	private int phonePlugged;
+	private long[] extraId;
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
@@ -35,23 +34,6 @@ public class DownloadService extends Service {
 		protected Void doInBackground(Void... params) {
 
 			SharedPreferences prefs = app.getSharedPreferences();
-
-			if (!prefs
-					.getBoolean(
-							PreferenceKeys.DOWNLOAD_AUTO,
-							Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
-				// automatic downloading is disabled
-				return null;
-			}
-
-			if (phonePlugged == 0
-					&& prefs.getBoolean(
-							PreferenceKeys.DOWNLOAD_CHARGING,
-							Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
-				// downloading is only allowed while charging but phone is not
-				// plugged in
-				return null;
-			}
 
 			int networkAllowd = 0;
 
@@ -67,26 +49,53 @@ public class DownloadService extends Service {
 				networkAllowd |= NETWORK_MOBILE;
 			}
 
-			int networkType = 0;
+			if (extraId == null) {
+				// check if automatic downloads are allowed
 
-			// get network state
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			if (netInfo != null
-					&& netInfo.getState() == NetworkInfo.State.CONNECTED) {
-				switch (netInfo.getType()) {
-				case ConnectivityManager.TYPE_WIFI:
-					networkType = NETWORK_WIFI;
-					break;
-				case ConnectivityManager.TYPE_MOBILE:
-					networkType = NETWORK_MOBILE;
+				if (!prefs
+						.getBoolean(
+								PreferenceKeys.DOWNLOAD_AUTO,
+								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
+					// automatic downloading is disabled
+					return null;
 				}
+
+				if (phonePlugged == 0
+						&& prefs.getBoolean(
+								PreferenceKeys.DOWNLOAD_CHARGING,
+								Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
+					// downloading is only allowed while charging but phone is
+					// not plugged in
+					return null;
+				}
+
+				int networkType = 0;
+
+				// get network state
+				ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo netInfo = cm.getActiveNetworkInfo();
+				if (netInfo != null
+						&& netInfo.getState() == NetworkInfo.State.CONNECTED) {
+					switch (netInfo.getType()) {
+					case ConnectivityManager.TYPE_WIFI:
+						networkType = NETWORK_WIFI;
+						break;
+					case ConnectivityManager.TYPE_MOBILE:
+						networkType = NETWORK_MOBILE;
+						break;
+					}
+				}
+
+				if ((networkType & networkAllowd) == 0) {
+					// no allowed network connection
+					return null;
+				}
+
 			}
 
-			if ((networkType & networkAllowd) == 0) {
-				// no allowed network connection
-				return null;
-			}
+			// here we can finally start the downloads
+
+			// TODO
 
 			return null;
 
@@ -128,6 +137,11 @@ public class DownloadService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		Log.d(getClass().getSimpleName(), "onStartCommand()");
+
+		extraId = intent.getLongArrayExtra("id");
+		if (extraId != null && extraId.length == 0) {
+			extraId = null;
+		}
 
 		// we need to register this broadcast receiver to get the charging state
 		registerReceiver(new BatteryChangedReceiver(), new IntentFilter(
