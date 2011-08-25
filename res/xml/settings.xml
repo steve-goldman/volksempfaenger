@@ -14,6 +14,9 @@
 		<CheckBoxPreference android:key="download_charging"
 			android:title="@string/settings_download_charging" android:summary="@string/settings_summary_download_charging"
 			android:defaultValue="@string/settings_default_download_charging" />
+		<EditTextPreference android:key="download_concurrent"
+			android:title="@string/settings_download_concurrent" android:summary="@string/settings_summary_download_concurrent"
+			android:defaultValue="@string/settings_default_download_concurrent" />
 	</PreferenceScreen>
 	<PreferenceScreen android:title="@string/settings_storage"
 		android:summary="@string/settings_summary_storage">
