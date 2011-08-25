@@ -183,7 +183,7 @@ public class DownloadService extends Service {
 		@Override
 		protected void onPostExecute(Void result) {
 
-			stopSelf();
+			//stopSelf();
 
 		}
 
