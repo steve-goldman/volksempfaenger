@@ -142,4 +142,16 @@ public class Utils {
 		return str.equals("true") || str.equals("yes");
 	}
 
+	public static String filenameFromUrl(String url) {
+		int slashIndex = url.lastIndexOf("/");
+		String filename = null;
+		if (slashIndex != -1) {
+			filename = url.substring(slashIndex + 1);
+			if (filename.length() == 0) {
+				filename = null;
+			}
+		}
+		return filename;
+	}
+
 }

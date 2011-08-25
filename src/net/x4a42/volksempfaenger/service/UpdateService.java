@@ -146,15 +146,35 @@ public class UpdateService extends Service {
 									null, values);
 						} catch (SQLException e) {
 							if (e instanceof SQLiteConstraintException) {
-								db.update(
-										DatabaseHelper.Enclosure._TABLE,
-										values,
-										String.format(
-												"%s = ? AND %s = ?",
-												DatabaseHelper.Enclosure.EPISODE,
-												DatabaseHelper.Enclosure.URL),
-										new String[] { String.valueOf(itemId),
-												enclosure.getUrl() });
+								Cursor c = db
+										.query(DatabaseHelper.Enclosure._TABLE,
+												new String[] { DatabaseHelper.Enclosure.ID },
+												String.format(
+														"%s = ? AND %s = ?",
+														DatabaseHelper.Enclosure.EPISODE,
+														DatabaseHelper.Enclosure.URL),
+												new String[] {
+														String.valueOf(itemId),
+														enclosure.getUrl() },
+												null, null, null);
+								if (!c.moveToFirst()) {
+									continue;
+								}
+								long enclosureId = c
+										.getLong(c
+												.getColumnIndex(DatabaseHelper.Enclosure.ID));
+								String filename = Utils
+										.filenameFromUrl(enclosure.getUrl());
+								if (!Utils.getEnclosureFile(UpdateService.this,
+										enclosureId, filename).isFile()) {
+									db.update(
+											DatabaseHelper.Enclosure._TABLE,
+											values,
+											String.format("%s = ?",
+													DatabaseHelper.Enclosure.ID),
+											new String[] { String
+													.valueOf(enclosureId) });
+								}
 							} else {
 								Log.wtf(getClass().getSimpleName(), e);
 								continue;

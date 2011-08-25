@@ -38,14 +38,7 @@ public class EnclosureDownloader extends Downloader {
 	}
 
 	public long downloadEnclosure(long id, String url, CharSequence title) {
-		int slashIndex = url.lastIndexOf("/");
-		String filename = null;
-		if (slashIndex != -1) {
-			filename = url.substring(slashIndex + 1);
-			if (filename.length() == 0) {
-				filename = null;
-			}
-		}
+		String filename = Utils.filenameFromUrl(url);
 		File target = Utils.getEnclosureFile(getContext(), id, filename);
 		target.getParentFile().mkdirs();
 		Request request = new Request(Uri.parse(url));
