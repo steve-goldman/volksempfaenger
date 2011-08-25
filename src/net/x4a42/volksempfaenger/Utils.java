@@ -54,6 +54,10 @@ public class Utils {
 		return string.replaceAll("\\s+", " ");
 	}
 
+	public static String normalizeFilename(String filename) {
+		return filename.replaceAll("[^A-Za-z0-9-_\\.]+", "_");
+	}
+
 	public static File joinPath(File base, String... children) {
 		for (String child : children) {
 			base = new File(base, child);
@@ -75,12 +79,20 @@ public class Utils {
 				sha1.hash(url));
 	}
 
-	public static File getEnclosureFile(Context context, long enclosureId) {
+	public static File getEnclosureFile(Context context, long enclosureId,
+			String filename) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		String location = prefs.getString(PreferenceKeys.STORAGE_LOCATION,
 				VolksempfaengerApplication.getDefaultStorageLocation());
-		return new File(location, String.valueOf(enclosureId));
+		String fullFilename;
+		if (filename == null) {
+			fullFilename = String.valueOf(enclosureId);
+		} else {
+			fullFilename = new StringBuffer().append(enclosureId).append('_')
+					.append(normalizeFilename(filename)).toString();
+		}
+		return new File(location, fullFilename);
 	}
 
 	public static class sha1 {
@@ -129,4 +141,5 @@ public class Utils {
 	public static boolean stringBoolean(String str) {
 		return str.equals("true") || str.equals("yes");
 	}
+
 }

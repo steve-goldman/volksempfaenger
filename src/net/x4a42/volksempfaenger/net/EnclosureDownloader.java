@@ -7,10 +7,14 @@ import net.x4a42.volksempfaenger.Utils;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class EnclosureDownloader extends Downloader {
 
@@ -34,7 +38,15 @@ public class EnclosureDownloader extends Downloader {
 	}
 
 	public long downloadEnclosure(long id, String url, CharSequence title) {
-		File target = Utils.getEnclosureFile(getContext(), id);
+		int slashIndex = url.lastIndexOf("/");
+		String filename = null;
+		if (slashIndex != -1) {
+			filename = url.substring(slashIndex + 1);
+			if (filename.length() == 0) {
+				filename = null;
+			}
+		}
+		File target = Utils.getEnclosureFile(getContext(), id, filename);
 		target.getParentFile().mkdirs();
 		Request request = new Request(Uri.parse(url));
 		request.addRequestHeader("User-Agend", getUserAgent());
