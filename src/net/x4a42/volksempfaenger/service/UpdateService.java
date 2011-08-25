@@ -1,6 +1,9 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.service;
 
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.DatabaseHelper.Episode;
+import net.x4a42.volksempfaenger.data.DatabaseHelper.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
@@ -9,11 +12,13 @@ import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -40,8 +45,8 @@ public class UpdateService extends Service {
 				lastRun = System.currentTimeMillis();
 
 				cursor = dbHelper.getReadableDatabase().query(
-						DatabaseHelper.Podcast._TABLE, null, null, null, null, null,
-						null);
+						DatabaseHelper.Podcast._TABLE, null, null, null, null,
+						null, null);
 			} else {
 				cursor = dbHelper.getReadableDatabase().query(
 						DatabaseHelper.Podcast._TABLE,
@@ -97,8 +102,8 @@ public class UpdateService extends Service {
 
 					long itemId;
 					try {
-						itemId = db.insertOrThrow(DatabaseHelper.Episode._TABLE,
-								null, values);
+						itemId = db.insertOrThrow(
+								DatabaseHelper.Episode._TABLE, null, values);
 					} catch (SQLException e) {
 						if (e instanceof SQLiteConstraintException) {
 							Cursor c = db.query(DatabaseHelper.Episode._TABLE,
@@ -114,8 +119,9 @@ public class UpdateService extends Service {
 							}
 							itemId = c.getLong(c
 									.getColumnIndex(DatabaseHelper.Episode.ID));
-							db.update(DatabaseHelper.Episode._TABLE, values, String
-									.format("%s = ?", DatabaseHelper.Episode.ID),
+							db.update(DatabaseHelper.Episode._TABLE, values,
+									String.format("%s = ?",
+											DatabaseHelper.Episode.ID),
 									new String[] { String.valueOf(itemId) });
 						} else {
 							Log.wtf(getClass().getSimpleName(), e);
@@ -128,17 +134,23 @@ public class UpdateService extends Service {
 						values.put(DatabaseHelper.Enclosure.EPISODE, itemId);
 						values.put(DatabaseHelper.Enclosure.TITLE,
 								enclosure.getTitle());
-						values.put(DatabaseHelper.Enclosure.URL, enclosure.getUrl());
-						values.put(DatabaseHelper.Enclosure.MIME, enclosure.getMime());
-						values.put(DatabaseHelper.Enclosure.SIZE, enclosure.getSize());
+						values.put(DatabaseHelper.Enclosure.URL,
+								enclosure.getUrl());
+						values.put(DatabaseHelper.Enclosure.MIME,
+								enclosure.getMime());
+						values.put(DatabaseHelper.Enclosure.SIZE,
+								enclosure.getSize());
 
 						try {
-							db.insertOrThrow(DatabaseHelper.Enclosure._TABLE, null,
-									values);
+							db.insertOrThrow(DatabaseHelper.Enclosure._TABLE,
+									null, values);
 						} catch (SQLException e) {
 							if (e instanceof SQLiteConstraintException) {
-								db.update(DatabaseHelper.Enclosure._TABLE, values,
-										String.format("%s = ? AND %s = ?",
+								db.update(
+										DatabaseHelper.Enclosure._TABLE,
+										values,
+										String.format(
+												"%s = ? AND %s = ?",
 												DatabaseHelper.Enclosure.EPISODE,
 												DatabaseHelper.Enclosure.URL),
 										new String[] { String.valueOf(itemId),
@@ -179,9 +191,8 @@ public class UpdateService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
 		Long[] id = null;
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			long[] extraId = extras.getLongArray("id");
+		long[] extraId = intent.getLongArrayExtra("id");
+		if (extraId != null && extraId.length > 0) {
 			if (extraId.length != 0) {
 				id = new Long[extraId.length];
 				for (int i = 0; i < id.length; i++) {
@@ -190,7 +201,15 @@ public class UpdateService extends Service {
 			}
 		}
 
-		new UpdateTask().execute(id);
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		if (id == null && !cm.getBackgroundDataSetting()) {
+			// background data is disabled
+			stopSelf();
+		} else {
+			// start UpdateTask
+			new UpdateTask().execute(id);
+		}
 
 		return START_NOT_STICKY;
 

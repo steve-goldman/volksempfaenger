@@ -7,7 +7,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import android.content.Context;
-import android.os.Environment;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class Utils {
@@ -29,6 +30,20 @@ public class Utils {
 		}
 
 		return buf.toString();
+	}
+
+	public static String joinArray(long[] longs, CharSequence sep) {
+		if (longs == null) {
+			return null;
+		}
+
+		String[] objects = new String[longs.length];
+
+		for (int i = 0; i < longs.length; i++) {
+			objects[i] = String.valueOf(longs[i]);
+		}
+
+		return joinArray(objects, sep);
 	}
 
 	public static long toUnixTimestamp(Date date) {
@@ -58,6 +73,14 @@ public class Utils {
 	public static File getDescriptionImageFile(Context context, String url) {
 		return Utils.joinPath(context.getExternalCacheDir(), "images",
 				sha1.hash(url));
+	}
+
+	public static File getEnclosureFile(Context context, long enclosureId) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		String location = prefs.getString(PreferenceKeys.STORAGE_LOCATION,
+				VolksempfaengerApplication.getDefaultStorageLocation());
+		return new File(location, String.valueOf(enclosureId));
 	}
 
 	public static class sha1 {
@@ -101,5 +124,9 @@ public class Utils {
 			sha1hash = md.digest();
 			return convertToHex(sha1hash);
 		}
+	}
+
+	public static boolean stringBoolean(String str) {
+		return str.equals("true") || str.equals("yes");
 	}
 }

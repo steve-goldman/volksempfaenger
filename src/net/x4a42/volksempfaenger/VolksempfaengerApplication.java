@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger;
 
-import net.x4a42.volksempfaenger.data.CleanCacheService;
-import net.x4a42.volksempfaenger.data.UpdateService;
+import net.x4a42.volksempfaenger.service.CleanCacheService;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
