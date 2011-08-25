@@ -16,6 +16,10 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
@@ -23,6 +27,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	private CheckBoxPreference prefDownloadAuto;
 	private CheckBoxPreference prefDownloadWifi;
 	private CheckBoxPreference prefDownloadCharging;
+	private EditTextPreference prefDownloadConcurrent;
 	private EditTextPreference prefStorageLocation;
 	private Preference prefAboutVersion;
 	private Preference prefAboutWebsite;
@@ -47,6 +52,8 @@ public class SettingsActivity extends PreferenceActivity implements
 				.findPreference(PreferenceKeys.DOWNLOAD_WIFI);
 		prefDownloadCharging = (CheckBoxPreference) prefscreen
 				.findPreference(PreferenceKeys.DOWNLOAD_CHARGING);
+		prefDownloadConcurrent = (EditTextPreference) prefscreen
+				.findPreference(PreferenceKeys.DOWNLOAD_CONCURRENT);
 		prefStorageLocation = (EditTextPreference) prefscreen
 				.findPreference(PreferenceKeys.STORAGE_LOCATION);
 		prefAboutVersion = prefscreen
@@ -56,6 +63,11 @@ public class SettingsActivity extends PreferenceActivity implements
 		prefAboutWiki = prefscreen.findPreference(PreferenceKeys.ABOUT_WIKI);
 		prefAboutBugtracker = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_BUGTRACKER);
+
+		EditText prefDownloadConcurrentEditText = (EditText) prefDownloadConcurrent
+				.getEditText();
+		prefDownloadConcurrentEditText
+				.setInputType(InputType.TYPE_CLASS_NUMBER);
 
 		prefAboutVersion.setSummary(app.getVersionName());
 		prefAboutWebsite.setSummary(VolksempfaengerUrls.WEBSITE);
@@ -90,7 +102,8 @@ public class SettingsActivity extends PreferenceActivity implements
 
 		CharSequence storageLocation = prefStorageLocation.getText();
 		if (storageLocation == null) {
-			storageLocation = VolksempfaengerApplication.getDefaultStorageLocation();
+			storageLocation = VolksempfaengerApplication
+					.getDefaultStorageLocation();
 		}
 
 		prefDownloadInterval.setSummary(downloadInterval);

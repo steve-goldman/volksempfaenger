@@ -36,7 +36,7 @@ public class DownloadService extends Service {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			
+
 			Log.d(getClass().getSimpleName(), "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
@@ -63,7 +63,8 @@ public class DownloadService extends Service {
 								PreferenceKeys.DOWNLOAD_AUTO,
 								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
 					// automatic downloading is disabled
-					Log.d(getClass().getSimpleName(), "automatic downloading is disabled");
+					Log.d(getClass().getSimpleName(),
+							"automatic downloading is disabled");
 					return null;
 				}
 
@@ -84,7 +85,8 @@ public class DownloadService extends Service {
 
 				if (!cm.getBackgroundDataSetting()) {
 					// background data is disabled
-					Log.d(getClass().getSimpleName(), "background data is disabled");
+					Log.d(getClass().getSimpleName(),
+							"background data is disabled");
 					return null;
 				}
 
@@ -103,7 +105,8 @@ public class DownloadService extends Service {
 
 				if ((networkType & networkAllowd) == 0) {
 					// no allowed network connection
-					Log.d(getClass().getSimpleName(), "network type is not allowed");
+					Log.d(getClass().getSimpleName(),
+							"network type is not allowed");
 					return null;
 				}
 
@@ -133,18 +136,22 @@ public class DownloadService extends Service {
 								.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
 						null, null, null);
 			}
-			
-			Log.d(getClass().getSimpleName(), String.format("starting %d downloads", cursor.getCount()));
 
 			EnclosureDownloader ed = new EnclosureDownloader(
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
 					(networkAllowd & NETWORK_MOBILE) != 0);
 
+			int freeSlots = ed.getFreeDownloadSlots();
+
+			Log.d(getClass().getSimpleName(), String.format(
+					"starting downloads inQueue:%d freeSlots:%d", cursor.getCount(),
+					freeSlots));
+
 			Cursor c;
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.Enclosure.STATE,
 					DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED);
-			while (cursor.moveToNext()) {
+			while (cursor.moveToNext() && freeSlots-- > 0) {
 				long episodeId = cursor.getLong(cursor
 						.getColumnIndex(DatabaseHelper.Enclosure.EPISODE));
 				c = db.query(DatabaseHelper.Episode._TABLE, null,

@@ -2,14 +2,18 @@ package net.x4a42.volksempfaenger.net;
 
 import java.io.File;
 
+import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.Utils;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 
 public class EnclosureDownloader extends Downloader {
+
 	private DownloadManager dm;
 	private int allowedNetworks;
 
@@ -47,4 +51,29 @@ public class EnclosureDownloader extends Downloader {
 				| DownloadManager.STATUS_PAUSED);
 		return dm.query(query).getCount();
 	}
+
+	public int getMaxConcurrentDownloads() {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(getContext());
+		int m;
+		try {
+			m = Integer.valueOf(prefs.getString(
+					PreferenceKeys.DOWNLOAD_CONCURRENT, null));
+		} catch (NumberFormatException e) {
+			return 1;
+		}
+		if (m < 1) {
+			return 1;
+		}
+		return m;
+	}
+
+	public int getFreeDownloadSlots() {
+		int a = getMaxConcurrentDownloads() - getRunningDownloadCount();
+		if (a < 0) {
+			return 0;
+		}
+		return a;
+	}
+
 }
