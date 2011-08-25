@@ -12,8 +12,6 @@
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Test FeedParser" android:id="@+id/button_testfeed"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Test EnclosureDownloader" android:id="@+id/button_testencdl"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Start UpdateService" android:id="@+id/button_startupdate"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Start CleanCacheService" android:id="@+id/button_startclean"

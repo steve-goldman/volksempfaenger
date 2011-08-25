@@ -5,12 +5,16 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.net.EnclosureDownloader;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -32,6 +36,8 @@ public class DownloadService extends Service {
 
 		@Override
 		protected Void doInBackground(Void... params) {
+			
+			Log.d(getClass().getSimpleName(), "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
 
@@ -57,6 +63,7 @@ public class DownloadService extends Service {
 								PreferenceKeys.DOWNLOAD_AUTO,
 								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
 					// automatic downloading is disabled
+					Log.d(getClass().getSimpleName(), "automatic downloading is disabled");
 					return null;
 				}
 
@@ -66,6 +73,7 @@ public class DownloadService extends Service {
 								Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
 					// downloading is only allowed while charging but phone is
 					// not plugged in
+					Log.d(getClass().getSimpleName(), "phone is not plugged in");
 					return null;
 				}
 
@@ -76,6 +84,7 @@ public class DownloadService extends Service {
 
 				if (!cm.getBackgroundDataSetting()) {
 					// background data is disabled
+					Log.d(getClass().getSimpleName(), "background data is disabled");
 					return null;
 				}
 
@@ -94,6 +103,7 @@ public class DownloadService extends Service {
 
 				if ((networkType & networkAllowd) == 0) {
 					// no allowed network connection
+					Log.d(getClass().getSimpleName(), "network type is not allowed");
 					return null;
 				}
 
@@ -101,7 +111,63 @@ public class DownloadService extends Service {
 
 			// here we can finally start the downloads
 
-			// TODO
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			Cursor cursor;
+
+			if (extraId == null) {
+				cursor = db
+						.query(DatabaseHelper.Enclosure._TABLE,
+								null,
+								String.format("%s = ?",
+										DatabaseHelper.Enclosure.STATE),
+								new String[] { String
+										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
+								null, null, null);
+			} else {
+				cursor = db.query(DatabaseHelper.Enclosure._TABLE, null, String
+						.format("%s = ? AND %s in (%s)",
+								DatabaseHelper.Enclosure.STATE,
+								DatabaseHelper.Enclosure.ID,
+								Utils.joinArray(extraId, ",")),
+						new String[] { String
+								.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
+						null, null, null);
+			}
+			
+			Log.d(getClass().getSimpleName(), String.format("starting %d downloads", cursor.getCount()));
+
+			EnclosureDownloader ed = new EnclosureDownloader(
+					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
+					(networkAllowd & NETWORK_MOBILE) != 0);
+
+			Cursor c;
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.Enclosure.STATE,
+					DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED);
+			while (cursor.moveToNext()) {
+				long episodeId = cursor.getLong(cursor
+						.getColumnIndex(DatabaseHelper.Enclosure.EPISODE));
+				c = db.query(DatabaseHelper.Episode._TABLE, null,
+						String.format("%s = ?", DatabaseHelper.Episode.ID),
+						new String[] { String.valueOf(episodeId) }, null, null,
+						null);
+				String title = null;
+				if (c.moveToFirst()) {
+					title = c.getString(c
+							.getColumnIndex(DatabaseHelper.Episode.TITLE));
+				}
+				c.close();
+				long id = cursor.getLong(cursor
+						.getColumnIndex(DatabaseHelper.Enclosure.ID));
+				String url = cursor.getString(cursor
+						.getColumnIndex(DatabaseHelper.Enclosure.URL));
+				long downloadId = ed.downloadEnclosure(id, url, title);
+				values.put(DatabaseHelper.Enclosure.DOWNLOAD_ID, downloadId);
+				db.update(DatabaseHelper.Enclosure._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+						new String[] { String.valueOf(id) });
+			}
+			cursor.close();
 
 			return null;
 

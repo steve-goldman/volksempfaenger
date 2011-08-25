@@ -30,7 +30,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 	private Button buttonListenQueue;
 	private Button buttonDownloadQueue;
 	private Button buttonTestFeed;
-	private Button buttonTestEncdl;
 	private Button buttonViewEpisode;
 	private Button buttonStartUpdate;
 	private Button buttonStartClean;
@@ -46,7 +45,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonListenQueue = (Button) findViewById(R.id.button_listenqueue);
 		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadqueue);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
-		buttonTestEncdl = (Button) findViewById(R.id.button_testencdl);
 		buttonViewEpisode = (Button) findViewById(R.id.button_viewepisode);
 		buttonStartUpdate = (Button) findViewById(R.id.button_startupdate);
 		buttonStartClean = (Button) findViewById(R.id.button_startclean);
@@ -57,7 +55,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		buttonListenQueue.setOnClickListener(this);
 		buttonDownloadQueue.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
-		buttonTestEncdl.setOnClickListener(this);
 		buttonViewEpisode.setOnClickListener(this);
 		buttonStartUpdate.setOnClickListener(this);
 		buttonStartClean.setOnClickListener(this);
@@ -84,9 +81,6 @@ public class VolksempfaengerActivity extends BaseActivity implements
 		case R.id.button_testfeed:
 			Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 			testFeedParser();
-			return;
-		case R.id.button_testencdl:
-			testEnclosureDownloader();
 			return;
 		case R.id.button_viewepisode:
 			intent = new Intent(this, ViewEpisodeActivity.class);
@@ -180,13 +174,5 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void testEnclosureDownloader() {
-		String url = "http://upload.wikimedia.org/wikipedia/commons/3/3c/Podcastlogo.jpg";
-		EnclosureDownloader d = new EnclosureDownloader(this);
-		d.downloadEnclosure(url);
-		Toast.makeText(this, String.format("Queued %s", url),
-				Toast.LENGTH_SHORT).show();
 	}
 }
