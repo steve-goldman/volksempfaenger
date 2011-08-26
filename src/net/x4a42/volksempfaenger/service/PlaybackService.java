@@ -105,6 +105,15 @@ public class PlaybackService extends Service implements OnPreparedListener {
 			return 0;
 		}
 	}
+	
+	public void seekTo(int position) {
+		if(playerState == PlayerState.STARTED || playerState == PlayerState.PAUSED) {
+			player.seekTo(position);
+		}
+		else {
+			Log.e(TAG, "Unable to seek: player is neither playing nor 'paused'");
+		}
+	}
 
 	private void resetPlayer() {
 		player.release();

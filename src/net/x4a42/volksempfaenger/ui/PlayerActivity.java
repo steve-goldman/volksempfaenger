@@ -44,6 +44,9 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		textTime = (TextView) findViewById(R.id.text_time);
 
 		buttonPlay.setOnClickListener(this);
+		seekBar.setOnSeekBarChangeListener(this);
+		
+		seekBar.setEnabled(false);
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
@@ -91,22 +94,6 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 					}
 				}
 			}
-			/*
-			 * boolean prepared; if (prepared) { togglePlayPause(); } else {
-			 * prepared = true; mp = new MediaPlayer(); try {
-			 * mp.setDataSource("/mnt/sdcard/test.mp3"); } catch
-			 * (IllegalArgumentException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); } catch (IllegalStateException e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } catch }
-			 * (IOException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); } updateHandler = new Handler();
-			 * seekBar.setOnSeekBarChangeListener(this);
-			 * mp.setOnPreparedListener(new OnPreparedListener() {
-			 * 
-			 * public void onPrepared(MediaPlayer mp) {} }); mp.prepareAsync();
-			 * }
-			 */
-
 		}
 	}
 
@@ -122,23 +109,24 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		/*
-		 * if (fromUser) { updateHandler.removeCallbacks(updateSliderTask);
-		 * mp.seekTo(progress); updateTime();
-		 * updateHandler.post(updateSliderTask); }
-		 */
-
+		if (fromUser && startedPlaying) {
+			updateHandler.removeCallbacks(updateSliderTask);
+			service.seekTo(progress);
+			updateTime();
+			updateHandler.post(updateSliderTask);
+		}
 	}
 
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		// updateHandler.removeCallbacks(updateSliderTask);
+		updateHandler.removeCallbacks(updateSliderTask);
 	}
 
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
 	private void updateTime() {
-		textTime.setText(formatTime(service.getCurrentPosition()) + "/" + durationString);
+		textTime.setText(formatTime(service.getCurrentPosition()) + "/"
+				+ durationString);
 	}
 
 	private String formatTime(int milliseconds) {
@@ -165,6 +153,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		togglePlayPause();
 		durationString = formatTime(service.getDuration());
 		seekBar.setMax(service.getDuration());
+		seekBar.setEnabled(true);
 		updateHandler.post(updateSliderTask);
 	}
 }
