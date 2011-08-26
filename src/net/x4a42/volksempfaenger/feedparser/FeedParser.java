@@ -69,6 +69,7 @@ public class FeedParser {
 		private boolean skipMode = false;
 		private boolean xhtmlMode = false;
 		private boolean currentItemHasHtml = false;
+		private boolean hasITunesImage = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
 
@@ -115,6 +116,7 @@ public class FeedParser {
 				} else if(ns == Namespace.ITUNES && tag == Tag.ITUNES_IMAGE) {
 					if(parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED) {
 						feed.setImage(atts.getValue("href"));
+						hasITunesImage = true;
 					}
 				} else {
 					skipMode = true;
@@ -311,7 +313,7 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_ICON:
-				if (parents.peek() == Tag.ATOM_FEED) {
+				if (parents.peek() == Tag.ATOM_FEED && !hasITunesImage) {
 					feed.setImage(buffer.toString().trim());
 				}
 				break;
@@ -382,7 +384,7 @@ public class FeedParser {
 				}
 				break;
 			case RSS_URL:
-				if(parents.peek() == Tag.RSS_IMAGE) {
+				if(parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
 					Tag copy = parents.pop();
 					if(parents.peek() == Tag.RSS_CHANNEL) {
 						feed.setImage(buffer.toString().trim());
