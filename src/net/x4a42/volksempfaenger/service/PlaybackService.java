@@ -88,6 +88,24 @@ public class PlaybackService extends Service implements OnPreparedListener {
 		}
 	}
 
+	public int getDuration() {
+		if (playerState != PlayerState.IDLE) {
+			return player.getDuration();
+		} else {
+			Log.e(TAG, "No duration: player is 'idle'");
+			return 0;
+		}
+	}
+
+	public int getCurrentPosition() {
+		if (playerState != PlayerState.IDLE) {
+			return player.getCurrentPosition();
+		} else {
+			Log.e(TAG, "No position: player is 'idle'");
+			return 0;
+		}
+	}
+
 	private void resetPlayer() {
 		player.release();
 		player.reset();
