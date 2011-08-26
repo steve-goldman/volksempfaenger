@@ -10,23 +10,27 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-public class PlaybackService extends Service implements OnPreparedListener {
+public class PlaybackService extends Service implements OnPreparedListener,
+		OnAudioFocusChangeListener {
 	private final String TAG = getClass().getSimpleName();
 	private MediaPlayer player;
-	private OnPreparedListener customListener;
 	private Notification notification;
+	private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
 	}
 
 	private PlayerState playerState = PlayerState.IDLE;
+	private PlayerListener playerListener = new DefaultPlayerListener();
 
 	@Override
 	public void onCreate() {
@@ -54,7 +58,7 @@ public class PlaybackService extends Service implements OnPreparedListener {
 		}
 	}
 
-	public void playFile(String path, MediaPlayer.OnPreparedListener listener)
+	public void playFile(String path)
 			throws IllegalArgumentException, IOException {
 		if (playerState != PlayerState.IDLE) {
 			resetPlayer();
@@ -63,13 +67,16 @@ public class PlaybackService extends Service implements OnPreparedListener {
 		playerState = PlayerState.INITIALIZED;
 		playerState = PlayerState.PREPARING;
 		player.setOnPreparedListener(this);
-		customListener = listener;
 		player.prepareAsync();
 	}
 
 	public void play() {
 		if (playerState == PlayerState.PAUSED
 				|| playerState == PlayerState.PREPARED) {
+			audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
+					AudioManager.AUDIOFOCUS_GAIN);
+			// TODO maybe we should do something special when we can't get audio
+			// focus
 			player.start();
 			playerState = PlayerState.STARTED;
 		} else {
@@ -135,8 +142,63 @@ public class PlaybackService extends Service implements OnPreparedListener {
 		Intent notificationIntent = new Intent(this, PlayerActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(this, "Folgentitel", "Podcasttitel", pendingIntent);
+		notification.setLatestEventInfo(this, "Folgentitel", "Podcasttitel",
+				pendingIntent);
 		startForeground(1, notification);
-		customListener.onPrepared(null);
+		playerListener.onPlayerPrepared();
+	}
+
+	public void onAudioFocusChange(int focusChange) {
+		switch (focusChange) {
+		case AudioManager.AUDIOFOCUS_GAIN:
+            player.setVolume(1.0f, 1.0f);
+            break;
+		case AudioManager.AUDIOFOCUS_LOSS:
+			if (player.isPlaying()) {
+				// TODO save current position 
+				player.stop();
+				// TODO notify activity
+			}
+			resetPlayer();
+			break;
+
+		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+			if (player.isPlaying()) {
+				player.pause();
+				// TODO notify activity
+			}
+			break;
+
+		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+			if (player.isPlaying()) {
+				player.setVolume(0.1f, 0.1f);
+			}
+			break;
+		}
+	}
+	
+	public void setPlayerListener(PlayerListener listener) {
+		playerListener = listener;
+	}
+	
+	public interface PlayerListener {
+		public void onPlayerPaused();
+		public void onPlayerStopped();
+		public void onPlayerPrepared();
+	}
+	
+	private class DefaultPlayerListener implements PlayerListener {
+		public void onPlayerPaused() {
+			Log.d(TAG, "No PlayerListener set");
+		}
+
+		public void onPlayerStopped() {
+			Log.d(TAG, "No PlayerListener set");
+		}
+
+		public void onPlayerPrepared() {
+			Log.d(TAG, "No PlayerListener set");
+		}
+		
 	}
 }

@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class PlayerActivity extends BaseActivity implements OnClickListener,
-		OnSeekBarChangeListener, ServiceConnection, OnPreparedListener {
+		OnSeekBarChangeListener, ServiceConnection, PlayerListener {
 	private SeekBar seekBar;
 	private TextView textDuration;
 	private TextView textPosition;
@@ -97,7 +98,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 					togglePlayPause();
 				} else {
 					try {
-						service.playFile("/mnt/sdcard/test.mp3", this);
+						service.playFile("/mnt/sdcard/test.mp3");
 						startedPlaying = true;
 					} catch (IllegalArgumentException e) {
 						// TODO Auto-generated catch block
@@ -195,6 +196,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		service = ((PlaybackBinder) binder).getService();
+		service.setPlayerListener(this);
 		if(service.isPlaying()) {
 			setPlaying();
 		}
@@ -206,7 +208,22 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		bound = false;
 	}
 
-	public void onPrepared(MediaPlayer actuallyNull) {
+	public void onPlayerPaused() {
+		setButtonPlay();
+	}
+
+	public void onPlayerStopped() {
+		// TODO clean up
+		setButtonPlay();
+		seekBar.setEnabled(false);
+		buttonBack.setEnabled(false);
+		buttonForward.setEnabled(false);
+		
+		textPosition.setText("00:00:00");
+		textDuration.setText("00:00:00");
+	}
+
+	public void onPlayerPrepared() {
 		service.play();
 		setPlaying();
 	}
