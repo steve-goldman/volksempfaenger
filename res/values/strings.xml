@@ -4,6 +4,7 @@
 	<string name="app_name_ascii">Volksempfaenger</string>
 	<string name="title_add_subscription">Add Subscription</string>
 	<string name="title_delete_subscription">Are you sure?</string>
+	<string name="title_downloads">Downloads</string>
 	<string name="title_subscription_list">Volksempfänger Subscriptions</string>
 	<string name="title_settings">Volksempfänger Settings</string>
 	<string name="description_add_subscription">Enter the URL of the podcast feed in order to subscribe to it</string>
@@ -36,6 +37,7 @@
 	<string name="message_podcast_feed_download_failed">Unable to download podcast</string>
 	<string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
 	<string name="message_podcast_feed_io_exception">IOException</string>
+	<string name="message_no_downloads">No active downloads</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>

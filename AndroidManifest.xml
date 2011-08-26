@@ -19,7 +19,7 @@
 		<activity android:name=".ui.DeleteSubscriptionActivity"
 			android:label="@string/title_delete_subscription" android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".ui.DownloadListActivity"
-			android:label="@string/app_name" />
+			android:label="@string/title_downloads" />
 		<activity android:name=".ui.EditSubscriptionActivity"
 			android:label="@string/app_name" android:windowSoftInputMode="adjustResize" />
 		<activity android:name=".ui.ListenQueueActivity"
@@ -31,7 +31,8 @@
 			android:label="@string/app_name" />
 		<activity android:name=".ui.ViewEpisodeActivity"
 			android:label="@string/app_name" />
-		<activity android:name=".ui.PlayerActivity" android:label="@string/app_name" android:launchMode="singleTop" />
+		<activity android:name=".ui.PlayerActivity" android:label="@string/app_name"
+			android:launchMode="singleTop" />
 		<activity android:name=".ui.VolksempfaengerActivity"
 			android:label="@string/app_name">
 			<intent-filter>
