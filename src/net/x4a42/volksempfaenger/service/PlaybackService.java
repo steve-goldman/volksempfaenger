@@ -3,7 +3,7 @@ package net.x4a42.volksempfaenger.service;
 import java.io.IOException;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.ui.PlayerActivity;
+import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -146,7 +146,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		playerState = PlayerState.PREPARED;
 		notification = new Notification(R.drawable.icon, "Folgentitel",
 				System.currentTimeMillis());
-		Intent notificationIntent = new Intent(this, PlayerActivity.class);
+		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(this, "Folgentitel", "Podcasttitel",
