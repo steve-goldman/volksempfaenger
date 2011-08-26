@@ -51,7 +51,7 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		setContentView(R.layout.view_subscription);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -59,8 +59,9 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.Episode._TABLE,
-				null, String.format("%s = ?", DatabaseHelper.Episode.PODCAST),
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.Episode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.Episode.PODCAST),
 				new String[] { String.valueOf(id) }, null, null,
 				String.format("%s DESC", DatabaseHelper.Episode.DATE));
 		startManagingCursor(cursor);
@@ -103,13 +104,6 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		// Update episode list
 		cursor.requery();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		dbHelper.close();
 	}
 
 	@Override

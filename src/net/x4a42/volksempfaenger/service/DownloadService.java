@@ -144,8 +144,8 @@ public class DownloadService extends Service {
 			int freeSlots = ed.getFreeDownloadSlots();
 
 			Log.d(getClass().getSimpleName(), String.format(
-					"starting downloads inQueue:%d freeSlots:%d", cursor.getCount(),
-					freeSlots));
+					"starting downloads inQueue:%d freeSlots:%d",
+					cursor.getCount(), freeSlots));
 
 			Cursor c;
 			ContentValues values = new ContentValues();
@@ -208,7 +208,7 @@ public class DownloadService extends Service {
 		super.onCreate();
 
 		app = (VolksempfaengerApplication) getApplication();
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 	}
 
@@ -234,14 +234,6 @@ public class DownloadService extends Service {
 	public IBinder onBind(Intent intent) {
 
 		return null;
-
-	}
-
-	@Override
-	public void onDestroy() {
-
-		super.onDestroy();
-		dbHelper.close();
 
 	}
 

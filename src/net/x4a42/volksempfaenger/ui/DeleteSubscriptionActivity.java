@@ -37,7 +37,7 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 			return;
 		}
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		setContentView(R.layout.delete_subscription);
 
@@ -71,13 +71,6 @@ public class DeleteSubscriptionActivity extends BaseActivity implements
 				c.getString(c.getColumnIndex(DatabaseHelper.Podcast.TITLE))));
 		buttonOk.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		dbHelper.close();
 	}
 
 	public void onClick(View v) {

@@ -204,7 +204,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public void onCreate() {
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 	}
 
 	@Override
@@ -238,11 +238,6 @@ public class UpdateService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
-	}
-
-	@Override
-	public void onDestroy() {
-		dbHelper.close();
 	}
 
 	public static long getLastRun() {
