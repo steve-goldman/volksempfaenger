@@ -23,7 +23,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private final String TAG = getClass().getSimpleName();
 	private MediaPlayer player;
 	private Notification notification;
-	private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+	private AudioManager audioManager;
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
@@ -36,6 +36,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	public void onCreate() {
 		super.onCreate();
 		player = new MediaPlayer();
+		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 	}
 
 	public class PlaybackBinder extends Binder {
