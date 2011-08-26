@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.service.PlaybackService;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -16,14 +23,15 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class PlayerActivity extends BaseActivity implements OnClickListener,
-		OnSeekBarChangeListener {
+		OnSeekBarChangeListener, ServiceConnection, OnPreparedListener {
 	private MediaPlayer mp;
 	private SeekBar seekBar;
 	private TextView textTime;
 	private String durationString;
 	private ImageButton buttonPlay;
-	boolean isPlaying = false;
-	boolean prepared = false;
+	private boolean bound = false;
+	private PlaybackService service;
+	private boolean startedPlaying = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,104 +43,92 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		textTime = (TextView) findViewById(R.id.text_time);
 
 		buttonPlay.setOnClickListener(this);
-	}
-	
-	@Override
-	public void onPause() {
-		super.onResume();
-		if(updateHandler != null) {
-			updateHandler.removeCallbacks(updateSliderTask);
-		}
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		if(updateHandler != null) {
-			updateHandler.post(updateSliderTask);
-		}
+
+		Intent intent = new Intent(this, PlaybackService.class);
+		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
-	private Handler updateHandler;
-
-	private Runnable updateSliderTask = new Runnable() {
-		public void run() {
-			seekBar.setProgress(mp.getCurrentPosition());
-			updateHandler.postDelayed(this, 500);
-			updateTime();
-		}
-	};
-
+	/*
+	 * @Override public void onPause() { super.onResume(); if(updateHandler !=
+	 * null) { updateHandler.removeCallbacks(updateSliderTask); } }
+	 * 
+	 * @Override public void onResume() { super.onResume(); if(updateHandler !=
+	 * null) { updateHandler.post(updateSliderTask); } }
+	 * 
+	 * private Handler updateHandler;
+	 * 
+	 * private Runnable updateSliderTask = new Runnable() { public void run() {
+	 * seekBar.setProgress(mp.getCurrentPosition());
+	 * updateHandler.postDelayed(this, 500); updateTime(); } };
+	 */
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button_play:
-			if (prepared) {
-				togglePlayPause();
-			} else {
-				prepared = true;
-				mp = new MediaPlayer();
-				try {
-					mp.setDataSource("/mnt/sdcard/test.mp3");
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				updateHandler = new Handler();
-				seekBar.setOnSeekBarChangeListener(this);
-				mp.setOnPreparedListener(new OnPreparedListener() {
-
-					public void onPrepared(MediaPlayer mp) {
-						mp.start();
-						togglePlayPause();
-						durationString = formatTime(mp.getDuration());
-						seekBar.setMax(mp.getDuration());
-						updateHandler.post(updateSliderTask);
+			if (bound) {
+				if (startedPlaying) {
+					togglePlayPause();
+				} else {
+					try {
+						service.playFile("/mnt/sdcard/test.mp3", this);
+						startedPlaying = true;
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				});
-				mp.prepareAsync();
+				}
 			}
+			/*
+			 * boolean prepared; if (prepared) { togglePlayPause(); } else {
+			 * prepared = true; mp = new MediaPlayer(); try {
+			 * mp.setDataSource("/mnt/sdcard/test.mp3"); } catch
+			 * (IllegalArgumentException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); } catch (IllegalStateException e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } catch }
+			 * (IOException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); } updateHandler = new Handler();
+			 * seekBar.setOnSeekBarChangeListener(this);
+			 * mp.setOnPreparedListener(new OnPreparedListener() {
+			 * 
+			 * public void onPrepared(MediaPlayer mp) {} }); mp.prepareAsync();
+			 * }
+			 */
+
 		}
 	}
 
 	private void togglePlayPause() {
-		if (isPlaying) {
+		if (service.isPlaying()) {
 			buttonPlay.setImageResource(android.R.drawable.ic_media_play);
-			mp.pause();
+			service.pause();
 		} else {
 			buttonPlay.setImageResource(android.R.drawable.ic_media_pause);
-			mp.start();
+			service.play();
 		}
-		buttonPlay.invalidate();
-		isPlaying = !isPlaying;
 	}
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		if (fromUser) {
-			updateHandler.removeCallbacks(updateSliderTask);
-			mp.seekTo(progress);
-			updateTime();
-			updateHandler.post(updateSliderTask);
-		}
+		/*
+		 * if (fromUser) { updateHandler.removeCallbacks(updateSliderTask);
+		 * mp.seekTo(progress); updateTime();
+		 * updateHandler.post(updateSliderTask); }
+		 */
 
 	}
 
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		updateHandler.removeCallbacks(updateSliderTask);
+		// updateHandler.removeCallbacks(updateSliderTask);
 	}
 
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
 	private void updateTime() {
-		textTime.setText(formatTime(mp.getCurrentPosition()) + "/"
-				+ durationString);
+		// textTime.setText(formatTime(mp.getCurrentPosition()) + "/"
+		// + durationString);
 	}
 
 	private String formatTime(int milliseconds) {
@@ -143,5 +139,22 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		DecimalFormat format = new DecimalFormat("00");
 		return format.format(hours) + ":" + format.format(minutes) + ":"
 				+ format.format(seconds2);
+	}
+
+	public void onServiceConnected(ComponentName name, IBinder binder) {
+		service = ((PlaybackBinder) binder).getService();
+		bound = true;
+	}
+
+	public void onServiceDisconnected(ComponentName name) {
+		Log.e(TAG, "Service disconnected");
+		bound = false;
+	}
+
+	public void onPrepared(MediaPlayer actuallyNull) {
+		togglePlayPause();
+		// durationString = formatTime(service.getDuration());
+		// seekBar.setMax(mp.getDuration());
+		// updateHandler.post(updateSliderTask);
 	}
 }
