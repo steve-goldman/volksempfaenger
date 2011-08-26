@@ -69,8 +69,6 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 
 					break;
 				case DownloadManager.STATUS_FAILED:
-					values.put(DatabaseHelper.Enclosure.DOWNLOAD_ID,
-							(Long) null);
 					values.put(DatabaseHelper.Enclosure.STATE,
 							DatabaseHelper.Enclosure.STATE_NEW);
 					break;
