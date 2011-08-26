@@ -4,7 +4,7 @@ import net.x4a42.volksempfaenger.R;
 import android.os.Bundle;
 import android.util.Log;
 
-public class DownloadQueueActivity extends BaseActivity {
+public class DownloadListActivity extends BaseActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
