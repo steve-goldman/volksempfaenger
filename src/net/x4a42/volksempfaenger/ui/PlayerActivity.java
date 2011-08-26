@@ -28,7 +28,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 	private SeekBar seekBar;
 	private TextView textDuration;
 	private TextView textPosition;
-	private ImageButton buttonPlay;
+	private ImageButton buttonPlay, buttonBack, buttonForward;
 	private boolean bound = false;
 	private PlaybackService service;
 	private boolean startedPlaying = false;
@@ -41,13 +41,19 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 		seekBar = (SeekBar) findViewById(R.id.seekBar1);
 		buttonPlay = (ImageButton) findViewById(R.id.button_play);
+		buttonBack = (ImageButton) findViewById(R.id.button_back);
+		buttonForward = (ImageButton) findViewById(R.id.button_forward);
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
-
-		buttonPlay.setOnClickListener(this);
-		seekBar.setOnSeekBarChangeListener(this);
 		
 		seekBar.setEnabled(false);
+		buttonBack.setEnabled(false);
+		buttonForward.setEnabled(false);
+
+		buttonPlay.setOnClickListener(this);
+		buttonBack.setOnClickListener(this);
+		buttonForward.setOnClickListener(this);
+		seekBar.setOnSeekBarChangeListener(this);
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
@@ -102,6 +108,26 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 					}
 				}
 			}
+			break;
+		case R.id.button_back:
+			if(bound) {
+				int newPosition = service.getCurrentPosition() - 30000;
+				if(newPosition < 0) {
+					newPosition = 0;
+				}
+				service.seekTo(newPosition);
+			}
+			break;
+		case R.id.button_forward:
+			if(bound) {
+				int newPosition = service.getCurrentPosition() + 30000;
+				int duration = service.getDuration();
+				if(newPosition > duration) {
+					newPosition = duration - 1000;
+				}
+				service.seekTo(newPosition);
+			}
+			break;
 		}
 	}
 
@@ -122,6 +148,8 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		textDuration.setText(formatTime(service.getDuration()));
 		seekBar.setMax(service.getDuration());
 		seekBar.setEnabled(true);
+		buttonBack.setEnabled(true);
+		buttonForward.setEnabled(true);
 		updateHandler.removeCallbacks(updateSliderTask);
 		updateHandler.post(updateSliderTask);
 	}
