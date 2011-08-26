@@ -2,7 +2,13 @@ package net.x4a42.volksempfaenger.service;
 
 import java.io.IOException;
 
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.PlayerActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -14,6 +20,7 @@ public class PlaybackService extends Service implements OnPreparedListener {
 	private final String TAG = getClass().getSimpleName();
 	private MediaPlayer player;
 	private OnPreparedListener customListener;
+	private Notification notification;
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
@@ -105,12 +112,12 @@ public class PlaybackService extends Service implements OnPreparedListener {
 			return 0;
 		}
 	}
-	
+
 	public void seekTo(int position) {
-		if(playerState == PlayerState.STARTED || playerState == PlayerState.PAUSED) {
+		if (playerState == PlayerState.STARTED
+				|| playerState == PlayerState.PAUSED) {
 			player.seekTo(position);
-		}
-		else {
+		} else {
 			Log.e(TAG, "Unable to seek: player is neither playing nor 'paused'");
 		}
 	}
@@ -123,6 +130,13 @@ public class PlaybackService extends Service implements OnPreparedListener {
 
 	public void onPrepared(MediaPlayer mp) {
 		playerState = PlayerState.PREPARED;
+		notification = new Notification(R.drawable.icon, "Folgentitel",
+				System.currentTimeMillis());
+		Intent notificationIntent = new Intent(this, PlayerActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
+		notification.setLatestEventInfo(this, "Folgentitel", "Podcasttitel", pendingIntent);
+		startForeground(1, notification);
 		customListener.onPrepared(null);
 	}
 }
