@@ -75,7 +75,7 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			startActivity(intent);
 			return;
 		case R.id.button_downloadqueue:
-			intent = new Intent(this, DownloadQueueActivity.class);
+			intent = new Intent(this, DownloadListActivity.class);
 			startActivity(intent);
 			return;
 		case R.id.button_testfeed:
