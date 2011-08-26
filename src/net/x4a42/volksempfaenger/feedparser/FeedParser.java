@@ -50,7 +50,7 @@ public class FeedParser {
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE, ITUNES_SUMMARY
 		}
 
 		private static enum AtomRel {
@@ -69,6 +69,7 @@ public class FeedParser {
 		private boolean skipMode = false;
 		private boolean xhtmlMode = false;
 		private boolean currentItemHasHtml = false;
+		private boolean currentItemHasITunesSummary = false;
 		private boolean hasITunesImage = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
@@ -113,11 +114,8 @@ public class FeedParser {
 					onStartTagRss(tag, atts);
 				} else if (ns == Namespace.XHTML && xhtmlMode) {
 					onStartTagXHtml(localName, atts);
-				} else if(ns == Namespace.ITUNES && tag == Tag.ITUNES_IMAGE) {
-					if(parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED) {
-						feed.setImage(atts.getValue("href"));
-						hasITunesImage = true;
-					}
+				} else if (ns == Namespace.ITUNES) {
+					onStartTagITunes(tag, atts);
 				} else {
 					skipMode = true;
 					skipDepth = 0;
@@ -163,6 +161,8 @@ public class FeedParser {
 					onEndTagRss(tag);
 				} else if (ns == Namespace.XHTML && xhtmlMode) {
 					onEndTagXHtml(localName);
+				} else if (ns == Namespace.ITUNES) {
+					onEndTagITunes(tag);
 				}
 				if (tag != Tag.UNKNOWN) {
 					// clear buffer
@@ -176,6 +176,7 @@ public class FeedParser {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
+				currentItemHasITunesSummary = false;
 				break;
 			case ATOM_CONTENT:
 				if (atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
@@ -234,6 +235,7 @@ public class FeedParser {
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
 				currentItemHasHtml = false;
+				currentItemHasITunesSummary = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
@@ -266,6 +268,14 @@ public class FeedParser {
 			buffer.append(">");
 		}
 
+		private void onStartTagITunes(Tag tag, Attributes atts) {
+			if (tag == Tag.ITUNES_IMAGE
+					&& (parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED)) {
+				feed.setImage(atts.getValue("href"));
+				hasITunesImage = true;
+			}
+		}
+
 		private void onEndTagAtom(Tag tag) {
 			switch (tag) {
 			case ATOM_TITLE:
@@ -281,7 +291,8 @@ public class FeedParser {
 				if (xhtmlMode) {
 					xhtmlMode = false;
 				}
-				if (parents.peek() == Tag.ATOM_ENTRY) {
+				if (parents.peek() == Tag.ATOM_ENTRY
+						&& !currentItemHasITunesSummary) {
 					feedItem.setDescription(buffer.toString().trim());
 				}
 				break;
@@ -349,7 +360,7 @@ public class FeedParser {
 				}
 				break;
 			case RSS_DESCRIPTION:
-				if (!currentItemHasHtml) {
+				if (!currentItemHasHtml && !currentItemHasITunesSummary) {
 					switch (parents.peek()) {
 					case RSS_ITEM:
 						feedItem.setDescription(buffer.toString().trim());
@@ -361,14 +372,16 @@ public class FeedParser {
 				}
 				break;
 			case RSS_CONTENT_ENCODED:
-				currentItemHasHtml = true;
-				switch (parents.peek()) {
-				case RSS_ITEM:
-					feedItem.setDescription(buffer.toString().trim());
-					break;
-				case RSS_CHANNEL:
-					feed.setDescription(buffer.toString().trim());
-					break;
+				if (!currentItemHasITunesSummary) {
+					currentItemHasHtml = true;
+					switch (parents.peek()) {
+					case RSS_ITEM:
+						feedItem.setDescription(buffer.toString().trim());
+						break;
+					case RSS_CHANNEL:
+						feed.setDescription(buffer.toString().trim());
+						break;
+					}
 				}
 				break;
 			case RSS_ITEM:
@@ -384,9 +397,9 @@ public class FeedParser {
 				}
 				break;
 			case RSS_URL:
-				if(parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
+				if (parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
 					Tag copy = parents.pop();
-					if(parents.peek() == Tag.RSS_CHANNEL) {
+					if (parents.peek() == Tag.RSS_CHANNEL) {
 						feed.setImage(buffer.toString().trim());
 					}
 					parents.push(copy);
@@ -399,6 +412,14 @@ public class FeedParser {
 			buffer.append("</");
 			buffer.append(name);
 			buffer.append(">");
+		}
+
+		private void onEndTagITunes(Tag tag) {
+			if (tag == Tag.ITUNES_SUMMARY
+					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)) {
+				currentItemHasITunesSummary = true;
+				feedItem.setDescription(buffer.toString().trim().replaceAll("\n", "<br />"));
+			}
 		}
 
 		private Date parseAtomDate(String datestring)
@@ -518,7 +539,8 @@ public class FeedParser {
 			temp.put("http://purl.org/rss/1.0/modules/content/",
 					Namespace.RSS_CONTENT);
 			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd", Namespace.ITUNES);
+			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
+					Namespace.ITUNES);
 			temp.put("", Namespace.NONE);
 			nsTable = Collections.unmodifiableMap(temp);
 		}
@@ -534,6 +556,7 @@ public class FeedParser {
 
 		static final Map<String, Tag> atomTable;
 		static final Map<String, Tag> rssTable;
+		static final Map<String, Tag> itunesTable;
 		static {
 			Map<String, Tag> temp = new HashMap<String, Tag>();
 			temp.put("feed", Tag.ATOM_FEED);
@@ -564,6 +587,13 @@ public class FeedParser {
 			rssTable = Collections.unmodifiableMap(temp);
 		}
 
+		static {
+			Map<String, Tag> temp = new HashMap<String, Tag>();
+			temp.put("image", Tag.ITUNES_IMAGE);
+			temp.put("summary", Tag.ITUNES_SUMMARY);
+			itunesTable = Collections.unmodifiableMap(temp);
+		}
+
 		private static Tag getTag(Namespace ns, String tagString) {
 			Tag tag = null;
 			if (ns == Namespace.ATOM) {
@@ -574,11 +604,8 @@ public class FeedParser {
 				if (tagString.equals("encoded")) {
 					tag = Tag.RSS_CONTENT_ENCODED;
 				}
-			}
-			else if (ns == Namespace.ITUNES) {
-				if(tagString.equals("image")) {
-					tag = Tag.ITUNES_IMAGE;
-				}
+			} else if (ns == Namespace.ITUNES) {
+				tag = itunesTable.get(tagString);
 			}
 
 			if (tag == null) {
