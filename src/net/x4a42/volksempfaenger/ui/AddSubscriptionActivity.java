@@ -99,7 +99,7 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			// Open database
-			DatabaseHelper dbHelper = new DatabaseHelper(AddSubscriptionActivity.this);
+			DatabaseHelper dbHelper = DatabaseHelper.getInstance(AddSubscriptionActivity.this);
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 			ContentValues values = new ContentValues();
@@ -138,8 +138,6 @@ public class AddSubscriptionActivity extends BaseActivity implements
 					// Some terrible failure happended
 					Log.wtf(getClass().getName(), e);
 				}
-			} finally {
-				dbHelper.close();
 			}
 			return null;
 		}

@@ -54,7 +54,7 @@ public class ViewEpisodeActivity extends BaseActivity {
 
 		setContentView(R.layout.view_episode);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);

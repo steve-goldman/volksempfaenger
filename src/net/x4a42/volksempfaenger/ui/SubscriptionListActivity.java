@@ -34,7 +34,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscription_list);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
 		subscriptionList
@@ -56,13 +56,6 @@ public class SubscriptionListActivity extends BaseActivity implements
 		super.onResume();
 
 		cursor.requery();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		dbHelper.close();
 	}
 
 	@Override

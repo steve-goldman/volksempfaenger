@@ -28,7 +28,7 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 	public DownloadListAdapter(Context context, Cursor cursor) {
 
 		super(context, R.layout.download_list_row, cursor, from, to);
-		dbHelper = new DatabaseHelper(context);
+		dbHelper = DatabaseHelper.getInstance(context);
 		onContentChanged();
 
 	}
@@ -113,15 +113,6 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 		}
 
 		c.close();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			dbHelper.close();
-		} finally {
-			super.finalize();
-		}
 	}
 
 }

@@ -38,7 +38,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 				// c.getString(i)));
 				// }
 
-				DatabaseHelper dbHelper = new DatabaseHelper(context);
+				DatabaseHelper dbHelper = DatabaseHelper.getInstance(context);
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
 				ContentValues values = new ContentValues();
 
