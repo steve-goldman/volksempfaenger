@@ -38,6 +38,7 @@
 	<string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
 	<string name="message_podcast_feed_io_exception">IOException</string>
 	<string name="message_no_downloads">No active downloads</string>
+	<string name="message_no_subscriptions">No subscriptions</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>

@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_height="match_parent"
 	android:layout_width="match_parent">
-	<ListView android:layout_height="match_parent"
-		android:layout_width="match_parent" android:id="@+id/subscription_list" />
+	<ListView android:id="@+id/subscription_list"
+		android:layout_height="match_parent" android:layout_width="match_parent" />
+	<TextView android:id="@+id/subscription_list_empty" style="@style/emptyListView"
+		android:text="@string/message_no_subscriptions" />
 </LinearLayout>
