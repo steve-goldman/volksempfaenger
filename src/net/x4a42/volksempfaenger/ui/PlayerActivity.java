@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +25,6 @@ import android.widget.TextView;
 
 public class PlayerActivity extends BaseActivity implements OnClickListener,
 		OnSeekBarChangeListener, ServiceConnection, OnPreparedListener {
-	private MediaPlayer mp;
 	private SeekBar seekBar;
 	private TextView textTime;
 	private String durationString;
@@ -32,6 +32,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 	private boolean bound = false;
 	private PlaybackService service;
 	private boolean startedPlaying = false;
+	private Handler updateHandler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,21 +47,31 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		updateHandler = new Handler();
 	}
 
-	/*
-	 * @Override public void onPause() { super.onResume(); if(updateHandler !=
-	 * null) { updateHandler.removeCallbacks(updateSliderTask); } }
-	 * 
-	 * @Override public void onResume() { super.onResume(); if(updateHandler !=
-	 * null) { updateHandler.post(updateSliderTask); } }
-	 * 
-	 * private Handler updateHandler;
-	 * 
-	 * private Runnable updateSliderTask = new Runnable() { public void run() {
-	 * seekBar.setProgress(mp.getCurrentPosition());
-	 * updateHandler.postDelayed(this, 500); updateTime(); } };
-	 */
+	@Override
+	public void onPause() {
+		super.onResume();
+		updateHandler.removeCallbacks(updateSliderTask);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (service != null && service.isPlaying()) {
+			updateHandler.post(updateSliderTask);
+		}
+	}
+
+	private Runnable updateSliderTask = new Runnable() {
+		public void run() {
+			seekBar.setProgress(service.getCurrentPosition());
+			updateHandler.postDelayed(this, 500);
+			updateTime();
+		}
+	};
+
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button_play:
@@ -127,8 +138,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void updateTime() {
-		// textTime.setText(formatTime(mp.getCurrentPosition()) + "/"
-		// + durationString);
+		textTime.setText(formatTime(service.getCurrentPosition()) + "/" + durationString);
 	}
 
 	private String formatTime(int milliseconds) {
@@ -153,8 +163,8 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	public void onPrepared(MediaPlayer actuallyNull) {
 		togglePlayPause();
-		// durationString = formatTime(service.getDuration());
-		// seekBar.setMax(mp.getDuration());
-		// updateHandler.post(updateSliderTask);
+		durationString = formatTime(service.getDuration());
+		seekBar.setMax(service.getDuration());
+		updateHandler.post(updateSliderTask);
 	}
 }
