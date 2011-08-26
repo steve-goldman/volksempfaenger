@@ -1,13 +1,51 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.DownloadListAdapter;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ListView;
 
 public class DownloadListActivity extends BaseActivity {
+	private Cursor cursor;
+	private ListView downloadList;
+	private DownloadListAdapter adapter;
+	private DownloadManager dm;
+
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.download_list);
+
+		downloadList = (ListView) findViewById(R.id.download_list);
+
+		dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+		Query downloadQuery = new DownloadManager.Query();
+		downloadQuery
+				.setFilterByStatus(DownloadManager.STATUS_PENDING
+						| DownloadManager.STATUS_RUNNING
+						| DownloadManager.STATUS_PAUSED
+						| DownloadManager.STATUS_FAILED);
+		cursor = dm.query(downloadQuery);
+		startManagingCursor(cursor);
+
+		adapter = new DownloadListAdapter(this, cursor);
+		downloadList.setAdapter(adapter);
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		cursor.requery();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+	}
+
 }
