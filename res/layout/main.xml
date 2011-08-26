@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_height="wrap_content"
+	android:layout_width="fill_parent">
+	<Button android:text="SubscriptionListActivity" android:id="@+id/button_subscriptionlist"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="ViewEpisodeActivity" android:id="@+id/button_viewepisode"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="ListenQueueActivity" android:id="@+id/button_listenqueue"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="DownloadQueueActivity" android:id="@+id/button_downloadqueue"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="Test FeedParser" android:id="@+id/button_testfeed"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="Start UpdateService" android:id="@+id/button_startupdate"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="Start CleanCacheService" android:id="@+id/button_startclean"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	<Button android:text="Start DownloadService" android:id="@+id/button_startdownload"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</LinearLayout>
