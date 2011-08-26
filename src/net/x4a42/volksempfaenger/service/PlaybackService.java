@@ -5,11 +5,12 @@ import java.io.IOException;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.ui.PlayerActivity;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
@@ -24,6 +25,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private MediaPlayer player;
 	private Notification notification;
 	private AudioManager audioManager;
+	private AudioNoisyReceiver audioNoisyReceiver;
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
@@ -37,6 +39,9 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		super.onCreate();
 		player = new MediaPlayer();
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		audioNoisyReceiver = new AudioNoisyReceiver();
+		registerReceiver(audioNoisyReceiver, new IntentFilter(
+				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 	}
 
 	public class PlaybackBinder extends Binder {
@@ -53,14 +58,15 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(audioNoisyReceiver);
 		if (player != null) {
 			player.release();
 			player = null;
 		}
 	}
 
-	public void playFile(String path)
-			throws IllegalArgumentException, IOException {
+	public void playFile(String path) throws IllegalArgumentException,
+			IOException {
 		if (playerState != PlayerState.IDLE) {
 			resetPlayer();
 		}
@@ -152,11 +158,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
 		case AudioManager.AUDIOFOCUS_GAIN:
-            player.setVolume(1.0f, 1.0f);
-            break;
+			player.setVolume(1.0f, 1.0f);
+			break;
 		case AudioManager.AUDIOFOCUS_LOSS:
 			if (player.isPlaying()) {
-				// TODO save current position 
+				// TODO save current position
 				player.stop();
 				// TODO notify activity
 			}
@@ -177,17 +183,32 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			break;
 		}
 	}
-	
+
 	public void setPlayerListener(PlayerListener listener) {
 		playerListener = listener;
 	}
-	
+
 	public interface PlayerListener {
 		public void onPlayerPaused();
+
 		public void onPlayerStopped();
+
 		public void onPlayerPrepared();
 	}
-	
+
+	private class AudioNoisyReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(
+					android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+				if (PlaybackService.this.isPlaying()) {
+					PlaybackService.this.pause();
+					PlaybackService.this.playerListener.onPlayerPaused();
+				}
+			}
+		}
+	}
+
 	private class DefaultPlayerListener implements PlayerListener {
 		public void onPlayerPaused() {
 			Log.d(TAG, "No PlayerListener set");
@@ -200,6 +221,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		public void onPlayerPrepared() {
 			Log.d(TAG, "No PlayerListener set");
 		}
-		
+
 	}
 }
