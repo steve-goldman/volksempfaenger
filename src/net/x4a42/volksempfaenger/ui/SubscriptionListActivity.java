@@ -37,11 +37,14 @@ public class SubscriptionListActivity extends BaseActivity implements
 		dbHelper = new DatabaseHelper(this);
 
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
+		subscriptionList
+				.setEmptyView(findViewById(R.id.subscription_list_empty));
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE,
-				null, null, null, null, null, DatabaseHelper.Podcast.TITLE);
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.Podcast._TABLE, null, null, null, null, null,
+				DatabaseHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);

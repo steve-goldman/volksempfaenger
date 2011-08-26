@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<style name="emptyListView">
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+		<item name="android:gravity">center_vertical|center_horizontal</item>
+	</style>
 	<style name="podcastLogo">
 		<item name="android:src">@drawable/default_logo</item>
 	</style>
