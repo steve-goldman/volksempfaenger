@@ -26,8 +26,8 @@ import android.widget.TextView;
 public class PlayerActivity extends BaseActivity implements OnClickListener,
 		OnSeekBarChangeListener, ServiceConnection, OnPreparedListener {
 	private SeekBar seekBar;
-	private TextView textTime;
-	private String durationString;
+	private TextView textDuration;
+	private TextView textPosition;
 	private ImageButton buttonPlay;
 	private boolean bound = false;
 	private PlaybackService service;
@@ -41,7 +41,8 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 		seekBar = (SeekBar) findViewById(R.id.seekBar1);
 		buttonPlay = (ImageButton) findViewById(R.id.button_play);
-		textTime = (TextView) findViewById(R.id.text_time);
+		textDuration = (TextView) findViewById(R.id.text_duration);
+		textPosition = (TextView) findViewById(R.id.text_position);
 
 		buttonPlay.setOnClickListener(this);
 		seekBar.setOnSeekBarChangeListener(this);
@@ -125,8 +126,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void updateTime() {
-		textTime.setText(formatTime(service.getCurrentPosition()) + "/"
-				+ durationString);
+		textPosition.setText(formatTime(service.getCurrentPosition()));
 	}
 
 	private String formatTime(int milliseconds) {
@@ -151,7 +151,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	public void onPrepared(MediaPlayer actuallyNull) {
 		togglePlayPause();
-		durationString = formatTime(service.getDuration());
+		textDuration.setText(formatTime(service.getDuration()));
 		seekBar.setMax(service.getDuration());
 		seekBar.setEnabled(true);
 		updateHandler.post(updateSliderTask);
