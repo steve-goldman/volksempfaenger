@@ -50,6 +50,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		seekBar.setEnabled(false);
 
 		Intent intent = new Intent(this, PlaybackService.class);
+		startService(intent);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 		updateHandler = new Handler();
 	}
@@ -66,6 +67,12 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 		if (service != null && service.isPlaying()) {
 			updateHandler.post(updateSliderTask);
 		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unbindService(this);
 	}
 
 	private Runnable updateSliderTask = new Runnable() {
@@ -100,12 +107,31 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	private void togglePlayPause() {
 		if (service.isPlaying()) {
-			buttonPlay.setImageResource(android.R.drawable.ic_media_play);
+			setButtonPlay();
 			service.pause();
 		} else {
+			setButtonPause();
 			buttonPlay.setImageResource(android.R.drawable.ic_media_pause);
 			service.play();
 		}
+	}
+	
+	private void setPlaying() {
+		startedPlaying = true;
+		setButtonPause();
+		textDuration.setText(formatTime(service.getDuration()));
+		seekBar.setMax(service.getDuration());
+		seekBar.setEnabled(true);
+		updateHandler.removeCallbacks(updateSliderTask);
+		updateHandler.post(updateSliderTask);
+	}
+	
+	private void setButtonPlay() {
+		buttonPlay.setImageResource(android.R.drawable.ic_media_play);
+	}
+	
+	private void setButtonPause() {
+		buttonPlay.setImageResource(android.R.drawable.ic_media_pause);
 	}
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
@@ -141,6 +167,9 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		service = ((PlaybackBinder) binder).getService();
+		if(service.isPlaying()) {
+			setPlaying();
+		}
 		bound = true;
 	}
 
@@ -150,10 +179,7 @@ public class PlayerActivity extends BaseActivity implements OnClickListener,
 	}
 
 	public void onPrepared(MediaPlayer actuallyNull) {
-		togglePlayPause();
-		textDuration.setText(formatTime(service.getDuration()));
-		seekBar.setMax(service.getDuration());
-		seekBar.setEnabled(true);
-		updateHandler.post(updateSliderTask);
+		service.play();
+		setPlaying();
 	}
 }
