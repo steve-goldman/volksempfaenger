@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
@@ -33,7 +29,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,6 +68,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView episodeDescription;
 
 	private String descriptionText;
+	private SpannableStringBuilder descriptionSpanned;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -154,14 +154,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
 		descriptionText = Utils.normalizeString(c.getString(c
 				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION)));
-		if (imageUrlMap == null) {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetterPrefetch(), null));
-			new ImagePrefetchTask().execute();
-		} else {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetter(), null));
-		}
+
+		descriptionSpanned = (SpannableStringBuilder) Html
+				.fromHtml(descriptionText);
+		episodeDescription.setText(descriptionSpanned);
+		new ImageLoadTask().execute();
 
 		c.close();
 
@@ -238,7 +235,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(DatabaseHelper.Enclosure.STATE, DatabaseHelper.Enclosure.STATE_LISTENED);
+			values.put(DatabaseHelper.Enclosure.STATE,
+					DatabaseHelper.Enclosure.STATE_LISTENED);
 			values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, 0);
 			dbHelper.getWritableDatabase().update(
 					DatabaseHelper.Enclosure._TABLE, values,
@@ -433,67 +431,65 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		setPlaying();
 	}
 
-	private Queue<String> imageUrlQueue;
-	private Map<String, String> imageUrlMap;
+	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
 
-	private class ImageGetterPrefetch implements Html.ImageGetter {
-
-		public ImageGetterPrefetch() {
-			imageUrlQueue = new LinkedList<String>();
-		}
-
-		public Drawable getDrawable(String source) {
-			imageUrlQueue.offer(source);
-			return null;
-		}
-
-	}
-
-	private class ImagePrefetchTask extends AsyncTask<Void, String, Void> {
+		private static final float SCALE = 1.5F;
+		private DescriptionImageDownloader imageDownloader;
 
 		@Override
 		protected void onPreExecute() {
-			imageUrlMap = new HashMap<String, String>();
+			imageDownloader = new DescriptionImageDownloader(
+					ViewEpisodeActivity.this);
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			DescriptionImageDownloader did = new DescriptionImageDownloader(
-					ViewEpisodeActivity.this);
-			String url;
-			while ((url = imageUrlQueue.poll()) != null) {
-				try {
-					imageUrlMap.put(url, did.fetchImage(url));
-				} catch (Exception e) {
-					// Who cares?
+
+			for (ImageSpan img : descriptionSpanned.getSpans(0,
+					descriptionSpanned.length(), ImageSpan.class)) {
+				if (!getImageFile(img).isFile()) {
+					try {
+						imageDownloader.fetchImage(img.getSource());
+					} catch (Exception e) {
+						// Who cares?
+						Log.d(getClass().getSimpleName(), "Exception handled",
+								e);
+					}
 				}
+				publishProgress(img);
 			}
+
 			return null;
+
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetter(), null));
+		protected void onProgressUpdate(ImageSpan... values) {
+			ImageSpan img = values[0];
+			File cache = getImageFile(img);
+			String src = img.getSource();
+			if (cache.isFile()) {
+				Drawable d = new BitmapDrawable(getResources(),
+						cache.getAbsolutePath());
+				d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * SCALE),
+						(int) (d.getIntrinsicHeight() * SCALE));
+				ImageSpan newImg = new ImageSpan(d, src);
+				int start = descriptionSpanned.getSpanStart(img);
+				int end = descriptionSpanned.getSpanEnd(img);
+				descriptionSpanned.removeSpan(img);
+				descriptionSpanned.setSpan(newImg, start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				// explicitly update description
+				episodeDescription.setText(descriptionSpanned);
+			}
 		}
 
-	}
+		private File getImageFile(ImageSpan img) {
+			return getImageFile(img.getSource());
+		}
 
-	private class ImageGetter implements Html.ImageGetter {
-
-		// TODO: Fix it!
-		private final float SCALE = 1.4F;
-
-		public Drawable getDrawable(String source) {
-			String file = imageUrlMap.get(source);
-			if (file == null) {
-				return null;
-			}
-			Log.d(getClass().getName(), source + " => " + file);
-			Drawable d = new BitmapDrawable(getResources(), file);
-			d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * SCALE),
-					(int) (d.getIntrinsicHeight() * SCALE));
-			return d;
+		private File getImageFile(String url) {
+			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
 	}
