@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class DownloadListAdapter extends SimpleCursorAdapter {
+public class DownloadListRunningAdapter extends SimpleCursorAdapter {
 
 	private static final String[] from = { DownloadManager.COLUMN_TITLE };
 	private static final int[] to = { R.id.download_title };
@@ -25,7 +25,7 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 	private DatabaseHelper dbHelper;
 	private Map<Long, Map<String, String>> dataMap;
 
-	public DownloadListAdapter(Context context, Cursor cursor) {
+	public DownloadListRunningAdapter(Context context, Cursor cursor) {
 
 		super(context, R.layout.download_list_row, cursor, from, to);
 		dbHelper = DatabaseHelper.getInstance(context);

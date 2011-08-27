@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.DownloadListAdapter;
+import net.x4a42.volksempfaenger.data.DownloadListRunningAdapter;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.database.Cursor;
@@ -11,7 +11,7 @@ import android.widget.ListView;
 public class DownloadListRunningActivity extends BaseActivity {
 
 	private Cursor cursor;
-	private DownloadListAdapter adapter;
+	private DownloadListRunningAdapter adapter;
 	private DownloadManager dm;
 
 	private ListView runningList;
@@ -34,7 +34,7 @@ public class DownloadListRunningActivity extends BaseActivity {
 		cursor = dm.query(downloadQuery);
 		startManagingCursor(cursor);
 
-		adapter = new DownloadListAdapter(this, cursor);
+		adapter = new DownloadListRunningAdapter(this, cursor);
 		runningList.setAdapter(adapter);
 	}
 
