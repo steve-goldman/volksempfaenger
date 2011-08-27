@@ -141,7 +141,8 @@ public class DownloadService extends Service {
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
 					(networkAllowd & NETWORK_MOBILE) != 0);
 
-			int freeSlots = ed.getFreeDownloadSlots();
+			int freeSlots = extraId == null ? ed.getFreeDownloadSlots()
+					: cursor.getCount();
 
 			Log.d(getClass().getSimpleName(), String.format(
 					"starting downloads inQueue:%d freeSlots:%d",
