@@ -7,28 +7,6 @@
 		<TabWidget android:id="@android:id/tabs"
 			android:layout_width="match_parent" android:layout_height="wrap_content" />
 		<FrameLayout android:id="@android:id/tabcontent"
-			android:layout_width="match_parent" android:layout_height="match_parent"
-			android:padding="5dp">
-			<!-- Running Downloads -->
-			<LinearLayout android:id="@+id/tab_running"
-				android:layout_width="match_parent" android:layout_height="match_parent">
-				<ListView android:id="@+id/running_list"
-					android:layout_height="match_parent" android:layout_width="match_parent" />
-				<TextView android:id="@+id/download_list_empty" style="@style/emptyListView"
-					android:text="@string/message_no_downloads" />
-			</LinearLayout>
-
-			<!-- Queued Downloads -->
-			<LinearLayout android:id="@+id/tab_queue"
-				android:layout_width="match_parent" android:layout_height="match_parent">
-				<!-- TODO -->
-			</LinearLayout>
-
-			<!-- Finished Downloads -->
-			<LinearLayout android:id="@+id/tab_finished"
-				android:layout_width="match_parent" android:layout_height="match_parent">
-				<!-- TODO -->
-			</LinearLayout>
-		</FrameLayout>
+			android:layout_width="match_parent" android:layout_height="match_parent" />
 	</LinearLayout>
 </TabHost>

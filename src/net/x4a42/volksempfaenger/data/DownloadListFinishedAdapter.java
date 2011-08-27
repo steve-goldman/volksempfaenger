@@ -12,44 +12,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class DownloadListRunningAdapter extends DownloadListAdapter {
+public class DownloadListFinishedAdapter extends DownloadListAdapter {
 
 	private static final String[] from = { DownloadManager.COLUMN_TITLE };
 	private static final int[] to = { R.id.download_title };
 
-	public DownloadListRunningAdapter(Context context, Cursor cursor) {
-		super(context, R.layout.download_list_running_row, cursor, from, to);
+	public DownloadListFinishedAdapter(Context context, Cursor cursor) {
+
+		super(context, R.layout.download_list_finished_row, cursor, from, to);
+
 	}
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 
 		super.bindView(view, context, cursor);
-
-		TextView downloadProgressText = (TextView) view
-				.findViewById(R.id.download_progress_text);
-		ProgressBar downloasProgressBar = (ProgressBar) view
-				.findViewById(R.id.download_progress_bar);
-		try {
-			int percent = (int) (100 * cursor
-					.getLong(cursor
-							.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)) / cursor
-					.getLong(cursor
-							.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)));
-			if (percent > 100) {
-				throw (Exception) null;
-			} else if (percent < 0) {
-				throw (Exception) null;
-			}
-			downloasProgressBar.setProgress(percent);
-			downloadProgressText.setText(percent + "%");
-		} catch (Exception e) {
-			// TODO
-			downloadProgressText.setText("??%");
-		}
 
 		Map<String, String> info = dataMap.get(cursor.getLong(cursor
 				.getColumnIndex(DownloadManager.COLUMN_ID)));
