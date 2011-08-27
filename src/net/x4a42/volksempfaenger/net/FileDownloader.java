@@ -4,14 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 import net.x4a42.volksempfaenger.data.StorageException;
 import android.content.Context;
-import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
 public class FileDownloader extends Downloader {

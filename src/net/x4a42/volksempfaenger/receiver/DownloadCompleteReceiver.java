@@ -12,7 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class DownloadCompleteReceiver extends BroadcastReceiver {
 

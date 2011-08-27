@@ -4,11 +4,8 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DownloadListAdapter;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ListView;
 
 public class DownloadListActivity extends BaseActivity {

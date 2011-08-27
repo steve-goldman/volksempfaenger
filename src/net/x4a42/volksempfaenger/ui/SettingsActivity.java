@@ -17,9 +17,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
-import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
