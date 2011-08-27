@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+
 	private static final String DB_NAME = "podcast.db";
 	private static final int DB_VERSION = 1;
 
@@ -21,11 +22,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		private static String createSql() {
 			return String.format("CREATE TABLE \"%s\" (\n"
 					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT UNIQUE,\n"
-					+ "  \"%s\" TEXT\n"
-					+ ")",
+					+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+					+ "  \"%s\" TEXT UNIQUE,\n" + "  \"%s\" TEXT\n" + ")",
 					_TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
 		}
 	}
@@ -45,13 +43,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.format("CREATE TABLE \"%s\" (\n"
 							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" INTEGER,\n" + "  \"%s\" TEXT,\n"
 							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" INTEGER,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n"
-							+ ")", _TABLE, ID,
+							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
 							PODCAST, Podcast._TABLE, Podcast.ID, ITEM_ID,
 							TITLE, DATE, URL, DESCRIPTION, PODCAST, ITEM_ID);
 		}
@@ -67,7 +62,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final String FILE = "file"; // path to file
 		public static final String SIZE = "size"; // file size
 		public static final String STATE = "state"; // see state constants below
-		public static final String DOWNLOAD_ID = "download_id"; // DownloadManager id
+		public static final String DOWNLOAD_ID = "download_id"; // DownloadManager
+																// id
 		public static final String DURATION_TOTAL = "duration_total"; // total
 																		// duration
 																		// in
@@ -91,17 +87,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.format("CREATE TABLE \"%s\" (\n"
 							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
+							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
 							+ "  \"%s\" INTEGER,\n"
 							+ "  \"%s\" INTEGER DEFAULT %d,\n"
+							+ "  \"%s\" INTEGER,\n" + "  \"%s\" INTEGER,\n"
 							+ "  \"%s\" INTEGER,\n"
-							+ "  \"%s\" INTEGER,\n"
-							+ "  \"%s\" INTEGER,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n"
-							+ ")", _TABLE, ID,
+							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
 							EPISODE, Episode._TABLE, Episode.ID, TITLE, URL,
 							MIME, FILE, SIZE, STATE, STATE_NEW, DOWNLOAD_ID,
 							DURATION_TOTAL, DURATION_LISTENED, EPISODE, URL);
@@ -110,9 +102,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	Context context;
 
-	public DatabaseHelper(Context context) {
+	private DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		this.context = context;
+	}
+
+	private static DatabaseHelper instance;
+
+	public static DatabaseHelper getInstance(Context context) {
+		if (instance == null) {
+			makeInstance(context);
+		}
+		return instance;
+	}
+
+	private static synchronized void makeInstance(Context context) {
+		if (instance == null) {
+			instance = new DatabaseHelper(context);
+		}
 	}
 
 	@Override
@@ -135,4 +142,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Nothing to do here
 	}
+
 }
