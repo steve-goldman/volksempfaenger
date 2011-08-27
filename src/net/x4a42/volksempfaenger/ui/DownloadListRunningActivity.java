@@ -26,11 +26,9 @@ public class DownloadListRunningActivity extends BaseActivity {
 
 		dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 		Query downloadQuery = new DownloadManager.Query();
-		downloadQuery
-				.setFilterByStatus(DownloadManager.STATUS_PENDING
-						| DownloadManager.STATUS_RUNNING
-						| DownloadManager.STATUS_PAUSED
-						| DownloadManager.STATUS_FAILED);
+		downloadQuery.setFilterByStatus(DownloadManager.STATUS_PENDING
+				| DownloadManager.STATUS_RUNNING
+				| DownloadManager.STATUS_PAUSED);
 		cursor = dm.query(downloadQuery);
 		startManagingCursor(cursor);
 

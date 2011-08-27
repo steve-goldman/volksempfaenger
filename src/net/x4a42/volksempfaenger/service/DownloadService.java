@@ -119,13 +119,20 @@ public class DownloadService extends Service {
 
 			if (extraId == null) {
 				cursor = db
-						.query(DatabaseHelper.Enclosure._TABLE,
-								null,
-								String.format("%s = ?",
-										DatabaseHelper.Enclosure.STATE),
+						.rawQuery(
+								"SELECT enclosure._id AS _id, episode.title AS episode_title, "
+										+ "enclosure.url AS enclosure_url FROM enclosure "
+										+ "JOIN episode ON episode._id = enclosure.episode_id "
+										+ "WHERE enclosure.state = ? ORDER BY episode.date DESC",
 								new String[] { String
-										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
-								null, null, null);
+										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
+				// .query(DatabaseHelper.Enclosure._TABLE,
+				// null,
+				// String.format("%s = ?",
+				// DatabaseHelper.Enclosure.STATE),
+				// new String[] { String
+				// .valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
+				// null, null, null);
 			} else {
 				cursor = db.query(DatabaseHelper.Enclosure._TABLE, null, String
 						.format("%s = ? AND %s in (%s)",
@@ -148,27 +155,15 @@ public class DownloadService extends Service {
 					"starting downloads inQueue:%d freeSlots:%d",
 					cursor.getCount(), freeSlots));
 
-			Cursor c;
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.Enclosure.STATE,
 					DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED);
 			while (cursor.moveToNext() && freeSlots-- > 0) {
-				long episodeId = cursor.getLong(cursor
-						.getColumnIndex(DatabaseHelper.Enclosure.EPISODE));
-				c = db.query(DatabaseHelper.Episode._TABLE, null,
-						String.format("%s = ?", DatabaseHelper.Episode.ID),
-						new String[] { String.valueOf(episodeId) }, null, null,
-						null);
-				String title = null;
-				if (c.moveToFirst()) {
-					title = c.getString(c
-							.getColumnIndex(DatabaseHelper.Episode.TITLE));
-				}
-				c.close();
-				long id = cursor.getLong(cursor
-						.getColumnIndex(DatabaseHelper.Enclosure.ID));
+				long id = cursor.getLong(cursor.getColumnIndex("_id"));
+				String title = cursor.getString(cursor
+						.getColumnIndex("episode_title"));
 				String url = cursor.getString(cursor
-						.getColumnIndex(DatabaseHelper.Enclosure.URL));
+						.getColumnIndex("enclosure_url"));
 				long downloadId = ed.downloadEnclosure(id, url, title);
 				values.put(DatabaseHelper.Enclosure.DOWNLOAD_ID, downloadId);
 				db.update(DatabaseHelper.Enclosure._TABLE, values,

@@ -51,8 +51,6 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 					MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 					mmr.setDataSource(context, Uri.parse(localUri));
 
-					values.put(DatabaseHelper.Enclosure.DOWNLOAD_ID,
-							(Long) null);
 					values.put(DatabaseHelper.Enclosure.FILE, localUri);
 					values.put(DatabaseHelper.Enclosure.MIME, c.getString(c
 							.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE)));
