@@ -69,7 +69,7 @@ public class FeedParser {
 		private boolean skipMode = false;
 		private boolean xhtmlMode = false;
 		private boolean currentItemHasHtml = false;
-		private boolean currentItemHasITunesSummary = false;
+		private boolean currentItemHasITunesSummaryAlternative = false;
 		private boolean hasITunesImage = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
@@ -176,7 +176,7 @@ public class FeedParser {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
-				currentItemHasITunesSummary = false;
+				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case ATOM_CONTENT:
 				if (atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
@@ -238,7 +238,7 @@ public class FeedParser {
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
 				currentItemHasHtml = false;
-				currentItemHasITunesSummary = false;
+				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
@@ -294,9 +294,9 @@ public class FeedParser {
 				if (xhtmlMode) {
 					xhtmlMode = false;
 				}
-				if (parents.peek() == Tag.ATOM_ENTRY
-						&& !currentItemHasITunesSummary) {
+				if (parents.peek() == Tag.ATOM_ENTRY) {
 					feedItem.setDescription(buffer.toString().trim());
+					currentItemHasITunesSummaryAlternative = true;
 				}
 				break;
 			case ATOM_PUBLISHED:
@@ -363,10 +363,11 @@ public class FeedParser {
 				}
 				break;
 			case RSS_DESCRIPTION:
-				if (!currentItemHasHtml && !currentItemHasITunesSummary) {
+				if (!currentItemHasHtml) {
 					switch (parents.peek()) {
 					case RSS_ITEM:
 						feedItem.setDescription(buffer.toString().trim());
+						currentItemHasITunesSummaryAlternative = true;
 						break;
 					case RSS_CHANNEL:
 						feed.setDescription(buffer.toString().trim());
@@ -375,16 +376,15 @@ public class FeedParser {
 				}
 				break;
 			case RSS_CONTENT_ENCODED:
-				if (!currentItemHasITunesSummary) {
-					currentItemHasHtml = true;
-					switch (parents.peek()) {
-					case RSS_ITEM:
-						feedItem.setDescription(buffer.toString().trim());
-						break;
-					case RSS_CHANNEL:
-						feed.setDescription(buffer.toString().trim());
-						break;
-					}
+				currentItemHasHtml = true;
+				switch (parents.peek()) {
+				case RSS_ITEM:
+					feedItem.setDescription(buffer.toString().trim());
+					currentItemHasITunesSummaryAlternative = true;
+					break;
+				case RSS_CHANNEL:
+					feed.setDescription(buffer.toString().trim());
+					break;
 				}
 				break;
 			case RSS_ITEM:
@@ -419,8 +419,8 @@ public class FeedParser {
 
 		private void onEndTagITunes(Tag tag) {
 			if (tag == Tag.ITUNES_SUMMARY
-					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)) {
-				currentItemHasITunesSummary = true;
+					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)
+					&& !currentItemHasITunesSummaryAlternative) {
 				feedItem.setDescription(buffer.toString().trim()
 						.replaceAll("\n", "<br />"));
 			}
