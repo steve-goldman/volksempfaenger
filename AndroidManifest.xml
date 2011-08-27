@@ -20,6 +20,9 @@
 			android:label="@string/title_delete_subscription" android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".ui.DownloadListActivity"
 			android:label="@string/title_downloads" />
+		<activity android:name=".ui.DownloadListRunningActivity" />
+		<activity android:name=".ui.DownloadListQueueActivity" />
+		<activity android:name=".ui.DownloadListFinishedActivity" />
 		<activity android:name=".ui.EditSubscriptionActivity"
 			android:label="@string/app_name" android:windowSoftInputMode="adjustResize" />
 		<activity android:name=".ui.ListenQueueActivity"

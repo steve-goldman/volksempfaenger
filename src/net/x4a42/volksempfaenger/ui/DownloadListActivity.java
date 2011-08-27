@@ -1,53 +1,75 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.DownloadListAdapter;
-import android.app.DownloadManager;
-import android.app.DownloadManager.Query;
-import android.database.Cursor;
+import android.app.LocalActivityManager;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
 public class DownloadListActivity extends BaseActivity {
-	private Cursor cursor;
-	private ListView downloadList;
-	private DownloadListAdapter adapter;
-	private DownloadManager dm;
+
+	private static final String TAG_RUNNING = "running";
+	private static final String TAG_QUEUE = "queue";
+	private static final String TAG_FINISHED = "finished";
+
+	private TabHost tabHost;
+	private LocalActivityManager localActivityManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.download_list);
 
-		downloadList = (ListView) findViewById(R.id.download_list);
+		localActivityManager = new LocalActivityManager(this, true);
+		localActivityManager.dispatchCreate(savedInstanceState);
 
-		downloadList.setEmptyView(findViewById(R.id.download_list_empty));
+		tabHost = (TabHost) findViewById(R.id.tabhost);
+		tabHost.setup(localActivityManager);
 
-		dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-		Query downloadQuery = new DownloadManager.Query();
-		downloadQuery
-				.setFilterByStatus(DownloadManager.STATUS_PENDING
-						| DownloadManager.STATUS_RUNNING
-						| DownloadManager.STATUS_PAUSED
-						| DownloadManager.STATUS_FAILED);
-		cursor = dm.query(downloadQuery);
-		startManagingCursor(cursor);
+		TabSpec spec;
 
-		adapter = new DownloadListAdapter(this, cursor);
-		downloadList.setAdapter(adapter);
+		// running
+		spec = tabHost.newTabSpec(TAG_RUNNING);
+		spec.setContent(new Intent(this, DownloadListRunningActivity.class));
+		spec.setIndicator(getString(R.string.title_tab_download_running));
+		tabHost.addTab(spec);
+
+		// queue
+		spec = tabHost.newTabSpec(TAG_RUNNING);
+		spec.setContent(new Intent(this, DownloadListQueueActivity.class));
+		spec.setIndicator(getString(R.string.title_tab_download_queue));
+		tabHost.addTab(spec);
+
+		// finished
+		spec = tabHost.newTabSpec(TAG_RUNNING);
+		spec.setContent(new Intent(this, DownloadListFinishedActivity.class));
+		spec.setIndicator(getString(R.string.title_tab_download_finished));
+		tabHost.addTab(spec);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		cursor.requery();
+		localActivityManager.dispatchResume();
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	protected void onPause() {
+		super.onPause();
+		localActivityManager.dispatchPause(isFinishing());
+	}
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		localActivityManager.dispatchStop();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		localActivityManager.dispatchDestroy(isFinishing());
 	}
 
 }
