@@ -31,6 +31,7 @@ import android.os.IBinder;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
 import android.util.Log;
@@ -155,8 +156,12 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		descriptionText = Utils.normalizeString(c.getString(c
 				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION)));
 
-		descriptionSpanned = (SpannableStringBuilder) Html
-				.fromHtml(descriptionText);
+		Spanned s = Html.fromHtml(descriptionText);
+		if (s instanceof SpannableStringBuilder) {
+			descriptionSpanned = (SpannableStringBuilder) s;
+		} else {
+			descriptionSpanned = new SpannableStringBuilder(s);
+		}
 		episodeDescription.setText(descriptionSpanned);
 		new ImageLoadTask().execute();
 
