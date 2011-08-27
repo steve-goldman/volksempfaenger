@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,10 +14,12 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
+import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -31,13 +35,17 @@ import android.os.IBinder;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class ViewEpisodeActivity extends BaseActivity implements
 		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
@@ -188,8 +196,83 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		if(service != null) {
+		if (service != null) {
 			unbindService(this);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.view_episode, menu);
+		addGlobalMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		Cursor cursor;
+		switch (item.getItemId()) {
+		case R.id.item_download:
+			intent = new Intent(this, DownloadService.class);
+			cursor = dbHelper.getReadableDatabase().query(
+					DatabaseHelper.Enclosure._TABLE,
+					new String[] { DatabaseHelper.Enclosure.ID },
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) }, null, null, null);
+			long[] v = null;
+			if (cursor.getCount() != 0) {
+				v = new long[cursor.getCount()];
+				for (int i = 0; i < v.length; i++) {
+					cursor.moveToNext();
+					v[i] = cursor.getLong(0);
+				}
+			}
+			cursor.close();
+			intent.putExtra("id", v);
+			startService(intent);
+			Toast.makeText(this, R.string.message_download_queued,
+					Toast.LENGTH_SHORT).show();
+			return true;
+
+		case R.id.item_mark_listened:
+			return true;
+
+		case R.id.item_delete:
+			// TODO: confirmation dialog, AsyncTask
+			cursor = dbHelper.getReadableDatabase().query(
+					DatabaseHelper.Enclosure._TABLE,
+					new String[] { DatabaseHelper.Enclosure.ID,
+							DatabaseHelper.Enclosure.FILE },
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) }, null, null, null);
+			ContentValues values = new ContentValues();
+			while (cursor.moveToNext()) {
+				String filename = cursor.getString(1);
+				try {
+					if (filename != null) {
+						File f = new File(new URI(filename));
+						if (f.isFile()) {
+							f.delete();
+						}
+					}
+				} catch (URISyntaxException e) {
+					Log.w(getClass().getSimpleName(), "Exception handled", e);
+				}
+				values.put(DatabaseHelper.Enclosure.FILE, (String) null);
+				values.put(DatabaseHelper.Enclosure.STATE,
+						DatabaseHelper.Enclosure.STATE_DELETED);
+				dbHelper.getReadableDatabase().update(
+						DatabaseHelper.Enclosure._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+						new String[] { String.valueOf(cursor.getLong(0)) });
+			}
+			cursor.close();
+			return true;
+
+		default:
+			return handleGlobalMenu(item);
 		}
 	}
 
