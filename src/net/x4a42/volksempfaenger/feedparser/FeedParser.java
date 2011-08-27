@@ -113,8 +113,9 @@ public class FeedParser {
 					onStartTagRss(tag, atts);
 				} else if (ns == Namespace.XHTML && xhtmlMode) {
 					onStartTagXHtml(localName, atts);
-				} else if(ns == Namespace.ITUNES && tag == Tag.ITUNES_IMAGE) {
-					if(parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED) {
+				} else if (ns == Namespace.ITUNES && tag == Tag.ITUNES_IMAGE) {
+					if (parents.peek() == Tag.RSS_CHANNEL
+							|| parents.peek() == Tag.ATOM_FEED) {
 						feed.setImage(atts.getValue("href"));
 						hasITunesImage = true;
 					}
@@ -204,15 +205,18 @@ public class FeedParser {
 					if (parents.peek() == Tag.ATOM_ENTRY) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
-							// actually there can be multiple "alternate links"
-							// this uses the LAST alternate link as the URL for
+							// actually there can be multiple
+							// "alternate links"
+							// this uses the LAST alternate link as the
+							// URL for
 							// the FeedItem
 							feedItem.setUrl(atts.getValue(ATOM_ATTR_HREF));
 						}
 					} else if (parents.peek() == Tag.ATOM_FEED) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
-							// same issue as above with multiple alternate links
+							// same issue as above with multiple
+							// alternate links
 							feed.setWebsite(atts.getValue(ATOM_ATTR_HREF));
 						}
 					}
@@ -384,9 +388,9 @@ public class FeedParser {
 				}
 				break;
 			case RSS_URL:
-				if(parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
+				if (parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
 					Tag copy = parents.pop();
-					if(parents.peek() == Tag.RSS_CHANNEL) {
+					if (parents.peek() == Tag.RSS_CHANNEL) {
 						feed.setImage(buffer.toString().trim());
 					}
 					parents.push(copy);
@@ -518,7 +522,8 @@ public class FeedParser {
 			temp.put("http://purl.org/rss/1.0/modules/content/",
 					Namespace.RSS_CONTENT);
 			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd", Namespace.ITUNES);
+			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
+					Namespace.ITUNES);
 			temp.put("", Namespace.NONE);
 			nsTable = Collections.unmodifiableMap(temp);
 		}
@@ -574,9 +579,8 @@ public class FeedParser {
 				if (tagString.equals("encoded")) {
 					tag = Tag.RSS_CONTENT_ENCODED;
 				}
-			}
-			else if (ns == Namespace.ITUNES) {
-				if(tagString.equals("image")) {
+			} else if (ns == Namespace.ITUNES) {
+				if (tagString.equals("image")) {
 					tag = Tag.ITUNES_IMAGE;
 				}
 			}

@@ -33,8 +33,10 @@ public class FileDownloader extends Downloader {
 			target.createNewFile();
 			deleteTargetOnFailure = true;
 
-			BufferedOutputStream bufout = new BufferedOutputStream(new FileOutputStream(target));
-			BufferedInputStream bufin = new BufferedInputStream(connection.getInputStream());
+			BufferedOutputStream bufout = new BufferedOutputStream(
+					new FileOutputStream(target));
+			BufferedInputStream bufin = new BufferedInputStream(
+					connection.getInputStream());
 
 			byte[] buf = new byte[1024];
 			int i;

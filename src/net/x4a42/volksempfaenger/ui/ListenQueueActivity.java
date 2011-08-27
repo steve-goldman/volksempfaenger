@@ -5,8 +5,8 @@ import android.os.Bundle;
 
 public class ListenQueueActivity extends BaseActivity {
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
 	}
 }

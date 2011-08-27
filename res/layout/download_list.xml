@@ -3,6 +3,6 @@
 	android:layout_width="match_parent" android:layout_height="match_parent">
 	<ListView android:id="@+id/download_list"
 		android:layout_height="match_parent" android:layout_width="match_parent" />
-	<TextView android:id="@+id/download_list_empty"
-		style="@style/emptyListView" android:text="@string/message_no_downloads" />
+	<TextView android:id="@+id/download_list_empty" style="@style/emptyListView"
+		android:text="@string/message_no_downloads" />
 </LinearLayout>

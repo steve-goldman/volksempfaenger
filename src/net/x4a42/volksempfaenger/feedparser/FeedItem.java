@@ -9,27 +9,27 @@ public class FeedItem {
 	private Feed feed;
 	private Date date;
 	private List<Enclosure> enclosures = new ArrayList<Enclosure>();
-	
+
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public Feed getFeed() {
 		return feed;
 	}
-	
+
 	public Date getDate() {
 		return date;
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public List<Enclosure> getEnclosures() {
 		return enclosures;
 	}
@@ -37,7 +37,6 @@ public class FeedItem {
 	public String getItemId() {
 		return itemId;
 	}
-
 
 	public void setTitle(String title) {
 		this.title = title;
