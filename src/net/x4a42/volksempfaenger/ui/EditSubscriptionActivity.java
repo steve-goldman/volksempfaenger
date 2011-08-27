@@ -74,7 +74,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		buttonSave.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 	}
 
 	@Override
@@ -96,7 +96,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 
 		podcastTitle.setText(c.getString(c
 				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
-		podcastUrl.setText(c.getString(c.getColumnIndex(DatabaseHelper.Podcast.URL)));
+		podcastUrl.setText(c.getString(c
+				.getColumnIndex(DatabaseHelper.Podcast.URL)));
 		podcastDescription.setText(c.getString(c
 				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
@@ -104,13 +105,6 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		reloadLogo();
 
 		c.close();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		dbHelper.close();
 	}
 
 	@Override
@@ -166,7 +160,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.Podcast.TITLE, podcastTitle.getText()
 					.toString());
-			values.put(DatabaseHelper.Podcast.URL, podcastUrl.getText().toString());
+			values.put(DatabaseHelper.Podcast.URL, podcastUrl.getText()
+					.toString());
 			values.put(DatabaseHelper.Podcast.DESCRIPTION, podcastDescription
 					.getText().toString());
 			try {

@@ -4,8 +4,11 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DownloadListAdapter;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ListView;
 
 public class DownloadListActivity extends BaseActivity {
@@ -20,6 +23,8 @@ public class DownloadListActivity extends BaseActivity {
 		setContentView(R.layout.download_list);
 
 		downloadList = (ListView) findViewById(R.id.download_list);
+
+		downloadList.setEmptyView(findViewById(R.id.download_list_empty));
 
 		dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 		Query downloadQuery = new DownloadManager.Query();

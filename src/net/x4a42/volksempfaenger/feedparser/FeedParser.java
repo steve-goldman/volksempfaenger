@@ -205,15 +205,18 @@ public class FeedParser {
 					if (parents.peek() == Tag.ATOM_ENTRY) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
-							// actually there can be multiple "alternate links"
-							// this uses the LAST alternate link as the URL for
+							// actually there can be multiple
+							// "alternate links"
+							// this uses the LAST alternate link as the
+							// URL for
 							// the FeedItem
 							feedItem.setUrl(atts.getValue(ATOM_ATTR_HREF));
 						}
 					} else if (parents.peek() == Tag.ATOM_FEED) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
-							// same issue as above with multiple alternate links
+							// same issue as above with multiple
+							// alternate links
 							feed.setWebsite(atts.getValue(ATOM_ATTR_HREF));
 						}
 					}

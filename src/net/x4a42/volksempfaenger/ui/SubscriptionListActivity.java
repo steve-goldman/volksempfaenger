@@ -34,14 +34,17 @@ public class SubscriptionListActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.subscription_list);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		subscriptionList = (ListView) findViewById(R.id.subscription_list);
+		subscriptionList
+				.setEmptyView(findViewById(R.id.subscription_list_empty));
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE,
-				null, null, null, null, null, DatabaseHelper.Podcast.TITLE);
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.Podcast._TABLE, null, null, null, null, null,
+				DatabaseHelper.Podcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);
@@ -53,13 +56,6 @@ public class SubscriptionListActivity extends BaseActivity implements
 		super.onResume();
 
 		cursor.requery();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		dbHelper.close();
 	}
 
 	@Override

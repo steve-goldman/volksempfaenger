@@ -2,20 +2,20 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
+import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -29,15 +29,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class ViewEpisodeActivity extends BaseActivity implements
 		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
@@ -61,6 +68,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView episodeDescription;
 
 	private String descriptionText;
+	private SpannableStringBuilder descriptionSpanned;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +88,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 		setContentView(R.layout.view_episode);
 
-		dbHelper = new DatabaseHelper(this);
+		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -146,14 +154,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
 		descriptionText = Utils.normalizeString(c.getString(c
 				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION)));
-		if (imageUrlMap == null) {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetterPrefetch(), null));
-			new ImagePrefetchTask().execute();
-		} else {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetter(), null));
-		}
+
+		descriptionSpanned = (SpannableStringBuilder) Html
+				.fromHtml(descriptionText);
+		episodeDescription.setText(descriptionSpanned);
+		new ImageLoadTask().execute();
 
 		c.close();
 
@@ -188,8 +193,90 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		if(service != null) {
+		if (service != null) {
 			unbindService(this);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.view_episode, menu);
+		addGlobalMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		Cursor cursor;
+		ContentValues values = new ContentValues();
+		switch (item.getItemId()) {
+		case R.id.item_download:
+			intent = new Intent(this, DownloadService.class);
+			cursor = dbHelper.getReadableDatabase().query(
+					DatabaseHelper.Enclosure._TABLE,
+					new String[] { DatabaseHelper.Enclosure.ID },
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) }, null, null, null);
+			long[] v = null;
+			if (cursor.getCount() != 0) {
+				v = new long[cursor.getCount()];
+				for (int i = 0; i < v.length; i++) {
+					cursor.moveToNext();
+					v[i] = cursor.getLong(0);
+				}
+			}
+			cursor.close();
+			intent.putExtra("id", v);
+			startService(intent);
+			Toast.makeText(this, R.string.message_download_queued,
+					Toast.LENGTH_SHORT).show();
+			return true;
+
+		case R.id.item_mark_listened:
+			values.put(DatabaseHelper.Enclosure.STATE,
+					DatabaseHelper.Enclosure.STATE_LISTENED);
+			values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, 0);
+			dbHelper.getWritableDatabase().update(
+					DatabaseHelper.Enclosure._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) });
+			return true;
+
+		case R.id.item_delete:
+			// TODO: confirmation dialog, AsyncTask
+			cursor = dbHelper.getReadableDatabase().query(
+					DatabaseHelper.Enclosure._TABLE,
+					new String[] { DatabaseHelper.Enclosure.ID,
+							DatabaseHelper.Enclosure.FILE },
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) }, null, null, null);
+			while (cursor.moveToNext()) {
+				String filename = cursor.getString(1);
+				try {
+					if (filename != null) {
+						File f = new File(new URI(filename));
+						if (f.isFile()) {
+							f.delete();
+						}
+					}
+				} catch (URISyntaxException e) {
+					Log.w(getClass().getSimpleName(), "Exception handled", e);
+				}
+				values.put(DatabaseHelper.Enclosure.FILE, (String) null);
+				values.put(DatabaseHelper.Enclosure.STATE,
+						DatabaseHelper.Enclosure.STATE_DELETED);
+				dbHelper.getReadableDatabase().update(
+						DatabaseHelper.Enclosure._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+						new String[] { String.valueOf(cursor.getLong(0)) });
+			}
+			cursor.close();
+			return true;
+
+		default:
+			return handleGlobalMenu(item);
 		}
 	}
 
@@ -344,67 +431,65 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		setPlaying();
 	}
 
-	private Queue<String> imageUrlQueue;
-	private Map<String, String> imageUrlMap;
+	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
 
-	private class ImageGetterPrefetch implements Html.ImageGetter {
-
-		public ImageGetterPrefetch() {
-			imageUrlQueue = new LinkedList<String>();
-		}
-
-		public Drawable getDrawable(String source) {
-			imageUrlQueue.offer(source);
-			return null;
-		}
-
-	}
-
-	private class ImagePrefetchTask extends AsyncTask<Void, String, Void> {
+		private static final float SCALE = 1.5F;
+		private DescriptionImageDownloader imageDownloader;
 
 		@Override
 		protected void onPreExecute() {
-			imageUrlMap = new HashMap<String, String>();
+			imageDownloader = new DescriptionImageDownloader(
+					ViewEpisodeActivity.this);
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			DescriptionImageDownloader did = new DescriptionImageDownloader(
-					ViewEpisodeActivity.this);
-			String url;
-			while ((url = imageUrlQueue.poll()) != null) {
-				try {
-					imageUrlMap.put(url, did.fetchImage(url));
-				} catch (Exception e) {
-					// Who cares?
+
+			for (ImageSpan img : descriptionSpanned.getSpans(0,
+					descriptionSpanned.length(), ImageSpan.class)) {
+				if (!getImageFile(img).isFile()) {
+					try {
+						imageDownloader.fetchImage(img.getSource());
+					} catch (Exception e) {
+						// Who cares?
+						Log.d(getClass().getSimpleName(), "Exception handled",
+								e);
+					}
 				}
+				publishProgress(img);
 			}
+
 			return null;
+
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			episodeDescription.setText(Html.fromHtml(descriptionText,
-					new ImageGetter(), null));
+		protected void onProgressUpdate(ImageSpan... values) {
+			ImageSpan img = values[0];
+			File cache = getImageFile(img);
+			String src = img.getSource();
+			if (cache.isFile()) {
+				Drawable d = new BitmapDrawable(getResources(),
+						cache.getAbsolutePath());
+				d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * SCALE),
+						(int) (d.getIntrinsicHeight() * SCALE));
+				ImageSpan newImg = new ImageSpan(d, src);
+				int start = descriptionSpanned.getSpanStart(img);
+				int end = descriptionSpanned.getSpanEnd(img);
+				descriptionSpanned.removeSpan(img);
+				descriptionSpanned.setSpan(newImg, start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				// explicitly update description
+				episodeDescription.setText(descriptionSpanned);
+			}
 		}
 
-	}
+		private File getImageFile(ImageSpan img) {
+			return getImageFile(img.getSource());
+		}
 
-	private class ImageGetter implements Html.ImageGetter {
-
-		// TODO: Fix it!
-		private final float SCALE = 1.4F;
-
-		public Drawable getDrawable(String source) {
-			String file = imageUrlMap.get(source);
-			if (file == null) {
-				return null;
-			}
-			Log.d(getClass().getName(), source + " => " + file);
-			Drawable d = new BitmapDrawable(getResources(), file);
-			d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * SCALE),
-					(int) (d.getIntrinsicHeight() * SCALE));
-			return d;
+		private File getImageFile(String url) {
+			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
 	}
