@@ -27,8 +27,8 @@ public class SubscriptionListAdapter extends SimpleCursorAdapter {
 
 		super.bindView(view, context, cursor);
 
-		File podcastLogoFile = Utils.getPodcastLogoFile(context,
-				cursor.getLong(cursor.getColumnIndex(DatabaseHelper.Podcast.ID)));
+		File podcastLogoFile = Utils.getPodcastLogoFile(context, cursor
+				.getLong(cursor.getColumnIndex(DatabaseHelper.Podcast.ID)));
 		ImageView podcastLogo = (ImageView) view
 				.findViewById(R.id.podcast_logo);
 		if (podcastLogoFile.isFile()) {

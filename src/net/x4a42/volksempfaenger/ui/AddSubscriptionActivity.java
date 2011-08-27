@@ -99,19 +99,21 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			// Open database
-			DatabaseHelper dbHelper = DatabaseHelper.getInstance(AddSubscriptionActivity.this);
+			DatabaseHelper dbHelper = DatabaseHelper
+					.getInstance(AddSubscriptionActivity.this);
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.Podcast.TITLE, feed.getTitle());
-			values.put(DatabaseHelper.Podcast.DESCRIPTION, feed.getDescription());
+			values.put(DatabaseHelper.Podcast.DESCRIPTION,
+					feed.getDescription());
 			values.put(DatabaseHelper.Podcast.URL, feedUrl);
 			values.put(DatabaseHelper.Podcast.WEBSITE, feed.getWebsite());
 
 			try {
 				// Try to add the podcast to the database
-				long podcastId = db.insertOrThrow(DatabaseHelper.Podcast._TABLE,
-						null, values);
+				long podcastId = db.insertOrThrow(
+						DatabaseHelper.Podcast._TABLE, null, values);
 				Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
 						UpdateService.class);
 				updatePodcast.putExtra("id", new long[] { podcastId });

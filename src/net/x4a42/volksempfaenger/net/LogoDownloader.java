@@ -9,7 +9,7 @@ public class LogoDownloader extends ImageDownloader {
 	public LogoDownloader(Context context) {
 		super(context);
 	}
-	
+
 	public void fetchLogo(String url, long podcastId) throws NetException,
 			StorageException {
 		fetchFile(url, Utils.getPodcastLogoFile(getContext(), podcastId));
