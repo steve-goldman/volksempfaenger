@@ -34,6 +34,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -437,14 +438,14 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
-
-		private static final float SCALE = 1.5F;
 		private DescriptionImageDownloader imageDownloader;
+		DisplayMetrics metrics = new DisplayMetrics();
 
 		@Override
 		protected void onPreExecute() {
 			imageDownloader = new DescriptionImageDownloader(
 					ViewEpisodeActivity.this);
+			getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		}
 
 		@Override
@@ -476,8 +477,19 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			if (cache.isFile()) {
 				Drawable d = new BitmapDrawable(getResources(),
 						cache.getAbsolutePath());
-				d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * SCALE),
-						(int) (d.getIntrinsicHeight() * SCALE));
+
+				int width, height;
+				int originalWidthScaled = (int) (d.getIntrinsicWidth() * metrics.density);
+				int originalHeightScaled = (int) (d.getIntrinsicHeight() * metrics.density);
+				if (originalWidthScaled > metrics.widthPixels) {
+					height = d.getIntrinsicHeight() * metrics.widthPixels
+							/ d.getIntrinsicWidth();
+					width = metrics.widthPixels;
+				} else {
+					height = originalHeightScaled;
+					width = originalWidthScaled;
+				}
+				d.setBounds(0, 0, width, height);
 				ImageSpan newImg = new ImageSpan(d, src);
 				int start = descriptionSpanned.getSpanStart(img);
 				int end = descriptionSpanned.getSpanEnd(img);
