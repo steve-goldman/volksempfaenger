@@ -3,8 +3,6 @@ package net.x4a42.volksempfaenger.net;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import org.apache.http.client.methods.HttpUriRequest;
-
 import android.content.Context;
 
 public class ImageDownloader extends FileDownloader {

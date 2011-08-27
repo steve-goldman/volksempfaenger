@@ -2,7 +2,6 @@ package net.x4a42.volksempfaenger.net;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.x4a42.volksempfaenger.R;

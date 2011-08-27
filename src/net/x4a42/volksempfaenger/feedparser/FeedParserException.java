@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.feedparser;
 
 public class FeedParserException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	public FeedParserException() {
 	}
 
