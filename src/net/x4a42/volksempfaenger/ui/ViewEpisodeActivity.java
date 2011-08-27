@@ -213,6 +213,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		Cursor cursor;
+		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 		case R.id.item_download:
 			intent = new Intent(this, DownloadService.class);
@@ -237,6 +238,12 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return true;
 
 		case R.id.item_mark_listened:
+			values.put(DatabaseHelper.Enclosure.STATE, DatabaseHelper.Enclosure.STATE_LISTENED);
+			values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, 0);
+			dbHelper.getWritableDatabase().update(
+					DatabaseHelper.Enclosure._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					new String[] { String.valueOf(id) });
 			return true;
 
 		case R.id.item_delete:
@@ -247,7 +254,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 							DatabaseHelper.Enclosure.FILE },
 					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
 					new String[] { String.valueOf(id) }, null, null, null);
-			ContentValues values = new ContentValues();
 			while (cursor.moveToNext()) {
 				String filename = cursor.getString(1);
 				try {
