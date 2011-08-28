@@ -116,32 +116,27 @@ public class DownloadService extends Service {
 			// here we can finally start the downloads
 
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
-			Cursor cursor;
 
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT enclosure._id AS _id, ");
+			sql.append("episode.title AS episode_title, ");
+			sql.append("enclosure.url AS enclosure_url, ");
+			sql.append("enclosure.download_id AS download_id ");
+			sql.append("FROM enclosure ");
+			sql.append("JOIN episode ON episode._id = enclosure.episode_id ");
+			sql.append("WHERE enclosure.state = ");
+			sql.append(DatabaseHelper.Enclosure.STATE_NEW);
+			sql.append(' ');
 			if (params == null) {
-				cursor = db
-						.rawQuery(
-								"SELECT enclosure._id AS _id, episode.title AS episode_title, "
-										+ "enclosure.url AS enclosure_url, enclosure.download_id "
-										+ "AS download_id FROM enclosure "
-										+ "JOIN episode ON episode._id = enclosure.episode_id "
-										+ "WHERE enclosure.state = ? ORDER BY episode.date DESC",
-								new String[] { String
-										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
+				sql.append("ORDER BY episode.date DESC");
 			} else {
-				cursor = db
-						.rawQuery(
-								String.format(
-										"SELECT enclosure._id AS _id, episode.title AS episode_title, "
-												+ "enclosure.url AS enclosure_url, enclosure.download_id "
-												+ "AS download_id FROM enclosure "
-												+ "JOIN episode ON episode._id = enclosure.episode_id "
-												+ "WHERE enclosure.state = ? AND enclosure._id IN (%s) "
-												+ "ORDER BY episode.date DESC",
-										Utils.joinArray(params, ",")),
-								new String[] { String
-										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
+				sql.append("AND enclosure._id IN (");
+				sql.append(Utils.joinArray(params, ","));
+				sql.append(") ");
 			}
+			Log.d(getClass().getSimpleName(), sql.toString());
+
+			Cursor cursor = db.rawQuery(sql.toString(), null);
 
 			EnclosureDownloader ed = new EnclosureDownloader(
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
