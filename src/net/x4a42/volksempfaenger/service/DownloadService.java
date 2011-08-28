@@ -125,22 +125,18 @@ public class DownloadService extends Service {
 										+ "WHERE enclosure.state = ? ORDER BY episode.date DESC",
 								new String[] { String
 										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
-				// .query(DatabaseHelper.Enclosure._TABLE,
-				// null,
-				// String.format("%s = ?",
-				// DatabaseHelper.Enclosure.STATE),
-				// new String[] { String
-				// .valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
-				// null, null, null);
 			} else {
-				cursor = db.query(DatabaseHelper.Enclosure._TABLE, null, String
-						.format("%s = ? AND %s in (%s)",
-								DatabaseHelper.Enclosure.STATE,
-								DatabaseHelper.Enclosure.ID,
-								Utils.joinArray(params, ",")),
-						new String[] { String
-								.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
-						null, null, null);
+				cursor = db
+						.rawQuery(
+								String.format(
+										"SELECT enclosure._id AS _id, episode.title AS episode_title, "
+												+ "enclosure.url AS enclosure_url FROM enclosure "
+												+ "JOIN episode ON episode._id = enclosure.episode_id "
+												+ "WHERE enclosure.state = ? AND enclosure._id IN (%s) "
+												+ "ORDER BY episode.date DESC",
+										Utils.joinArray(params, ",")),
+								new String[] { String
+										.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
 			}
 
 			EnclosureDownloader ed = new EnclosureDownloader(
