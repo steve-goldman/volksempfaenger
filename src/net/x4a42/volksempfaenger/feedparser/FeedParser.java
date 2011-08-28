@@ -421,8 +421,7 @@ public class FeedParser {
 			if (tag == Tag.ITUNES_SUMMARY
 					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)
 					&& !currentItemHasITunesSummaryAlternative) {
-				feedItem.setDescription(buffer.toString().trim()
-						.replaceAll("\n", "<br />"));
+				feedItem.setDescription(buffer.toString().trim());
 			}
 		}
 
