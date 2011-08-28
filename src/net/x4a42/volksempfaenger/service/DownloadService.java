@@ -27,15 +27,14 @@ public class DownloadService extends Service {
 	private VolksempfaengerApplication app;
 	private DatabaseHelper dbHelper;
 	private int phonePlugged;
-	private long[] extraId;
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
 
-	private class DownloadTask extends AsyncTask<Void, Void, Void> {
+	private class DownloadTask extends AsyncTask<Long, Void, Void> {
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Void doInBackground(Long... params) {
 
 			Log.d(getClass().getSimpleName(), "doInBackground()");
 
@@ -55,7 +54,7 @@ public class DownloadService extends Service {
 				networkAllowd |= NETWORK_MOBILE;
 			}
 
-			if (extraId == null) {
+			if (params == null) {
 				// check if automatic downloads are allowed
 
 				if (!prefs
@@ -117,7 +116,7 @@ public class DownloadService extends Service {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 			Cursor cursor;
 
-			if (extraId == null) {
+			if (params == null) {
 				cursor = db
 						.rawQuery(
 								"SELECT enclosure._id AS _id, episode.title AS episode_title, "
@@ -138,7 +137,7 @@ public class DownloadService extends Service {
 						.format("%s = ? AND %s in (%s)",
 								DatabaseHelper.Enclosure.STATE,
 								DatabaseHelper.Enclosure.ID,
-								Utils.joinArray(extraId, ",")),
+								Utils.joinArray(params, ",")),
 						new String[] { String
 								.valueOf(DatabaseHelper.Enclosure.STATE_NEW) },
 						null, null, null);
@@ -148,8 +147,8 @@ public class DownloadService extends Service {
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
 					(networkAllowd & NETWORK_MOBILE) != 0);
 
-			int freeSlots = extraId == null ? ed.getFreeDownloadSlots()
-					: cursor.getCount();
+			int freeSlots = params == null ? ed.getFreeDownloadSlots() : cursor
+					.getCount();
 
 			Log.d(getClass().getSimpleName(), String.format(
 					"starting downloads inQueue:%d freeSlots:%d",
@@ -187,13 +186,19 @@ public class DownloadService extends Service {
 
 	private class BatteryChangedReceiver extends BroadcastReceiver {
 
+		private Long[] extraId;
+
+		public BatteryChangedReceiver(Long[] extraId) {
+			this.extraId = extraId;
+		}
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			unregisterReceiver(this);
 			phonePlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
 
 			// the charging state is now known so we can start the DownloadTask
-			new DownloadTask().execute();
+			new DownloadTask().execute(extraId);
 		}
 
 	}
@@ -213,13 +218,19 @@ public class DownloadService extends Service {
 
 		Log.d(getClass().getSimpleName(), "onStartCommand()");
 
-		extraId = intent.getLongArrayExtra("id");
-		if (extraId != null && extraId.length == 0) {
-			extraId = null;
+		Long[] id = null;
+		long[] extraId = intent.getLongArrayExtra("id");
+		if (extraId != null && extraId.length > 0) {
+			if (extraId.length != 0) {
+				id = new Long[extraId.length];
+				for (int i = 0; i < id.length; i++) {
+					id[i] = extraId[i];
+				}
+			}
 		}
 
 		// we need to register this broadcast receiver to get the charging state
-		registerReceiver(new BatteryChangedReceiver(), new IntentFilter(
+		registerReceiver(new BatteryChangedReceiver(id), new IntentFilter(
 				Intent.ACTION_BATTERY_CHANGED));
 
 		return START_STICKY;
