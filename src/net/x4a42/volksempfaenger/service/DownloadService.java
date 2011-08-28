@@ -6,6 +6,8 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.net.EnclosureDownloader;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -120,7 +122,8 @@ public class DownloadService extends Service {
 				cursor = db
 						.rawQuery(
 								"SELECT enclosure._id AS _id, episode.title AS episode_title, "
-										+ "enclosure.url AS enclosure_url FROM enclosure "
+										+ "enclosure.url AS enclosure_url, enclosure.download_id "
+										+ "AS download_id FROM enclosure "
 										+ "JOIN episode ON episode._id = enclosure.episode_id "
 										+ "WHERE enclosure.state = ? ORDER BY episode.date DESC",
 								new String[] { String
@@ -130,7 +133,8 @@ public class DownloadService extends Service {
 						.rawQuery(
 								String.format(
 										"SELECT enclosure._id AS _id, episode.title AS episode_title, "
-												+ "enclosure.url AS enclosure_url FROM enclosure "
+												+ "enclosure.url AS enclosure_url, enclosure.download_id "
+												+ "AS download_id FROM enclosure "
 												+ "JOIN episode ON episode._id = enclosure.episode_id "
 												+ "WHERE enclosure.state = ? AND enclosure._id IN (%s) "
 												+ "ORDER BY episode.date DESC",
@@ -142,6 +146,7 @@ public class DownloadService extends Service {
 			EnclosureDownloader ed = new EnclosureDownloader(
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
 					(networkAllowd & NETWORK_MOBILE) != 0);
+			DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 
 			int freeSlots = params == null ? ed.getFreeDownloadSlots() : cursor
 					.getCount();
@@ -154,6 +159,14 @@ public class DownloadService extends Service {
 			values.put(DatabaseHelper.Enclosure.STATE,
 					DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED);
 			while (cursor.moveToNext() && freeSlots-- > 0) {
+				Query query = new Query();
+				query.setFilterById(cursor.getLong(cursor
+						.getColumnIndex("download_id")));
+				if (dm.query(query).getCount() != 0) {
+					// The Download of this episode was already started
+					// TODO: Handling of failed downloads
+					continue;
+				}
 				long id = cursor.getLong(cursor.getColumnIndex("_id"));
 				String title = cursor.getString(cursor
 						.getColumnIndex("episode_title"));
