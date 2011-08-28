@@ -34,7 +34,13 @@ public class FeedParser {
 			if (!handler.isFeed()) {
 				throw new NotAFeedException();
 			}
-			return handler.getFeed();
+			Feed feed = handler.getFeed();
+			for (FeedItem item : feed.getItems()) {
+				if(item.getDate() == null) {
+					throw new NotAFeedException();
+				}
+			}
+			return feed;
 		} catch (ParserConfigurationException e) {
 			throw new FeedParserException();
 		} catch (SAXException e) {
@@ -50,7 +56,7 @@ public class FeedParser {
 		}
 
 		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE, ITUNES_SUMMARY
+			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE, ITUNES_SUMMARY, ATOM_UPDATED
 		}
 
 		private static enum AtomRel {
@@ -68,8 +74,9 @@ public class FeedParser {
 		private boolean isFeed = false;
 		private boolean skipMode = false;
 		private boolean xhtmlMode = false;
-		private boolean currentItemHasHtml = false;
+		private boolean currentRssItemHasHtml = false;
 		private boolean currentItemHasITunesSummaryAlternative = false;
+		private boolean currentAtomItemHasPublished = false;
 		private boolean hasITunesImage = false;
 		private int skipDepth = 0;
 		private StringBuilder buffer = new StringBuilder();
@@ -132,7 +139,8 @@ public class FeedParser {
 				return;
 			}
 			if (parents.peek() != Tag.UNKNOWN || xhtmlMode) {
-				if (parents.peek() == Tag.RSS_DESCRIPTION && currentItemHasHtml) {
+				if (parents.peek() == Tag.RSS_DESCRIPTION
+						&& currentRssItemHasHtml) {
 					// we already have an HTML version of this, so just ignore
 					// the plaintext
 					return;
@@ -177,6 +185,7 @@ public class FeedParser {
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
 				currentItemHasITunesSummaryAlternative = false;
+				currentAtomItemHasPublished = false;
 				break;
 			case ATOM_CONTENT:
 				if (atts.getValue(ATOM_ATTR_TYPE).equals("xhtml")) {
@@ -237,7 +246,7 @@ public class FeedParser {
 			case RSS_ITEM:
 				feedItem = new FeedItem();
 				feedItem.setFeed(feed);
-				currentItemHasHtml = false;
+				currentRssItemHasHtml = false;
 				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
@@ -303,6 +312,21 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
 						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
+						currentAtomItemHasPublished = true;
+					} catch (IndexOutOfBoundsException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				break;
+			case ATOM_UPDATED:
+				if (parents.peek() == Tag.ATOM_ENTRY
+						&& !currentAtomItemHasPublished) {
+					try {
+						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -363,7 +387,7 @@ public class FeedParser {
 				}
 				break;
 			case RSS_DESCRIPTION:
-				if (!currentItemHasHtml) {
+				if (!currentRssItemHasHtml) {
 					switch (parents.peek()) {
 					case RSS_ITEM:
 						feedItem.setDescription(buffer.toString().trim());
@@ -376,7 +400,7 @@ public class FeedParser {
 				}
 				break;
 			case RSS_CONTENT_ENCODED:
-				currentItemHasHtml = true;
+				currentRssItemHasHtml = true;
 				switch (parents.peek()) {
 				case RSS_ITEM:
 					feedItem.setDescription(buffer.toString().trim());
@@ -392,7 +416,7 @@ public class FeedParser {
 					feed.getItems().add(feedItem);
 				}
 				feedItem = null;
-				currentItemHasHtml = false;
+				currentRssItemHasHtml = false;
 				break;
 			case RSS_GUID:
 				if (parents.peek() == Tag.RSS_ITEM) {
@@ -568,6 +592,7 @@ public class FeedParser {
 			temp.put("link", Tag.ATOM_LINK);
 			temp.put("content", Tag.ATOM_CONTENT);
 			temp.put("published", Tag.ATOM_PUBLISHED);
+			temp.put("updated", Tag.ATOM_UPDATED);
 			temp.put("subtitle", Tag.ATOM_SUBTITLE);
 			temp.put("id", Tag.ATOM_ID);
 			temp.put("icon", Tag.ATOM_ICON);
