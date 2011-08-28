@@ -34,6 +34,7 @@
 	<string name="dialog_add_progress_message">Please wait...</string>
 	<string name="dialog_reload_logo_progress_title">Reloading Logo</string>
 	<string name="dialog_reload_logo_progress_message">Please wait...</string>
+	<string name="dialog_choose_download_enclosure">Choose a file</string>
 	<string name="message_error">Something went wrong</string>
 	<string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
 	<string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
@@ -47,6 +48,7 @@
 	<string name="message_no_downloads_finished">No finished downloads</string>
 	<string name="message_no_subscriptions">No subscriptions</string>
 	<string name="message_download_queued">Download added to queue</string>
+	<string name="message_episode_without_enclosure">There is no file attached to this episode</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>
