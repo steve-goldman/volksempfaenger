@@ -645,7 +645,7 @@ public class FeedParser {
 		static final Map<String, AtomRel> atomRelTable;
 		static {
 			Map<String, AtomRel> temp = new HashMap<String, AtomRel>();
-			temp.put("enclosure", AtomRel.SELF);
+			temp.put("enclosure", AtomRel.ENCLOSURE);
 			temp.put("alternate", AtomRel.ALTERNATE);
 			temp.put("self", AtomRel.SELF);
 			atomRelTable = Collections.unmodifiableMap(temp);
