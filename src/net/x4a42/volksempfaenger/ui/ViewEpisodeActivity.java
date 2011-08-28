@@ -33,6 +33,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.CharacterStyle;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -104,8 +105,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
 
-		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
-
 		seekBar.setEnabled(false);
 		buttonBack.setEnabled(false);
 		buttonForward.setEnabled(false);
@@ -154,16 +153,25 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				.getColumnIndex(DatabaseHelper.Episode.PODCAST));
 		episodeTitle.setText(c.getString(c
 				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
-		descriptionText = Utils.normalizeString(c.getString(c
-				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION)));
+		descriptionText = c.getString(c
+				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION));
 
 		Spanned s = Html.fromHtml(descriptionText);
 		if (s instanceof SpannableStringBuilder) {
 			descriptionSpanned = (SpannableStringBuilder) s;
+			episodeDescription.setMovementMethod(null);
 		} else {
 			descriptionSpanned = new SpannableStringBuilder(s);
+			episodeDescription.setMovementMethod(LinkMovementMethod
+					.getInstance());
 		}
-		episodeDescription.setText(descriptionSpanned);
+		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+				CharacterStyle.class).length == 0) {
+			// use the normal text as there is no html
+			episodeDescription.setText(descriptionText);
+		} else {
+			episodeDescription.setText(descriptionSpanned);
+		}
 		new ImageLoadTask().execute();
 
 		c.close();
