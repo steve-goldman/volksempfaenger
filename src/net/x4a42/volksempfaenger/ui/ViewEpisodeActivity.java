@@ -110,6 +110,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
 
+		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
+
 		seekBar.setEnabled(false);
 		buttonBack.setEnabled(false);
 		buttonForward.setEnabled(false);
@@ -164,11 +166,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		Spanned s = Html.fromHtml(descriptionText);
 		if (s instanceof SpannableStringBuilder) {
 			descriptionSpanned = (SpannableStringBuilder) s;
-			episodeDescription.setMovementMethod(null);
 		} else {
 			descriptionSpanned = new SpannableStringBuilder(s);
-			episodeDescription.setMovementMethod(LinkMovementMethod
-					.getInstance());
 		}
 		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
 				CharacterStyle.class).length == 0) {
