@@ -105,6 +105,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
 
+		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
+
 		seekBar.setEnabled(false);
 		buttonBack.setEnabled(false);
 		buttonForward.setEnabled(false);
@@ -166,11 +168,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				CharacterStyle.class).length == 0) {
 			// use the normal text as there is no html
 			episodeDescription.setText(descriptionText);
-			episodeDescription.setMovementMethod(null);
 		} else {
 			episodeDescription.setText(descriptionSpanned);
-			episodeDescription.setMovementMethod(LinkMovementMethod
-					.getInstance());
 		}
 		new ImageLoadTask().execute();
 
