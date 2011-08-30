@@ -159,18 +159,18 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		Spanned s = Html.fromHtml(descriptionText);
 		if (s instanceof SpannableStringBuilder) {
 			descriptionSpanned = (SpannableStringBuilder) s;
-			episodeDescription.setMovementMethod(null);
 		} else {
 			descriptionSpanned = new SpannableStringBuilder(s);
-			episodeDescription.setMovementMethod(LinkMovementMethod
-					.getInstance());
 		}
 		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
 				CharacterStyle.class).length == 0) {
 			// use the normal text as there is no html
 			episodeDescription.setText(descriptionText);
+			episodeDescription.setMovementMethod(null);
 		} else {
 			episodeDescription.setText(descriptionSpanned);
+			episodeDescription.setMovementMethod(LinkMovementMethod
+					.getInstance());
 		}
 		new ImageLoadTask().execute();
 
