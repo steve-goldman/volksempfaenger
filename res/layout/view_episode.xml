@@ -27,9 +27,9 @@
 				android:layout_marginTop="12sp" />
 			<TextView android:id="@+id/episode_description"
 				android:layout_height="wrap_content" android:layout_width="match_parent"
-				android:layout_weight="1" android:textColor="@color/episode_description_text_color"
-				android:textColorHighlight="@color/episode_description_text_color"
-				android:textColorLink="@color/episode_description_link_color"></TextView>
+				android:layout_weight="1" android:textColor="@color/episode_description_text"
+				android:textColorHighlight="@color/episode_description_text"
+				android:textColorLink="@color/episode_description_link"></TextView>
 		</LinearLayout>
 	</ScrollView>
 	<LinearLayout android:layout_width="match_parent"
