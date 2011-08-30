@@ -144,7 +144,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	public void onPrepared(MediaPlayer mp) {
 		playerState = PlayerState.PREPARED;
-		notification = new Notification(R.drawable.icon, "Folgentitel",
+		notification = new Notification(R.drawable.notification, "Folgentitel",
 				System.currentTimeMillis());
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
