@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="emptyListView">
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+		<item name="android:gravity">center_vertical|center_horizontal</item>
+	</style>
+	<style name="podcastLogo">
+		<item name="android:src">@drawable/default_logo</item>
+	</style>
+	<style name="podcastLogoSmall" parent="podcastLogo">
+		<item name="android:layout_width">64dp</item>
+		<item name="android:layout_height">64dp</item>
+	</style>
+	<style name="podcastLogoLarge" parent="podcastLogo">
+		<item name="android:layout_width">96dp</item>
+		<item name="android:layout_height">96dp</item>
+	</style>
+</resources>
