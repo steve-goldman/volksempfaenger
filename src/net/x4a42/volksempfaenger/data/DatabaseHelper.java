@@ -46,15 +46,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final String DESCRIPTION = "description";
 		public static final String STATE = "state";
 		public static final String ENCLOSURE = "enclosure_id";
-
+		
 		public static final int STATE_NEW = 0;
-		public static final int STATE_DOWNLOAD_QUEUED = 1;
-		public static final int STATE_DOWNLOADING = 2;
-		public static final int STATE_DOWNLOADED = 3;
-		public static final int STATE_LISTEN_QUEUED = 4;
-		public static final int STATE_LISTENING = 5;
-		public static final int STATE_LISTENED = 6;
-		public static final int STATE_DELETED = 7;
+		public static final int STATE_DOWNLOADING = 1;
+		public static final int STATE_READY = 2;
+		public static final int STATE_LISTENING = 3;
+		public static final int STATE_LISTENED = 4;
 
 		private static String createSql() {
 			StringBuilder sql = new StringBuilder();
@@ -66,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			sql.append("  \"date\" INTEGER,\n");
 			sql.append("  \"url\" TEXT,\n");
 			sql.append("  \"description\" TEXT,\n");
-			sql.append("  \"state\" INTEGER,\n");
+			sql.append("  \"state\" INTEGER DEFAULT 0,\n");
 			sql.append("  \"enclosure_id\" INTEGER REFERENCES \"enclosure\" (\"_id\"),\n");
 			sql.append("  UNIQUE (\"podcast_id\", \"item_id\")\n");
 			sql.append(")");
