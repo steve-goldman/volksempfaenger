@@ -42,8 +42,10 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 			for (int i = 0; i < c.getColumnCount(); i++) {
 				m.put(cols[i], c.getString(i));
 			}
-			dataMap.put(c.getLong(c
-					.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID)), m);
+			dataMap.put(
+					c.getLong(c
+							.getColumnIndex(DatabaseHelper.ExtendedEpisode.DOWNLOAD_ID)),
+					m);
 		}
 
 		c.close();
