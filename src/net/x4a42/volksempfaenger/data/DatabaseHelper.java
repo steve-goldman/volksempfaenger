@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final String DESCRIPTION = "description";
 		public static final String STATE = "state";
 		public static final String ENCLOSURE = "enclosure_id";
-		
+
 		public static final int STATE_NEW = 0;
 		public static final int STATE_DOWNLOADING = 1;
 		public static final int STATE_READY = 2;
@@ -108,11 +108,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static class ExtendedEpisode {
 
+		public static final String _TABLE = "extended_episode";
+		public static final String ID = "_id";
+		public static final String EPISODE_ITEM_ID = "episode_item_id";
+		public static final String EPISODE_TITLE = "episode_title";
+		public static final String EPISODE_DATE = "episode_date";
+		public static final String EPISODE_URL = "episode_url";
+		public static final String EPISODE_DESCRIPTION = "episode_description";
+		public static final String EPISODE_STATE = "episode_state";
+		public static final String PODCAST_ID = "podcast_id";
+		public static final String PODCAST_TITLE = "podcast_title";
+		public static final String PODCAST_DESCRIPTION = "podcast_description";
+		public static final String PODCAST_URL = "podcast_url";
+		public static final String PODCAST_WEBSITE = "podcast_website";
+		public static final String ENCLOSURE_ID = "enclosure_id";
+		public static final String ENCLOSURE_TITLE = "enclosure_title";
+		public static final String ENCLOSURE_URL = "enclosure_url";
+		public static final String ENCLOSURE_MIME = "enclosure_mime";
+		public static final String ENCLOSURE_FILE = "enclosure_file";
+		public static final String ENCLOSURE_SIZE = "enclosure_size";
+		public static final String DOWNLOAD_ID = "download_id";
+		public static final String DURATION_TOTAL = "duration_total";
+		public static final String DURATION_LISTENED = "duration_listened";
+
 		private static String createSql() {
 			StringBuilder sql = new StringBuilder();
 			sql.append("CREATE VIEW \"extended_episode\" AS\n");
 			sql.append("SELECT\n");
-			sql.append("  \"episode\".\"_id\" AS \"episode_id\",\n");
+			sql.append("  \"episode\".\"_id\" AS \"_id\",\n");
 			sql.append("  \"episode\".\"item_id\" AS \"episode_item_id\",\n");
 			sql.append("  \"episode\".\"title\" AS \"episode_title\",\n");
 			sql.append("  \"episode\".\"date\" AS \"episode_date\",\n");

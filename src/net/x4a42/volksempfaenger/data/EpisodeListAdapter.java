@@ -19,26 +19,26 @@ public class EpisodeListAdapter extends SimpleCursorAdapter {
 			DatabaseHelper.Episode.DATE };
 	static final int[] to = { R.id.episode_title, R.id.episode_date };
 
-	static final Map<Integer, Integer> rowColorMap;
-	static {
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		map.put(DatabaseHelper.Enclosure.STATE_NEW, R.color.episode_title_new);
-		map.put(DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED,
-				R.color.episode_title_download_queued);
-		map.put(DatabaseHelper.Enclosure.STATE_DOWNLOADING,
-				R.color.episode_title_downloading);
-		map.put(DatabaseHelper.Enclosure.STATE_DOWNLOADED,
-				R.color.episode_title_downloaded);
-		map.put(DatabaseHelper.Enclosure.STATE_LISTEN_QUEUED,
-				R.color.episode_title_listen_queued);
-		map.put(DatabaseHelper.Enclosure.STATE_LISTENING,
-				R.color.episode_title_listening);
-		map.put(DatabaseHelper.Enclosure.STATE_LISTENED,
-				R.color.episode_title_listened);
-		map.put(DatabaseHelper.Enclosure.STATE_DELETED,
-				R.color.episode_title_deleted);
-		rowColorMap = Collections.unmodifiableMap(map);
-	}
+	// static final Map<Integer, Integer> rowColorMap;
+	// static {
+	// Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+	// map.put(DatabaseHelper.Enclosure.STATE_NEW, R.color.episode_title_new);
+	// map.put(DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED,
+	// R.color.episode_title_download_queued);
+	// map.put(DatabaseHelper.Enclosure.STATE_DOWNLOADING,
+	// R.color.episode_title_downloading);
+	// map.put(DatabaseHelper.Enclosure.STATE_DOWNLOADED,
+	// R.color.episode_title_downloaded);
+	// map.put(DatabaseHelper.Enclosure.STATE_LISTEN_QUEUED,
+	// R.color.episode_title_listen_queued);
+	// map.put(DatabaseHelper.Enclosure.STATE_LISTENING,
+	// R.color.episode_title_listening);
+	// map.put(DatabaseHelper.Enclosure.STATE_LISTENED,
+	// R.color.episode_title_listened);
+	// map.put(DatabaseHelper.Enclosure.STATE_DELETED,
+	// R.color.episode_title_deleted);
+	// rowColorMap = Collections.unmodifiableMap(map);
+	// }
 
 	public EpisodeListAdapter(Context context, Cursor cursor) {
 		super(context, R.layout.view_subscription_row, cursor, from, to);

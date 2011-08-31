@@ -117,26 +117,20 @@ public class DownloadService extends Service {
 
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT enclosure._id AS _id, ");
-			sql.append("episode.title AS episode_title, ");
-			sql.append("enclosure.url AS enclosure_url, ");
-			sql.append("enclosure.download_id AS download_id ");
-			sql.append("FROM enclosure ");
-			sql.append("JOIN episode ON episode._id = enclosure.episode_id ");
-			sql.append("WHERE enclosure.state = ");
-			sql.append(DatabaseHelper.Enclosure.STATE_NEW);
-			sql.append(' ');
-			if (params == null) {
-				sql.append("ORDER BY episode.date DESC");
-			} else {
-				sql.append("AND enclosure._id IN (");
-				sql.append(Utils.joinArray(params, ","));
-				sql.append(") ");
-			}
-			Log.d(getClass().getSimpleName(), sql.toString());
+			String selection = "WHERE enclosure.state = "
+					+ DatabaseHelper.Episode.STATE_NEW;
+			String orderBy = null;
 
-			Cursor cursor = db.rawQuery(sql.toString(), null);
+			if (params == null) {
+				orderBy = String.format("%s DESC",
+						DatabaseHelper.ExtendedEpisode.EPISODE_DATE);
+			} else {
+				selection += " AND enclosure._id IN ("
+						+ Utils.joinArray(params, ",") + ")";
+			}
+
+			Cursor cursor = db.query(DatabaseHelper.ExtendedEpisode._TABLE,
+					null, selection, null, null, null, orderBy);
 
 			EnclosureDownloader ed = new EnclosureDownloader(
 					DownloadService.this, (networkAllowd & NETWORK_WIFI) != 0,
@@ -151,27 +145,45 @@ public class DownloadService extends Service {
 					cursor.getCount(), freeSlots));
 
 			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.Enclosure.STATE,
-					DatabaseHelper.Enclosure.STATE_DOWNLOAD_QUEUED);
 			while (cursor.moveToNext() && freeSlots-- > 0) {
 				Query query = new Query();
 				query.setFilterById(cursor.getLong(cursor
-						.getColumnIndex("download_id")));
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.DOWNLOAD_ID)));
 				if (dm.query(query).getCount() != 0) {
 					// The Download of this episode was already started
 					// TODO: Handling of failed downloads
 					continue;
 				}
-				long id = cursor.getLong(cursor.getColumnIndex("_id"));
-				String title = cursor.getString(cursor
-						.getColumnIndex("episode_title"));
-				String url = cursor.getString(cursor
-						.getColumnIndex("enclosure_url"));
-				long downloadId = ed.downloadEnclosure(id, url, title);
+
+				// get necessary information and enqueue download
+				long enclosureId = cursor
+						.getLong(cursor
+								.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+				long episodeId = cursor.getLong(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID));
+				String title = cursor
+						.getString(cursor
+								.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
+				String url = cursor
+						.getString(cursor
+								.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_URL));
+				long downloadId = ed.downloadEnclosure(enclosureId, url, title);
+
+				// update enclosure table
+				values.clear();
 				values.put(DatabaseHelper.Enclosure.DOWNLOAD_ID, downloadId);
 				db.update(DatabaseHelper.Enclosure._TABLE, values,
 						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-						new String[] { String.valueOf(id) });
+						new String[] { String.valueOf(enclosureId) });
+
+				// update episode table
+				values.clear();
+				values.put(DatabaseHelper.Episode.STATE,
+						DatabaseHelper.Episode.STATE_DOWNLOADING);
+				db.update(DatabaseHelper.Episode._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Episode.ID),
+						new String[] { String.valueOf(episodeId) });
+
 			}
 			cursor.close();
 

@@ -59,8 +59,8 @@ public class DownloadListRunningAdapter extends DownloadListAdapter {
 			return;
 		}
 
-		File podcastLogoFile = Utils.getPodcastLogoFile(context,
-				Long.valueOf(info.get("podcast_id")));
+		File podcastLogoFile = Utils.getPodcastLogoFile(context, Long
+				.valueOf(info.get(DatabaseHelper.ExtendedEpisode.PODCAST_ID)));
 		ImageView podcastLogo = (ImageView) view
 				.findViewById(R.id.podcast_logo);
 		if (podcastLogoFile.isFile()) {
@@ -73,7 +73,8 @@ public class DownloadListRunningAdapter extends DownloadListAdapter {
 
 		TextView podcastTitle = (TextView) view
 				.findViewById(R.id.podcast_title);
-		podcastTitle.setText(info.get("podcast_title"));
+		podcastTitle.setText(info
+				.get(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
 
 	}
 

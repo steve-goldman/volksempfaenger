@@ -62,6 +62,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private Handler updateHandler;
 
 	private long id;
+	private long podcastId;
+	private long enclosureId;
+	private String enclosureFile;
 	private DatabaseHelper dbHelper;
 
 	private ImageView podcastLogo;
@@ -137,12 +140,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			updateHandler.post(updateSliderTask);
 		}
 
-		Cursor c;
-
-		// Update episode information
-
-		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Episode._TABLE,
-				null, String.format("%s = ?", DatabaseHelper.Episode.ID),
+		Cursor c = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
 				new String[] { String.valueOf(id) }, null, null, null);
 
 		if (!c.moveToFirst()) {
@@ -151,27 +151,22 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return;
 		}
 
-		long podcastId = c.getLong(c
-				.getColumnIndex(DatabaseHelper.Episode.PODCAST));
+		podcastId = c.getLong(c
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
+		enclosureId = c.getLong(c
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+		enclosureFile = c.getString(c
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
 		episodeTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
-		descriptionText = c.getString(c
-				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION));
-
-		Spanned s = Html.fromHtml(descriptionText);
-		if (s instanceof SpannableStringBuilder) {
-			descriptionSpanned = (SpannableStringBuilder) s;
-		} else {
-			descriptionSpanned = new SpannableStringBuilder(s);
-		}
-		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-				CharacterStyle.class).length == 0) {
-			// use the normal text as there is no html
-			episodeDescription.setText(descriptionText);
-		} else {
-			episodeDescription.setText(descriptionSpanned);
-		}
-		new ImageLoadTask().execute();
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE)));
+		descriptionText = c
+				.getString(c
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
+		podcastTitle.setText(c.getString(c
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE)));
+		podcastDescription
+				.setText(c.getString(c
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION)));
 
 		c.close();
 
@@ -182,24 +177,17 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			podcastLogo.setImageBitmap(podcastLogoBitmap);
 		}
 
-		// Update podcast information
-		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE,
-				null, String.format("%s = ?", DatabaseHelper.Podcast.ID),
-				new String[] { String.valueOf(podcastId) }, null, null, null,
-				"1");
-
-		if (!c.moveToFirst()) {
-			// ID does not exist
-			finish();
-			return;
+		Spanned s = Html.fromHtml(descriptionText);
+		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+				: new SpannableStringBuilder(s);
+		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+				CharacterStyle.class).length == 0) {
+			// use the normal text as there is no html
+			episodeDescription.setText(descriptionText);
+		} else {
+			episodeDescription.setText(descriptionSpanned);
 		}
-
-		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
-		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
-
-		c.close();
+		new ImageLoadTask().execute();
 	}
 
 	@Override
@@ -227,74 +215,50 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_download:
 			intent = new Intent(this, DownloadService.class);
-			cursor = dbHelper.getReadableDatabase().query(
-					DatabaseHelper.Enclosure._TABLE,
-					new String[] { DatabaseHelper.Enclosure.ID },
-					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-					new String[] { String.valueOf(id) }, null, null, null);
-			long[] v = null;
-			if (cursor.getCount() != 0) {
-				v = new long[cursor.getCount()];
-				for (int i = 0; i < v.length; i++) {
-					cursor.moveToNext();
-					v[i] = cursor.getLong(0);
-				}
-			}
-			cursor.close();
-			intent.putExtra("id", v);
+			intent.putExtra("id", new long[] { enclosureId });
 			startService(intent);
 			Toast.makeText(this, R.string.message_download_queued,
 					Toast.LENGTH_SHORT).show();
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(DatabaseHelper.Enclosure.STATE,
-					DatabaseHelper.Enclosure.STATE_LISTENED);
-			values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, 0);
+			values.put(DatabaseHelper.Episode.STATE,
+					DatabaseHelper.Episode.STATE_LISTENED);
 			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Enclosure._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+					DatabaseHelper.Episode._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Episode.ID),
 					new String[] { String.valueOf(id) });
 			return true;
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			cursor = dbHelper.getReadableDatabase().query(
-					DatabaseHelper.Enclosure._TABLE,
-					new String[] { DatabaseHelper.Enclosure.ID,
-							DatabaseHelper.Enclosure.FILE },
-					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-					new String[] { String.valueOf(id) }, null, null, null);
-			while (cursor.moveToNext()) {
-				String filename = cursor.getString(1);
-				try {
-					if (filename != null) {
-						File f = new File(new URI(filename));
-						if (f.isFile()) {
-							f.delete();
-						}
+			try {
+				if (enclosureFile != null) {
+					File f = new File(new URI(enclosureFile));
+					if (f.isFile()) {
+						f.delete();
 					}
-				} catch (URISyntaxException e) {
-					Log.w(getClass().getSimpleName(), "Exception handled", e);
 				}
-				values.put(DatabaseHelper.Enclosure.FILE, (String) null);
-				values.put(DatabaseHelper.Enclosure.STATE,
-						DatabaseHelper.Enclosure.STATE_DELETED);
-				dbHelper.getReadableDatabase().update(
-						DatabaseHelper.Enclosure._TABLE, values,
-						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-						new String[] { String.valueOf(cursor.getLong(0)) });
+			} catch (URISyntaxException e) {
+				Log.w(getClass().getSimpleName(), "Exception handled", e);
 			}
-			cursor.close();
+			values.put(DatabaseHelper.Enclosure.FILE, (String) null);
+			dbHelper.getReadableDatabase().update(
+					DatabaseHelper.Enclosure._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+					new String[] { String.valueOf(enclosureId) });
+			values.clear();
+			values.put(DatabaseHelper.Episode.STATE,
+					DatabaseHelper.Episode.STATE_LISTENED);
+			dbHelper.getReadableDatabase().update(
+					DatabaseHelper.Episode._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Episode.ID),
+					new String[] { String.valueOf(id) });
 			return true;
 
 		default:
 			return handleGlobalMenu(item);
 		}
-	}
-
-	public Drawable getDrawable(String src) {
-		return null;
 	}
 
 	private Runnable updateSliderTask = new Runnable() {

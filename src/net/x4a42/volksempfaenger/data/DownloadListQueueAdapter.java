@@ -13,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
 public class DownloadListQueueAdapter extends SimpleCursorAdapter {
-	static final String[] FROM = { "podcast_title", "episode_title" };
-	static final int[] TO = { R.id.podcast_title, R.id.episode_title };
+	static final String[] from = {
+			DatabaseHelper.ExtendedEpisode.PODCAST_TITLE,
+			DatabaseHelper.ExtendedEpisode.EPISODE_TITLE };
+	static final int[] to = { R.id.podcast_title, R.id.episode_title };
 
 	public DownloadListQueueAdapter(Context context, Cursor cursor) {
-		super(context, R.layout.download_list_queue_row, cursor, FROM, TO);
+		super(context, R.layout.download_list_queue_row, cursor, from, to);
 	}
 
 	@Override
