@@ -12,6 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final int DB_VERSION = 1;
 
 	public static class Podcast {
+
 		public static final String _TABLE = "podcast";
 		public static final String ID = BaseColumns._ID;
 		public static final String TITLE = "title";
@@ -20,58 +21,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final String WEBSITE = "website";
 
 		private static String createSql() {
-			return String.format("CREATE TABLE \"%s\" (\n"
-					+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-					+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-					+ "  \"%s\" TEXT UNIQUE,\n" + "  \"%s\" TEXT\n" + ")",
-					_TABLE, ID, TITLE, DESCRIPTION, URL, WEBSITE);
+			StringBuilder sql = new StringBuilder();
+			sql.append("CREATE TABLE \"podcast\" (\n");
+			sql.append("  \"_id\" INTEGER PRIMARY KEY AUTOINCREMENT,\n");
+			sql.append("  \"title\" TEXT,\n");
+			sql.append("  \"description\" TEXT,\n");
+			sql.append("  \"url\" TEXT UNIQUE,\n");
+			sql.append("  \"website\" TEXT\n");
+			sql.append(")");
+			return sql.toString();
 		}
+
 	}
 
 	public static class Episode {
+
 		public static final String _TABLE = "episode";
 		public static final String ID = BaseColumns._ID;
-		public static final String PODCAST = "podcast_id";
 		public static final String ITEM_ID = "item_id";
+		public static final String PODCAST = "podcast_id";
 		public static final String TITLE = "title";
 		public static final String DATE = "date";
 		public static final String URL = "url";
 		public static final String DESCRIPTION = "description";
-
-		private static String createSql() {
-			return String
-					.format("CREATE TABLE \"%s\" (\n"
-							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" INTEGER,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
-							PODCAST, Podcast._TABLE, Podcast.ID, ITEM_ID,
-							TITLE, DATE, URL, DESCRIPTION, PODCAST, ITEM_ID);
-		}
-	}
-
-	public static class Enclosure {
-		public static final String _TABLE = "enclosure";
-		public static final String ID = BaseColumns._ID;
-		public static final String EPISODE = "episode_id";
-		public static final String TITLE = "title";
-		public static final String URL = "url";
-		public static final String MIME = "mime"; // mime type
-		public static final String FILE = "file"; // path to file
-		public static final String SIZE = "size"; // file size
-		public static final String STATE = "state"; // see state constants below
-		public static final String DOWNLOAD_ID = "download_id"; // DownloadManager
-																// id
-		public static final String DURATION_TOTAL = "duration_total"; // total
-																		// duration
-																		// in
-																		// seconds
-		public static final String DURATION_LISTENED = "duration_listened"; // listened
-																			// time
-																			// in
-																			// seconds
+		public static final String STATE = "state";
+		public static final String ENCLOSURE = "enclosure_id";
 
 		public static final int STATE_NEW = 0;
 		public static final int STATE_DOWNLOAD_QUEUED = 1;
@@ -83,21 +57,91 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		public static final int STATE_DELETED = 7;
 
 		private static String createSql() {
-			return String
-					.format("CREATE TABLE \"%s\" (\n"
-							+ "  \"%s\" INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-							+ "  \"%s\" INTEGER REFERENCES \"%s\" (\"%s\") ON DELETE CASCADE,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" TEXT,\n" + "  \"%s\" TEXT,\n"
-							+ "  \"%s\" INTEGER,\n"
-							+ "  \"%s\" INTEGER DEFAULT %d,\n"
-							+ "  \"%s\" INTEGER,\n" + "  \"%s\" INTEGER,\n"
-							+ "  \"%s\" INTEGER,\n"
-							+ "  UNIQUE (\"%s\", \"%s\")\n" + ")", _TABLE, ID,
-							EPISODE, Episode._TABLE, Episode.ID, TITLE, URL,
-							MIME, FILE, SIZE, STATE, STATE_NEW, DOWNLOAD_ID,
-							DURATION_TOTAL, DURATION_LISTENED, EPISODE, URL);
+			StringBuilder sql = new StringBuilder();
+			sql.append("CREATE TABLE \"episode\" (\n");
+			sql.append("  \"_id\" INTEGER PRIMARY KEY AUTOINCREMENT,\n");
+			sql.append("  \"item_id\" TEXT,\n");
+			sql.append("  \"podcast_id\" INTEGER REFERENCES \"podcast\" (\"_id\") ON DELETE CASCADE,\n");
+			sql.append("  \"title\" TEXT,\n");
+			sql.append("  \"date\" INTEGER,\n");
+			sql.append("  \"url\" TEXT,\n");
+			sql.append("  \"description\" TEXT,\n");
+			sql.append("  \"state\" INTEGER,\n");
+			sql.append("  \"enclosure_id\" INTEGER REFERENCES \"enclosure\" (\"_id\"),\n");
+			sql.append("  UNIQUE (\"podcast_id\", \"item_id\")\n");
+			sql.append(")");
+			return sql.toString();
 		}
+
+	}
+
+	public static class Enclosure {
+
+		public static final String _TABLE = "enclosure";
+		public static final String ID = BaseColumns._ID;
+		public static final String EPISODE = "episode_id";
+		public static final String TITLE = "title";
+		public static final String URL = "url";
+		public static final String MIME = "mime";
+		public static final String FILE = "file";
+		public static final String SIZE = "size";
+		public static final String DOWNLOAD_ID = "download_id";
+		public static final String DURATION_TOTAL = "duration_total";
+		public static final String DURATION_LISTENED = "duration_listened";
+
+		private static String createSql() {
+			StringBuilder sql = new StringBuilder();
+			sql.append("CREATE TABLE \"enclosure\" (\n");
+			sql.append("  \"_id\" INTEGER PRIMARY KEY AUTOINCREMENT,\n");
+			sql.append("  \"episode_id\" INTEGER REFERENCES \"episode\" (\"_id\") ON DELETE CASCADE,\n");
+			sql.append("  \"title\" TEXT,\n");
+			sql.append("  \"url\" TEXT,\n");
+			sql.append("  \"mime\" TEXT,\n");
+			sql.append("  \"file\" TEXT,\n");
+			sql.append("  \"size\" INTEGER,\n");
+			sql.append("  \"download_id\" INTEGER,\n");
+			sql.append("  \"duration_total\" INTEGER,\n");
+			sql.append("  \"duration_listened\" INTEGER,\n");
+			sql.append("  UNIQUE (\"episode_id\", \"url\")\n");
+			sql.append(")");
+			return sql.toString();
+		}
+
+	}
+
+	public static class ExtendedEpisode {
+
+		private static String createSql() {
+			StringBuilder sql = new StringBuilder();
+			sql.append("CREATE VIEW \"extended_episode\" AS\n");
+			sql.append("SELECT\n");
+			sql.append("  \"episode\".\"_id\" AS \"episode_id\",\n");
+			sql.append("  \"episode\".\"item_id\" AS \"episode_item_id\",\n");
+			sql.append("  \"episode\".\"title\" AS \"episode_title\",\n");
+			sql.append("  \"episode\".\"date\" AS \"episode_date\",\n");
+			sql.append("  \"episode\".\"url\" AS \"episode_url\",\n");
+			sql.append("  \"episode\".\"description\" AS \"episode_description\",\n");
+			sql.append("  \"episode\".\"state\" AS \"episode_state\",\n");
+			sql.append("  \"podcast\".\"_id\" AS \"podcast_id\",\n");
+			sql.append("  \"podcast\".\"title\" AS \"podcast_title\",\n");
+			sql.append("  \"podcast\".\"description\" AS \"podcast_description\",\n");
+			sql.append("  \"podcast\".\"url\" AS \"podcast_url\",\n");
+			sql.append("  \"podcast\".\"website\" AS \"podcast_website\",\n");
+			sql.append("  \"enclosure\".\"_id\" AS \"enclosure_id\",\n");
+			sql.append("  \"enclosure\".\"title\" AS \"enclosure_title\",\n");
+			sql.append("  \"enclosure\".\"url\" AS \"enclosure_url\",\n");
+			sql.append("  \"enclosure\".\"mime\" AS \"enclosure_mime\",\n");
+			sql.append("  \"enclosure\".\"file\" AS \"enclosure_file\",\n");
+			sql.append("  \"enclosure\".\"size\" AS \"enclosure_size\",\n");
+			sql.append("  \"enclosure\".\"download_id\" AS \"download_id\",\n");
+			sql.append("  \"enclosure\".\"duration_total\" AS \"duration_total\",\n");
+			sql.append("  \"enclosure\".\"duration_listened\" AS \"duration_listened\"\n");
+			sql.append("FROM \"episode\"\n");
+			sql.append("JOIN \"podcast\" ON \"episode\".\"podcast_id\" = \"podcast\".\"_id\"\n");
+			sql.append("JOIN \"enclosure\" ON \"episode\".\"enclosure_id\" = \"enclosure\".\"_id\"");
+			return sql.toString();
+		}
+
 	}
 
 	Context context;
@@ -136,6 +180,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(Podcast.createSql());
 		db.execSQL(Episode.createSql());
 		db.execSQL(Enclosure.createSql());
+		db.execSQL(ExtendedEpisode.createSql());
 	}
 
 	@Override
