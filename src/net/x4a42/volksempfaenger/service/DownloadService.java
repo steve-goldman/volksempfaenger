@@ -117,15 +117,16 @@ public class DownloadService extends Service {
 
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-			String selection = "WHERE enclosure.state = "
-					+ DatabaseHelper.Episode.STATE_NEW;
+			String selection = DatabaseHelper.ExtendedEpisode.EPISODE_STATE
+					+ " = " + DatabaseHelper.Episode.STATE_NEW;
 			String orderBy = null;
 
 			if (params == null) {
 				orderBy = String.format("%s DESC",
 						DatabaseHelper.ExtendedEpisode.EPISODE_DATE);
 			} else {
-				selection += " AND enclosure._id IN ("
+				selection += " AND "
+						+ DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID + " IN ("
 						+ Utils.joinArray(params, ",") + ")";
 			}
 
