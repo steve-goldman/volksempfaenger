@@ -5,18 +5,23 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -207,18 +212,40 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		return true;
 	}
 
+	List<EnclosureSimple> enclosures;
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
 		Cursor cursor;
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 		case R.id.item_download:
-			intent = new Intent(this, DownloadService.class);
-			intent.putExtra("id", new long[] { enclosureId });
-			startService(intent);
-			Toast.makeText(this, R.string.message_download_queued,
-					Toast.LENGTH_SHORT).show();
+			enclosures = getEnclosures();
+			switch (enclosures.size()) {
+			case 0:
+				Toast.makeText(this,
+						R.string.message_episode_without_enclosure,
+						Toast.LENGTH_SHORT).show();
+				return true;
+			case 1:
+				long v[] = new long[1];
+				v[0] = enclosures.get(0).id;
+				downloadEnclosure(v);
+				break;
+			default:
+				AlertDialog dialog = getEnclosureChooserDialog(
+						getString(R.string.dialog_choose_download_enclosure),
+						enclosures, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								long v[] = new long[1];
+								v[0] = enclosures.get(which).id;
+								downloadEnclosure(v);
+							}
+						});
+				dialog.show();
+				break;
+			}
 			return true;
 
 		case R.id.item_mark_listened:
@@ -259,6 +286,16 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		default:
 			return handleGlobalMenu(item);
 		}
+	}
+
+	private void downloadEnclosure(long[] v) {
+		// currently broken
+		// Intent intent;
+		// intent = new Intent(this, DownloadService.class);
+		// intent.putExtra("id", v);
+		// startService(intent);
+		Toast.makeText(this, R.string.message_download_queued,
+				Toast.LENGTH_SHORT).show();
 	}
 
 	private Runnable updateSliderTask = new Runnable() {
@@ -406,6 +443,44 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public void onPlayerPrepared() {
 		service.play();
 		setPlaying();
+	}
+
+	private class EnclosureSimple {
+		public long id;
+		public String url;
+	}
+
+	private List<EnclosureSimple> getEnclosures() {
+		Cursor cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.Enclosure._TABLE,
+				new String[] { DatabaseHelper.Enclosure.ID,
+						DatabaseHelper.Enclosure.URL },
+				String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+				new String[] { String.valueOf(id) }, null, null, null);
+		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
+		while (cursor.moveToNext()) {
+			EnclosureSimple enclosure = new EnclosureSimple();
+			enclosure.id = cursor.getLong(cursor
+					.getColumnIndex(DatabaseHelper.Enclosure.ID));
+			enclosure.url = cursor.getString(cursor
+					.getColumnIndex(DatabaseHelper.Enclosure.URL));
+			enclosures.add(enclosure);
+		}
+		cursor.close();
+		return enclosures;
+	}
+
+	private AlertDialog getEnclosureChooserDialog(String title,
+			List<EnclosureSimple> enclosures,
+			DialogInterface.OnClickListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(title);
+		CharSequence items[] = new String[enclosures.size()];
+		for (int i = 0; i < enclosures.size(); i++) {
+			items[i] = enclosures.get(i).url;
+		}
+		builder.setItems(items, listener);
+		return builder.create();
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
