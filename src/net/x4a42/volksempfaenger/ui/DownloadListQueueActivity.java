@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ListView;
 
+// TODO: Improve implementation. GC has a lot of work to do in this activity
+
 public class DownloadListQueueActivity extends BaseActivity {
 
 	private DatabaseHelper dbHelper;
@@ -25,17 +27,14 @@ public class DownloadListQueueActivity extends BaseActivity {
 		runningList = (ListView) findViewById(R.id.download_list);
 		runningList.setEmptyView(findViewById(R.id.download_list_empty));
 
-		cursor = dbHelper
-				.getReadableDatabase()
-				.rawQuery(
-						"SELECT enclosure._id AS _id, podcast._id AS podcast_id, "
-								+ "podcast.title AS podcast_title, episode.title AS "
-								+ "episode_title FROM enclosure JOIN episode ON "
-								+ "episode._id = enclosure.episode_id JOIN podcast "
-								+ "ON podcast._id = episode.podcast_id WHERE "
-								+ "enclosure.state = ? ORDER BY episode.date DESC",
+		cursor = dbHelper.getReadableDatabase()
+				.query(DatabaseHelper.ExtendedEpisode._TABLE,
+						null,
+						String.format("%s = ?",
+								DatabaseHelper.ExtendedEpisode.EPISODE_STATE),
 						new String[] { String
-								.valueOf(DatabaseHelper.Enclosure.STATE_NEW) });
+								.valueOf(DatabaseHelper.Episode.STATE_NEW) },
+						null, null, null);
 
 		adapter = new DownloadListQueueAdapter(this, cursor);
 		runningList.setAdapter(adapter);

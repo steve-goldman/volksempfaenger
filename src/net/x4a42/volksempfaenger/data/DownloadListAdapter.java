@@ -26,16 +26,12 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 
 		Log.d(getClass().getSimpleName(), "onContentChanged()");
 
-		Cursor c = dbHelper
-				.getReadableDatabase()
-				.rawQuery(
-						"SELECT enclosure.download_id AS _id, podcast._id AS podcast_id, "
-								+ "podcast.title AS podcast_title, episode._id AS episode_id, "
-								+ "episode.title AS episode_title, enclosure._id AS enclosure_id "
-								+ "FROM enclosure JOIN episode ON episode._id = enclosure.episode_id "
-								+ "JOIN podcast ON podcast._id = episode.podcast_id "
-								+ "WHERE enclosure.download_id IS NOT NULL",
-						null);
+		Cursor c = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE,
+				null,
+				String.format("%s IS NOT NULL",
+						DatabaseHelper.ExtendedEpisode.DOWNLOAD_ID), null,
+				null, null, null);
 
 		String[] cols = c.getColumnNames();
 		dataMap = new HashMap<Long, Map<String, String>>(c.getCount());
@@ -46,7 +42,8 @@ public class DownloadListAdapter extends SimpleCursorAdapter {
 			for (int i = 0; i < c.getColumnCount(); i++) {
 				m.put(cols[i], c.getString(i));
 			}
-			dataMap.put(c.getLong(c.getColumnIndex("_id")), m);
+			dataMap.put(c.getLong(c
+					.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID)), m);
 		}
 
 		c.close();

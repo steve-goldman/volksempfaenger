@@ -21,13 +21,13 @@ import android.util.Log;
 
 public class UpdateService extends IntentService {
 
-	public UpdateService() {
-		super(UpdateService.class.getSimpleName());
-	}
-
 	private static long lastRun = 0;
 
 	private DatabaseHelper dbHelper;
+
+	public UpdateService() {
+		super(UpdateService.class.getSimpleName());
+	}
 
 	@Override
 	public void onCreate() {
@@ -134,6 +134,8 @@ public class UpdateService extends IntentService {
 					}
 				}
 
+				long mainEnclosureId = 0;
+
 				for (Enclosure enclosure : item.getEnclosures()) {
 					values.clear();
 					values.put(DatabaseHelper.Enclosure.EPISODE, itemId);
@@ -145,9 +147,11 @@ public class UpdateService extends IntentService {
 					values.put(DatabaseHelper.Enclosure.SIZE,
 							enclosure.getSize());
 
+					long enclosureId = 0;
+
 					try {
-						db.insertOrThrow(DatabaseHelper.Enclosure._TABLE, null,
-								values);
+						enclosureId = db.insertOrThrow(
+								DatabaseHelper.Enclosure._TABLE, null, values);
 					} catch (SQLException e) {
 						if (e instanceof SQLiteConstraintException) {
 							Cursor c = db
@@ -164,7 +168,7 @@ public class UpdateService extends IntentService {
 							if (!c.moveToFirst()) {
 								continue;
 							}
-							long enclosureId = c
+							enclosureId = c
 									.getLong(c
 											.getColumnIndex(DatabaseHelper.Enclosure.ID));
 							String filename = Utils.filenameFromUrl(enclosure
@@ -182,6 +186,22 @@ public class UpdateService extends IntentService {
 							continue;
 						}
 					}
+					// Try to find the main enclosure that will get downloaded
+					if (item.getEnclosures().size() == 1) {
+						// This is the only enclosure so it's the main one
+						mainEnclosureId = enclosureId;
+					} else {
+						// TODO: try to automatically choose the best match
+					}
+				}
+				// save mainEnclosureId in database
+				if (mainEnclosureId > 0) {
+					values.clear();
+					values.put(DatabaseHelper.Episode.ENCLOSURE,
+							mainEnclosureId);
+					db.update(DatabaseHelper.Episode._TABLE, values,
+							String.format("%s = ?", DatabaseHelper.Episode.ID),
+							new String[] { String.valueOf(itemId) });
 				}
 			}
 			Log.d(getClass().getSimpleName(), "Updated " + feed.getTitle());
