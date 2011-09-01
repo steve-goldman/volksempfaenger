@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.receiver;
 
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.service.DownloadService;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.content.BroadcastReceiver;
@@ -105,6 +106,15 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 			}
 			return null;
 
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// start DownloadService to start automatic downloads if there are
+			// new free slots
+			Intent downloadServiceIntent = new Intent(context,
+					DownloadService.class);
+			context.startService(downloadServiceIntent);
 		}
 	}
 

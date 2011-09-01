@@ -236,6 +236,10 @@ public class UpdateService extends IntentService {
 
 			Log.d(getClass().getSimpleName(), "Updated " + feed.getTitle());
 		}
+
+		// start DownloadService to start automatic downloads if enabled
+		Intent downloadServiceIntent = new Intent(this, DownloadService.class);
+		startService(downloadServiceIntent);
 	}
 
 	public static long getLastRun() {
