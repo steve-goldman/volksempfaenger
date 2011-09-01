@@ -60,10 +60,15 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 		episodeList.setOnItemClickListener(this);
 
 		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.Episode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.Episode.PODCAST),
-				new String[] { String.valueOf(id) }, null, null,
-				String.format("%s DESC", DatabaseHelper.Episode.DATE));
+				DatabaseHelper.ExtendedEpisode._TABLE,
+				null,
+				String.format("%s = ?",
+						DatabaseHelper.ExtendedEpisode.PODCAST_ID),
+				new String[] { String.valueOf(id) },
+				null,
+				null,
+				String.format("%s DESC",
+						DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
 		startManagingCursor(cursor);
 
 		adapter = new EpisodeListAdapter(this, cursor);

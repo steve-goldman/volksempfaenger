@@ -4,13 +4,11 @@
 	<color name="episode_description_text">#bbbbbb</color>
 	<color name="episode_description_link">#aaccee</color>
 
-	<color name="episode_title_new">#bbbbbb</color>
-	<color name="episode_title_download_queued">#bbbbbb</color>
-	<color name="episode_title_downloading">#bbbbbb</color>
-	<color name="episode_title_downloaded">#bbbbbb</color>
-	<color name="episode_title_listen_queued">#bbbbbb</color>
-	<color name="episode_title_listening">#bbbbbb</color>
-	<color name="episode_title_listened">#bbbbbb</color>
-	<color name="episode_title_deleted">#bbbbbb</color>
+	<!-- TODO: Choose better colors -->
+	<color name="episode_title_new">#0000ff</color>
+	<color name="episode_title_downloading">#ffff00</color>
+	<color name="episode_title_ready">#00ff00</color>
+	<color name="episode_title_listening">#ff00ff</color>
+	<color name="episode_title_listened">#ff0000</color>
 
 </resources>
