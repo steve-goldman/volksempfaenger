@@ -368,8 +368,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 					} else {
 						try {
 							// TODO change to actual file name
-							service.playFile(getEnclosureFile()
-									.getAbsolutePath());
+							service.playEpisode(getEpisodeId());
 							startedPlaying = true;
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block

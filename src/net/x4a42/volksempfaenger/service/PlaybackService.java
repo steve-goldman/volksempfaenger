@@ -1,16 +1,22 @@
 package net.x4a42.volksempfaenger.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
@@ -26,6 +32,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private Notification notification;
 	private AudioManager audioManager;
 	private AudioNoisyReceiver audioNoisyReceiver;
+	private DatabaseHelper dbHelper;
+	private Cursor cursor;
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
@@ -33,6 +41,26 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private PlayerState playerState = PlayerState.IDLE;
 	private PlayerListener playerListener = new DefaultPlayerListener();
+
+	private long getEpisodeId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID));
+	}
+
+	private long getEnclosureId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+	}
+
+	private String getPodcastTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
+	}
+
+	private String getEpisodeTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
+	}
 
 	@Override
 	public void onCreate() {
@@ -42,6 +70,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		audioNoisyReceiver = new AudioNoisyReceiver();
 		registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+		dbHelper = DatabaseHelper.getInstance(this);
 	}
 
 	public class PlaybackBinder extends Binder {
@@ -65,7 +94,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 	}
 
-	public void playFile(String path) throws IllegalArgumentException,
+	private void playFile(String path) throws IllegalArgumentException,
 			IOException {
 		if (playerState != PlayerState.IDLE) {
 			resetPlayer();
@@ -75,6 +104,47 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		playerState = PlayerState.PREPARING;
 		player.setOnPreparedListener(this);
 		player.prepareAsync();
+	}
+
+	public void playEpisode(long episodeId) throws IllegalArgumentException,
+			IOException {
+		// TODO Auto-generated method stub
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
+				new String[] { String.valueOf(episodeId) }, null, null, null);
+		if (!cursor.moveToFirst()) {
+			throw new IllegalArgumentException("Episode not found");
+		}
+		File enclosureFile;
+		try {
+			enclosureFile = new File(
+					new URI(
+							cursor.getString(cursor
+									.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE))));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Episode not found");
+		}
+		if (!enclosureFile.isFile()) {
+			throw new IllegalArgumentException("Episode not found");
+		}
+		playFile(enclosureFile.getAbsolutePath());
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.Episode.STATE,
+				DatabaseHelper.Episode.STATE_LISTENING);
+		updateEpisode(values);
+	}
+
+	private void updateEpisode(ContentValues values) {
+		dbHelper.getWritableDatabase().update(DatabaseHelper.Episode._TABLE,
+				values, String.format("%s = ?", DatabaseHelper.Episode.ID),
+				new String[] { String.valueOf(getEpisodeId()) });
+	}
+
+	private void updateEnclosure(ContentValues values) {
+		dbHelper.getWritableDatabase().update(DatabaseHelper.Enclosure._TABLE,
+				values, String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+				new String[] { String.valueOf(getEnclosureId()) });
 	}
 
 	public void play() {
@@ -143,13 +213,14 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	public void onPrepared(MediaPlayer mp) {
 		playerState = PlayerState.PREPARED;
-		notification = new Notification(R.drawable.notification, "Folgentitel",
-				System.currentTimeMillis());
+		notification = new Notification(R.drawable.notification,
+				getEpisodeTitle(), System.currentTimeMillis());
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
+		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(this, "Folgentitel", "Podcasttitel",
-				pendingIntent);
+		notification.setLatestEventInfo(this, getEpisodeTitle(),
+				getPodcastTitle(), pendingIntent);
 		startForeground(1, notification);
 		playerListener.onPlayerPrepared();
 	}
