@@ -19,7 +19,6 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -232,31 +231,35 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 		case R.id.item_download:
-			enclosures = getEnclosures();
-			switch (enclosures.size()) {
-			case 0:
-				Toast.makeText(this,
-						R.string.message_episode_without_enclosure,
-						Toast.LENGTH_SHORT).show();
-				return true;
-			case 1:
-				long v[] = new long[1];
-				v[0] = enclosures.get(0).id;
-				downloadEnclosure(v);
-				break;
-			default:
-				AlertDialog dialog = getEnclosureChooserDialog(
-						getString(R.string.dialog_choose_download_enclosure),
-						enclosures, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								long v[] = new long[1];
-								v[0] = enclosures.get(which).id;
-								downloadEnclosure(v);
-							}
-						});
-				dialog.show();
-				break;
+			if (getEnclosureId() != 0) {
+				// there is an preferred enclosure
+				downloadEnclosure();
+			} else {
+				enclosures = getEnclosures();
+				switch (enclosures.size()) {
+				case 0:
+					// no enclosures
+					Toast.makeText(this,
+							R.string.message_episode_without_enclosure,
+							Toast.LENGTH_SHORT).show();
+					break;
+				case 1:
+					// exactly one enclosure
+					downloadEnclosure(enclosures.get(0).id);
+					break;
+				default:
+					// multiple enclosures (they suck)
+					AlertDialog dialog = getEnclosureChooserDialog(
+							getString(R.string.dialog_choose_download_enclosure),
+							enclosures, new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									downloadEnclosure(enclosures.get(which).id);
+								}
+							});
+					dialog.show();
+					break;
+				}
 			}
 			return true;
 
@@ -300,7 +303,12 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		}
 	}
 
-	private void downloadEnclosure(long[] v) {
+	private void downloadEnclosure(long... v) {
+		if (v == null || v.length == 0) {
+			v = new long[] { getEnclosureId() };
+		} else if (v.length == 1) {
+			// TODO: update preferred enclosure
+		}
 		Intent intent = new Intent(this, DownloadService.class);
 		intent.putExtra("id", v);
 		startService(intent);
