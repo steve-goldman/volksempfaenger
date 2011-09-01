@@ -158,10 +158,12 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
 		case AudioManager.AUDIOFOCUS_GAIN:
-			player.setVolume(1.0f, 1.0f);
+			if (player != null) {
+				player.setVolume(1.0f, 1.0f);
+			}
 			break;
 		case AudioManager.AUDIOFOCUS_LOSS:
-			if (player.isPlaying()) {
+			if (player != null && player.isPlaying()) {
 				// TODO save current position
 				player.stop();
 				// TODO notify activity
@@ -170,14 +172,14 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-			if (player.isPlaying()) {
+			if (player != null && player.isPlaying()) {
 				player.pause();
 				// TODO notify activity
 			}
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-			if (player.isPlaying()) {
+			if (player != null && player.isPlaying()) {
 				player.setVolume(0.1f, 0.1f);
 			}
 			break;
