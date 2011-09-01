@@ -11,7 +11,6 @@ import java.util.List;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
-import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -216,7 +215,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Cursor cursor;
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 		case R.id.item_download:
@@ -289,11 +287,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	}
 
 	private void downloadEnclosure(long[] v) {
-		// currently broken
-		// Intent intent;
-		// intent = new Intent(this, DownloadService.class);
-		// intent.putExtra("id", v);
-		// startService(intent);
+		Intent intent = new Intent(this, DownloadService.class);
+		intent.putExtra("id", v);
+		startService(intent);
 		Toast.makeText(this, R.string.message_download_queued,
 				Toast.LENGTH_SHORT).show();
 	}
