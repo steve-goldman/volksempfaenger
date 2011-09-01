@@ -137,7 +137,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private void resetPlayer() {
-		player.release();
 		player.reset();
 		playerState = PlayerState.IDLE;
 	}
