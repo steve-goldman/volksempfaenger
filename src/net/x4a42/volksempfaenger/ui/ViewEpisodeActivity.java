@@ -492,6 +492,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 		textPosition.setText("00:00:00");
 		textDuration.setText("00:00:00");
+		startedPlaying = false;
 	}
 
 	public void onPlayerPrepared() {
