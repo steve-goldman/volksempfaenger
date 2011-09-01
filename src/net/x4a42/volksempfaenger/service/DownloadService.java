@@ -1,5 +1,9 @@
 package net.x4a42.volksempfaenger.service;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
@@ -117,11 +121,15 @@ public class DownloadService extends Service {
 
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-			String selection = DatabaseHelper.ExtendedEpisode.EPISODE_STATE
-					+ " = " + DatabaseHelper.Episode.STATE_NEW;
+			String selection = DatabaseHelper.ExtendedEpisode.ENCLOSURE_URL
+					+ " IS NOT NULL";
 			String orderBy = null;
 
 			if (params == null) {
+				selection += " AND "
+						+ DatabaseHelper.ExtendedEpisode.EPISODE_STATE + " = "
+						+ DatabaseHelper.Episode.STATE_NEW;
+
 				orderBy = String.format("%s DESC",
 						DatabaseHelper.ExtendedEpisode.EPISODE_DATE);
 			} else {
@@ -153,7 +161,23 @@ public class DownloadService extends Service {
 				if (dm.query(query).getCount() != 0) {
 					// The Download of this episode was already started
 					// TODO: Handling of failed downloads
+					freeSlots++;
 					continue;
+				}
+
+				try {
+					String enclosureFile = cursor
+							.getString(cursor
+									.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
+					if (enclosureFile != null
+							&& new File(new URI(enclosureFile)).isFile()) {
+						// the file already exists
+						freeSlots++;
+						continue;
+					}
+				} catch (URISyntaxException e) {
+					// if the URI is invalid, the file can't even exist so we
+					// just don't care
 				}
 
 				// get necessary information and enqueue download
