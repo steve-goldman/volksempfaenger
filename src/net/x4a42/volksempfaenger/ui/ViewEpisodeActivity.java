@@ -66,10 +66,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private Handler updateHandler;
 
 	private long id;
-	private long podcastId;
-	private long enclosureId;
-	private String enclosureFile;
 	private DatabaseHelper dbHelper;
+	private Cursor cursor;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
@@ -77,8 +75,54 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView episodeTitle;
 	private TextView episodeDescription;
 
-	private String descriptionText;
 	private SpannableStringBuilder descriptionSpanned;
+
+	private long getPodcastId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
+	}
+
+	private String getPodcastDescription() {
+		return cursor
+				.getString(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION));
+	}
+
+	private Bitmap getPodcastLogoBitmap() {
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+		if (podcastLogoFile.isFile()) {
+			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
+		} else {
+			return BitmapFactory.decodeResource(getResources(),
+					R.drawable.default_logo);
+		}
+	}
+
+	private long getEnclosureId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+	}
+
+	private String getEnclosureFile() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
+	}
+
+	private String getEpisodeTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
+	}
+
+	private String getEpisodeDescription() {
+		return cursor
+				.getString(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
+	}
+
+	private String getPodcastTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +143,12 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		setContentView(R.layout.view_episode);
 
 		dbHelper = DatabaseHelper.getInstance(this);
+
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
+				new String[] { String.valueOf(id) }, null, null, null);
+		startManagingCursor(cursor);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -125,7 +175,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		bindService(intent, this, BIND_AUTO_CREATE);
 		updateHandler = new Handler();
 	}
 
@@ -144,54 +194,18 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			updateHandler.post(updateSliderTask);
 		}
 
-		Cursor c = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedEpisode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(id) }, null, null, null);
-
-		if (!c.moveToFirst()) {
+		cursor.requery();
+		if (!cursor.moveToFirst()) {
 			// ID does not exist
 			finish();
 			return;
 		}
 
-		podcastId = c.getLong(c
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
-		enclosureId = c.getLong(c
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
-		enclosureFile = c.getString(c
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
-		episodeTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE)));
-		descriptionText = c
-				.getString(c
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
-		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE)));
-		podcastDescription
-				.setText(c.getString(c
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION)));
-
-		c.close();
-
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, podcastId);
-		if (podcastLogoFile.isFile()) {
-			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-			podcastLogo.setImageBitmap(podcastLogoBitmap);
-		}
-
-		Spanned s = Html.fromHtml(descriptionText);
-		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
-				: new SpannableStringBuilder(s);
-		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-				CharacterStyle.class).length == 0) {
-			// use the normal text as there is no html
-			episodeDescription.setText(descriptionText);
-		} else {
-			episodeDescription.setText(descriptionSpanned);
-		}
-		new ImageLoadTask().execute();
+		podcastTitle.setText(getPodcastTitle());
+		podcastLogo.setImageBitmap(getPodcastLogoBitmap());
+		podcastDescription.setText(getPodcastDescription());
+		episodeTitle.setText(getEpisodeTitle());
+		updateEpisodeDescription();
 	}
 
 	@Override
@@ -258,8 +272,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
 			try {
-				if (enclosureFile != null) {
-					File f = new File(new URI(enclosureFile));
+				if (getEnclosureFile() != null) {
+					File f = new File(new URI(getEnclosureFile()));
 					if (f.isFile()) {
 						f.delete();
 					}
@@ -271,7 +285,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			dbHelper.getReadableDatabase().update(
 					DatabaseHelper.Enclosure._TABLE, values,
 					String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-					new String[] { String.valueOf(enclosureId) });
+					new String[] { String.valueOf(getEnclosureId()) });
 			values.clear();
 			values.put(DatabaseHelper.Episode.STATE,
 					DatabaseHelper.Episode.STATE_LISTENED);
@@ -477,6 +491,20 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		}
 		builder.setItems(items, listener);
 		return builder.create();
+	}
+
+	private void updateEpisodeDescription() {
+		Spanned s = Html.fromHtml(getEpisodeDescription());
+		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+				: new SpannableStringBuilder(s);
+		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+				CharacterStyle.class).length == 0) {
+			// use the normal text as there is no html
+			episodeDescription.setText(getEpisodeDescription());
+		} else {
+			episodeDescription.setText(descriptionSpanned);
+			new ImageLoadTask().execute();
+		}
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
