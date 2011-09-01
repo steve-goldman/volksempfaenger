@@ -20,13 +20,14 @@ import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
 public class PlaybackService extends Service implements OnPreparedListener,
-		OnAudioFocusChangeListener {
+		OnAudioFocusChangeListener, OnCompletionListener {
 	private final String TAG = getClass().getSimpleName();
 	private MediaPlayer player;
 	private Notification notification;
@@ -103,6 +104,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		playerState = PlayerState.INITIALIZED;
 		playerState = PlayerState.PREPARING;
 		player.setOnPreparedListener(this);
+		player.setOnCompletionListener(this);
 		player.prepareAsync();
 	}
 
@@ -294,5 +296,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			Log.d(TAG, "No PlayerListener set");
 		}
 
+	}
+
+	public void onCompletion(MediaPlayer mp) {
+		playerListener.onPlayerStopped();
+		resetPlayer();
+		stopForeground(true);
 	}
 }
