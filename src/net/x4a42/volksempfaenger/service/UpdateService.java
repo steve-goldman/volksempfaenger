@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.service;
 
+import java.util.Date;
+
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
@@ -39,6 +41,7 @@ public class UpdateService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 
 		long[] extraId = intent.getLongArrayExtra("id");
+		boolean extraFirstSync = intent.getBooleanExtra("first_sync", false);
 
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -95,6 +98,9 @@ public class UpdateService extends IntentService {
 			ContentValues values = new ContentValues();
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
+			long latestEpisodeId = 0;
+			Date latestEpisodeDate = null;
+
 			for (FeedItem item : feed.getItems()) {
 				values.clear();
 				values.put(DatabaseHelper.Episode.PODCAST, podcastId);
@@ -105,6 +111,12 @@ public class UpdateService extends IntentService {
 				values.put(DatabaseHelper.Episode.URL, item.getUrl());
 				values.put(DatabaseHelper.Episode.DESCRIPTION,
 						item.getDescription());
+				if (extraFirstSync) {
+					// if this is the first sync, set all episodes to be
+					// listened
+					values.put(DatabaseHelper.Episode.STATE,
+							DatabaseHelper.Episode.STATE_LISTENED);
+				}
 
 				long itemId;
 				try {
@@ -131,6 +143,14 @@ public class UpdateService extends IntentService {
 					} else {
 						Log.wtf(getClass().getSimpleName(), e);
 						continue;
+					}
+				}
+
+				if (extraFirstSync) {
+					if (latestEpisodeDate == null
+							|| latestEpisodeDate.before(item.getDate())) {
+						latestEpisodeDate = item.getDate();
+						latestEpisodeId = itemId;
 					}
 				}
 
@@ -204,6 +224,16 @@ public class UpdateService extends IntentService {
 							new String[] { String.valueOf(itemId) });
 				}
 			}
+
+			if (extraFirstSync) {
+				values.clear();
+				values.put(DatabaseHelper.Episode.STATE,
+						DatabaseHelper.Episode.STATE_NEW);
+				db.update(DatabaseHelper.Episode._TABLE, values,
+						String.format("%s = ?", DatabaseHelper.Episode.ID),
+						new String[] { String.valueOf(latestEpisodeId) });
+			}
+
 			Log.d(getClass().getSimpleName(), "Updated " + feed.getTitle());
 		}
 	}

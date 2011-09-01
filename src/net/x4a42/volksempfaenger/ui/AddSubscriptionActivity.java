@@ -119,6 +119,7 @@ public class AddSubscriptionActivity extends BaseActivity implements
 				Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
 						UpdateService.class);
 				updatePodcast.putExtra("id", new long[] { podcastId });
+				updatePodcast.putExtra("first_sync", true);
 				startService(updatePodcast);
 				// Succeeded
 				String feedImage = feed.getImage();
