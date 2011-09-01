@@ -11,7 +11,6 @@ import java.util.List;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
-import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -20,7 +19,6 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -29,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,6 +67,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	private long id;
 	private DatabaseHelper dbHelper;
+	private Cursor cursor;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
@@ -75,8 +75,78 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView episodeTitle;
 	private TextView episodeDescription;
 
-	private String descriptionText;
 	private SpannableStringBuilder descriptionSpanned;
+
+	/* Podcast getters */
+	private long getPodcastId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
+	}
+
+	private String getPodcastTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
+	}
+
+	private String getPodcastDescription() {
+		return cursor
+				.getString(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION));
+	}
+
+	private Bitmap getPodcastLogoBitmap() {
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+		if (podcastLogoFile.isFile()) {
+			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
+		} else {
+			return BitmapFactory.decodeResource(getResources(),
+					R.drawable.default_logo);
+		}
+	}
+
+	/* Episode getters */
+	private long getEpisodeId() {
+		return id;
+	}
+
+	private String getEpisodeTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
+	}
+
+	private String getEpisodeDescription() {
+		return cursor
+				.getString(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
+	}
+
+	private int getEpisodeState() {
+		return cursor.getInt(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
+	}
+
+	/* Enclosure getters */
+	private long getEnclosureId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+	}
+
+	private File getEnclosureFile() {
+		String filename = getEnclosureFileName();
+		if (filename == null || filename.length() == 0) {
+			return null;
+		}
+		try {
+			return new File(new URI(filename));
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private String getEnclosureFileName() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +167,13 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		setContentView(R.layout.view_episode);
 
 		dbHelper = DatabaseHelper.getInstance(this);
+
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
+				new String[] { String.valueOf(getEpisodeId()) }, null, null,
+				null);
+		startManagingCursor(cursor);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -123,7 +200,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		bindService(intent, this, BIND_AUTO_CREATE);
 		updateHandler = new Handler();
 	}
 
@@ -142,69 +219,18 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			updateHandler.post(updateSliderTask);
 		}
 
-		Cursor c;
-
-		// Update episode information
-
-		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Episode._TABLE,
-				null, String.format("%s = ?", DatabaseHelper.Episode.ID),
-				new String[] { String.valueOf(id) }, null, null, null);
-
-		if (!c.moveToFirst()) {
+		cursor.requery();
+		if (!cursor.moveToFirst()) {
 			// ID does not exist
 			finish();
 			return;
 		}
 
-		long podcastId = c.getLong(c
-				.getColumnIndex(DatabaseHelper.Episode.PODCAST));
-		episodeTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Episode.TITLE)));
-		descriptionText = c.getString(c
-				.getColumnIndex(DatabaseHelper.Episode.DESCRIPTION));
-
-		Spanned s = Html.fromHtml(descriptionText);
-		if (s instanceof SpannableStringBuilder) {
-			descriptionSpanned = (SpannableStringBuilder) s;
-		} else {
-			descriptionSpanned = new SpannableStringBuilder(s);
-		}
-		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-				CharacterStyle.class).length == 0) {
-			// use the normal text as there is no html
-			episodeDescription.setText(descriptionText);
-		} else {
-			episodeDescription.setText(descriptionSpanned);
-		}
-		new ImageLoadTask().execute();
-
-		c.close();
-
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, podcastId);
-		if (podcastLogoFile.isFile()) {
-			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-			podcastLogo.setImageBitmap(podcastLogoBitmap);
-		}
-
-		// Update podcast information
-		c = dbHelper.getReadableDatabase().query(DatabaseHelper.Podcast._TABLE,
-				null, String.format("%s = ?", DatabaseHelper.Podcast.ID),
-				new String[] { String.valueOf(podcastId) }, null, null, null,
-				"1");
-
-		if (!c.moveToFirst()) {
-			// ID does not exist
-			finish();
-			return;
-		}
-
-		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
-		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
-
-		c.close();
+		podcastTitle.setText(getPodcastTitle());
+		podcastLogo.setImageBitmap(getPodcastLogoBitmap());
+		podcastDescription.setText(getPodcastDescription());
+		episodeTitle.setText(getEpisodeTitle());
+		updateEpisodeDescription();
 	}
 
 	@Override
@@ -228,78 +254,74 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Cursor cursor;
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 		case R.id.item_download:
-			enclosures = getEnclosures();
-			switch (enclosures.size()) {
-			case 0:
-				Toast.makeText(this,
-						R.string.message_episode_without_enclosure,
-						Toast.LENGTH_SHORT).show();
-				return true;
-			case 1:
-				long v[] = new long[1];
-				v[0] = enclosures.get(0).id;
-				downloadEnclosure(v);
-				break;
-			default:
-				AlertDialog dialog = getEnclosureChooserDialog(
-						getString(R.string.dialog_choose_download_enclosure),
-						enclosures, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								long v[] = new long[1];
-								v[0] = enclosures.get(which).id;
-								downloadEnclosure(v);
-							}
-						});
-				dialog.show();
-				break;
+			if (getEnclosureId() != 0) {
+				// there is an preferred enclosure
+				downloadEnclosure();
+			} else {
+				enclosures = getEnclosures();
+				switch (enclosures.size()) {
+				case 0:
+					// no enclosures
+					Toast.makeText(this,
+							R.string.message_episode_without_enclosure,
+							Toast.LENGTH_SHORT).show();
+					break;
+				case 1:
+					// exactly one enclosure
+					downloadEnclosure(enclosures.get(0).id);
+					break;
+				default:
+					// multiple enclosures (they suck)
+					AlertDialog dialog = getEnclosureChooserDialog(
+							getString(R.string.dialog_choose_download_enclosure),
+							enclosures, new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									downloadEnclosure(enclosures.get(which).id);
+								}
+							});
+					dialog.show();
+					break;
+				}
 			}
-
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(DatabaseHelper.Enclosure.STATE,
-					DatabaseHelper.Enclosure.STATE_LISTENED);
-			values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, 0);
+			values.put(DatabaseHelper.Episode.STATE,
+					DatabaseHelper.Episode.STATE_LISTENED);
 			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Enclosure._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-					new String[] { String.valueOf(id) });
+					DatabaseHelper.Episode._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Episode.ID),
+					new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			cursor = dbHelper.getReadableDatabase().query(
-					DatabaseHelper.Enclosure._TABLE,
-					new String[] { DatabaseHelper.Enclosure.ID,
-							DatabaseHelper.Enclosure.FILE },
-					String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-					new String[] { String.valueOf(id) }, null, null, null);
-			while (cursor.moveToNext()) {
-				String filename = cursor.getString(1);
-				try {
-					if (filename != null) {
-						File f = new File(new URI(filename));
-						if (f.isFile()) {
-							f.delete();
-						}
+			try {
+				if (getEnclosureFileName() != null) {
+					File f = new File(new URI(getEnclosureFileName()));
+					if (f.isFile()) {
+						f.delete();
 					}
-				} catch (URISyntaxException e) {
-					Log.w(getClass().getSimpleName(), "Exception handled", e);
 				}
-				values.put(DatabaseHelper.Enclosure.FILE, (String) null);
-				values.put(DatabaseHelper.Enclosure.STATE,
-						DatabaseHelper.Enclosure.STATE_DELETED);
-				dbHelper.getReadableDatabase().update(
-						DatabaseHelper.Enclosure._TABLE, values,
-						String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-						new String[] { String.valueOf(cursor.getLong(0)) });
+			} catch (URISyntaxException e) {
+				Log.w(getClass().getSimpleName(), "Exception handled", e);
 			}
-			cursor.close();
+			values.put(DatabaseHelper.Enclosure.FILE, (String) null);
+			dbHelper.getReadableDatabase().update(
+					DatabaseHelper.Enclosure._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+					new String[] { String.valueOf(getEnclosureId()) });
+			values.clear();
+			values.put(DatabaseHelper.Episode.STATE,
+					DatabaseHelper.Episode.STATE_LISTENED);
+			dbHelper.getReadableDatabase().update(
+					DatabaseHelper.Episode._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Episode.ID),
+					new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		default:
@@ -307,18 +329,17 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		}
 	}
 
-	private void downloadEnclosure(long[] v) {
-		// currently broken
-		// Intent intent;
-		// intent = new Intent(this, DownloadService.class);
-		// intent.putExtra("id", v);
-		// startService(intent);
+	private void downloadEnclosure(long... v) {
+		if (v == null || v.length == 0) {
+			v = new long[] { getEnclosureId() };
+		} else if (v.length == 1) {
+			// TODO: update preferred enclosure
+		}
+		Intent intent = new Intent(this, DownloadService.class);
+		intent.putExtra("id", v);
+		startService(intent);
 		Toast.makeText(this, R.string.message_download_queued,
 				Toast.LENGTH_SHORT).show();
-	}
-
-	public Drawable getDrawable(String src) {
-		return null;
 	}
 
 	private Runnable updateSliderTask = new Runnable() {
@@ -336,16 +357,26 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				if (startedPlaying) {
 					togglePlayPause();
 				} else {
-					try {
-						// TODO change to actual file name
-						service.playFile("/mnt/sdcard/test.mp3");
-						startedPlaying = true;
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (getEpisodeState() < DatabaseHelper.Episode.STATE_READY
+							|| getEnclosureFile() == null
+							|| !getEnclosureFile().isFile()) {
+						// enclosure file does not exist
+						// TODO: auto download
+						Toast.makeText(this,
+								R.string.message_enclosure_file_not_available,
+								Toast.LENGTH_SHORT).show();
+					} else {
+						try {
+							// TODO change to actual file name
+							service.playEpisode(getEpisodeId());
+							startedPlaying = true;
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -461,6 +492,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 		textPosition.setText("00:00:00");
 		textDuration.setText("00:00:00");
+		startedPlaying = false;
 	}
 
 	public void onPlayerPrepared() {
@@ -504,6 +536,20 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		}
 		builder.setItems(items, listener);
 		return builder.create();
+	}
+
+	private void updateEpisodeDescription() {
+		Spanned s = Html.fromHtml(getEpisodeDescription());
+		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+				: new SpannableStringBuilder(s);
+		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+				CharacterStyle.class).length == 0) {
+			// use the normal text as there is no html
+			episodeDescription.setText(getEpisodeDescription());
+		} else {
+			episodeDescription.setText(descriptionSpanned);
+			new ImageLoadTask().execute();
+		}
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {

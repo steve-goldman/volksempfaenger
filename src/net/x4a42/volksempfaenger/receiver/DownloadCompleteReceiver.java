@@ -15,10 +15,17 @@ import android.os.AsyncTask;
 
 public class DownloadCompleteReceiver extends BroadcastReceiver {
 
-	private Context context;
-	private Intent intent;
-
 	private class DownloadCompleteTask extends AsyncTask<Void, Void, Void> {
+
+		private Context context;
+		private Intent intent;
+		private DatabaseHelper dbHelper;
+
+		public DownloadCompleteTask(Context context, Intent intent) {
+			this.context = context;
+			this.intent = intent;
+			dbHelper = DatabaseHelper.getInstance(context);
+		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -31,15 +38,25 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 			query.setFilterById(downloadId);
 			Cursor c = dm.query(query);
 			if (c.moveToFirst()) {
-				// for (int i = 0; i < c.getColumnCount(); i++) {
-				// Log.d(getClass().getSimpleName(),
-				// String.format("%s: %s", c.getColumnName(i),
-				// c.getString(i)));
-				// }
 
-				DatabaseHelper dbHelper = DatabaseHelper.getInstance(context);
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				ContentValues values = new ContentValues();
+				ContentValues episodeValues = new ContentValues();
+				ContentValues enclosureValues = new ContentValues();
+
+				Cursor cur = db.query(DatabaseHelper.Enclosure._TABLE,
+						new String[] { DatabaseHelper.Enclosure.EPISODE },
+						String.format("%s = ?",
+								DatabaseHelper.Enclosure.DOWNLOAD_ID),
+						new String[] { String.valueOf(downloadId) }, null,
+						null, null);
+
+				if (!cur.moveToFirst()) {
+					// somehow the downloaded enclosure doesn't exist anymore
+					return null;
+				}
+
+				long episodeId = cur.getLong(cur
+						.getColumnIndex(DatabaseHelper.Enclosure.EPISODE));
 
 				switch (c.getInt(c
 						.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
@@ -51,30 +68,40 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 					MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 					mmr.setDataSource(context, Uri.parse(localUri));
 
-					values.put(DatabaseHelper.Enclosure.FILE, localUri);
-					values.put(DatabaseHelper.Enclosure.MIME, c.getString(c
-							.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE)));
-					values.put(
-							DatabaseHelper.Enclosure.SIZE,
-							c.getLong(c
-									.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)));
-					values.put(
-							DatabaseHelper.Enclosure.DURATION_TOTAL,
-							mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-					values.put(DatabaseHelper.Enclosure.STATE,
-							DatabaseHelper.Enclosure.STATE_DOWNLOADED);
+					enclosureValues
+							.put(DatabaseHelper.Enclosure.FILE, localUri);
+					enclosureValues
+							.put(DatabaseHelper.Enclosure.MIME,
+									c.getString(c
+											.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE)));
+					enclosureValues
+							.put(DatabaseHelper.Enclosure.SIZE,
+									c.getLong(c
+											.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)));
+					enclosureValues
+							.put(DatabaseHelper.Enclosure.DURATION_TOTAL,
+									mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+					episodeValues.put(DatabaseHelper.Episode.STATE,
+							DatabaseHelper.Episode.STATE_READY);
 
 					break;
 				case DownloadManager.STATUS_FAILED:
-					values.put(DatabaseHelper.Enclosure.STATE,
-							DatabaseHelper.Enclosure.STATE_NEW);
+					episodeValues.put(DatabaseHelper.Episode.STATE,
+							DatabaseHelper.Episode.STATE_NEW);
 					break;
 				}
 
-				db.update(DatabaseHelper.Enclosure._TABLE, values,
-						String.format("%s = ?",
-								DatabaseHelper.Enclosure.DOWNLOAD_ID),
-						new String[] { String.valueOf(downloadId) });
+				if (enclosureValues.size() > 0) {
+					db.update(DatabaseHelper.Enclosure._TABLE, enclosureValues,
+							String.format("%s = ?",
+									DatabaseHelper.Enclosure.DOWNLOAD_ID),
+							new String[] { String.valueOf(downloadId) });
+				}
+				if (episodeValues.size() > 0) {
+					db.update(DatabaseHelper.Episode._TABLE, episodeValues,
+							String.format("%s = ?", DatabaseHelper.Episode.ID),
+							new String[] { String.valueOf(episodeId) });
+				}
 			}
 			return null;
 
@@ -90,10 +117,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 			return;
 		}
 
-		this.context = context;
-		this.intent = intent;
-
-		new DownloadCompleteTask().execute();
+		new DownloadCompleteTask(context, intent).execute();
 
 	}
 
