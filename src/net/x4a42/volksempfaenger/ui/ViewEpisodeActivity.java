@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,9 +77,15 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	private SpannableStringBuilder descriptionSpanned;
 
+	/* Podcast getters */
 	private long getPodcastId() {
 		return cursor.getLong(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
+	}
+
+	private String getPodcastTitle() {
+		return cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
 	}
 
 	private String getPodcastDescription() {
@@ -97,14 +104,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		}
 	}
 
-	private long getEnclosureId() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
-	}
-
-	private String getEnclosureFile() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
+	/* Episode getters */
+	private long getEpisodeId() {
+		return id;
 	}
 
 	private String getEpisodeTitle() {
@@ -118,9 +120,32 @@ public class ViewEpisodeActivity extends BaseActivity implements
 						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
 	}
 
-	private String getPodcastTitle() {
+	private int getEpisodeState() {
+		return cursor.getInt(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
+	}
+
+	/* Enclosure getters */
+	private long getEnclosureId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+	}
+
+	private File getEnclosureFile() {
+		String filename = getEnclosureFileName();
+		if (filename == null || filename.length() == 0) {
+			return null;
+		}
+		try {
+			return new File(new URI(filename));
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private String getEnclosureFileName() {
 		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
 	}
 
 	@Override
@@ -146,7 +171,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		cursor = dbHelper.getReadableDatabase().query(
 				DatabaseHelper.ExtendedEpisode._TABLE, null,
 				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(id) }, null, null, null);
+				new String[] { String.valueOf(getEpisodeId()) }, null, null,
+				null);
 		startManagingCursor(cursor);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
@@ -269,14 +295,14 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			dbHelper.getWritableDatabase().update(
 					DatabaseHelper.Episode._TABLE, values,
 					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(id) });
+					new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
 			try {
-				if (getEnclosureFile() != null) {
-					File f = new File(new URI(getEnclosureFile()));
+				if (getEnclosureFileName() != null) {
+					File f = new File(new URI(getEnclosureFileName()));
 					if (f.isFile()) {
 						f.delete();
 					}
@@ -295,7 +321,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			dbHelper.getReadableDatabase().update(
 					DatabaseHelper.Episode._TABLE, values,
 					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(id) });
+					new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		default:
@@ -331,16 +357,27 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				if (startedPlaying) {
 					togglePlayPause();
 				} else {
-					try {
-						// TODO change to actual file name
-						service.playFile("/mnt/sdcard/test.mp3");
-						startedPlaying = true;
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (getEpisodeState() < DatabaseHelper.Episode.STATE_READY
+							|| getEnclosureFile() == null
+							|| !getEnclosureFile().isFile()) {
+						// enclosure file does not exist
+						// TODO: auto download
+						Toast.makeText(this,
+								R.string.message_enclosure_file_not_available,
+								Toast.LENGTH_SHORT).show();
+					} else {
+						try {
+							// TODO change to actual file name
+							service.playFile(getEnclosureFile()
+									.getAbsolutePath());
+							startedPlaying = true;
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
