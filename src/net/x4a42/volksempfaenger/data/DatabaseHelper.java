@@ -157,8 +157,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			sql.append("  \"enclosure\".\"duration_total\" AS \"duration_total\",\n");
 			sql.append("  \"enclosure\".\"duration_listened\" AS \"duration_listened\"\n");
 			sql.append("FROM \"episode\"\n");
-			sql.append("JOIN \"podcast\" ON \"episode\".\"podcast_id\" = \"podcast\".\"_id\"\n");
-			sql.append("JOIN \"enclosure\" ON \"episode\".\"enclosure_id\" = \"enclosure\".\"_id\"");
+			sql.append("INNER JOIN \"podcast\" ON \"episode\".\"podcast_id\" = \"podcast\".\"_id\"\n");
+			sql.append("LEFT OUTER JOIN \"enclosure\" ON \"episode\".\"enclosure_id\" = \"enclosure\".\"_id\"");
 			return sql.toString();
 		}
 
