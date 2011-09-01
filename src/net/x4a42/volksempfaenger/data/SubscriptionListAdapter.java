@@ -14,12 +14,12 @@ import android.widget.SimpleCursorAdapter;
 
 public class SubscriptionListAdapter extends SimpleCursorAdapter {
 
-	static final String[] FROM = { DatabaseHelper.Podcast.TITLE,
+	static final String[] from = { DatabaseHelper.Podcast.TITLE,
 			DatabaseHelper.Podcast.DESCRIPTION };
-	static final int[] TO = { R.id.podcast_title, R.id.podcast_description };
+	static final int[] to = { R.id.podcast_title, R.id.podcast_description };
 
 	public SubscriptionListAdapter(Context context, Cursor cursor) {
-		super(context, R.layout.subscription_list_row, cursor, FROM, TO);
+		super(context, R.layout.subscription_list_row, cursor, from, to);
 	}
 
 	@Override

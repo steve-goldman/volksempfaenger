@@ -28,12 +28,14 @@ import android.widget.Toast;
 
 public class AddSubscriptionActivity extends BaseActivity implements
 		OnClickListener {
+
 	public static final int RESULT_SUCCEEDED = 0;
 	public static final int RESULT_DOWNLOAD_FAILED = 1;
 	public static final int RESULT_XML_EXCEPTION = 2;
 	public static final int RESULT_IO_EXCEPTION = 3;
 	public static final int RESULT_DUPLICATE = 4;
 
+	private DatabaseHelper dbHelper;
 	private EditText editTextUrl;
 	private Button buttonAdd;
 	private Button buttonCancel;
@@ -53,6 +55,8 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 		buttonAdd.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
+
+		dbHelper = DatabaseHelper.getInstance(this);
 	}
 
 	public void onClick(View v) {
@@ -99,8 +103,6 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			}
 
 			// Open database
-			DatabaseHelper dbHelper = DatabaseHelper
-					.getInstance(AddSubscriptionActivity.this);
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 			ContentValues values = new ContentValues();
