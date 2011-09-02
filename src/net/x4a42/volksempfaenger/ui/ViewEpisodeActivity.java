@@ -508,6 +508,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public void onPlayerPrepared() {
 		service.play();
 		setPlaying();
+		service.seekTo(cursor.getInt(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_LISTENED)));
 	}
 
 	private class EnclosureSimple {
