@@ -148,6 +148,17 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
 	}
 
+	private int getDurationListened() {
+		return cursor
+				.getInt(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_LISTENED));
+	}
+
+	private int getDurationTotal() {
+		return cursor.getInt(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_TOTAL));
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -239,6 +250,10 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		podcastLogo.setImageBitmap(getPodcastLogoBitmap());
 		podcastDescription.setText(getPodcastDescription());
 		episodeTitle.setText(getEpisodeTitle());
+		seekBar.setMax(getDurationTotal());
+		seekBar.setProgress(getDurationListened());
+		textPosition.setText(formatTime(getDurationListened()));
+		textDuration.setText(formatTime(getDurationTotal()));
 		updateEpisodeDescription();
 	}
 
@@ -508,8 +523,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public void onPlayerPrepared() {
 		service.play();
 		setPlaying();
-		service.seekTo(cursor.getInt(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_LISTENED)));
+		service.seekTo(getDurationListened());
 	}
 
 	private class EnclosureSimple {
