@@ -19,6 +19,7 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -27,7 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -151,29 +151,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// Check if there is an ID
-		Bundle extras = getIntent().getExtras();
-		if (extras == null) {
-			finish();
-			return;
-		}
-		id = extras.getLong("id");
-		if (id <= 0) {
-			finish();
-			return;
-		}
-
 		setContentView(R.layout.view_episode);
 
 		dbHelper = DatabaseHelper.getInstance(this);
-
-		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedEpisode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(getEpisodeId()) }, null, null,
-				null);
-		startManagingCursor(cursor);
+		
+		onNewIntent(getIntent());
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -203,20 +185,43 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		bindService(intent, this, BIND_AUTO_CREATE);
 		updateHandler = new Handler();
 	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		stopManagingCursor(cursor);
+		// Check if there is an ID
+		Bundle extras = intent.getExtras();
+		if (extras == null) {
+			finish();
+			return;
+		}
+		id = extras.getLong("id");
+		if (id <= 0) {
+			finish();
+			return;
+		}
+
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedEpisode._TABLE, null,
+				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
+				new String[] { String.valueOf(getEpisodeId()) }, null, null,
+				null);
+		startManagingCursor(cursor);
+	}
 
 	@Override
-	public void onPause() {
-		super.onResume();
+	protected void onPause() {
+		super.onPause();
 		updateHandler.removeCallbacks(updateSliderTask);
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
-		if (service != null && service.isPlaying()) {
-			updateHandler.post(updateSliderTask);
+		if (service != null && service.isPlaying()
+				&& service.getCurrentEpisode() == getEpisodeId()) {
+			setPlaying();
 		}
 
 		cursor.requery();
@@ -468,7 +473,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		service = ((PlaybackBinder) binder).getService();
 		service.setPlayerListener(this);
-		if (service.isPlaying()) {
+		if (service.isPlaying()
+				&& service.getCurrentEpisode() == getEpisodeId()) {
 			setPlaying();
 		}
 		bound = true;
@@ -624,6 +630,10 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
+	}
+
+	public Context getContext() {
+		return this;
 	}
 
 }
