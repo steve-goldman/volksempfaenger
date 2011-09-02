@@ -42,6 +42,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private PlayerState playerState = PlayerState.IDLE;
 	private PlayerListener playerListener = new DefaultPlayerListener();
+	private long enclosureId;
 
 	private long getEpisodeId() {
 		return cursor.getLong(cursor
@@ -130,6 +131,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		if (!enclosureFile.isFile()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
+		enclosureId = getEnclosureId();
 		playFile(enclosureFile.getAbsolutePath());
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.Episode.STATE,
@@ -208,6 +210,27 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 	}
 
+	public void stop() {
+		stop(false);
+	}
+
+	public void stop(boolean completed) {
+		if (playerState == PlayerState.STARTED || completed) {
+			// save position if not completed TODO
+
+			stopForeground(true);
+			enclosureId = -1;
+			playerListener.onPlayerStopped();
+			resetPlayer();
+		} else {
+			Log.e(TAG, "Unable to stop: player is not playing");
+		}
+	}
+	
+	public long getCurrentEpisode() {
+		return getEpisodeId();
+	}
+
 	private void resetPlayer() {
 		player.reset();
 		playerState = PlayerState.IDLE;
@@ -235,12 +258,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			}
 			break;
 		case AudioManager.AUDIOFOCUS_LOSS:
-			if (player != null && player.isPlaying()) {
-				// TODO save current position
-				player.stop();
+			if (playerState == PlayerState.STARTED) {
+				stop();
 				// TODO notify activity
 			}
-			resetPlayer();
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -299,8 +320,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	public void onCompletion(MediaPlayer mp) {
-		playerListener.onPlayerStopped();
-		resetPlayer();
-		stopForeground(true);
+		stop(true);
 	}
 }
