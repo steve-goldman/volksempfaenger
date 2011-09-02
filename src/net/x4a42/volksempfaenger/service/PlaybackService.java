@@ -41,7 +41,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private AudioNoisyReceiver audioNoisyReceiver;
 	private DatabaseHelper dbHelper;
 	private Cursor cursor;
-	
+
 	private Handler saveHandler;
 
 	private static enum PlayerState {
@@ -230,7 +230,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	public void stop(boolean completed) {
-		if (playerState == PlayerState.STARTED || playerState == PlayerState.PAUSED || completed) {
+		if (playerState == PlayerState.STARTED
+				|| playerState == PlayerState.PAUSED || completed) {
 			saveHandler.removeCallbacks(savePositionTask);
 			if (completed) {
 				savePosition(0);
