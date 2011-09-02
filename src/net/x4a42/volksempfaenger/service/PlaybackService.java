@@ -24,6 +24,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -40,6 +41,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private AudioNoisyReceiver audioNoisyReceiver;
 	private DatabaseHelper dbHelper;
 	private Cursor cursor;
+
+	private Handler saveHandler;
 
 	private static enum PlayerState {
 		IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, STOPPED, PAUSED, PLAYBACK_COMPLETED, ERROR
@@ -79,6 +82,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 		dbHelper = DatabaseHelper.getInstance(this);
+		saveHandler = new Handler();
 	}
 
 	public class PlaybackBinder extends Binder {
@@ -167,6 +171,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			player.start();
 			playerState = PlayerState.STARTED;
 			startForeground();
+			saveHandler.post(savePositionTask);
 		} else {
 			Log.e(TAG,
 					"Unable to play: player has neither been 'paused' nor 'prepared'");
@@ -175,8 +180,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	public void pause() {
 		if (playerState == PlayerState.STARTED) {
+			saveHandler.removeCallbacks(savePositionTask);
 			player.pause();
 			playerState = PlayerState.PAUSED;
+			savePosition();
 			stopForeground();
 		} else {
 			Log.e(TAG, "Unable to pause: player has not been 'started'");
@@ -223,9 +230,14 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	public void stop(boolean completed) {
-		if (playerState == PlayerState.STARTED || completed) {
-			// save position if not completed TODO
-
+		if (playerState == PlayerState.STARTED
+				|| playerState == PlayerState.PAUSED || completed) {
+			saveHandler.removeCallbacks(savePositionTask);
+			if (completed) {
+				savePosition(0);
+			} else {
+				savePosition();
+			}
 			stopForeground();
 			enclosureId = -1;
 			playerListener.onPlayerStopped();
@@ -254,8 +266,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				playerListener.getContext(), 0,
-				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				playerListener.getContext(), 0, notificationIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getEpisodeTitle(),
 				getPodcastTitle(), pendingIntent);
 		startForeground();
@@ -351,4 +363,24 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	public void onCompletion(MediaPlayer mp) {
 		stop(true);
 	}
+
+	private void savePosition() {
+		if (playerState == PlayerState.STARTED
+				|| playerState == PlayerState.PAUSED) {
+			savePosition(player.getCurrentPosition());
+		}
+	}
+
+	private void savePosition(long position) {
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, position);
+		updateEnclosure(values);
+	}
+
+	private Runnable savePositionTask = new Runnable() {
+		public void run() {
+			savePosition();
+			saveHandler.postDelayed(this, 500);
+		}
+	};
 }
