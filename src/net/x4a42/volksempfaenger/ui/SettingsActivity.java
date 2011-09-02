@@ -31,6 +31,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	private Preference prefAboutWebsite;
 	private Preference prefAboutWiki;
 	private Preference prefAboutBugtracker;
+	private Preference prefAboutLicense;
 
 	private VolksempfaengerApplication app;
 
@@ -61,6 +62,8 @@ public class SettingsActivity extends PreferenceActivity implements
 		prefAboutWiki = prefscreen.findPreference(PreferenceKeys.ABOUT_WIKI);
 		prefAboutBugtracker = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_BUGTRACKER);
+		prefAboutLicense = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_LICENSE);
 
 		EditText prefDownloadConcurrentEditText = (EditText) prefDownloadConcurrent
 				.getEditText();
@@ -74,6 +77,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		prefAboutWiki.setOnPreferenceClickListener(this);
 		prefAboutBugtracker.setSummary(VolksempfaengerUrls.BUGTRACKER);
 		prefAboutBugtracker.setOnPreferenceClickListener(this);
+		prefAboutLicense.setOnPreferenceClickListener(this);
 	}
 
 	@Override
@@ -138,6 +142,9 @@ public class SettingsActivity extends PreferenceActivity implements
 			startActivity(new Intent("android.intent.action.VIEW",
 					Uri.parse(VolksempfaengerUrls.BUGTRACKER)));
 			return true;
+		} else if (pref == prefAboutLicense) {
+			Intent intent = new Intent(this, LicenseActivity.class);
+			startActivity(intent);
 		}
 		return false;
 	}

@@ -30,5 +30,7 @@
 		<Preference android:key="about_website" android:title="@string/settings_about_website" />
 		<Preference android:key="about_wiki" android:title="@string/settings_about_wiki" />
 		<Preference android:key="about_bugtracker" android:title="@string/settings_about_bugtracker" />
+		<Preference android:key="about_license" android:title="@string/settings_about_license"
+			android:summary="@string/settings_summary_about_license" />
 	</PreferenceScreen>
 </PreferenceScreen>

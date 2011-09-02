@@ -26,6 +26,7 @@
 		<activity android:name=".ui.DownloadListFinishedActivity" />
 		<activity android:name=".ui.EditSubscriptionActivity"
 			android:windowSoftInputMode="adjustResize" />
+		<activity android:name=".ui.LicenseActivity" />
 		<activity android:name=".ui.ListenQueueActivity" />
 		<activity android:name=".ui.SettingsActivity" android:label="@string/title_settings" />
 		<activity android:name=".ui.SubscriptionListActivity"
