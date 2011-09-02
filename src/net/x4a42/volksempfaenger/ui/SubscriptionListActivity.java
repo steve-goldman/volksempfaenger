@@ -43,8 +43,8 @@ public class SubscriptionListActivity extends BaseActivity implements
 		subscriptionList.setOnCreateContextMenuListener(this);
 
 		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.Podcast._TABLE, null, null, null, null, null,
-				DatabaseHelper.Podcast.TITLE);
+				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null, null,
+				DatabaseHelper.ExtendedPodcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);

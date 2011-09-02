@@ -11,11 +11,12 @@ import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class SubscriptionListAdapter extends SimpleCursorAdapter {
 
-	static final String[] from = { DatabaseHelper.Podcast.TITLE,
-			DatabaseHelper.Podcast.DESCRIPTION };
+	static final String[] from = { DatabaseHelper.ExtendedPodcast.TITLE,
+			DatabaseHelper.ExtendedPodcast.DESCRIPTION };
 	static final int[] to = { R.id.podcast_title, R.id.podcast_description };
 
 	public SubscriptionListAdapter(Context context, Cursor cursor) {
@@ -26,6 +27,14 @@ public class SubscriptionListAdapter extends SimpleCursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 
 		super.bindView(view, context, cursor);
+
+		TextView newEpisodesText = (TextView) view
+				.findViewById(R.id.new_episodes);
+		long newEpisodes = cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedPodcast.NEW_EPISODES));
+		if (newEpisodes > 0) {
+			newEpisodesText.setText(String.valueOf(newEpisodes));
+		}
 
 		File podcastLogoFile = Utils.getPodcastLogoFile(context, cursor
 				.getLong(cursor.getColumnIndex(DatabaseHelper.Podcast.ID)));

@@ -19,8 +19,8 @@
 			android:ellipsize="marquee" android:scrollHorizontally="true"
 			android:singleLine="true" />
 	</LinearLayout>
-	<TextView android:layout_width="wrap_content" android:text="4"
-		android:textSize="24sp" android:layout_gravity="center_vertical|center_horizontal"
-		android:layout_height="wrap_content" android:padding="12dp"
-		android:layout_weight="0" />
+	<TextView android:id="@+id/new_episodes" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:textSize="24sp"
+		android:layout_gravity="center_vertical|center_horizontal"
+		android:padding="12dp" android:layout_weight="0" />
 </LinearLayout>
