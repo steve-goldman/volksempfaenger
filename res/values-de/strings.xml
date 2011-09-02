@@ -44,7 +44,7 @@
 	<string name="message_podcast_feed_parsing_failed">Podcast-XML konnte nicht geparst werden</string>
 	<string name="message_podcast_feed_io_exception">IOException</string>
 	<string name="message_no_downloads_running">Keine laufenden Downloads</string>
-	<string name="message_no_downloads_queued">Keine wartende Downloads</string>
+	<string name="message_no_downloads_queued">Keine wartenden Downloads</string>
 	<string name="message_no_downloads_finished">Keine fertigen Downloads</string>
 	<string name="message_no_subscriptions">Keine Abonnements</string>
 	<string name="message_download_queued">Download wurde zur Warteschlange hinzugefügt</string>
