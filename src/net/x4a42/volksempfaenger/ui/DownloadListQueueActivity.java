@@ -16,17 +16,17 @@ public class DownloadListQueueActivity extends BaseActivity {
 	private Cursor cursor;
 	private DownloadListQueueAdapter adapter;
 
-	private ListView runningList;
+	private ListView queueList;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.download_list_running);
+		setContentView(R.layout.download_list_queue);
 
 		dbHelper = DatabaseHelper.getInstance(this);
 
-		runningList = (ListView) findViewById(R.id.download_list);
-		runningList.setEmptyView(findViewById(R.id.download_list_empty));
+		queueList = (ListView) findViewById(R.id.download_list);
+		queueList.setEmptyView(findViewById(R.id.download_list_empty));
 
 		String selection = DatabaseHelper.ExtendedEpisode.ENCLOSURE_URL
 				+ " IS NOT NULL  AND "
@@ -41,7 +41,7 @@ public class DownloadListQueueActivity extends BaseActivity {
 				null, null, orderBy);
 
 		adapter = new DownloadListQueueAdapter(this, cursor);
-		runningList.setAdapter(adapter);
+		queueList.setAdapter(adapter);
 	}
 
 	@Override
