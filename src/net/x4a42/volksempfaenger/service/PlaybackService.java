@@ -241,9 +241,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		notification = new Notification(R.drawable.notification,
 				getEpisodeTitle(), System.currentTimeMillis());
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
+		
 		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				playerListener.getContext(), 0, notificationIntent, 0);
+				playerListener.getContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getEpisodeTitle(),
 				getPodcastTitle(), pendingIntent);
 		stopForeground(true);

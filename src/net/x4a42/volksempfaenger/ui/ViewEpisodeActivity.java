@@ -154,8 +154,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		setContentView(R.layout.view_episode);
 
 		dbHelper = DatabaseHelper.getInstance(this);
-		
-		onNewIntent(getIntent());
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -184,11 +182,13 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		startService(intent);
 		bindService(intent, this, BIND_AUTO_CREATE);
 		updateHandler = new Handler();
+
+		onNewIntent(getIntent());
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
-		stopManagingCursor(cursor);
+		super.onNewIntent(intent);
 		// Check if there is an ID
 		Bundle extras = intent.getExtras();
 		if (extras == null) {
@@ -201,6 +201,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return;
 		}
 
+		if (cursor != null) {
+			stopManagingCursor(cursor);
+			cursor.close();
+			cursor = null;
+		}
 		cursor = dbHelper.getReadableDatabase().query(
 				DatabaseHelper.ExtendedEpisode._TABLE, null,
 				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
@@ -219,16 +224,15 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	protected void onResume() {
 		super.onResume();
 
-		if (service != null && service.isPlaying()
-				&& service.getCurrentEpisode() == getEpisodeId()) {
-			setPlaying();
-		}
-
-		cursor.requery();
 		if (!cursor.moveToFirst()) {
 			// ID does not exist
 			finish();
 			return;
+		}
+
+		if (service != null && service.isPlaying()
+				&& service.getCurrentEpisode() == getEpisodeId()) {
+			setPlaying();
 		}
 
 		podcastTitle.setText(getPodcastTitle());
