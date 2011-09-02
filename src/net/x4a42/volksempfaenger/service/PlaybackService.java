@@ -226,7 +226,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			Log.e(TAG, "Unable to stop: player is not playing");
 		}
 	}
-	
+
 	public long getCurrentEpisode() {
 		return getEpisodeId();
 	}
@@ -242,10 +242,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 				getEpisodeTitle(), System.currentTimeMillis());
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 		notificationIntent.putExtra("id", getEpisodeId());
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
+		PendingIntent pendingIntent = PendingIntent.getActivity(
+				playerListener.getContext(), 0, notificationIntent, 0);
 		notification.setLatestEventInfo(this, getEpisodeTitle(),
 				getPodcastTitle(), pendingIntent);
+		stopForeground(true);
 		startForeground(1, notification);
 		playerListener.onPlayerPrepared();
 	}
@@ -289,6 +290,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		public void onPlayerStopped();
 
 		public void onPlayerPrepared();
+
+		public Context getContext();
 	}
 
 	private class AudioNoisyReceiver extends BroadcastReceiver {
@@ -315,6 +318,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		public void onPlayerPrepared() {
 			Log.d(TAG, "No PlayerListener set");
+		}
+
+		public Context getContext() {
+			return PlaybackService.this;
 		}
 
 	}
