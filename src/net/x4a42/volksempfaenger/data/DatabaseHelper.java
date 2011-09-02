@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.data;
 
+import net.x4a42.volksempfaenger.Utils;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -106,6 +107,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	}
 
+	public static class ExtendedPodcast extends Podcast {
+
+		public static final String _TABLE = "extended_podcast";
+		public static final String NEW_EPISODES = "new_episodes";
+
+		private static String createSql() {
+			StringBuilder sql = new StringBuilder();
+			sql.append("CREATE VIEW \"extended_podcast\" AS\n");
+			sql.append("SELECT\n");
+			sql.append("  \"podcast\".\"_id\" AS \"_id\",\n");
+			sql.append("  \"podcast\".\"title\" AS \"title\",\n");
+			sql.append("  \"podcast\".\"description\" AS \"description\",\n");
+			sql.append("  \"podcast\".\"url\" AS \"url\",\n");
+			sql.append("  \"podcast\".\"website\" AS \"website\",\n");
+			sql.append("  (SELECT COUNT(*) FROM \"episode\" ");
+			sql.append("WHERE \"episode\".\"podcast_id\" = \"podcast\".\"_id\" ");
+			sql.append("AND \"state\" IN (");
+			sql.append(Utils.joinArray(new long[] { Episode.STATE_NEW,
+					Episode.STATE_DOWNLOADING, Episode.STATE_READY }, ","));
+			sql.append(")) AS \"new_episodes\"\n");
+			sql.append("FROM \"podcast\"");
+			return sql.toString();
+		}
+
+	}
+
 	public static class ExtendedEpisode {
 
 		public static final String _TABLE = "extended_episode";
@@ -200,6 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(Podcast.createSql());
 		db.execSQL(Episode.createSql());
 		db.execSQL(Enclosure.createSql());
+		db.execSQL(ExtendedPodcast.createSql());
 		db.execSQL(ExtendedEpisode.createSql());
 	}
 
