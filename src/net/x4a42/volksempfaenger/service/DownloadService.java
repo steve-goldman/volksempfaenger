@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DownloadService extends Service {
 
@@ -37,7 +38,7 @@ public class DownloadService extends Service {
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
 
-	private class DownloadTask extends AsyncTask<Long, Void, Void> {
+	private class DownloadTask extends AsyncTask<Long, Integer, Void> {
 
 		@Override
 		protected Void doInBackground(Long... params) {
@@ -155,14 +156,55 @@ public class DownloadService extends Service {
 
 			ContentValues values = new ContentValues();
 			while (cursor.moveToNext() && freeSlots-- > 0) {
+				long downloadId = cursor
+						.getLong(cursor
+								.getColumnIndex(DatabaseHelper.ExtendedEpisode.DOWNLOAD_ID));
 				Query query = new Query();
-				query.setFilterById(cursor.getLong(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.DOWNLOAD_ID)));
-				if (dm.query(query).getCount() != 0) {
+				query.setFilterById(downloadId);
+				Cursor dmCursor = dm.query(query);
+				if (dmCursor.moveToFirst()) {
 					// The Download of this episode was already started
-					// TODO: Handling of failed downloads
-					freeSlots++;
-					continue;
+					int status = dmCursor.getInt(dmCursor
+							.getColumnIndex(DownloadManager.COLUMN_STATUS));
+					switch (status) {
+					case DownloadManager.STATUS_SUCCESSFUL:
+						try {
+							URI localUri = new URI(
+									dmCursor.getString(dmCursor
+											.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
+							if (new File(localUri).isFile()) {
+								// the file was successfully downloaded and does
+								// still exist
+								if (params != null) {
+									publishProgress(R.string.message_download_episode_already_downloaded);
+								}
+								freeSlots++;
+								continue;
+							} else {
+								// the file was deleted, we'll restart the
+								// download
+								break;
+							}
+						} catch (URISyntaxException e) {
+							// this should never ever happen but just in case
+							// we'll handle it like a failed download (next
+							// case)
+						}
+					case DownloadManager.STATUS_FAILED:
+						// remove the download so that we can start a new one
+						dm.remove(downloadId);
+						break;
+
+					case DownloadManager.STATUS_PENDING:
+					case DownloadManager.STATUS_RUNNING:
+					case DownloadManager.STATUS_PAUSED:
+						// the download is already running
+						if (params != null) {
+							publishProgress(R.string.message_download_already_running);
+						}
+						freeSlots++;
+						continue;
+					}
 				}
 
 				try {
@@ -172,6 +214,9 @@ public class DownloadService extends Service {
 					if (enclosureFile != null
 							&& new File(new URI(enclosureFile)).isFile()) {
 						// the file already exists
+						if (params != null) {
+							publishProgress(R.string.message_download_episode_already_downloaded);
+						}
 						freeSlots++;
 						continue;
 					}
@@ -192,7 +237,7 @@ public class DownloadService extends Service {
 				String url = cursor
 						.getString(cursor
 								.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_URL));
-				long downloadId = ed.downloadEnclosure(enclosureId, url, title);
+				downloadId = ed.downloadEnclosure(enclosureId, url, title);
 
 				// update enclosure table
 				values.clear();
@@ -208,11 +253,21 @@ public class DownloadService extends Service {
 				db.update(DatabaseHelper.Episode._TABLE, values,
 						String.format("%s = ?", DatabaseHelper.Episode.ID),
 						new String[] { String.valueOf(episodeId) });
-
+				if (params != null) {
+					publishProgress(R.string.message_download_started);
+				}
 			}
 			cursor.close();
 
 			return null;
+
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+
+			Toast.makeText(DownloadService.this, values[0], Toast.LENGTH_SHORT)
+					.show();
 
 		}
 

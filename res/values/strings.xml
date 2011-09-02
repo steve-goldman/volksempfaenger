@@ -47,7 +47,9 @@
 	<string name="message_no_downloads_queued">No queued downloads</string>
 	<string name="message_no_downloads_finished">No finished downloads</string>
 	<string name="message_no_subscriptions">No subscriptions</string>
-	<string name="message_download_queued">Download added to queue</string>
+	<string name="message_download_started">The download was started</string>
+	<string name="message_download_already_running">The download is already running</string>
+	<string name="message_download_episode_already_downloaded">This episode has already been downloaded</string>
 	<string name="message_episode_without_enclosure">There is no file attached to this episode</string>
 	<string name="message_enclosure_file_not_available">Please download the episode first</string>
 	<string name="settings_download">Download</string>

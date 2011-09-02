@@ -47,7 +47,6 @@
 	<string name="message_no_downloads_queued">Keine wartenden Downloads</string>
 	<string name="message_no_downloads_finished">Keine fertigen Downloads</string>
 	<string name="message_no_subscriptions">Keine Abonnements</string>
-	<string name="message_download_queued">Download wurde zur Warteschlange hinzugefügt</string>
 	<string name="message_episode_without_enclosure">Dieser Folge wurde keine Datei angehängt</string>
 	<string name="message_enclosure_file_not_available">Bitte lade die Folge erst herunter</string>
 	<string name="settings_download">Download</string>

@@ -362,8 +362,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		Intent intent = new Intent(this, DownloadService.class);
 		intent.putExtra("id", v);
 		startService(intent);
-		Toast.makeText(this, R.string.message_download_queued,
-				Toast.LENGTH_SHORT).show();
+		// the service will send a Toast as user feedback
 	}
 
 	private Runnable updateSliderTask = new Runnable() {
