@@ -215,8 +215,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		// TODO Auto-generated method stub
 		super.onResume();
 
-		if (service != null && service.isPlaying()) {
-			updateHandler.post(updateSliderTask);
+		if (service != null && service.isPlaying()
+				&& service.getCurrentEpisode() == getEpisodeId()) {
+			setPlaying();
 		}
 
 		cursor.requery();
@@ -468,7 +469,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		service = ((PlaybackBinder) binder).getService();
 		service.setPlayerListener(this);
-		if (service.isPlaying()) {
+		if (service.isPlaying()
+				&& service.getCurrentEpisode() == getEpisodeId()) {
 			setPlaying();
 		}
 		bound = true;
