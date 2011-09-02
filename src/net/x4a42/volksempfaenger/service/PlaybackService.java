@@ -9,6 +9,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -28,9 +29,13 @@ import android.util.Log;
 
 public class PlaybackService extends Service implements OnPreparedListener,
 		OnAudioFocusChangeListener, OnCompletionListener {
+
+	private static final int NOTIFICATION_ID = 0x59d54313;
 	private final String TAG = getClass().getSimpleName();
+
 	private MediaPlayer player;
 	private Notification notification;
+	private NotificationManager notificationManager;
 	private AudioManager audioManager;
 	private AudioNoisyReceiver audioNoisyReceiver;
 	private DatabaseHelper dbHelper;
@@ -68,7 +73,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	public void onCreate() {
 		super.onCreate();
 		player = new MediaPlayer();
-		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 		audioNoisyReceiver = new AudioNoisyReceiver();
 		registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
@@ -160,6 +166,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			// focus
 			player.start();
 			playerState = PlayerState.STARTED;
+			startForeground();
 		} else {
 			Log.e(TAG,
 					"Unable to play: player has neither been 'paused' nor 'prepared'");
@@ -170,6 +177,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		if (playerState == PlayerState.STARTED) {
 			player.pause();
 			playerState = PlayerState.PAUSED;
+			stopForeground();
 		} else {
 			Log.e(TAG, "Unable to pause: player has not been 'started'");
 		}
@@ -218,7 +226,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		if (playerState == PlayerState.STARTED || completed) {
 			// save position if not completed TODO
 
-			stopForeground(true);
+			stopForeground();
 			enclosureId = -1;
 			playerListener.onPlayerStopped();
 			resetPlayer();
@@ -234,22 +242,35 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private void resetPlayer() {
 		player.reset();
 		playerState = PlayerState.IDLE;
+		stopForeground();
 	}
 
 	public void onPrepared(MediaPlayer mp) {
 		playerState = PlayerState.PREPARED;
-		notification = new Notification(R.drawable.notification,
-				getEpisodeTitle(), System.currentTimeMillis());
+		notification = new Notification(R.drawable.notification, null,
+				System.currentTimeMillis());
+		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
-		
+
 		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				playerListener.getContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				playerListener.getContext(), 0,
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getEpisodeTitle(),
 				getPodcastTitle(), pendingIntent);
-		stopForeground(true);
-		startForeground(1, notification);
+		startForeground();
 		playerListener.onPlayerPrepared();
+	}
+
+	private void startForeground() {
+		if (notification == null) {
+			return;
+		}
+		startForeground(NOTIFICATION_ID, notification);
+	}
+
+	private void stopForeground() {
+		stopForeground(true);
 	}
 
 	public void onAudioFocusChange(int focusChange) {
