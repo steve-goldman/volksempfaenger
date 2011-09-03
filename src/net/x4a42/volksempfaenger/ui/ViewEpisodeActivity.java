@@ -651,8 +651,4 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	}
 
-	public Context getContext() {
-		return this;
-	}
-
 }
