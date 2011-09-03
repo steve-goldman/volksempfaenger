@@ -265,9 +265,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 
 		notificationIntent.putExtra("id", getEpisodeId());
-		PendingIntent pendingIntent = PendingIntent.getActivity(
-				playerListener.getContext(), 0, notificationIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.setLatestEventInfo(this, getEpisodeTitle(),
 				getPodcastTitle(), pendingIntent);
 		startForeground();
@@ -324,8 +323,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		public void onPlayerStopped();
 
 		public void onPlayerPrepared();
-
-		public Context getContext();
 	}
 
 	private class AudioNoisyReceiver extends BroadcastReceiver {
@@ -352,10 +349,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		public void onPlayerPrepared() {
 			Log.d(TAG, "No PlayerListener set");
-		}
-
-		public Context getContext() {
-			return PlaybackService.this;
 		}
 
 	}
