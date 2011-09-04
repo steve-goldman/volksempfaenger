@@ -19,11 +19,16 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.gesture.GestureOverlayView.OnGesturePerformedListener;
+import android.gesture.Prediction;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -55,7 +60,7 @@ import android.widget.Toast;
 
 public class ViewEpisodeActivity extends BaseActivity implements
 		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
-		PlayerListener {
+		PlayerListener, OnGesturePerformedListener {
 	private SeekBar seekBar;
 	private TextView textDuration;
 	private TextView textPosition;
@@ -74,6 +79,9 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView podcastDescription;
 	private TextView episodeTitle;
 	private TextView episodeDescription;
+	private GestureOverlayView gestureOverlay;
+
+	private GestureLibrary gestureLibrary;
 
 	private SpannableStringBuilder descriptionSpanned;
 
@@ -123,6 +131,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private int getEpisodeState() {
 		return cursor.getInt(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
+	}
+
+	private long getEpisodeDate() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
 	}
 
 	/* Enclosure getters */
@@ -177,6 +190,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		buttonForward = (ImageButton) findViewById(R.id.button_forward);
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
+		gestureOverlay = (GestureOverlayView) findViewById(R.id.gestures);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -188,6 +202,12 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		buttonBack.setOnClickListener(this);
 		buttonForward.setOnClickListener(this);
 		seekBar.setOnSeekBarChangeListener(this);
+		gestureOverlay.addOnGesturePerformedListener(this);
+
+		gestureLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		if (!gestureLibrary.load()) {
+			finish();
+		}
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
@@ -649,6 +669,53 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
+	}
+
+	public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+		ArrayList<Prediction> predictions = gestureLibrary.recognize(gesture);
+
+		if (predictions.size() > 0) {
+			Prediction prediction = predictions.get(0);
+			String order;
+			String operator;
+			if (prediction.name.equals("swipe left")) {
+				// next episode
+				order = "ASC";
+				operator = ">";
+			} else if (prediction.name.equals("swipe right")) {
+				// previous episode
+				order = "DESC";
+				operator = "<";
+			} else {
+				Toast.makeText(this, "foobar3", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			Cursor cursor = dbHelper
+					.getReadableDatabase()
+					.query(DatabaseHelper.ExtendedEpisode._TABLE,
+							null,
+							String.format(
+									"%s = ? AND %s %s= ?",
+									DatabaseHelper.ExtendedEpisode.PODCAST_ID,
+									DatabaseHelper.ExtendedEpisode.EPISODE_DATE,
+									operator),
+							new String[] { String.valueOf(getPodcastId()),
+									String.valueOf(getEpisodeDate()) },
+							null,
+							null,
+							String.format(
+									"%s %s",
+									DatabaseHelper.ExtendedEpisode.EPISODE_DATE,
+									order), "1,1");
+			if (cursor.moveToFirst()) {
+				long id = cursor.getLong(cursor
+						.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID));
+				Intent intent = new Intent(this, ViewEpisodeActivity.class);
+				intent.putExtra("id", id);
+				startActivity(intent);
+			}
+			cursor.close();
+		}
 	}
 
 }
