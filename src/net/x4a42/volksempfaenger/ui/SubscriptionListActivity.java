@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.ui;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SubscriptionListActivity extends BaseActivity implements
 		OnItemClickListener {
@@ -43,8 +45,8 @@ public class SubscriptionListActivity extends BaseActivity implements
 		subscriptionList.setOnCreateContextMenuListener(this);
 
 		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null, null,
-				DatabaseHelper.ExtendedPodcast.TITLE);
+				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null,
+				null, DatabaseHelper.ExtendedPodcast.TITLE);
 		startManagingCursor(cursor);
 
 		adapter = new SubscriptionListAdapter(this, cursor);
@@ -71,6 +73,11 @@ public class SubscriptionListActivity extends BaseActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_add:
 			startActivity(new Intent(this, AddSubscriptionActivity.class));
+			return true;
+		case R.id.item_update:
+			startService(new Intent(this, UpdateService.class));
+			Toast.makeText(this, R.string.message_update_started,
+					Toast.LENGTH_SHORT).show();
 			return true;
 		default:
 			return handleGlobalMenu(item);

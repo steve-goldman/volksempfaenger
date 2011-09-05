@@ -17,6 +17,7 @@
 	<string name="menu_settings">Settings</string>
 	<string name="menu_download">Download</string>
 	<string name="menu_mark_listened">Mark as listened</string>
+	<string name="menu_update">Update</string>
 	<string name="context_edit">Edit</string>
 	<string name="context_delete">Delete</string>
 	<string name="context_reload">Reload</string>
@@ -52,6 +53,7 @@
 	<string name="message_download_episode_already_downloaded">This episode has already been downloaded</string>
 	<string name="message_episode_without_enclosure">There is no file attached to this episode</string>
 	<string name="message_enclosure_file_not_available">Please download the episode first</string>
+	<string name="message_update_started">Updated started</string>
 	<string name="settings_download">Download</string>
 	<string name="settings_download_interval">Refresh interval</string>
 	<string name="settings_download_auto">Auto Download</string>
