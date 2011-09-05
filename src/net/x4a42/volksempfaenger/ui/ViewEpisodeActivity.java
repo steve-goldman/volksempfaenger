@@ -418,7 +418,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 								Toast.LENGTH_SHORT).show();
 					} else {
 						try {
-							// TODO change to actual file name
 							service.playEpisode(getEpisodeId());
 							startedPlaying = true;
 						} catch (IllegalArgumentException e) {
