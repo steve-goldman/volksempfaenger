@@ -377,10 +377,15 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		if (v == null || v.length == 0) {
 			v = new long[] { getEnclosureId() };
 		} else if (v.length == 1) {
-			// TODO: update preferred enclosure
+			ContentValues values = new ContentValues();
+			values.put(DatabaseHelper.Episode.ENCLOSURE, v[0]);
+			dbHelper.getWritableDatabase().update(
+					DatabaseHelper.Episode._TABLE, values,
+					String.format("%s = ?", DatabaseHelper.Episode.ID),
+					new String[] { String.valueOf(getEpisodeId()) });
 		}
 		Intent intent = new Intent(this, DownloadService.class);
-		intent.putExtra("id", v);
+		intent.putExtra("id", new long[] { getEpisodeId() });
 		startService(intent);
 		// the service will send a Toast as user feedback
 	}
