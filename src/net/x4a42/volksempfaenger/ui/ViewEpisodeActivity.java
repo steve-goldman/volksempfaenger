@@ -459,7 +459,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			service.pause();
 		} else {
 			setButtonPause();
-			buttonPlay.setImageResource(android.R.drawable.ic_media_pause);
+			buttonPlay.setImageResource(R.drawable.ic_media_pause);
 			service.play();
 		}
 	}
@@ -477,11 +477,11 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	}
 
 	private void setButtonPlay() {
-		buttonPlay.setImageResource(android.R.drawable.ic_media_play);
+		buttonPlay.setImageResource(R.drawable.ic_media_play);
 	}
 
 	private void setButtonPause() {
-		buttonPlay.setImageResource(android.R.drawable.ic_media_pause);
+		buttonPlay.setImageResource(R.drawable.ic_media_pause);
 	}
 
 	public void onProgressChanged(SeekBar seekBar, int progress,

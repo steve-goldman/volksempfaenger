@@ -47,14 +47,14 @@
 			<TextView android:text="00:00:00" android:id="@+id/text_position"
 				android:layout_height="wrap_content" android:layout_gravity="center_vertical"
 				android:layout_width="wrap_content"></TextView>
-			<ImageButton android:id="@+id/button_back" android:src="@android:drawable/ic_media_rew"
+			<ImageButton android:id="@+id/button_back" android:src="@drawable/ic_media_rew"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"></ImageButton>
-			<ImageButton android:id="@+id/button_play" android:src="@android:drawable/ic_media_play"
+			<ImageButton android:id="@+id/button_play" android:src="@drawable/ic_media_play"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"></ImageButton>
 			<ImageButton android:id="@+id/button_forward"
-				android:src="@android:drawable/ic_media_ff" android:layout_width="wrap_content"
+				android:src="@drawable/ic_media_ff" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:layout_gravity="center_vertical"></ImageButton>
 			<TextView android:text="00:00:00" android:id="@+id/text_duration"
 				android:layout_height="wrap_content" android:layout_gravity="center_vertical"
