@@ -80,6 +80,8 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	private TextView episodeTitle;
 	private TextView episodeDescription;
 	private GestureOverlayView gestureOverlay;
+	
+	private View contentContainer;
 
 	private GestureLibrary gestureLibrary;
 
@@ -191,6 +193,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 		textDuration = (TextView) findViewById(R.id.text_duration);
 		textPosition = (TextView) findViewById(R.id.text_position);
 		gestureOverlay = (GestureOverlayView) findViewById(R.id.gestures);
+		contentContainer = findViewById(R.id.contentContainer);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -604,6 +607,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
 		private DescriptionImageDownloader imageDownloader;
+		private int viewWidth;
 		DisplayMetrics metrics = new DisplayMetrics();
 
 		@Override
@@ -611,6 +615,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			imageDownloader = new DescriptionImageDownloader(
 					ViewEpisodeActivity.this);
 			getWindowManager().getDefaultDisplay().getMetrics(metrics);
+			viewWidth = contentContainer.getMeasuredWidth();
 		}
 
 		@Override
@@ -646,10 +651,10 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				int width, height;
 				int originalWidthScaled = (int) (d.getIntrinsicWidth() * metrics.density);
 				int originalHeightScaled = (int) (d.getIntrinsicHeight() * metrics.density);
-				if (originalWidthScaled > metrics.widthPixels) {
-					height = d.getIntrinsicHeight() * metrics.widthPixels
+				if (originalWidthScaled > viewWidth) {
+					height = d.getIntrinsicHeight() * viewWidth
 							/ d.getIntrinsicWidth();
-					width = metrics.widthPixels;
+					width = viewWidth;
 				} else {
 					height = originalHeightScaled;
 					width = originalWidthScaled;
@@ -692,7 +697,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				order = "DESC";
 				operator = "<";
 			} else {
-				Toast.makeText(this, "foobar3", Toast.LENGTH_SHORT).show();
 				return;
 			}
 			Cursor cursor = dbHelper
