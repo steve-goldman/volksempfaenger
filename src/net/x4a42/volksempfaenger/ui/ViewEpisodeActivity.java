@@ -687,7 +687,6 @@ public class ViewEpisodeActivity extends BaseActivity implements
 				order = "DESC";
 				operator = "<";
 			} else {
-				Toast.makeText(this, "foobar3", Toast.LENGTH_SHORT).show();
 				return;
 			}
 			Cursor cursor = dbHelper
