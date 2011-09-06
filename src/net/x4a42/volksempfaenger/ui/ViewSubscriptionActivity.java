@@ -69,8 +69,9 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 				new String[] { String.valueOf(id) },
 				null,
 				null,
-				String.format("%s DESC",
-						DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
+				String.format("%s DESC, %s DESC",
+						DatabaseHelper.ExtendedEpisode.EPISODE_DATE,
+						DatabaseHelper.ExtendedPodcast.ID));
 		startManagingCursor(cursor);
 
 		adapter = new EpisodeListAdapter(this, cursor);
