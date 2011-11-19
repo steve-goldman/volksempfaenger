@@ -14,6 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.astuetz.viewpagertabs.ViewPagerTabProvider;
+import com.astuetz.viewpagertabs.ViewPagerTabs;
+
 public class VolksempfaengerActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -22,13 +25,18 @@ public class VolksempfaengerActivity extends FragmentActivity {
 		MyAdapter adapter = new MyAdapter(getSupportFragmentManager());
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 		viewPager.setAdapter(adapter);
+
+		ViewPagerTabs tabs = (ViewPagerTabs) findViewById(R.id.tabs);
+		tabs.setViewPager(viewPager);
 	}
 
-	public static class MyAdapter extends FragmentPagerAdapter {
+	public static class MyAdapter extends FragmentPagerAdapter implements
+			ViewPagerTabProvider {
 		private FragmentManager fragmentManager;
 		private static final int NUM = 2;
 		private Fragment[] fragments = new Fragment[NUM];
-		
+		private static final String[] titles = new String[] {"Buttonfoo", "Downloads"};
+
 		public MyAdapter(FragmentManager fm) {
 			super(fm);
 			this.fragmentManager = fm;
@@ -51,17 +59,21 @@ public class VolksempfaengerActivity extends FragmentActivity {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
 			Fragment f = fragments[position];
-			switch(position) {
-				case 0:
-					f = new VolksempfaengerFragment();
-					break;
-				case 1:
-					f = new DownloadListFragment();
-					break;
+			switch (position) {
+			case 0:
+				f = new VolksempfaengerFragment();
+				break;
+			case 1:
+				f = new DownloadListFragment();
+				break;
 			}
 			fragmentTransaction.add(container.getId(), f);
 			fragmentTransaction.commit();
 			return f;
+		}
+
+		public String getTitle(int position) {
+			return titles[position];
 		}
 	}
 
