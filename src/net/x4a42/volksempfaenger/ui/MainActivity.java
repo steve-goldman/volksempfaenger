@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.util.ArrayList;
+
 import net.x4a42.volksempfaenger.R;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,63 +19,69 @@ import android.view.View;
 import com.astuetz.viewpagertabs.ViewPagerTabProvider;
 import com.astuetz.viewpagertabs.ViewPagerTabs;
 
-public class VolksempfaengerActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity {
+
+	private Adapter adapter;
+	private ViewPager viewPager;
+	private ViewPagerTabs tabs;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.volksempfaenger);
-		MyAdapter adapter = new MyAdapter(getSupportFragmentManager());
-		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		
+		adapter = new Adapter(getSupportFragmentManager());
+		adapter.addFragment("Start", new VolksempfaengerFragment());
+		adapter.addFragment("Downloads", new DownloadListFragment());
+		
+		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		viewPager.setAdapter(adapter);
 
-		ViewPagerTabs tabs = (ViewPagerTabs) findViewById(R.id.tabs);
+		tabs = (ViewPagerTabs) findViewById(R.id.tabs);
 		tabs.setViewPager(viewPager);
 	}
 
-	public static class MyAdapter extends FragmentPagerAdapter implements
+	public static class Adapter extends FragmentPagerAdapter implements
 			ViewPagerTabProvider {
-		private FragmentManager fragmentManager;
-		private static final int NUM = 2;
-		private Fragment[] fragments = new Fragment[NUM];
-		private static final String[] titles = new String[] {"Buttonfoo", "Downloads"};
 
-		public MyAdapter(FragmentManager fm) {
+		private FragmentManager fragmentManager;
+		private ArrayList<Fragment> fragments;
+		private ArrayList<String> titles;
+
+		public Adapter(FragmentManager fm) {
 			super(fm);
-			this.fragmentManager = fm;
+			fragmentManager = fm;
+			fragments = new ArrayList<Fragment>();
+			titles = new ArrayList<String>();
 		}
 
-		VolksempfaengerFragment f;
+		public void addFragment(String title, Fragment fragment) {
+			titles.add(title);
+			fragments.add(fragment);
+		}
 
 		@Override
 		public int getCount() {
-			return NUM;
+			return fragments.size();
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return fragments[position];
+			return fragments.get(position);
 		}
 
 		@Override
 		public Object instantiateItem(View container, int position) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
-			Fragment f = fragments[position];
-			switch (position) {
-			case 0:
-				f = new VolksempfaengerFragment();
-				break;
-			case 1:
-				f = new DownloadListFragment();
-				break;
-			}
+			Fragment f = fragments.get(position);
 			fragmentTransaction.add(container.getId(), f);
 			fragmentTransaction.commit();
 			return f;
 		}
 
 		public String getTitle(int position) {
-			return titles[position];
+			return titles.get(position);
 		}
 	}
 
