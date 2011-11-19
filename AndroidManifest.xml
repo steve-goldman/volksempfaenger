@@ -25,9 +25,6 @@
             android:label="@string/title_delete_subscription"
             android:name=".ui.DeleteSubscriptionActivity"
             android:theme="@android:style/Theme.Dialog" />
-        <activity
-            android:label="@string/title_downloads"
-            android:name=".ui.DownloadListActivity" />
         <activity android:name=".ui.DownloadListRunningActivity" />
         <activity android:name=".ui.DownloadListQueueActivity" />
         <activity android:name=".ui.DownloadListFinishedActivity" />

@@ -4,8 +4,6 @@
 	android:layout_width="fill_parent">
 	<Button android:text="Subscription List" android:id="@+id/button_subscriptionlist"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Download Manager" android:id="@+id/button_downloadmanager"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Listen Queue" android:id="@+id/button_listenqueue"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 	<Button android:text="Debug" android:id="@+id/button_debug"

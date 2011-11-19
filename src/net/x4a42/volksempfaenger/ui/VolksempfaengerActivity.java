@@ -26,7 +26,9 @@ public class VolksempfaengerActivity extends FragmentActivity {
 
 	public static class MyAdapter extends FragmentPagerAdapter {
 		private FragmentManager fragmentManager;
-
+		private static final int NUM = 2;
+		private Fragment[] fragments = new Fragment[NUM];
+		
 		public MyAdapter(FragmentManager fm) {
 			super(fm);
 			this.fragmentManager = fm;
@@ -36,19 +38,27 @@ public class VolksempfaengerActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			return 1;
+			return NUM;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return f;
+			return fragments[position];
 		}
 
 		@Override
 		public Object instantiateItem(View container, int position) {
 			FragmentTransaction fragmentTransaction = fragmentManager
 					.beginTransaction();
-			f = new VolksempfaengerFragment();
+			Fragment f = fragments[position];
+			switch(position) {
+				case 0:
+					f = new VolksempfaengerFragment();
+					break;
+				case 1:
+					f = new DownloadListFragment();
+					break;
+			}
 			fragmentTransaction.add(container.getId(), f);
 			fragmentTransaction.commit();
 			return f;
