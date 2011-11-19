@@ -135,7 +135,7 @@ public class DownloadService extends Service {
 						DatabaseHelper.ExtendedEpisode.EPISODE_DATE);
 			} else {
 				selection += " AND "
-						+ DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID + " IN ("
+						+ DatabaseHelper.ExtendedEpisode.ID + " IN ("
 						+ Utils.joinArray(params, ",") + ")";
 			}
 
