@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<color name="episode_description_text">#bbbbbb</color>
+	<color name="episode_description_link">#aaccee</color>
+
+	<!-- TODO: Choose better colors -->
+	<color name="episode_title_new">#ffffff</color>
+	<color name="episode_title_downloading">#ffffff</color>
+	<color name="episode_title_ready">#ffffff</color>
+	<color name="episode_title_listening">#ffffff</color>
+	<color name="episode_title_listened">#666666</color>
+
+</resources>
