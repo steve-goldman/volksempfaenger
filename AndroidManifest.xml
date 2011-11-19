@@ -14,7 +14,8 @@
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:name=".VolksempfaengerApplication" >
+        android:name=".VolksempfaengerApplication"
+        android:theme="@android:style/Theme.Light" >
         <activity
             android:label="@string/title_add_subscription"
             android:name=".ui.AddSubscriptionActivity"
@@ -41,8 +42,7 @@
             android:name=".ui.SettingsActivity" />
         <activity
             android:label="@string/title_subscription_list"
-            android:name=".ui.SubscriptionListActivity"
-            android:theme="@android:style/Theme.Light" />
+            android:name=".ui.SubscriptionListActivity" />
         <activity android:name=".ui.ViewSubscriptionActivity" />
         <activity
             android:launchMode="singleTop"
