@@ -32,7 +32,11 @@ public class SubscriptionListAdapter extends SimpleCursorAdapter {
 		long newEpisodes = cursor.getLong(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedPodcast.NEW_EPISODES));
 		if (newEpisodes > 0) {
-			newEpisodesText.setText(String.valueOf(newEpisodes));
+			newEpisodesText.setText(newEpisodes < 10 ? String
+					.valueOf(newEpisodes) : "+");
+			newEpisodesText.setVisibility(View.VISIBLE);
+		} else {
+			newEpisodesText.setVisibility(View.INVISIBLE);
 		}
 
 		File podcastLogoFile = Utils.getPodcastLogoFile(context, cursor

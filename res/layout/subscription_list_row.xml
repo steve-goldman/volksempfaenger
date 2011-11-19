@@ -29,12 +29,16 @@
 
         <TextView
             android:id="@+id/new_episodes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:layout_weight="0"
-            android:padding="12dp"
-            android:textSize="24sp" />
+            android:background="@drawable/new_episodes_edge"
+            android:gravity="top|right"
+            android:paddingRight="4dp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 </net.x4a42.volksempfaenger.ui.SquareView>
