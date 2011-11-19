@@ -21,7 +21,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class FeedParser {
-	private final String TAG = getClass().getSimpleName();
 
 	public static Feed parse(Reader reader) throws FeedParserException,
 			IOException {
@@ -36,7 +35,7 @@ public class FeedParser {
 			}
 			Feed feed = handler.getFeed();
 			for (FeedItem item : feed.getItems()) {
-				if(item.getDate() == null) {
+				if (item.getDate() == null) {
 					throw new NotAFeedException();
 				}
 			}
@@ -67,7 +66,6 @@ public class FeedParser {
 			HTML, XHTML, UNKNOWN
 		}
 
-		private static final String TAG = "ParserHelper";
 		private Feed feed = new Feed();
 		private FeedItem feedItem = null;
 		private Stack<Tag> parents = new Stack<Tag>();
@@ -341,7 +339,7 @@ public class FeedParser {
 				break;
 			case ATOM_ENTRY:
 				if (feedItem.getItemId() != null) {
-					feed.getItems().add(feedItem);
+					feed.getItems().add(0, feedItem);
 				}
 				feedItem = null;
 				break;
@@ -413,7 +411,7 @@ public class FeedParser {
 				break;
 			case RSS_ITEM:
 				if (feedItem.getItemId() != null) {
-					feed.getItems().add(feedItem);
+					feed.getItems().add(0, feedItem);
 				}
 				feedItem = null;
 				currentRssItemHasHtml = false;

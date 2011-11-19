@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ViewSubscriptionActivity extends BaseActivity implements
 		OnItemClickListener {
@@ -67,8 +69,9 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 				new String[] { String.valueOf(id) },
 				null,
 				null,
-				String.format("%s DESC",
-						DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
+				String.format("%s DESC, %s DESC",
+						DatabaseHelper.ExtendedEpisode.EPISODE_DATE,
+						DatabaseHelper.ExtendedPodcast.ID));
 		startManagingCursor(cursor);
 
 		adapter = new EpisodeListAdapter(this, cursor);
@@ -123,6 +126,13 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
+		case R.id.item_update:
+			intent = new Intent(this, UpdateService.class);
+			intent.putExtra("id", new long[] { id });
+			startService(intent);
+			Toast.makeText(this, R.string.message_update_started,
+					Toast.LENGTH_SHORT).show();
+			return true;
 		case R.id.item_edit:
 			intent = new Intent(this, EditSubscriptionActivity.class);
 			intent.putExtra("id", id);

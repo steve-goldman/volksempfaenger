@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/item_update" android:title="@string/menu_update"
+		android:icon="@drawable/ic_menu_refresh" />
 	<item android:id="@+id/item_edit" android:title="@string/menu_edit"
-		android:icon="@android:drawable/ic_menu_edit"></item>
+		android:icon="@drawable/ic_menu_edit" />
 	<item android:id="@+id/item_delete" android:title="@string/menu_delete"
-		android:icon="@android:drawable/ic_menu_delete"></item>
+		android:icon="@drawable/ic_menu_delete" />
 </menu>
