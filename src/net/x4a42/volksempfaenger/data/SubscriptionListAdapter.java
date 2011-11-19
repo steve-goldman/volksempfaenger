@@ -15,9 +15,8 @@ import android.widget.TextView;
 
 public class SubscriptionListAdapter extends SimpleCursorAdapter {
 
-	static final String[] from = { DatabaseHelper.ExtendedPodcast.TITLE,
-			DatabaseHelper.ExtendedPodcast.DESCRIPTION };
-	static final int[] to = { R.id.podcast_title, R.id.podcast_description };
+	static final String[] from = { DatabaseHelper.ExtendedPodcast.TITLE };
+	static final int[] to = { R.id.podcast_title };
 
 	public SubscriptionListAdapter(Context context, Cursor cursor) {
 		super(context, R.layout.subscription_list_row, cursor, from, to);

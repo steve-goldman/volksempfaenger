@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +26,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 
 	private DatabaseHelper dbHelper;
 	private Cursor cursor;
-	private ListView subscriptionList;
+	private GridView subscriptionList;
 	private SubscriptionListAdapter adapter;
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
@@ -38,7 +38,7 @@ public class SubscriptionListActivity extends BaseActivity implements
 
 		dbHelper = DatabaseHelper.getInstance(this);
 
-		subscriptionList = (ListView) findViewById(R.id.subscription_list);
+		subscriptionList = (GridView) findViewById(R.id.subscription_list);
 		subscriptionList
 				.setEmptyView(findViewById(R.id.subscription_list_empty));
 		subscriptionList.setOnItemClickListener(this);
