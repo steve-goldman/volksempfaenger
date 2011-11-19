@@ -3,56 +3,55 @@ package net.x4a42.volksempfaenger.ui;
 import net.x4a42.volksempfaenger.R;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
-public class VolksempfaengerActivity extends BaseActivity implements
-		OnClickListener {
-
-	private Button buttonSubscriptionList;
-	private Button buttonListenManager;
-	private Button buttonDownloadQueue;
-	private Button buttonDebug;
-
+public class VolksempfaengerActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-
-		buttonSubscriptionList = (Button) findViewById(R.id.button_subscriptionlist);
-		buttonDownloadQueue = (Button) findViewById(R.id.button_downloadmanager);
-		buttonListenManager = (Button) findViewById(R.id.button_listenqueue);
-		buttonDebug = (Button) findViewById(R.id.button_debug);
-
-		buttonSubscriptionList.setOnClickListener(this);
-		buttonDownloadQueue.setOnClickListener(this);
-		buttonListenManager.setOnClickListener(this);
-		buttonDebug.setOnClickListener(this);
+		setContentView(R.layout.volksempfaenger);
+		MyAdapter adapter = new MyAdapter(getSupportFragmentManager());
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		viewPager.setAdapter(adapter);
 	}
 
-	public void onClick(View v) {
-		Intent intent;
+	public static class MyAdapter extends FragmentPagerAdapter {
+		private FragmentManager fragmentManager;
 
-		switch (v.getId()) {
-		case R.id.button_subscriptionlist:
-			intent = new Intent(this, SubscriptionListActivity.class);
-			startActivity(intent);
-			return;
-		case R.id.button_downloadmanager:
-			intent = new Intent(this, DownloadListActivity.class);
-			startActivity(intent);
-			return;
-		case R.id.button_listenqueue:
-			intent = new Intent(this, ListenQueueActivity.class);
-			startActivity(intent);
-			return;
-		case R.id.button_debug:
-			intent = new Intent(this, DebugActivity.class);
-			startActivity(intent);
-			return;
+		public MyAdapter(FragmentManager fm) {
+			super(fm);
+			this.fragmentManager = fm;
+		}
+
+		VolksempfaengerFragment f;
+
+		@Override
+		public int getCount() {
+			return 1;
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			return f;
+		}
+
+		@Override
+		public Object instantiateItem(View container, int position) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			f = new VolksempfaengerFragment();
+			fragmentTransaction.add(container.getId(), f);
+			fragmentTransaction.commit();
+			return f;
 		}
 	}
 
@@ -69,6 +68,21 @@ public class VolksempfaengerActivity extends BaseActivity implements
 			handleGlobalMenu(item);
 		}
 		return true;
+	}
+
+	public void addGlobalMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.global, menu);
+	}
+
+	public boolean handleGlobalMenu(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.item_settings:
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		default:
+			return false;
+		}
 	}
 
 }
