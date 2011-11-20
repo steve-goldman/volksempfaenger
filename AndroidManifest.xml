@@ -39,11 +39,14 @@
         <activity
             android:name=".ui.EditSubscriptionActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.LicenseActivity" />
+        <activity
+            android:name=".ui.LicenseActivity"
+            android:theme="@android:style/Theme.Black" />
         <activity android:name=".ui.ListenQueueActivity" />
         <activity
             android:label="@string/title_settings"
-            android:name=".ui.SettingsActivity" />
+            android:name=".ui.SettingsActivity"
+            android:theme="@android:style/Theme.Black" />
         <activity android:name=".ui.ViewSubscriptionActivity" />
         <activity
             android:launchMode="singleTop"
