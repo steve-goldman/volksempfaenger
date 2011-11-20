@@ -4,17 +4,14 @@ import java.util.ArrayList;
 
 import net.x4a42.volksempfaenger.R;
 import android.os.Bundle;
-import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.View;
 
 import com.astuetz.viewpagertabs.ViewPagerTabProvider;
 import com.astuetz.viewpagertabs.ViewPagerTabs;
@@ -23,7 +20,6 @@ public class MainActivity extends FragmentActivity {
 
 	public static final String TAG = "MainActivity";
 
-	private ActionBar actionBar;
 	private Adapter adapter;
 	private ViewPager viewPager;
 	private ViewPagerTabs tabs;
@@ -32,8 +28,6 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.volksempfaenger);
-
-		actionBar = getSupportActionBar();
 
 		adapter = new Adapter(getSupportFragmentManager());
 		adapter.addFragment(getString(R.string.title_tab_subscriptions),
@@ -53,13 +47,11 @@ public class MainActivity extends FragmentActivity {
 	public static class Adapter extends FragmentPagerAdapter implements
 			ViewPagerTabProvider {
 
-		private FragmentManager fragmentManager;
 		private ArrayList<Class<? extends Fragment>> fragments;
 		private ArrayList<String> titles;
 
 		public Adapter(FragmentManager fm) {
 			super(fm);
-			fragmentManager = fm;
 			fragments = new ArrayList<Class<? extends Fragment>>();
 			titles = new ArrayList<String>();
 		}
@@ -90,15 +82,6 @@ public class MainActivity extends FragmentActivity {
 			return null;
 		}
 
-		@Override
-		public Object instantiateItem(View container, int position) {
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			Fragment f = getItem(position);
-			fragmentTransaction.add(container.getId(), f);
-			fragmentTransaction.commit();
-			return f;
-		}
 	}
 
 	@Override
