@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.ActionBar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
@@ -29,6 +30,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private long id;
 	private DatabaseHelper dbHelper;
 
+	private ActionBar actionBar;
 	private ImageView podcastLogo;
 	private TextView podcastDescription;
 	private ListView episodeList;
@@ -54,6 +56,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		setContentView(R.layout.view_subscription);
 
 		dbHelper = DatabaseHelper.getInstance(this);
+
+		actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
@@ -95,6 +100,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		c.moveToFirst();
 
+		setTitle(c.getString(c.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
 		podcastDescription.setText(c.getString(c
 				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
@@ -123,6 +129,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
 		case R.id.item_update:
 			intent = new Intent(this, UpdateService.class);
 			intent.putExtra("id", new long[] { id });
