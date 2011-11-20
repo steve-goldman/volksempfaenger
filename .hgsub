@@ -1,1 +1,2 @@
 libs/android-viewpagertabs = [git]git://github.com/astuetz/android-viewpagertabs.git
+libs/ActionBarSherlock = [git]git://github.com/JakeWharton/ActionBarSherlock.git

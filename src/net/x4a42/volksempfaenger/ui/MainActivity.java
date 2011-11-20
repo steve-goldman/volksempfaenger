@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 import net.x4a42.volksempfaenger.R;
 import android.os.Bundle;
+import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.astuetz.viewpagertabs.ViewPagerTabProvider;
@@ -22,6 +23,7 @@ public class MainActivity extends FragmentActivity {
 
 	public static final String TAG = "MainActivity";
 
+	private ActionBar actionBar;
 	private Adapter adapter;
 	private ViewPager viewPager;
 	private ViewPagerTabs tabs;
@@ -30,6 +32,8 @@ public class MainActivity extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.volksempfaenger);
+
+		actionBar = getSupportActionBar();
 
 		adapter = new Adapter(getSupportFragmentManager());
 		adapter.addFragment(getString(R.string.title_tab_subscriptions),
