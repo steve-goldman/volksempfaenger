@@ -12,9 +12,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,13 +24,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewSubscriptionActivity extends BaseActivity implements
+public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnItemClickListener {
 	private long id;
 	private DatabaseHelper dbHelper;
 
 	private ImageView podcastLogo;
-	private TextView podcastTitle;
 	private TextView podcastDescription;
 	private ListView episodeList;
 	private Cursor cursor;
@@ -56,7 +56,6 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
-		podcastTitle = (TextView) findViewById(R.id.podcast_title);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
@@ -96,8 +95,6 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 
 		c.moveToFirst();
 
-		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
 		podcastDescription.setText(c.getString(c
 				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
@@ -118,7 +115,7 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_subscription, menu);
-		addGlobalMenu(menu);
+		BaseActivity.addGlobalMenu(this, menu);
 		return true;
 	}
 
@@ -144,7 +141,7 @@ public class ViewSubscriptionActivity extends BaseActivity implements
 			startActivity(intent);
 			return true;
 		default:
-			return handleGlobalMenu(item);
+			return BaseActivity.handleGlobalMenu(this, item);
 		}
 	}
 

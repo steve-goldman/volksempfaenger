@@ -27,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.volksempfaenger);
+		setContentView(R.layout.main);
 
 		adapter = new Adapter(getSupportFragmentManager());
 		adapter.addFragment(getString(R.string.title_tab_subscriptions),
@@ -39,6 +39,7 @@ public class MainActivity extends FragmentActivity {
 
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		viewPager.setAdapter(adapter);
+		viewPager.setPageMargin(10);
 
 		tabs = (ViewPagerTabs) findViewById(R.id.tabs);
 		tabs.setViewPager(viewPager);

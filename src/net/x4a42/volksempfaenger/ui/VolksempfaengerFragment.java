@@ -13,23 +13,19 @@ import android.widget.Button;
 public class VolksempfaengerFragment extends Fragment implements
 		OnClickListener {
 
-	private Button buttonSubscriptionList;
-	private Button buttonListenManager;
+	private Button buttonListenQueue;
 	private Button buttonDebug;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.main, container, false);
+		View view = inflater.inflate(R.layout.buttons, container, false);
 
-		buttonSubscriptionList = (Button) view
-				.findViewById(R.id.button_subscriptionlist);
-		buttonListenManager = (Button) view
+		buttonListenQueue = (Button) view
 				.findViewById(R.id.button_listenqueue);
 		buttonDebug = (Button) view.findViewById(R.id.button_debug);
 
-		buttonSubscriptionList.setOnClickListener(this);
-		buttonListenManager.setOnClickListener(this);
+		buttonListenQueue.setOnClickListener(this);
 		buttonDebug.setOnClickListener(this);
 		return view;
 	}
@@ -38,10 +34,6 @@ public class VolksempfaengerFragment extends Fragment implements
 		Intent intent;
 
 		switch (v.getId()) {
-		case R.id.button_subscriptionlist:
-			intent = new Intent(getActivity(), SubscriptionGridFragment.class);
-			startActivity(intent);
-			return;
 		case R.id.button_listenqueue:
 			intent = new Intent(getActivity(), ListenQueueActivity.class);
 			startActivity(intent);

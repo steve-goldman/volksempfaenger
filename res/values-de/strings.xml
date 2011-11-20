@@ -10,6 +10,8 @@
 	<string name="title_tab_download_running">Laufend</string>
 	<string name="title_tab_download_queue">Wartend</string>
 	<string name="title_tab_download_finished">Fertig</string>
+	<string name="title_tab_subscriptions">ABONNEMENTS</string>
+	<string name="title_tab_downloads">DOWNLOADS</string>
 	<string name="description_add_subscription">Gibt die Podcast-URL an, um diesen zu abonnieren</string>
 	<string name="menu_add">Hinzufügen</string>
 	<string name="menu_edit">Bearbeiten</string>
