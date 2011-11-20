@@ -24,7 +24,8 @@ public class DownloadListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.download_list, container, false);
-		localActivityManager = new LocalActivityManager(this.getActivity(), true);
+		localActivityManager = new LocalActivityManager(this.getActivity(),
+				true);
 		localActivityManager.dispatchCreate(savedInstanceState);
 
 		tabHost = (TabHost) view.findViewById(R.id.tabhost);
@@ -34,19 +35,22 @@ public class DownloadListFragment extends Fragment {
 
 		// running
 		spec = tabHost.newTabSpec(TAG_RUNNING);
-		spec.setContent(new Intent(this.getActivity(), DownloadListRunningActivity.class));
+		spec.setContent(new Intent(this.getActivity(),
+				DownloadListRunningActivity.class));
 		spec.setIndicator(getString(R.string.title_tab_download_running));
 		tabHost.addTab(spec);
 
 		// queue
-		spec = tabHost.newTabSpec(TAG_RUNNING);
-		spec.setContent(new Intent(this.getActivity(), DownloadListQueueActivity.class));
+		spec = tabHost.newTabSpec(TAG_QUEUE);
+		spec.setContent(new Intent(this.getActivity(),
+				DownloadListQueueActivity.class));
 		spec.setIndicator(getString(R.string.title_tab_download_queue));
 		tabHost.addTab(spec);
 
 		// finished
-		spec = tabHost.newTabSpec(TAG_RUNNING);
-		spec.setContent(new Intent(this.getActivity(), DownloadListFinishedActivity.class));
+		spec = tabHost.newTabSpec(TAG_FINISHED);
+		spec.setContent(new Intent(this.getActivity(),
+				DownloadListFinishedActivity.class));
 		spec.setIndicator(getString(R.string.title_tab_download_finished));
 		tabHost.addTab(spec);
 		return view;

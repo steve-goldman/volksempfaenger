@@ -3,7 +3,6 @@ package net.x4a42.volksempfaenger.ui;
 import java.util.ArrayList;
 
 import net.x4a42.volksempfaenger.R;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,7 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -107,10 +105,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		default:
-			return BaseActivity.handleGlobalMenu(this, item);
-		}
+		return BaseActivity.handleGlobalMenu(this, item);
 	}
 
 }
