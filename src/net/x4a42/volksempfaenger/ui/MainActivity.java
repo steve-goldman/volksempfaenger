@@ -34,9 +34,12 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.volksempfaenger);
 
 		adapter = new Adapter(getSupportFragmentManager());
-		adapter.addFragment(getString(R.string.title_tab_subscriptions), SubscriptionGridFragment.class);
-		adapter.addFragment(getString(R.string.title_tab_downloads), DownloadListFragment.class);
-		adapter.addFragment(getString(R.string.title_tab_buttons), VolksempfaengerFragment.class);
+		adapter.addFragment(getString(R.string.title_tab_subscriptions),
+				SubscriptionGridFragment.class);
+		adapter.addFragment(getString(R.string.title_tab_downloads),
+				DownloadListFragment.class);
+		adapter.addFragment(getString(R.string.title_tab_buttons),
+				VolksempfaengerFragment.class);
 
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		viewPager.setAdapter(adapter);
@@ -98,7 +101,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		addGlobalMenu(menu);
+		BaseActivity.addGlobalMenu(this, menu);
 		return true;
 	}
 
@@ -106,23 +109,7 @@ public class MainActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		default:
-			handleGlobalMenu(item);
-		}
-		return true;
-	}
-
-	public void addGlobalMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.global, menu);
-	}
-
-	public boolean handleGlobalMenu(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.item_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
-			return true;
-		default:
-			return false;
+			return BaseActivity.handleGlobalMenu(this, item);
 		}
 	}
 

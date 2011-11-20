@@ -15,18 +15,26 @@ public class BaseActivity extends Activity {
 		return (VolksempfaengerApplication) super.getApplication();
 	}
 
-	public void addGlobalMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+	public static void addGlobalMenu(Activity activity, Menu menu) {
+		MenuInflater inflater = activity.getMenuInflater();
 		inflater.inflate(R.menu.global, menu);
 	}
 
-	public boolean handleGlobalMenu(MenuItem item) {
+	public void addGlobalMenu(Menu menu) {
+		addGlobalMenu(this, menu);
+	}
+
+	public static boolean handleGlobalMenu(Activity activity, MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
+			activity.startActivity(new Intent(activity, SettingsActivity.class));
 			return true;
 		default:
 			return false;
 		}
+	}
+
+	public boolean handleGlobalMenu(MenuItem item) {
+		return handleGlobalMenu(this, item);
 	}
 }
