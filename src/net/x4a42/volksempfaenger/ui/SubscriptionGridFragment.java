@@ -7,20 +7,24 @@ import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SubscriptionListActivity extends BaseActivity implements
+public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener {
+
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
 
@@ -31,56 +35,61 @@ public class SubscriptionListActivity extends BaseActivity implements
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
 	@Override
-	// TODO Auto-generated method stub
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.subscription_list);
+		setHasOptionsMenu(true);
+	}
 
-		dbHelper = DatabaseHelper.getInstance(this);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.subscription_list, container,
+				false);
 
-		subscriptionList = (GridView) findViewById(R.id.subscription_list);
-		subscriptionList
-				.setEmptyView(findViewById(R.id.subscription_list_empty));
+		dbHelper = DatabaseHelper.getInstance(getActivity());
+
+		subscriptionList = (GridView) view.findViewById(R.id.subscription_list);
+		subscriptionList.setEmptyView(view
+				.findViewById(R.id.subscription_list_empty));
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
 
 		cursor = dbHelper.getReadableDatabase().query(
 				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null,
 				null, DatabaseHelper.ExtendedPodcast.TITLE);
-		startManagingCursor(cursor);
+		getActivity().startManagingCursor(cursor);
 
-		adapter = new SubscriptionListAdapter(this, cursor);
+		adapter = new SubscriptionListAdapter(getActivity(), cursor);
 		subscriptionList.setAdapter(adapter);
+
+		return view;
 	}
 
 	@Override
-	protected void onResume() {
+	public void onResume() {
 		super.onResume();
 
 		cursor.requery();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.subscription_list, menu);
-		addGlobalMenu(menu);
-		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_add:
-			startActivity(new Intent(this, AddSubscriptionActivity.class));
+			startActivity(new Intent(getActivity(), AddSubscriptionActivity.class));
 			return true;
 		case R.id.item_update:
-			startService(new Intent(this, UpdateService.class));
-			Toast.makeText(this, R.string.message_update_started,
+			getActivity().startService(new Intent(getActivity(), UpdateService.class));
+			Toast.makeText(getActivity(), R.string.message_update_started,
 					Toast.LENGTH_SHORT).show();
 			return true;
 		default:
-			return handleGlobalMenu(item);
+			return false;
 		}
 	}
 
@@ -106,12 +115,12 @@ public class SubscriptionListActivity extends BaseActivity implements
 		Intent intent;
 		switch (item.getItemId()) {
 		case CONTEXT_EDIT:
-			intent = new Intent(this, EditSubscriptionActivity.class);
+			intent = new Intent(getActivity(), EditSubscriptionActivity.class);
 			intent.putExtra("id", currentMenuInfo.id);
 			startActivity(intent);
 			return true;
 		case CONTEXT_DELETE:
-			intent = new Intent(this, DeleteSubscriptionActivity.class);
+			intent = new Intent(getActivity(), DeleteSubscriptionActivity.class);
 			intent.putExtra("id", currentMenuInfo.id);
 			startActivity(intent);
 			return true;
@@ -120,7 +129,8 @@ public class SubscriptionListActivity extends BaseActivity implements
 	}
 
 	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
-		Intent intent = new Intent(this, ViewSubscriptionActivity.class);
+		Intent intent = new Intent(getActivity(),
+				ViewSubscriptionActivity.class);
 		intent.putExtra("id", id);
 		startActivity(intent);
 	}
