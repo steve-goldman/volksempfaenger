@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_height="wrap_content"
-	android:layout_width="match_parent">
-	<LinearLayout android:layout_height="wrap_content"
-		android:layout_width="match_parent" android:orientation="horizontal"
-		android:padding="8dp">
-		<ImageView android:id="@+id/podcast_logo" style="@style/podcastLogoLarge" />
-		<LinearLayout android:layout_height="match_parent"
-			android:layout_width="wrap_content" android:orientation="vertical"
-			android:layout_weight="1" android:paddingLeft="8dp">
-			<TextView android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceLarge"
-				android:layout_width="match_parent" android:id="@+id/podcast_title"
-				android:text="TextView" />
-			<TextView android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
-				android:layout_width="match_parent" android:id="@+id/podcast_description"
-				android:text="TextView" />
-		</LinearLayout>
-	</LinearLayout>
-	<ListView android:id="@+id/episode_list" android:layout_width="match_parent"
-		android:layout_height="wrap_content" android:layout_weight="1"></ListView>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <net.x4a42.volksempfaenger.ui.SquareView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <ImageView
+                android:id="@+id/podcast_logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </net.x4a42.volksempfaenger.ui.SquareView>
+
+        <TextView
+            android:id="@+id/podcast_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="4dp"
+            android:text="TextView"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/episode_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+    </ListView>
+
 </LinearLayout>
