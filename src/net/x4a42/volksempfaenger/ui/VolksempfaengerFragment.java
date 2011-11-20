@@ -39,7 +39,7 @@ public class VolksempfaengerFragment extends Fragment implements
 
 		switch (v.getId()) {
 		case R.id.button_subscriptionlist:
-			intent = new Intent(getActivity(), SubscriptionListActivity.class);
+			intent = new Intent(getActivity(), SubscriptionGridFragment.class);
 			startActivity(intent);
 			return;
 		case R.id.button_listenqueue:

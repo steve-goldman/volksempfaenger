@@ -10,6 +10,9 @@
 	<string name="title_tab_download_running">Running</string>
 	<string name="title_tab_download_queue">Queue</string>
 	<string name="title_tab_download_finished">Finished</string>
+	<string name="title_tab_subscriptions">SUBSCRIPTIONS</string>
+	<string name="title_tab_downloads">DOWNLOADS</string>
+	<string name="title_tab_buttons">AWESOME BUTTON, OH YEAH!</string>
 	<string name="description_add_subscription">Enter the URL of the podcast feed in order to subscribe to it</string>
 	<string name="menu_add">Add</string>
 	<string name="menu_edit">Edit</string>
