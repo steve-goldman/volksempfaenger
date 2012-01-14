@@ -16,8 +16,11 @@ import android.support.v4.app.ActionBar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
+import android.text.Layout;
+import android.text.StaticLayout;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
@@ -101,7 +104,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		c.moveToFirst();
 
 		setTitle(c.getString(c.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
-		podcastDescription.setText(c.getString(c
+		updatePodcastDescription(c.getString(c
 				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
 
 		c.close();
@@ -115,6 +118,10 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		// Update episode list
 		cursor.requery();
+	}
+
+	private void updatePodcastDescription(String description) {
+		podcastDescription.setText(description);
 	}
 
 	@Override

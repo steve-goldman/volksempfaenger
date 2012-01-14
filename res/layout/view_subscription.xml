@@ -26,9 +26,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#DDD"
+            android:maxLines="9"
             android:padding="4dp"
-            android:text="TextView"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:text="TextView" />
     </LinearLayout>
 
     <View
