@@ -5,20 +5,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.astuetz.viewpagertabs.ViewPagerTabs
-        android:id="@+id/tabs"
+    <TabHost
+        android:id="@+id/tabhost"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#FF3B3B3B" />
+        android:layout_height="wrap_content" >
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        android:background="#FF91A438" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:orientation="horizontal" />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </TabHost>
 
 </LinearLayout>
