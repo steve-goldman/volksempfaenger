@@ -50,18 +50,8 @@ public class SubscriptionListAdapter extends SimpleCursorAdapter {
 				.getColumnIndex(DatabaseHelper.Podcast.ID));
 		if (!podcastId.equals(podcastLogo.getTag(R.id.podcast_logo))) {
 			podcastLogo.setTag(R.id.podcast_logo, podcastId);
-			Bitmap podcastLogoBitmap = null;
-			if (logoCache.containsKey(podcastId)) {
-				podcastLogoBitmap = logoCache.get(podcastId);
-			} else {
-				File podcastLogoFile = Utils.getPodcastLogoFile(context,
-						podcastId);
-				if (podcastLogoFile.isFile()) {
-					podcastLogoBitmap = BitmapFactory
-							.decodeFile(podcastLogoFile.getAbsolutePath());
-				}
-				logoCache.put(podcastId, podcastLogoBitmap);
-			}
+			Bitmap podcastLogoBitmap = Utils.getPodcastLogoBitmap(context,
+					podcastId, logoCache);
 			if (podcastLogoBitmap == null) {
 				podcastLogo.setImageResource(R.drawable.default_logo);
 			} else {

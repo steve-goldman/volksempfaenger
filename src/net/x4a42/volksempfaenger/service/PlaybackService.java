@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
@@ -17,13 +18,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -60,6 +64,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private long getEnclosureId() {
 		return cursor.getLong(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
+	}
+
+	private long getPodcastId() {
+		return cursor.getLong(cursor
+				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
 	}
 
 	private String getPodcastTitle() {
@@ -259,16 +268,40 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	public void onPrepared(MediaPlayer mp) {
 		playerState = PlayerState.PREPARED;
-		notification = new Notification(R.drawable.notification, null,
-				System.currentTimeMillis());
-		notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 
+		// create notification
+		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(this, getEpisodeTitle(),
-				getPodcastTitle(), pendingIntent);
+		if (Build.VERSION.SDK_INT >= 11) {
+			Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
+					getPodcastId());
+			if (podcastLogo != null) {
+				Resources res = getResources();
+				podcastLogo = Bitmap
+						.createScaledBitmap(
+								podcastLogo,
+								res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+								res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
+								false);
+			}
+			notification = new Notification.Builder(this)
+					.setSmallIcon(R.drawable.notification)
+					.setLargeIcon(podcastLogo)
+					.setContentTitle(getEpisodeTitle())
+					.setContentText(getPodcastTitle())
+					.setContentIntent(pendingIntent).setOngoing(true)
+					.setWhen(0).getNotification();
+		} else {
+			// Gingerbread (API 10) does not support Notification.Builder
+			notification = new Notification(R.drawable.notification, null,
+					System.currentTimeMillis());
+			notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+			notification.setLatestEventInfo(this, getEpisodeTitle(),
+					getPodcastTitle(), pendingIntent);
+		}
 		startForeground();
 		playerListener.onPlayerPrepared();
 	}

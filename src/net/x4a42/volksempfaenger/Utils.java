@@ -5,9 +5,12 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -72,6 +75,29 @@ public class Utils {
 	public static File getPodcastLogoFile(Context context, long podcastId) {
 		return Utils.joinPath(context.getExternalFilesDir(null), "logos",
 				String.valueOf(podcastId));
+	}
+
+	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId) {
+		File podcastLogoFile = getPodcastLogoFile(context, podcastId);
+		if (podcastLogoFile.isFile()) {
+			return BitmapFactory.decodeFile(podcastLogoFile
+					.getAbsolutePath());
+		} else {
+			return null;
+		}
+	}
+
+	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId,
+			Map<Long, Bitmap> cache) {
+		if (cache.containsKey(podcastId)) {
+			return cache.get(podcastId);
+		} else {
+			Bitmap bitmap = getPodcastLogoBitmap(context, podcastId);
+			if (bitmap != null) {
+				cache.put(podcastId, bitmap);
+			}
+			return bitmap;
+		}
 	}
 
 	public static File getDescriptionImageFile(Context context, String url) {
