@@ -1,14 +1,17 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import net.x4a42.volksempfaenger.R;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -18,47 +21,103 @@ import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
+import android.widget.TabHost.TabSpec;
 
-public class MainActivity extends FragmentActivity implements
-		OnTabChangeListener, OnPageChangeListener {
+public class MainActivity extends FragmentActivity {
 
-	public static final String TAG = "MainActivity";
+	private static List<FragmentTab> fragmentTabs;
 
-	private PagerAdapter adapter;
-	private ViewPager viewPager;
-	private TabHost tabs;
+	static {
+		fragmentTabs = new ArrayList<FragmentTab>(3);
+		fragmentTabs.add(new FragmentTab("subscriptions",
+				R.string.title_tab_subscriptions,
+				SubscriptionGridFragment.class));
+		fragmentTabs.add(new FragmentTab("downloads",
+				R.string.title_tab_downloads, DownloadListFragment.class));
+		fragmentTabs.add(new FragmentTab("buttons", R.string.title_tab_buttons,
+				VolksempfaengerFragment.class));
+	}
+
+	private ViewPager viewpager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		tabs = (TabHost) findViewById(R.id.tabhost);
-		tabs.setup();
-		addTab(tabs.newTabSpec("SubscriptionGridTab").setIndicator(
-				getString(R.string.title_tab_subscriptions)));
+		// initialize ViewPager
+		viewpager = (ViewPager) findViewById(R.id.viewpager);
+		viewpager.setAdapter(new PagerAdapter());
+		viewpager.setPageMargin(10);
 
-		addTab(tabs.newTabSpec("DownloadListTab").setIndicator(
-				getString(R.string.title_tab_downloads)));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
-		addTab(tabs.newTabSpec("VolksempfaengerTab").setIndicator(
-				getString(R.string.title_tab_buttons)));
+			// ActionBar is only available on Honeycomb and later
+			ActionBar actionbar = getActionBar();
+			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+			// actionbar.setDisplayShowTitleEnabled(false);
 
-		tabs.setOnTabChangedListener(this);
+			// create a TabListener that simply changes the page in the
+			// ViewPager
+			ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+				public void onTabSelected(Tab tab, FragmentTransaction ft) {
+					viewpager.setCurrentItem(tab.getPosition());
+				}
 
-		List<Fragment> fragments = new Vector<Fragment>();
-		fragments.add(Fragment.instantiate(this,
-				SubscriptionGridFragment.class.getName()));
-		fragments.add(Fragment.instantiate(this,
-				DownloadListFragment.class.getName()));
-		fragments.add(Fragment.instantiate(this,
-				VolksempfaengerFragment.class.getName()));
-		adapter = new PagerAdapter(getSupportFragmentManager(), fragments);
+				public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+				}
 
-		viewPager = (ViewPager) findViewById(R.id.viewpager);
-		viewPager.setAdapter(adapter);
-		viewPager.setPageMargin(10);
-		viewPager.setOnPageChangeListener(this);
+				public void onTabReselected(Tab tab, FragmentTransaction ft) {
+				}
+			};
+
+			// iterate over all tabs and add them to the ActionBar
+			for (FragmentTab ft : fragmentTabs) {
+				actionbar.addTab(actionbar.newTab().setText(ft.string)
+						.setTabListener(tabListener));
+			}
+
+			// add an OnPageChangeListener that switches to the correct tab in
+			// the ActionBar
+			viewpager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+				@Override
+				public void onPageSelected(int position) {
+					getActionBar().setSelectedNavigationItem(position);
+				}
+			});
+
+		} else {
+
+			// for Gingerbread we use a TabHost as fallback
+			final TabHost tabs = (TabHost) findViewById(R.id.tabhost);
+			tabs.setup();
+
+			// iterate over all tabs and add them to the TabHost
+			for (FragmentTab ft : fragmentTabs) {
+				TabSpec tabSpec = tabs.newTabSpec(ft.tag).setIndicator(
+						getString(ft.string));
+				tabSpec.setContent(new TabFactory(this));
+				tabs.addTab(tabSpec);
+			}
+
+			// set an OnTabChangeListener that changes the page in the ViewPager
+			tabs.setOnTabChangedListener(new OnTabChangeListener() {
+				@Override
+				public void onTabChanged(String tabId) {
+					int pos = tabs.getCurrentTab();
+					viewpager.setCurrentItem(pos);
+				}
+			});
+
+			// add an OnPageChangeListener that switches to the correct tab in
+			// the TabHost
+			viewpager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+				@Override
+				public void onPageSelected(int position) {
+					tabs.setCurrentTab(position);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -72,39 +131,65 @@ public class MainActivity extends FragmentActivity implements
 		return BaseActivity.handleGlobalMenu(this, item);
 	}
 
-	@Override
-	public void onTabChanged(String tabId) {
-		int pos = tabs.getCurrentTab();
-		viewPager.setCurrentItem(pos);
-	}
-
-	private void addTab(TabHost.TabSpec tabSpec) {
-
-		// Attach a Tab view factory to the spec
-		tabSpec.setContent(this.new TabFactory(this));
-		tabs.addTab(tabSpec);
-	}
-
 	private class PagerAdapter extends FragmentPagerAdapter {
-		private List<Fragment> fragments;
+		private Fragment[] fragments;
 
-		public PagerAdapter(FragmentManager fm, List<Fragment> fragments) {
-			super(fm);
-			this.fragments = fragments;
+		public PagerAdapter() {
+			super(getSupportFragmentManager());
+			fragments = new Fragment[fragmentTabs.size()];
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return this.fragments.get(position);
+			Fragment fragment = null;
+			if (fragments[position] == null) {
+				fragment = Fragment.instantiate(MainActivity.this,
+						fragmentTabs.get(position).fragment.getName());
+				fragments[position] = fragment;
+			} else {
+				fragment = fragments[position];
+			}
+			return fragment;
 		}
 
 		@Override
 		public int getCount() {
-			return this.fragments.size();
+			return fragments.length;
 		}
-
 	}
 
+	// abstract class that implements 2 methods of an interface in order to
+	// avoid having empty methods in anonymous classes that implement
+	// OnPageChangeListener
+	private static abstract class SimpleOnPageChangeListener implements
+			OnPageChangeListener {
+		@Override
+		public abstract void onPageSelected(int arg0);
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+		}
+	}
+
+	// simple data structure for storing information about all tabs
+	private static class FragmentTab {
+		private String tag;
+		private int string;
+		private Class<? extends Fragment> fragment;
+
+		public FragmentTab(String tag, int string,
+				Class<? extends Fragment> fragment) {
+			this.tag = tag;
+			this.string = string;
+			this.fragment = fragment;
+		}
+	}
+
+	// TODO: remove this if possible
 	private class TabFactory implements TabContentFactory {
 		private final Context context;
 
@@ -120,24 +205,6 @@ public class MainActivity extends FragmentActivity implements
 			v.setVisibility(View.GONE);
 			return v;
 		}
-	}
-
-	@Override
-	public void onPageScrolled(int position, float positionOffset,
-			int positionOffsetPixels) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPageSelected(int position) {
-		tabs.setCurrentTab(position);
-	}
-
-	@Override
-	public void onPageScrollStateChanged(int state) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
