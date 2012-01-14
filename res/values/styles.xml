@@ -1,30 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Volksempfaenger" parent="Theme.Sherlock.Light">
-        <item name="actionBarSize">45dip</item>
-        <item name="actionBarTabStyle">@style/Widget.Sherlock.ActionBar.TabView</item>
-        <item name="actionBarTabBarStyle">@style/Widget.Sherlock.ActionBar.TabBar</item>
-        <item name="actionBarTabTextStyle">@style/Widget.Sherlock.ActionBar.TabText</item>
-        <item name="actionButtonStyle">@style/Widget.Sherlock.ActionButton</item>
-        <item name="actionDropDownStyle">@style/Widget.Sherlock.Spinner</item>
-        <item name="actionHomeButtonStyle">@style/Widget.Sherlock.ActionButton.Home</item>
-        <item name="actionMenuTextAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="actionMenuTextColor">?android:attr/textColorPrimary</item>
-        <item name="actionModeBackground">@drawable/abs__cab_background_holo_dark</item>
-        <item name="actionModeCloseDrawable">@drawable/abs__cab_ic_close_holo</item>
-        <item name="actionModeCloseButtonStyle">@style/Widget.Sherlock.ActionButton.CloseMode</item>
-        <item name="actionOverflowButtonStyle">@style/Widget.Sherlock.ActionButton.Overflow</item>
-        <item name="actionSpinnerItemStyle">@style/Widget.Sherlock.TextView.SpinnerItem.ActionBar</item>
-        <item name="dropDownListViewStyle">@style/Widget.Sherlock.ListView.DropDown</item>
-        <item name="dropdownListPreferredItemHeight">48dip</item>
-        <item name="homeAsUpIndicator">@drawable/abs__ic_ab_back_holo_dark</item>
-        <item name="popupMenuStyle">@style/Widget.Sherlock.PopupMenu</item>
-        <item name="selectableItemBackground">@color/abs__item_bg</item>
-        <item name="windowActionBar">true</item>
-        <item name="windowActionModeOverlay">false</item>
-        <item name="abBackground">#222</item>
-    </style>
+    <style name="Theme.Volksempfaenger" parent="@android:Theme.Light"></style>
 
     <style name="TextAppearance.Widget.Title" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">#DDD</item>

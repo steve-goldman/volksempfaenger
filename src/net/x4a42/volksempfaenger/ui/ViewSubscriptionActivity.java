@@ -7,20 +7,18 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.EpisodeListAdapter;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActionBar;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
-import android.text.Layout;
-import android.text.StaticLayout;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
@@ -33,7 +31,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private long id;
 	private DatabaseHelper dbHelper;
 
-	private ActionBar actionBar;
 	private ImageView podcastLogo;
 	private TextView podcastDescription;
 	private ListView episodeList;
@@ -60,8 +57,10 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		dbHelper = DatabaseHelper.getInstance(this);
 
-		actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
