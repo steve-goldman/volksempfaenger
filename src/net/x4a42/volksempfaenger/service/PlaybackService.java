@@ -274,7 +274,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		notificationIntent.putExtra("id", getEpisodeId());
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		if (Build.VERSION.SDK_INT >= 11) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
 					getPodcastId());
 			if (podcastLogo != null) {
