@@ -1,88 +1,64 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import net.x4a42.volksempfaenger.R;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabHost.TabContentFactory;
 
-import com.astuetz.viewpagertabs.ViewPagerTabProvider;
-import com.astuetz.viewpagertabs.ViewPagerTabs;
-
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements
+		OnTabChangeListener, OnPageChangeListener {
 
 	public static final String TAG = "MainActivity";
 
-	private Adapter adapter;
+	private PagerAdapter adapter;
 	private ViewPager viewPager;
-	private ViewPagerTabs tabs;
+	private TabHost tabs;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		adapter = new Adapter(getSupportFragmentManager());
-		adapter.addFragment(getString(R.string.title_tab_subscriptions),
-				SubscriptionGridFragment.class);
-		adapter.addFragment(getString(R.string.title_tab_downloads),
-				DownloadListFragment.class);
-		adapter.addFragment(getString(R.string.title_tab_buttons),
-				VolksempfaengerFragment.class);
+		tabs = (TabHost) findViewById(R.id.tabhost);
+		tabs.setup();
+		addTab(tabs.newTabSpec("SubscriptionGridTab").setIndicator(
+				getString(R.string.title_tab_subscriptions)));
+
+		addTab(tabs.newTabSpec("DownloadListTab").setIndicator(
+				getString(R.string.title_tab_downloads)));
+
+		addTab(tabs.newTabSpec("VolksempfaengerTab").setIndicator(
+				getString(R.string.title_tab_buttons)));
+
+		tabs.setOnTabChangedListener(this);
+
+		List<Fragment> fragments = new Vector<Fragment>();
+		fragments.add(Fragment.instantiate(this,
+				SubscriptionGridFragment.class.getName()));
+		fragments.add(Fragment.instantiate(this,
+				DownloadListFragment.class.getName()));
+		fragments.add(Fragment.instantiate(this,
+				VolksempfaengerFragment.class.getName()));
+		adapter = new PagerAdapter(getSupportFragmentManager(), fragments);
 
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		viewPager.setAdapter(adapter);
 		viewPager.setPageMargin(10);
-
-		tabs = (ViewPagerTabs) findViewById(R.id.tabs);
-		tabs.setViewPager(viewPager);
-	}
-
-	public static class Adapter extends FragmentPagerAdapter implements
-			ViewPagerTabProvider {
-
-		private ArrayList<Class<? extends Fragment>> fragments;
-		private ArrayList<String> titles;
-
-		public Adapter(FragmentManager fm) {
-			super(fm);
-			fragments = new ArrayList<Class<? extends Fragment>>();
-			titles = new ArrayList<String>();
-		}
-
-		public void addFragment(String title, Class<? extends Fragment> fragment) {
-			titles.add(title);
-			fragments.add(fragment);
-		}
-
-		@Override
-		public int getCount() {
-			return fragments.size();
-		}
-
-		public String getTitle(int position) {
-			return titles.get(position);
-		}
-
-		@Override
-		public Fragment getItem(int position) {
-			try {
-				return fragments.get(position).newInstance();
-			} catch (InstantiationException e) {
-				Log.wtf(TAG, e);
-			} catch (IllegalAccessException e) {
-				Log.wtf(TAG, e);
-			}
-			return null;
-		}
-
+		viewPager.setOnPageChangeListener(this);
 	}
 
 	@Override
@@ -94,6 +70,74 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return BaseActivity.handleGlobalMenu(this, item);
+	}
+
+	@Override
+	public void onTabChanged(String tabId) {
+		int pos = tabs.getCurrentTab();
+		viewPager.setCurrentItem(pos);
+	}
+
+	private void addTab(TabHost.TabSpec tabSpec) {
+
+		// Attach a Tab view factory to the spec
+		tabSpec.setContent(this.new TabFactory(this));
+		tabs.addTab(tabSpec);
+	}
+
+	private class PagerAdapter extends FragmentPagerAdapter {
+		private List<Fragment> fragments;
+
+		public PagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+			super(fm);
+			this.fragments = fragments;
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			return this.fragments.get(position);
+		}
+
+		@Override
+		public int getCount() {
+			return this.fragments.size();
+		}
+
+	}
+
+	private class TabFactory implements TabContentFactory {
+		private final Context context;
+
+		public TabFactory(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		public View createTabContent(String tag) {
+			View v = new View(context);
+			v.setMinimumHeight(0);
+			v.setMinimumWidth(0);
+			v.setVisibility(View.GONE);
+			return v;
+		}
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset,
+			int positionOffsetPixels) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		tabs.setCurrentTab(position);
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
