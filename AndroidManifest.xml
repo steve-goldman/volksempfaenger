@@ -43,12 +43,12 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.LicenseActivity"
-            android:theme="@android:style/Theme.Black" />
+            android:theme="@style/Theme.Settings" />
         <activity android:name=".ui.ListenQueueActivity" />
         <activity
             android:label="@string/title_settings"
             android:name=".ui.SettingsActivity"
-            android:theme="@android:style/Theme.Black" />
+            android:theme="@style/Theme.Settings" />
         <activity android:name=".ui.ViewSubscriptionActivity" />
         <activity
             android:launchMode="singleTop"
