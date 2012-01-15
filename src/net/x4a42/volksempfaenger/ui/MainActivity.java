@@ -7,7 +7,6 @@ import net.x4a42.volksempfaenger.R;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,10 +16,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
-import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends FragmentActivity {
@@ -96,7 +93,9 @@ public class MainActivity extends FragmentActivity {
 			for (FragmentTab ft : fragmentTabs) {
 				TabSpec tabSpec = tabs.newTabSpec(ft.tag).setIndicator(
 						getString(ft.string));
-				tabSpec.setContent(new TabFactory(this));
+				// View v = new View(this);
+				// v.setVisibility(View.GONE);
+				tabSpec.setContent(R.id.empty_view);
 				tabs.addTab(tabSpec);
 			}
 
@@ -200,24 +199,6 @@ public class MainActivity extends FragmentActivity {
 			this.tag = tag;
 			this.string = string;
 			this.fragment = fragment;
-		}
-	}
-
-	// TODO: remove this if possible
-	private class TabFactory implements TabContentFactory {
-		private final Context context;
-
-		public TabFactory(Context context) {
-			this.context = context;
-		}
-
-		@Override
-		public View createTabContent(String tag) {
-			View v = new View(context);
-			v.setMinimumHeight(0);
-			v.setMinimumWidth(0);
-			v.setVisibility(View.GONE);
-			return v;
 		}
 	}
 
