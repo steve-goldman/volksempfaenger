@@ -128,4 +128,6 @@
         </SeekBar>
     </LinearLayout>
 
+    <include layout="@layout/nowplaying_fragment" />
+
 </LinearLayout>

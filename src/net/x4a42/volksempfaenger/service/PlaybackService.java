@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Vector;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
@@ -180,6 +182,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			player.start();
 			playerState = PlayerState.STARTED;
 			startForeground();
+			sendPlayerEvent(PlayerEvent.PLAY);
 			saveHandler.post(savePositionTask);
 		} else {
 			Log.e(TAG,
@@ -192,6 +195,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			saveHandler.removeCallbacks(savePositionTask);
 			player.pause();
 			playerState = PlayerState.PAUSED;
+			playerListener.onPlayerPaused();
+			sendPlayerEvent(PlayerEvent.PAUSE);
 			savePosition();
 			stopForeground();
 		} else {
@@ -250,6 +255,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			stopForeground();
 			enclosureId = -1;
 			playerListener.onPlayerStopped();
+			sendPlayerEvent(PlayerEvent.STOP);
 			resetPlayer();
 		} else {
 			Log.e(TAG, "Unable to stop: player is not playing");
@@ -304,6 +310,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 		startForeground();
 		playerListener.onPlayerPrepared();
+		sendPlayerEvent(PlayerEvent.PREPARE);
 	}
 
 	private void startForeground() {
@@ -334,7 +341,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			if (player != null && player.isPlaying()) {
 				player.pause();
-				// TODO notify activity
+				playerListener.onPlayerPaused();
+				sendPlayerEvent(PlayerEvent.PAUSE);
 			}
 			break;
 
@@ -346,6 +354,37 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 	}
 
+	private List<OnPlayerEventListener> onPlayerEventListeners;
+
+	{
+		onPlayerEventListeners = new Vector<PlaybackService.OnPlayerEventListener>();
+	}
+
+	public enum PlayerEvent {
+		PREPARE, PLAY, PAUSE, STOP
+	}
+
+	public interface OnPlayerEventListener {
+		public void onPlayerEvent(PlayerEvent event);
+	}
+
+	public void addOnPlayerEventListener(OnPlayerEventListener listener) {
+		if (!onPlayerEventListeners.contains(listener)) {
+			onPlayerEventListeners.add(listener);
+		}
+	}
+
+	public void removeOnPlayerEventListener(OnPlayerEventListener listener) {
+		onPlayerEventListeners.remove(listener);
+	}
+
+	private void sendPlayerEvent(PlayerEvent event) {
+		for (OnPlayerEventListener listener : onPlayerEventListeners) {
+			listener.onPlayerEvent(event);
+		}
+	}
+
+	// TODO deprecate this
 	public void setPlayerListener(PlayerListener listener) {
 		playerListener = listener;
 	}
@@ -366,6 +405,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 				if (PlaybackService.this.isPlaying()) {
 					PlaybackService.this.pause();
 					PlaybackService.this.playerListener.onPlayerPaused();
+					sendPlayerEvent(PlayerEvent.PAUSE);
 				}
 			}
 		}
