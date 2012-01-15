@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.data;
 
-import java.io.File;
 import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.R;
@@ -8,7 +7,6 @@ import net.x4a42.volksempfaenger.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;

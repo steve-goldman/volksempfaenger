@@ -43,4 +43,6 @@
         android:layout_weight="1" >
     </ListView>
 
+    <include layout="@layout/nowplaying_fragment" />
+
 </LinearLayout>

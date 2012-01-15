@@ -31,6 +31,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -52,9 +53,12 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewEpisodeActivity extends BaseActivity implements
+public class ViewEpisodeActivity extends FragmentActivity implements
 		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
 		PlayerListener {
+
+	private static final String TAG = "ViewEpisodeActivity";
+
 	private SeekBar seekBar;
 	private TextView textDuration;
 	private TextView textPosition;
@@ -277,7 +281,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_episode, menu);
-		addGlobalMenu(menu);
+		BaseActivity.addGlobalMenu(this, menu);
 		return true;
 	}
 
@@ -356,7 +360,7 @@ public class ViewEpisodeActivity extends BaseActivity implements
 			return true;
 
 		default:
-			return handleGlobalMenu(item);
+			return BaseActivity.handleGlobalMenu(this, item);
 		}
 	}
 
