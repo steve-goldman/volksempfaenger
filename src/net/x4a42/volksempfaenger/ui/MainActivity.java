@@ -55,7 +55,7 @@ public class MainActivity extends FragmentActivity {
 			// ActionBar is only available on Honeycomb and later
 			ActionBar actionbar = getActionBar();
 			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-			// actionbar.setDisplayShowTitleEnabled(false);
+			actionbar.setHomeButtonEnabled(true);
 
 			// create a TabListener that simply changes the page in the
 			// ViewPager
@@ -137,7 +137,12 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		return BaseActivity.handleGlobalMenu(this, item);
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			viewpager.setCurrentItem(0);
+		default:
+			return BaseActivity.handleGlobalMenu(this, item);
+		}
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {

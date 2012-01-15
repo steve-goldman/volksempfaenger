@@ -16,6 +16,7 @@ import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -28,6 +29,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -174,6 +176,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_episode);
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar actionBar = getActionBar();
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
+
 		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
@@ -291,6 +298,9 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
 		case R.id.item_download:
 			if (getEnclosureId() != 0) {
 				// there is an preferred enclosure
