@@ -93,8 +93,6 @@ public class MainActivity extends FragmentActivity {
 			for (FragmentTab ft : fragmentTabs) {
 				TabSpec tabSpec = tabs.newTabSpec(ft.tag).setIndicator(
 						getString(ft.string));
-				// View v = new View(this);
-				// v.setVisibility(View.GONE);
 				tabSpec.setContent(R.id.empty_view);
 				tabs.addTab(tabSpec);
 			}
