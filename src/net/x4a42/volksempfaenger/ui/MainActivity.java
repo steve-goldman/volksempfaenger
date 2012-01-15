@@ -118,6 +118,15 @@ public class MainActivity extends FragmentActivity {
 				}
 			});
 		}
+
+		if (getIntent().hasExtra("tag")) {
+			String tag = getIntent().getStringExtra("tag");
+			for (int i = 0; i < fragmentTabs.size(); ++i) {
+				if (fragmentTabs.get(i).tag.equals(tag)) {
+					viewpager.setCurrentItem(i, false);
+				}
+			}
+		}
 	}
 
 	@Override
