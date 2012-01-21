@@ -74,6 +74,10 @@
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:authorities="net.x4a42.volksempfaenger"
+            android:name="net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider" />
     </application>
 
 </manifest>
