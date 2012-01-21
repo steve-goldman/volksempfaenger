@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
@@ -23,6 +24,7 @@ import android.widget.TabHost.TabSpec;
 public class MainActivity extends FragmentActivity {
 
 	private static List<FragmentTab> fragmentTabs;
+	private Menu menu;
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
@@ -112,6 +114,16 @@ public class MainActivity extends FragmentActivity {
 				@Override
 				public void onPageSelected(int position) {
 					tabs.setCurrentTab(position);
+					if (menu == null) {
+						return;
+					}
+					menu.clear();
+					onCreateOptionsMenu(menu);
+					MenuInflater inflater = getMenuInflater();
+					PagerAdapter adapter = (PagerAdapter) viewpager
+							.getAdapter();
+					adapter.fragments[position].onCreateOptionsMenu(menu,
+							inflater);
 				}
 			});
 		}
@@ -135,6 +147,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		BaseActivity.addGlobalMenu(this, menu);
 		return true;
 	}
