@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.data;
 import java.util.List;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -109,6 +110,15 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		case PODCAST_DIR:
 			return queryHelper.queryPodcastDir(projection, selection,
 					selectionArgs, sortOrder);
+		case PODCAST_ITEM:
+			return queryHelper.queryPodcastItem(ContentUris.parseId(uri),
+					projection);
+		case EPISODE_DIR:
+			return queryHelper.queryEpisodeDir(projection, selection,
+					selectionArgs, sortOrder);
+		case EPISODE_ITEM:
+			return queryHelper.queryEpisodeItem(ContentUris.parseId(uri),
+					projection);
 		default:
 			return null;
 		}
