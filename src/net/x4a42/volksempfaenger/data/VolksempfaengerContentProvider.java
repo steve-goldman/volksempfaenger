@@ -18,12 +18,16 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	public static final Uri ENCLOSURE_URI = Uri.parse("content://" + AUTHORITY
 			+ "/enclosure");
 
-	public static final String MIME_PODCAST_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.podcast";
 	public static final String MIME_PODCAST_DIR = "vnd.android.cursor.dir/vnd.volksempfaenger.podcast";
-	public static final String MIME_EPISODE_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.episode";
+	public static final String MIME_PODCAST_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.podcast";
 	public static final String MIME_EPISODE_DIR = "vnd.android.cursor.dir/vnd.volksempfaenger.episode";
-	public static final String MIME_ENCLOSURE_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.enclosure";
+	public static final String MIME_EPISODE_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.episode";
 	public static final String MIME_ENCLOSURE_DIR = "vnd.android.cursor.dir/vnd.volksempfaenger.enclosure";
+	public static final String MIME_ENCLOSURE_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.enclosure";
+
+	private enum Mime {
+		PODCAST_DIR, PODCAST_ITEM, EPISODE_DIR, EPISODE_ITEM, ENCLOSURE_DIR, ENCLOSURE_ITEM
+	}
 
 	private DatabaseHelper dbHelper;
 
@@ -33,8 +37,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		return true;
 	}
 
-	@Override
-	public String getType(Uri uri) {
+	private Mime getTypeMime(Uri uri) {
 		if (!AUTHORITY.equals(uri.getAuthority())) {
 			return null;
 		}
@@ -48,31 +51,51 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		if ("podcast".equals(type)) {
 			switch (segments.size()) {
 			case 1:
-				return MIME_PODCAST_DIR;
+				return Mime.PODCAST_DIR;
 			case 2:
-				return MIME_PODCAST_ITEM;
+				return Mime.PODCAST_ITEM;
 			default:
 				return null;
 			}
 		} else if ("episode".equals(type)) {
 			switch (segments.size()) {
 			case 1:
-				return MIME_EPISODE_DIR;
+				return Mime.EPISODE_DIR;
 			case 2:
-				return MIME_EPISODE_ITEM;
+				return Mime.EPISODE_ITEM;
 			default:
 				return null;
 			}
 		} else if ("enclosure".equals(type)) {
 			switch (segments.size()) {
 			case 1:
-				return MIME_ENCLOSURE_DIR;
+				return Mime.ENCLOSURE_DIR;
 			case 2:
-				return MIME_ENCLOSURE_ITEM;
+				return Mime.ENCLOSURE_ITEM;
 			default:
 				return null;
 			}
 		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		switch (getTypeMime(uri)) {
+		case PODCAST_DIR:
+			return MIME_PODCAST_DIR;
+		case PODCAST_ITEM:
+			return MIME_PODCAST_ITEM;
+		case EPISODE_DIR:
+			return MIME_EPISODE_DIR;
+		case EPISODE_ITEM:
+			return MIME_EPISODE_ITEM;
+		case ENCLOSURE_DIR:
+			return MIME_ENCLOSURE_DIR;
+		case ENCLOSURE_ITEM:
+			return MIME_ENCLOSURE_ITEM;
+		default:
 			return null;
 		}
 	}
