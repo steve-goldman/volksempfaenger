@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -19,6 +20,7 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -71,7 +73,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private Handler updateHandler;
 
 	private long id;
-	private DatabaseHelper dbHelper;
 	private Cursor cursor;
 
 	private ImageView podcastLogo;
@@ -84,93 +85,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private SpannableStringBuilder descriptionSpanned;
 
-	/* Podcast getters */
-	protected long getPodcastId() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
-	}
-
-	protected String getPodcastTitle() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
-	}
-
-	protected String getPodcastDescription() {
-		return cursor
-				.getString(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION));
-	}
-
-	protected Bitmap getPodcastLogoBitmap() {
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
-		if (podcastLogoFile.isFile()) {
-			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
-		} else {
-			return BitmapFactory.decodeResource(getResources(),
-					R.drawable.default_logo);
-		}
-	}
-
-	/* Episode getters */
-	protected long getEpisodeId() {
-		return id;
-	}
-
-	protected String getEpisodeTitle() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
-	}
-
-	protected String getEpisodeDescription() {
-		return cursor
-				.getString(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
-	}
-
-	protected int getEpisodeState() {
-		return cursor.getInt(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
-	}
-
-	protected long getEpisodeDate() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
-	}
-
-	/* Enclosure getters */
-	private long getEnclosureId() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
-	}
-
-	private File getEnclosureFile() {
-		String filename = getEnclosureFileName();
-		if (filename == null || filename.length() == 0) {
-			return null;
-		}
-		try {
-			return new File(new URI(filename));
-		} catch (URISyntaxException e) {
-			return null;
-		}
-	}
-
-	private String getEnclosureFileName() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
-	}
-
-	private int getDurationListened() {
-		return cursor
-				.getInt(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_LISTENED));
-	}
-
-	private int getDurationTotal() {
-		return cursor.getInt(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_TOTAL));
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -180,8 +94,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			ActionBar actionBar = getActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-
-		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -231,16 +143,15 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 
 		if (cursor != null) {
-			stopManagingCursor(cursor);
 			cursor.close();
-			cursor = null;
 		}
-		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedEpisode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(getEpisodeId()) }, null, null,
-				null);
-		startManagingCursor(cursor);
+		cursor = managedQuery(ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.EPISODE_URI, id), new String[] {
+				Episode._ID, Episode.TITLE, Episode.DESCRIPTION,
+				Episode.STATUS, Episode.DATE, Episode.DURATION_TOTAL,
+				Episode.DURATION_LISTENED, Episode.PODCAST_ID,
+				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION }, null,
+				null, null);
 	}
 
 	@Override
@@ -335,12 +246,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(DatabaseHelper.Episode.STATE,
-					DatabaseHelper.Episode.STATE_LISTENED);
-			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+			// TODO!
+			// dbHelper.getWritableDatabase().update(
+			// DatabaseHelper.Episode._TABLE, values,
+			// String.format("%s = ?", DatabaseHelper.Episode.ID),
+			// new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		case R.id.item_delete:
@@ -355,18 +266,19 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			} catch (URISyntaxException e) {
 				Log.w(getClass().getSimpleName(), "Exception handled", e);
 			}
-			values.put(DatabaseHelper.Enclosure.FILE, (String) null);
-			dbHelper.getReadableDatabase().update(
-					DatabaseHelper.Enclosure._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-					new String[] { String.valueOf(getEnclosureId()) });
-			values.clear();
-			values.put(DatabaseHelper.Episode.STATE,
-					DatabaseHelper.Episode.STATE_LISTENED);
-			dbHelper.getReadableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			// TODO!
+			// values.put(DatabaseHelper.Enclosure.FILE, (String) null);
+			// dbHelper.getReadableDatabase().update(
+			// DatabaseHelper.Enclosure._TABLE, values,
+			// String.format("%s = ?", DatabaseHelper.Enclosure.ID),
+			// new String[] { String.valueOf(getEnclosureId()) });
+			// values.clear();
+			// values.put(DatabaseHelper.Episode.STATE,
+			// DatabaseHelper.Episode.STATE_LISTENED);
+			// dbHelper.getReadableDatabase().update(
+			// DatabaseHelper.Episode._TABLE, values,
+			// String.format("%s = ?", DatabaseHelper.Episode.ID),
+			// new String[] { String.valueOf(getEpisodeId()) });
 			return true;
 
 		default:
@@ -378,12 +290,13 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		if (v == null || v.length == 0) {
 			v = new long[] { getEnclosureId() };
 		} else if (v.length == 1) {
-			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.Episode.ENCLOSURE, v[0]);
-			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			// TODO!
+			// ContentValues values = new ContentValues();
+			// values.put(DatabaseHelper.Episode.ENCLOSURE, v[0]);
+			// dbHelper.getWritableDatabase().update(
+			// DatabaseHelper.Episode._TABLE, values,
+			// String.format("%s = ?", DatabaseHelper.Episode.ID),
+			// new String[] { String.valueOf(getEpisodeId()) });
 		}
 		Intent intent = new Intent(this, DownloadService.class);
 		intent.putExtra("id", new long[] { getEpisodeId() });
@@ -406,7 +319,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				if (startedPlaying) {
 					togglePlayPause();
 				} else {
-					if (getEpisodeState() < DatabaseHelper.Episode.STATE_READY
+					if (getEpisodeStatus() < Constants.EPISODE_STATE_READY
 							|| getEnclosureFile() == null
 							|| !getEnclosureFile().isFile()) {
 						// enclosure file does not exist
@@ -556,22 +469,23 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private List<EnclosureSimple> getEnclosures() {
-		Cursor cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.Enclosure._TABLE,
-				new String[] { DatabaseHelper.Enclosure.ID,
-						DatabaseHelper.Enclosure.URL },
-				String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-				new String[] { String.valueOf(id) }, null, null, null);
-		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
-		while (cursor.moveToNext()) {
-			EnclosureSimple enclosure = new EnclosureSimple();
-			enclosure.id = cursor.getLong(cursor
-					.getColumnIndex(DatabaseHelper.Enclosure.ID));
-			enclosure.url = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.Enclosure.URL));
-			enclosures.add(enclosure);
-		}
-		cursor.close();
+		// TODO!
+		// Cursor cursor = dbHelper.getReadableDatabase().query(
+		// DatabaseHelper.Enclosure._TABLE,
+		// new String[] { DatabaseHelper.Enclosure.ID,
+		// DatabaseHelper.Enclosure.URL },
+		// String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
+		// new String[] { String.valueOf(id) }, null, null, null);
+		// List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
+		// while (cursor.moveToNext()) {
+		// EnclosureSimple enclosure = new EnclosureSimple();
+		// enclosure.id = cursor.getLong(cursor
+		// .getColumnIndex(DatabaseHelper.Enclosure.ID));
+		// enclosure.url = cursor.getString(cursor
+		// .getColumnIndex(DatabaseHelper.Enclosure.URL));
+		// enclosures.add(enclosure);
+		// }
+		// cursor.close();
 		return enclosures;
 	}
 
@@ -676,6 +590,80 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
+	}
+
+	/* Podcast getters */
+	protected long getPodcastId() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID));
+	}
+
+	protected String getPodcastTitle() {
+		return cursor.getString(cursor.getColumnIndex(Episode.PODCAST_TITLE));
+	}
+
+	protected String getPodcastDescription() {
+		return cursor.getString(cursor
+				.getColumnIndex(Episode.PODCAST_DESCRIPTION));
+	}
+
+	protected Bitmap getPodcastLogoBitmap() {
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+		if (podcastLogoFile.isFile()) {
+			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
+		} else {
+			return BitmapFactory.decodeResource(getResources(),
+					R.drawable.default_logo);
+		}
+	}
+
+	/* Episode getters */
+	protected long getEpisodeId() {
+		return id;
+	}
+
+	protected String getEpisodeTitle() {
+		return cursor.getString(cursor.getColumnIndex(Episode.TITLE));
+	}
+
+	protected String getEpisodeDescription() {
+		return cursor.getString(cursor.getColumnIndex(Episode.DESCRIPTION));
+	}
+
+	protected int getEpisodeStatus() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.STATUS));
+	}
+
+	protected long getEpisodeDate() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.DATE));
+	}
+
+	/* Enclosure getters */
+	private long getEnclosureId() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.ENCLOSURE_ID));
+	}
+
+	private File getEnclosureFile() {
+		String filename = getEnclosureFileName();
+		if (filename == null || filename.length() == 0) {
+			return null;
+		}
+		try {
+			return new File(new URI(filename));
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private String getEnclosureFileName() {
+		return cursor.getString(cursor.getColumnIndex(Episode.DOWNLOAD_FILE));
+	}
+
+	private int getDurationListened() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_LISTENED));
+	}
+
+	private int getDurationTotal() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_TOTAL));
 	}
 
 }
