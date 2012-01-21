@@ -30,10 +30,12 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	}
 
 	private DatabaseHelper dbHelper;
+	private QueryHelper queryHelper;
 
 	@Override
 	public boolean onCreate() {
 		dbHelper = DatabaseHelper.getInstance(getContext());
+		queryHelper = new QueryHelper(dbHelper);
 		return true;
 	}
 
@@ -103,8 +105,13 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		// TODO Auto-generated method stub
-		return null;
+		switch (getTypeMime(uri)) {
+		case PODCAST_DIR:
+			return queryHelper.queryPodcastDir(projection, selection,
+					selectionArgs, sortOrder);
+		default:
+			return null;
+		}
 	}
 
 	@Override
