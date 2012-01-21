@@ -85,23 +85,23 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private SpannableStringBuilder descriptionSpanned;
 
 	/* Podcast getters */
-	private long getPodcastId() {
+	protected long getPodcastId() {
 		return cursor.getLong(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
 	}
 
-	private String getPodcastTitle() {
+	protected String getPodcastTitle() {
 		return cursor.getString(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
 	}
 
-	private String getPodcastDescription() {
+	protected String getPodcastDescription() {
 		return cursor
 				.getString(cursor
 						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION));
 	}
 
-	private Bitmap getPodcastLogoBitmap() {
+	protected Bitmap getPodcastLogoBitmap() {
 		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
 		if (podcastLogoFile.isFile()) {
 			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
@@ -112,27 +112,27 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	/* Episode getters */
-	private long getEpisodeId() {
+	protected long getEpisodeId() {
 		return id;
 	}
 
-	private String getEpisodeTitle() {
+	protected String getEpisodeTitle() {
 		return cursor.getString(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
 	}
 
-	private String getEpisodeDescription() {
+	protected String getEpisodeDescription() {
 		return cursor
 				.getString(cursor
 						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
 	}
 
-	private int getEpisodeState() {
+	protected int getEpisodeState() {
 		return cursor.getInt(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
 	}
 
-	private long getEpisodeDate() {
+	protected long getEpisodeDate() {
 		return cursor.getLong(cursor
 				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
 	}

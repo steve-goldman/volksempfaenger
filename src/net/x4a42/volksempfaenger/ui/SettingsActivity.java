@@ -5,14 +5,12 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.VolksempfaengerUrls;
 import android.app.ActionBar;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -26,9 +24,9 @@ import android.widget.EditText;
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 	private ListPreference prefDownloadInterval;
-	private CheckBoxPreference prefDownloadAuto;
-	private CheckBoxPreference prefDownloadWifi;
-	private CheckBoxPreference prefDownloadCharging;
+	// private CheckBoxPreference prefDownloadAuto;
+	// private CheckBoxPreference prefDownloadWifi;
+	// private CheckBoxPreference prefDownloadCharging;
 	private EditTextPreference prefDownloadConcurrent;
 	private EditTextPreference prefStorageLocation;
 	private Preference prefAboutVersion;
@@ -54,12 +52,12 @@ public class SettingsActivity extends PreferenceActivity implements
 		PreferenceScreen prefscreen = getPreferenceScreen();
 		prefDownloadInterval = (ListPreference) prefscreen
 				.findPreference(PreferenceKeys.DOWNLOAD_INTERVAL);
-		prefDownloadAuto = (CheckBoxPreference) prefscreen
-				.findPreference(PreferenceKeys.DOWNLOAD_AUTO);
-		prefDownloadWifi = (CheckBoxPreference) prefscreen
-				.findPreference(PreferenceKeys.DOWNLOAD_WIFI);
-		prefDownloadCharging = (CheckBoxPreference) prefscreen
-				.findPreference(PreferenceKeys.DOWNLOAD_CHARGING);
+		// prefDownloadAuto = (CheckBoxPreference) prefscreen
+		// .findPreference(PreferenceKeys.DOWNLOAD_AUTO);
+		// prefDownloadWifi = (CheckBoxPreference) prefscreen
+		// .findPreference(PreferenceKeys.DOWNLOAD_WIFI);
+		// prefDownloadCharging = (CheckBoxPreference) prefscreen
+		// .findPreference(PreferenceKeys.DOWNLOAD_CHARGING);
 		prefDownloadConcurrent = (EditTextPreference) prefscreen
 				.findPreference(PreferenceKeys.DOWNLOAD_CONCURRENT);
 		prefStorageLocation = (EditTextPreference) prefscreen

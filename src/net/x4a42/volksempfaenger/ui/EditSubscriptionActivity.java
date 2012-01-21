@@ -22,7 +22,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -110,9 +109,7 @@ public class EditSubscriptionActivity extends BaseActivity implements
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-
-		menu.setHeaderTitle("Hi");
+		menu.setHeaderTitle(R.string.title_context_change_logo);
 
 		menu.add(0, CONTEXT_RELOAD, 0, R.string.context_reload);
 		menu.add(0, CONTEXT_DELETE, 0, R.string.context_delete);
@@ -122,9 +119,6 @@ public class EditSubscriptionActivity extends BaseActivity implements
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// menuInfo = (AdapterView.AdapterContextMenuInfo) item
-		// .getMenuInfo();
-		// Intent intent;
 		switch (item.getItemId()) {
 		case CONTEXT_RELOAD:
 			new ReloadLogoTask().execute();
