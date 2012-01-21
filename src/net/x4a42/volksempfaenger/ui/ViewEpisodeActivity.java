@@ -150,14 +150,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				Episode._ID, Episode.TITLE, Episode.DESCRIPTION,
 				Episode.STATUS, Episode.DATE, Episode.DURATION_TOTAL,
 				Episode.DURATION_LISTENED, Episode.PODCAST_ID,
-				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION }, null,
-				null, null);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		updateHandler.removeCallbacks(updateSliderTask);
+				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION,
+				Episode.DOWNLOAD_ID, Episode.DOWNLOAD_DONE,
+				Episode.DOWNLOAD_FILE, Episode.DOWNLOAD_STATUS,
+				Episode.DOWNLOAD_TOTAL }, null, null, null);
+		cursor.moveToFirst();
 	}
 
 	@Override
@@ -184,6 +181,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		textPosition.setText(formatTime(getDurationListened()));
 		textDuration.setText(formatTime(getDurationTotal()));
 		updateEpisodeDescription();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		updateHandler.removeCallbacks(updateSliderTask);
 	}
 
 	@Override
@@ -655,7 +658,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private String getEnclosureFileName() {
-		return cursor.getString(cursor.getColumnIndex(Episode.DOWNLOAD_FILE));
+		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_FILE);
+		if (!cursor.isNull(cursorIndex)) {
+			return cursor.getString(cursorIndex);
+		} else {
+			return null;
+		}
 	}
 
 	private int getDurationListened() {
