@@ -2,9 +2,11 @@ package net.x4a42.volksempfaenger.data;
 
 import java.util.List;
 
+import android.app.DownloadManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -31,12 +33,15 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	}
 
 	private DatabaseHelper dbHelper;
+	private DownloadManager dlManager;
 	private QueryHelper queryHelper;
 
 	@Override
 	public boolean onCreate() {
 		dbHelper = DatabaseHelper.getInstance(getContext());
-		queryHelper = new QueryHelper(dbHelper);
+		dlManager = (DownloadManager) getContext().getSystemService(
+				Context.DOWNLOAD_SERVICE);
+		queryHelper = new QueryHelper(dbHelper, dlManager);
 		return true;
 	}
 

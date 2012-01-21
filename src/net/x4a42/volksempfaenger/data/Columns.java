@@ -158,13 +158,6 @@ public class Columns {
 		public static final String DOWNLOAD_STATUS = "download_status";
 
 		/**
-		 * Progress of the download (type int)
-		 * 
-		 * 0 - 100 if the download is running, otherwise -1
-		 */
-		public static final String DOWNLOAD_PROGRESS = "download_progress";
-
-		/**
 		 * Total size of the download in bytes as reported by DownloadManager
 		 * (type long)
 		 */
