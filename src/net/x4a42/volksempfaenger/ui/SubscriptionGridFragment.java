@@ -38,6 +38,15 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		
+		dbHelper = DatabaseHelper.getInstance(getActivity());
+
+		cursor = dbHelper.getReadableDatabase().query(
+				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null,
+				null, DatabaseHelper.ExtendedPodcast.TITLE);
+		getActivity().startManagingCursor(cursor);
+		
+		adapter = new SubscriptionListAdapter(getActivity(), cursor);
 	}
 
 	@Override
@@ -46,20 +55,12 @@ public class SubscriptionGridFragment extends Fragment implements
 		View view = inflater.inflate(R.layout.subscription_list, container,
 				false);
 
-		dbHelper = DatabaseHelper.getInstance(getActivity());
-
 		subscriptionList = (GridView) view.findViewById(R.id.subscription_list);
 		subscriptionList.setEmptyView(view
 				.findViewById(R.id.subscription_list_empty));
 		subscriptionList.setOnItemClickListener(this);
 		subscriptionList.setOnCreateContextMenuListener(this);
 
-		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null,
-				null, DatabaseHelper.ExtendedPodcast.TITLE);
-		getActivity().startManagingCursor(cursor);
-
-		adapter = new SubscriptionListAdapter(getActivity(), cursor);
 		subscriptionList.setAdapter(adapter);
 
 		return view;
