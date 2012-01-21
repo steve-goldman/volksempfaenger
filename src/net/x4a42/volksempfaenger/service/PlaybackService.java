@@ -53,7 +53,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private PlayerState playerState = PlayerState.IDLE;
-	private PlayerListener playerListener = new DefaultPlayerListener();
 
 	/**
 	 * Returns the ID of the currently playing episode.
@@ -237,7 +236,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			saveHandler.removeCallbacks(savePositionTask);
 			player.pause();
 			playerState = PlayerState.PAUSED;
-			playerListener.onPlayerPaused();
 			sendPlayerEvent(PlayerEvent.PAUSE);
 			savePosition();
 			stopForeground();
@@ -296,7 +294,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			}
 			stopForeground();
 			cursor = null;
-			playerListener.onPlayerStopped();
 			sendPlayerEvent(PlayerEvent.STOP);
 			resetPlayer();
 		} else {
@@ -351,7 +348,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 					getPodcastTitle(), pendingIntent);
 		}
 		startForeground();
-		playerListener.onPlayerPrepared();
 		sendPlayerEvent(PlayerEvent.PREPARE);
 	}
 
@@ -383,7 +379,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			if (player != null && player.isPlaying()) {
 				player.pause();
-				playerListener.onPlayerPaused();
 				sendPlayerEvent(PlayerEvent.PAUSE);
 			}
 			break;
@@ -426,19 +421,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 	}
 
-	// TODO deprecate this
-	public void setPlayerListener(PlayerListener listener) {
-		playerListener = listener;
-	}
-
-	public interface PlayerListener {
-		public void onPlayerPaused();
-
-		public void onPlayerStopped();
-
-		public void onPlayerPrepared();
-	}
-
 	private class AudioNoisyReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -446,26 +428,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 					android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
 				if (PlaybackService.this.isPlaying()) {
 					PlaybackService.this.pause();
-					PlaybackService.this.playerListener.onPlayerPaused();
 					sendPlayerEvent(PlayerEvent.PAUSE);
 				}
 			}
 		}
-	}
-
-	private class DefaultPlayerListener implements PlayerListener {
-		public void onPlayerPaused() {
-			Log.d(TAG, "No PlayerListener set");
-		}
-
-		public void onPlayerStopped() {
-			Log.d(TAG, "No PlayerListener set");
-		}
-
-		public void onPlayerPrepared() {
-			Log.d(TAG, "No PlayerListener set");
-		}
-
 	}
 
 	public void onCompletion(MediaPlayer mp) {

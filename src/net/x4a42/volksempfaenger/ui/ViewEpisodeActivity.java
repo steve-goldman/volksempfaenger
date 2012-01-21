@@ -14,8 +14,9 @@ import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
+import net.x4a42.volksempfaenger.service.PlaybackService.OnPlayerEventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlayerListener;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlayerEvent;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -57,7 +58,7 @@ import android.widget.Toast;
 
 public class ViewEpisodeActivity extends FragmentActivity implements
 		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
-		PlayerListener {
+		OnPlayerEventListener {
 
 	private static final String TAG = "ViewEpisodeActivity";
 
@@ -277,7 +278,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		if (service != null) {
 			unbindService(this);
@@ -515,7 +515,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		service = ((PlaybackBinder) binder).getService();
-		service.setPlayerListener(this);
+		service.addOnPlayerEventListener(this);
 		if (service.isPlaying()
 				&& service.getCurrentEpisode() == getEpisodeId()) {
 			setPlaying();
@@ -528,26 +528,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		bound = false;
 	}
 
-	public void onPlayerPaused() {
-		setButtonPlay();
-	}
-
-	public void onPlayerStopped() {
-		// TODO clean up
-		setButtonPlay();
-		seekBar.setEnabled(false);
-		buttonBack.setEnabled(false);
-		buttonForward.setEnabled(false);
-
-		textPosition.setText("00:00:00");
-		textDuration.setText("00:00:00");
-		startedPlaying = false;
-	}
-
 	public void onPlayerPrepared() {
-		service.play();
-		setPlaying();
-		service.seekTo(getDurationListened());
 	}
 
 	private class EnclosureSimple {
@@ -676,6 +657,31 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return Utils.getDescriptionImageFile(ViewEpisodeActivity.this, url);
 		}
 
+	}
+
+	@Override
+	public void onPlayerEvent(PlayerEvent event) {
+		switch (event) {
+		case PAUSE:
+			setButtonPlay();
+			break;
+		case PREPARE:
+			service.play();
+			setPlaying();
+			service.seekTo(getDurationListened());
+			break;
+		case STOP:
+			// TODO clean up
+			setButtonPlay();
+			seekBar.setEnabled(false);
+			buttonBack.setEnabled(false);
+			buttonForward.setEnabled(false);
+
+			textPosition.setText("00:00:00");
+			textDuration.setText("00:00:00");
+			startedPlaying = false;
+			break;
+		}
 	}
 
 }
