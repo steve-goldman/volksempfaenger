@@ -132,25 +132,93 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		// TODO: Filter keys
+		Uri newUri = null;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			return queryHelper.insertPodcast(uri, values);
-		default:
-			return null;
+			newUri = queryHelper.insertPodcast(uri, values);
+			break;
+		case EPISODE_DIR:
+			newUri = queryHelper.insertEpisode(uri, values);
+			break;
+		case ENCLOSURE_DIR:
+			newUri = queryHelper.insertEnclosure(uri, values);
+			break;
 		}
+		if (newUri != null) {
+			getContext().getContentResolver().notifyChange(newUri, null);
+		}
+		return newUri;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		int rowsAffected = 0;
+		switch (getTypeMime(uri)) {
+		case PODCAST_DIR:
+			rowsAffected = queryHelper.updatePodcastDir(uri, values, selection,
+					selectionArgs);
+			break;
+		case PODCAST_ITEM:
+			rowsAffected = queryHelper.updatePodcastItem(uri, values,
+					selection, selectionArgs);
+			break;
+		case EPISODE_DIR:
+			rowsAffected = queryHelper.updateEpisodeDir(uri, values, selection,
+					selectionArgs);
+			break;
+		case EPISODE_ITEM:
+			rowsAffected = queryHelper.updateEpisodeItem(uri, values,
+					selection, selectionArgs);
+			break;
+		case ENCLOSURE_DIR:
+			rowsAffected = queryHelper.updateEnclosureDir(uri, values,
+					selection, selectionArgs);
+			break;
+		case ENCLOSURE_ITEM:
+			rowsAffected = queryHelper.updateEnclosureItem(uri, values,
+					selection, selectionArgs);
+			break;
+		}
+		if (rowsAffected > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return rowsAffected;
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		int rowsAffected = 0;
+		switch (getTypeMime(uri)) {
+		case PODCAST_DIR:
+			rowsAffected = queryHelper.deletePodcastDir(uri, selection,
+					selectionArgs);
+			break;
+		case PODCAST_ITEM:
+			rowsAffected = queryHelper.deletePodcastItem(uri, selection,
+					selectionArgs);
+			break;
+		case EPISODE_DIR:
+			rowsAffected = queryHelper.deleteEpisodeDir(uri, selection,
+					selectionArgs);
+			break;
+		case EPISODE_ITEM:
+			rowsAffected = queryHelper.deleteEpisodeItem(uri, selection,
+					selectionArgs);
+			break;
+		case ENCLOSURE_DIR:
+			rowsAffected = queryHelper.deleteEnclosureDir(uri, selection,
+					selectionArgs);
+			break;
+		case ENCLOSURE_ITEM:
+			rowsAffected = queryHelper.deleteEnclosureItem(uri, selection,
+					selectionArgs);
+			break;
+		}
+		if (rowsAffected > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return rowsAffected;
 	}
 
 }

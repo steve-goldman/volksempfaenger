@@ -229,17 +229,99 @@ public class QueryHelper {
 					null, values);
 		} catch (SQLException e) {
 			if (e instanceof SQLiteConstraintException) {
-				throw new Error.DuplicatePodcast();
+				throw new Error.DuplicateException();
 			} else {
-				throw new Error.InsertError();
+				throw new Error.InsertException();
 			}
 		}
 		if (id == -1) {
-			throw new Error.InsertError();
+			throw new Error.InsertException();
 		} else {
 			return ContentUris.withAppendedId(
 					VolksempfaengerContentProvider.PODCAST_URI, id);
 		}
+	}
+
+	public Uri insertEpisode(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Uri insertEnclosure(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int updatePodcastDir(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int updatePodcastItem(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int updateEpisodeDir(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int updateEpisodeItem(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int updateEnclosureDir(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int updateEnclosureItem(Uri uri, ContentValues values,
+			String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deletePodcastDir(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deletePodcastItem(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deleteEpisodeDir(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deleteEpisodeItem(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deleteEnclosureDir(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int deleteEnclosureItem(Uri uri, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
