@@ -2,8 +2,6 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -30,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -259,15 +258,9 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			try {
-				if (getEnclosureFileName() != null) {
-					File f = new File(new URI(getEnclosureFileName()));
-					if (f.isFile()) {
-						f.delete();
-					}
-				}
-			} catch (URISyntaxException e) {
-				Log.w(getClass().getSimpleName(), "Exception handled", e);
+			File f = getDownloadFile();
+			if (f.isFile()) {
+				f.delete();
 			}
 			// TODO!
 			// values.put(DatabaseHelper.Enclosure.FILE, (String) null);
@@ -323,16 +316,20 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 					togglePlayPause();
 				} else {
 					if (getEpisodeStatus() < Constants.EPISODE_STATE_READY
-							|| getEnclosureFile() == null
-							|| !getEnclosureFile().isFile()) {
+							|| getDownloadFile() == null
+							|| !getDownloadFile().isFile()) {
 						// enclosure file does not exist
-						// TODO: auto download
+						// TODO: auto download, streaming?
+						Log.d(TAG, "getEpisodeStatus(): " + getEpisodeStatus());
+						Log.d(TAG, "getEnclosureFile(): " + getDownloadFile());
 						Toast.makeText(this,
 								R.string.message_enclosure_file_not_available,
 								Toast.LENGTH_SHORT).show();
 					} else {
 						try {
-							service.playEpisode(getEpisodeId());
+							service.playEpisode(ContentUris.withAppendedId(
+									VolksempfaengerContentProvider.EPISODE_URI,
+									getEpisodeId()));
 							startedPlaying = true;
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block
@@ -645,22 +642,18 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		return cursor.getLong(cursor.getColumnIndex(Episode.ENCLOSURE_ID));
 	}
 
-	private File getEnclosureFile() {
-		String filename = getEnclosureFileName();
-		if (filename == null || filename.length() == 0) {
+	private File getDownloadFile() {
+		Uri uri = getDownloadUri();
+		if (uri == null) {
 			return null;
 		}
-		try {
-			return new File(new URI(filename));
-		} catch (URISyntaxException e) {
-			return null;
-		}
+		return new File(uri.getPath());
 	}
 
-	private String getEnclosureFileName() {
-		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_FILE);
+	private Uri getDownloadUri() {
+		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_URI);
 		if (!cursor.isNull(cursorIndex)) {
-			return cursor.getString(cursorIndex);
+			return Uri.parse(cursor.getString(cursorIndex));
 		} else {
 			return null;
 		}

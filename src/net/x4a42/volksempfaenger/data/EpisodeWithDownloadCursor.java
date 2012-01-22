@@ -13,9 +13,11 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 public class EpisodeWithDownloadCursor implements Cursor {
 
+	private static final String TAG = "EpisodeWithDownloadCursor";
 	private static Map<String, String> dlColumnMap;
 	private Map<Integer, Integer> dbToDlMap;
 	private String[] dlColumns;
@@ -32,6 +34,7 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		temp.put(Episode.DOWNLOAD_STATUS, DownloadManager.COLUMN_STATUS);
 		temp.put(Episode.DOWNLOAD_TOTAL,
 				DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
+		temp.put(Episode.DOWNLOAD_URI, DownloadManager.COLUMN_LOCAL_URI);
 		dlColumnMap = Collections.unmodifiableMap(temp);
 	}
 
@@ -60,11 +63,15 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		}
 		dlCursor.moveToPosition(-1);
 
+		Log.d(TAG, "Generated the following dlIdToDlPos:");
+		for (Long db : dlIdToDlPos.keySet()) {
+			Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
+		}
+
 		Integer dlPos;
 		HashMap<Integer, Integer> temp = new HashMap<Integer, Integer>(length);
 		while (dbCursor.moveToNext()) {
-			long dlId = dbCursor.getLong(dbDownloadId);
-			dlPos = dlIdToDlPos.get(dlId);
+			dlPos = dlIdToDlPos.get(dbCursor.getLong(dbDownloadId));
 			if (dlPos != null) {
 				temp.put(dbCursor.getPosition(), dlPos);
 			}
@@ -72,6 +79,11 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		dbCursor.moveToPosition(-1);
 
 		dbToDlMap = temp;
+
+		Log.d(TAG, "Generated the following dbToDlMap:");
+		for (Integer db : temp.keySet()) {
+			Log.d(TAG, db + " -> " + temp.get(db));
+		}
 	}
 
 	private boolean isDbCursor(int index) {
@@ -254,8 +266,8 @@ public class EpisodeWithDownloadCursor implements Cursor {
 	}
 
 	private void moveDlCursor() {
-		Integer dbPos = dbToDlMap.get(dbCursor.getPosition());
-		dlCursor.moveToPosition(dbPos == null ? -1 : dbPos);
+		Integer dlPos = dbToDlMap.get(dbCursor.getPosition());
+		dlCursor.moveToPosition(dlPos == null ? -1 : dlPos);
 	}
 
 	@Override

@@ -151,6 +151,11 @@ public class Columns {
 		public static final String DOWNLOAD_FILE = "download_file";
 
 		/**
+		 * URI of the downloaded file (type String)
+		 */
+		public static final String DOWNLOAD_URI = "download_uri";
+
+		/**
 		 * Status of the download (type int)
 		 * 
 		 * Values: see android.app.DownloadManager.STATUS_*
