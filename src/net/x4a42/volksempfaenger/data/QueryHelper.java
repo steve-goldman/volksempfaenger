@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import android.app.DownloadManager;
@@ -15,16 +16,18 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 public class QueryHelper {
 
 	private static final String PODCAST_TABLE = DatabaseHelper.TABLE_PODCAST;
 	private static final String EPISODE_TABLE = DatabaseHelper.TABLE_EPISODE;
+	private static final String ENCLOSURE_TABLE = DatabaseHelper.TABLE_ENCLOSURE;
 	private static final String PODCAST_WHERE_ID = PODCAST_TABLE + "."
 			+ Podcast._ID + "=?";
 	private static final String EPISODE_WHERE_ID = EPISODE_TABLE + "."
 			+ Episode._ID + "=?";
+	private static final String ENCLOSURE_WHERE_ID = ENCLOSURE_TABLE + "."
+			+ Enclosure._ID + "=?";
 	private static final String EPISODE_JOIN_PODCAST = "INNER JOIN podcast ON episode.podcast_id = podcast._id";
 	private static final String EPISODE_JOIN_ENCLOSURE = "LEFT OUTER JOIN enclosure ON episode.enclosure_id = enclosure._id";
 	private static final Map<String, String> podcastColumnMap;
@@ -84,16 +87,17 @@ public class QueryHelper {
 		temp.put(Episode.STATUS, "episode.status AS " + Episode.STATUS);
 		temp.put(Episode.TITLE, "episode.title AS " + Episode.TITLE);
 		temp.put(Episode.URL, "episode.url AS " + Episode.URL);
-		// temp.put(Episode.DOWNLOAD_DONE, value);
-		// temp.put(Episode.DOWNLOAD_FILE, value);
-		// temp.put(Episode.DOWNLOAD_PROGRESS, value);
-		// temp.put(Episode.DOWNLOAD_STATUS, value);
-		// temp.put(Episode.DOWNLOAD_TOTAL, value);
 		episodeColumnMap = Collections.unmodifiableMap(temp);
 
 		// enclosureColumnMap
 		temp = new HashMap<String, String>();
-		// TODO
+		temp.put(Enclosure._ID, "enclosure._id AS " + Enclosure._ID);
+		temp.put(Enclosure.EPISODE_ID, "enclosure.episode_id AS "
+				+ Enclosure.EPISODE_ID);
+		temp.put(Enclosure.MIME, "enclosure.mime AS " + Enclosure.MIME);
+		temp.put(Enclosure.SIZE, "enclosure.size AS " + Enclosure.SIZE);
+		temp.put(Enclosure.TITLE, "enclosure.title AS " + Enclosure.TITLE);
+		temp.put(Enclosure.URL, "enclosure.url AS " + Enclosure.URL);
 		enclosureColumnMap = Collections.unmodifiableMap(temp);
 	}
 
@@ -113,6 +117,10 @@ public class QueryHelper {
 
 		episodeQueryBuilder = new SQLiteQueryBuilder();
 		episodeQueryBuilder.setProjectionMap(episodeColumnMap);
+
+		enclosureQueryBuilder = new SQLiteQueryBuilder();
+		enclosureQueryBuilder.setTables(DatabaseHelper.TABLE_ENCLOSURE);
+		enclosureQueryBuilder.setProjectionMap(enclosureColumnMap);
 	}
 
 	public Cursor queryPodcastDir(String[] projection, String selection,
@@ -220,6 +228,17 @@ public class QueryHelper {
 	public Cursor queryEpisodeItem(long episodeId, String[] projection) {
 		return queryEpisodeDir(projection, EPISODE_WHERE_ID,
 				new String[] { String.valueOf(episodeId) }, null);
+	}
+
+	public Cursor queryEnclosureDir(String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		return enclosureQueryBuilder.query(dbHelper.getReadableDatabase(),
+				projection, selection, selectionArgs, null, null, sortOrder);
+	}
+
+	public Cursor queryEnclosureItem(long enclosureId, String[] projection) {
+		return queryPodcastDir(projection, ENCLOSURE_WHERE_ID,
+				new String[] { String.valueOf(enclosureId) }, null);
 	}
 
 	public Uri insertPodcast(Uri uri, ContentValues values) {
