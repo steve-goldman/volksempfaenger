@@ -86,4 +86,6 @@
 	<string name="settings_default_download_wifi">true</string>
 	<string name="settings_default_download_charging">false</string>
 	<string name="settings_default_download_concurrent">1</string>
+	<string name="menu_import">Import</string>
+	<string name="dialog_choose_opml">Choose OPML file</string>
 </resources>

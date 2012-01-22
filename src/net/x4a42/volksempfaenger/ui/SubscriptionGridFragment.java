@@ -1,9 +1,11 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -28,6 +30,8 @@ public class SubscriptionGridFragment extends Fragment implements
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
 
+	private static final int PICK_FILE_REQUEST = 0;
+
 	private DatabaseHelper dbHelper;
 	private Cursor cursor;
 	private GridView subscriptionList;
@@ -38,14 +42,14 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		
+
 		dbHelper = DatabaseHelper.getInstance(getActivity());
 
 		cursor = dbHelper.getReadableDatabase().query(
 				DatabaseHelper.ExtendedPodcast._TABLE, null, null, null, null,
 				null, DatabaseHelper.ExtendedPodcast.TITLE);
 		getActivity().startManagingCursor(cursor);
-		
+
 		adapter = new SubscriptionListAdapter(getActivity(), cursor);
 	}
 
@@ -82,12 +86,20 @@ public class SubscriptionGridFragment extends Fragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_add:
-			startActivity(new Intent(getActivity(), AddSubscriptionActivity.class));
+			startActivity(new Intent(getActivity(),
+					AddSubscriptionActivity.class));
 			return true;
 		case R.id.item_update:
-			getActivity().startService(new Intent(getActivity(), UpdateService.class));
+			getActivity().startService(
+					new Intent(getActivity(), UpdateService.class));
 			Toast.makeText(getActivity(), R.string.message_update_started,
 					Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.import_items:
+			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);
+			intent.putExtra(Constants.EXTRA_OI_TITLE,
+					getString(R.string.dialog_choose_opml));
+			startActivityForResult(intent, PICK_FILE_REQUEST);
 			return true;
 		default:
 			return false;
@@ -127,6 +139,21 @@ public class SubscriptionGridFragment extends Fragment implements
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case PICK_FILE_REQUEST:
+			if (resultCode == Activity.RESULT_OK) {
+				if (data != null) {
+					String path = data.getData().getPath();
+					// TODO import now!
+				}
+			}
+			break;
+		}
 	}
 
 	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
