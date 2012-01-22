@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/item_add" android:title="@string/menu_add"
-		android:icon="@drawable/ic_menu_btn_add" android:showAsAction="ifRoom" />
-	<item android:id="@+id/item_update" android:title="@string/menu_update"
-		android:icon="@drawable/ic_menu_refresh" android:showAsAction="ifRoom" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_add"
+        android:icon="@drawable/ic_menu_btn_add"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_add"/>
+    <item
+        android:id="@+id/item_update"
+        android:icon="@drawable/ic_menu_refresh"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_update"/>
+    <item
+        android:id="@+id/import_items"
+        android:title="@string/menu_import"/>
+
 </menu>
