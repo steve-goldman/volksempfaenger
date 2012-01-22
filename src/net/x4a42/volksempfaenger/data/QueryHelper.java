@@ -6,11 +6,9 @@ import java.util.Map;
 
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
-
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 
 public class QueryHelper {
@@ -55,7 +53,7 @@ public class QueryHelper {
 				+ Episode.DURATION_LISTENED);
 		temp.put(Episode.DURATION_TOTAL, "episode.duration_total AS "
 				+ Episode.DURATION_TOTAL);
-		temp.put(Episode.ENCLOSURE_ID, "episode.encosure_id AS "
+		temp.put(Episode.ENCLOSURE_ID, "episode.enclosure_id AS "
 				+ Episode.ENCLOSURE_ID);
 		temp.put(Episode.ENCLOSURE_MIME, "enclosure.mime AS "
 				+ Episode.ENCLOSURE_MIME);
@@ -204,6 +202,7 @@ public class QueryHelper {
 				ids[dbCursor.getPosition()] = dbCursor
 						.getLong(downloadIdColumn);
 			}
+			dbCursor.moveToPosition(-1);
 			query.setFilterById(ids);
 			dlCursor = dlManager.query(query);
 			cursor = new EpisodeWithDownloadCursor(dbCursor, dlCursor);
