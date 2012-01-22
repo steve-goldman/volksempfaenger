@@ -8,8 +8,14 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.util.Log;
 
 public class QueryHelper {
 
@@ -214,6 +220,26 @@ public class QueryHelper {
 	public Cursor queryEpisodeItem(long episodeId, String[] projection) {
 		return queryEpisodeDir(projection, EPISODE_WHERE_ID,
 				new String[] { String.valueOf(episodeId) }, null);
+	}
+
+	public Uri insertPodcast(Uri uri, ContentValues values) {
+		long id;
+		try {
+			id = dbHelper.getWritableDatabase().insertOrThrow(PODCAST_TABLE,
+					null, values);
+		} catch (SQLException e) {
+			if (e instanceof SQLiteConstraintException) {
+				throw new Error.DuplicatePodcast();
+			} else {
+				throw new Error.InsertError();
+			}
+		}
+		if (id == -1) {
+			throw new Error.InsertError();
+		} else {
+			return ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.PODCAST_URI, id);
+		}
 	}
 
 }
