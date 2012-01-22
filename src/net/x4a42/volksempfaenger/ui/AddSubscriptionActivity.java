@@ -111,9 +111,9 @@ public class AddSubscriptionActivity extends BaseActivity implements
 			try {
 				newPodcastUri = getContentResolver().insert(
 						VolksempfaengerContentProvider.PODCAST_URI, values);
-			} catch (Error.DuplicatePodcast e) {
+			} catch (Error.DuplicateException e) {
 				return AddFeedTaskResult.DUPLICATE;
-			} catch (Error.InsertError e) {
+			} catch (Error.InsertException e) {
 				return AddFeedTaskResult.INSERT_ERROR;
 			}
 
