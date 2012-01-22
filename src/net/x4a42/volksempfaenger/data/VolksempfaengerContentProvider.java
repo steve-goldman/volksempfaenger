@@ -131,8 +131,13 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: Filter keys
+		switch (getTypeMime(uri)) {
+		case PODCAST_DIR:
+			return queryHelper.insertPodcast(uri, values);
+		default:
+			return null;
+		}
 	}
 
 	@Override
