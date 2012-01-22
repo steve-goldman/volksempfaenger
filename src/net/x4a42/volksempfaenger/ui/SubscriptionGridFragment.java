@@ -1,15 +1,23 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.List;
+
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
+import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -149,6 +157,22 @@ public class SubscriptionGridFragment extends Fragment implements
 			if (resultCode == Activity.RESULT_OK) {
 				if (data != null) {
 					String path = data.getData().getPath();
+
+					// test opml parser
+					FileInputStream fstream;
+					try {
+						fstream = new FileInputStream(path);
+						InputStreamReader in = new InputStreamReader(fstream);
+						List<String> urls = OpmlParser
+								.parse(new BufferedReader(in));
+						for (String url : urls) {
+							Log.d("OPML Import", url);
+						}
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 					// TODO import now!
 				}
 			}
