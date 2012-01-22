@@ -1,9 +1,7 @@
 DROP VIEW "extended_podcast";
 DROP VIEW "extended_episode";
 
--- podcast
 ALTER TABLE "podcast" RENAME TO "podcast_backup";
-
 CREATE TABLE "podcast" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"feed" TEXT UNIQUE,
@@ -12,13 +10,10 @@ CREATE TABLE "podcast" (
 	"website" TEXT,
 	"last_update" INTEGER
 );
-
 INSERT INTO "podcast" ("_id", "feed", "title", "description", "website")
 SELECT "_id", "url", "title", "description", "website" FROM "podcast_backup";
-
 DROP TABLE "podcast_backup";
 
--- episode
 ALTER TABLE "episode" RENAME TO "episode_backup";
 CREATE TABLE "episode" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,19 +30,15 @@ CREATE TABLE "episode" (
 	"download_id" INTEGER,
 	UNIQUE ("podcast_id", "feed_item_id")
 );
-
 INSERT INTO "episode" ("_id", "podcast_id", "title", "date", "url", "description",
 "feed_item_id", "status", "duration_total", "duration_listened", "enclosure_id", "download_id")
 SELECT ep."_id", ep."podcast_id", ep."title", ep."date", ep."url", ep."description",
 ep."item_id", ep."state", en."duration_total", en."duration_listened", ep."enclosure_id",
 en."download_id" FROM "episode_backup" ep
 LEFT OUTER JOIN "enclosure" en ON ep."enclosure_id" = en."_id";
-
 DROP TABLE "episode_backup";
 
--- enclosure
 ALTER TABLE "enclosure" RENAME TO "enclosure_backup";
-
 CREATE TABLE "enclosure" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"episode_id" INTEGER REFERENCES "episode" ("_id") ON DELETE CASCADE,
@@ -56,9 +47,6 @@ CREATE TABLE "enclosure" (
 	"mime" TEXT,
 	"size" INTEGER,
 	UNIQUE ("episode_id", "url")
-);
-
 INSERT INTO "enclosure" ("_id", "episode_id", "title", "url", "mime", "size")
 SELECT "_id", "episode_id", "title", "url", "mime", "size" FROM "enclosure_backup";
-
 DROP TABLE "enclosure_backup";

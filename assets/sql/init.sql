@@ -1,4 +1,3 @@
--- podcast
 CREATE TABLE "podcast" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"feed" TEXT UNIQUE,
@@ -8,7 +7,6 @@ CREATE TABLE "podcast" (
 	"last_update" INTEGER
 );
 
--- episode
 CREATE TABLE "episode" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"podcast_id" INTEGER REFERENCES "podcast" ("_id") ON DELETE CASCADE,
@@ -25,7 +23,6 @@ CREATE TABLE "episode" (
 	UNIQUE ("podcast_id", "feed_item_id")
 );
 
--- enclosure
 CREATE TABLE "enclosure" (
 	"_id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"episode_id" INTEGER REFERENCES "episode" ("_id") ON DELETE CASCADE,

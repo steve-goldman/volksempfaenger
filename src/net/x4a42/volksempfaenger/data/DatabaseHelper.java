@@ -90,9 +90,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Writer wr = new StringWriter();
 		int c;
 		while ((c = in.read()) != -1) {
-			wr.write(c);
+			if (c == ';') {
+				String sql = wr.toString();
+				Log.d(TAG, "Executing the following SQL:");
+				Log.d(TAG, sql);
+				db.execSQL(sql);
+				wr = new StringWriter();
+			} else {
+				wr.write(c);
+			}
 		}
-		db.execSQL(wr.toString());
 
 	}
 }
