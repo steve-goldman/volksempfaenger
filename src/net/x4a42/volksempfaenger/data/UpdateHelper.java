@@ -1,7 +1,6 @@
 package net.x4a42.volksempfaenger.data;
 
 import android.content.ContentValues;
-import android.net.Uri;
 
 public class UpdateHelper extends ContentProviderHelper {
 
@@ -17,41 +16,41 @@ public class UpdateHelper extends ContentProviderHelper {
 
 	// Podcast
 
-	public int updatePodcastDir(Uri uri, ContentValues values,
+	public int updatePodcastDir(ContentValues values,
 			String selection, String[] selectionArgs) {
 		return update(PODCAST_TABLE, values, selection, selectionArgs);
 	}
 
-	public int updatePodcastItem(Uri uri, ContentValues values,
+	public int updatePodcastItem(long id, ContentValues values,
 			String selection, String[] selectionArgs) {
-		return updatePodcastDir(uri, values, PODCAST_WHERE_ID,
-				selectionArray(uri));
+		return updatePodcastDir(values, PODCAST_WHERE_ID,
+				selectionArray(id));
 	}
 
 	// Episode
 
-	public int updateEpisodeDir(Uri uri, ContentValues values,
+	public int updateEpisodeDir(ContentValues values,
 			String selection, String[] selectionArgs) {
 		return update(EPISODE_TABLE, values, selection, selectionArgs);
 	}
 
-	public int updateEpisodeItem(Uri uri, ContentValues values,
+	public int updateEpisodeItem(long id, ContentValues values,
 			String selection, String[] selectionArgs) {
-		return updateEpisodeDir(uri, values, EPISODE_WHERE_ID,
-				selectionArray(uri));
+		return updateEpisodeDir(values, EPISODE_WHERE_ID,
+				selectionArray(id));
 	}
 
 	// Enclosure
 
-	public int updateEnclosureDir(Uri uri, ContentValues values,
+	public int updateEnclosureDir(ContentValues values,
 			String selection, String[] selectionArgs) {
 		return update(ENCLOSURE_TABLE, values, selection, selectionArgs);
 	}
 
-	public int updateEnclosureItem(Uri uri, ContentValues values,
+	public int updateEnclosureItem(long id, ContentValues values,
 			String selection, String[] selectionArgs) {
-		return updateEnclosureDir(uri, values, ENCLOSURE_WHERE_ID,
-				selectionArray(uri));
+		return updateEnclosureDir(values, ENCLOSURE_WHERE_ID,
+				selectionArray(id));
 	}
 
 }

@@ -3,9 +3,7 @@ package net.x4a42.volksempfaenger.data;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
-import android.content.ContentUris;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 
 public class ContentProviderHelper {
 
@@ -36,10 +34,6 @@ public class ContentProviderHelper {
 
 	protected String[] selectionArray(long id) {
 		return new String[] { String.valueOf(id) };
-	}
-
-	protected String[] selectionArray(Uri uri) {
-		return selectionArray(ContentUris.parseId(uri));
 	}
 
 }
