@@ -9,19 +9,11 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
 
-public class QueryHelper {
+public class QueryHelper extends ContentProviderHelper {
 
-	private static final String PODCAST_TABLE = DatabaseHelper.TABLE_PODCAST;
-	private static final String EPISODE_TABLE = DatabaseHelper.TABLE_EPISODE;
-	private static final String ENCLOSURE_TABLE = DatabaseHelper.TABLE_ENCLOSURE;
 	private static final String PODCAST_WHERE_ID = PODCAST_TABLE + "."
 			+ Podcast._ID + "=?";
 	private static final String EPISODE_WHERE_ID = EPISODE_TABLE + "."
@@ -101,32 +93,32 @@ public class QueryHelper {
 		enclosureColumnMap = Collections.unmodifiableMap(temp);
 	}
 
-	private DatabaseHelper dbHelper;
 	private DownloadManager dlManager;
 	private SQLiteQueryBuilder podcastQueryBuilder;
 	private SQLiteQueryBuilder episodeQueryBuilder;
 	private SQLiteQueryBuilder enclosureQueryBuilder;
 
 	protected QueryHelper(DatabaseHelper dbHelper, DownloadManager dlManager) {
-		this.dbHelper = dbHelper;
+		super(dbHelper);
+
 		this.dlManager = dlManager;
 
 		podcastQueryBuilder = new SQLiteQueryBuilder();
-		podcastQueryBuilder.setTables(DatabaseHelper.TABLE_PODCAST);
+		podcastQueryBuilder.setTables(PODCAST_TABLE);
 		podcastQueryBuilder.setProjectionMap(podcastColumnMap);
 
 		episodeQueryBuilder = new SQLiteQueryBuilder();
 		episodeQueryBuilder.setProjectionMap(episodeColumnMap);
 
 		enclosureQueryBuilder = new SQLiteQueryBuilder();
-		enclosureQueryBuilder.setTables(DatabaseHelper.TABLE_ENCLOSURE);
+		enclosureQueryBuilder.setTables(ENCLOSURE_TABLE);
 		enclosureQueryBuilder.setProjectionMap(enclosureColumnMap);
 	}
 
 	public Cursor queryPodcastDir(String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		return podcastQueryBuilder.query(dbHelper.getReadableDatabase(),
-				projection, selection, selectionArgs, null, null, sortOrder);
+		return podcastQueryBuilder.query(getReadableDatabase(), projection,
+				selection, selectionArgs, null, null, sortOrder);
 	}
 
 	public Cursor queryPodcastItem(long podcastId, String[] projection) {
@@ -201,8 +193,8 @@ public class QueryHelper {
 					selectionArgs, null, null, sortOrder, null);
 
 			cursor = episodeQueryBuilder
-					.query(dbHelper.getReadableDatabase(), projection,
-							selection, selectionArgs, null, null, sortOrder);
+					.query(getReadableDatabase(), projection, selection,
+							selectionArgs, null, null, sortOrder);
 		}
 
 		if (joinDownload) {
@@ -232,115 +224,13 @@ public class QueryHelper {
 
 	public Cursor queryEnclosureDir(String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		return enclosureQueryBuilder.query(dbHelper.getReadableDatabase(),
-				projection, selection, selectionArgs, null, null, sortOrder);
+		return enclosureQueryBuilder.query(getReadableDatabase(), projection,
+				selection, selectionArgs, null, null, sortOrder);
 	}
 
 	public Cursor queryEnclosureItem(long enclosureId, String[] projection) {
 		return queryPodcastDir(projection, ENCLOSURE_WHERE_ID,
 				new String[] { String.valueOf(enclosureId) }, null);
-	}
-
-	public Uri insertPodcast(Uri uri, ContentValues values) {
-		long id;
-		try {
-			id = dbHelper.getWritableDatabase().insertOrThrow(PODCAST_TABLE,
-					null, values);
-		} catch (SQLException e) {
-			if (e instanceof SQLiteConstraintException) {
-				throw new Error.DuplicateException();
-			} else {
-				throw new Error.InsertException();
-			}
-		}
-		if (id == -1) {
-			throw new Error.InsertException();
-		} else {
-			return ContentUris.withAppendedId(
-					VolksempfaengerContentProvider.PODCAST_URI, id);
-		}
-	}
-
-	public Uri insertEpisode(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Uri insertEnclosure(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public int updatePodcastDir(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int updatePodcastItem(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int updateEpisodeDir(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int updateEpisodeItem(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int updateEnclosureDir(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int updateEnclosureItem(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deletePodcastDir(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deletePodcastItem(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deleteEpisodeDir(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deleteEpisodeItem(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deleteEnclosureDir(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int deleteEnclosureItem(Uri uri, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }
