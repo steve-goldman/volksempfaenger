@@ -3,12 +3,15 @@ package net.x4a42.volksempfaenger.ui;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
@@ -61,6 +64,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		PlayerListener {
 
 	private static final String TAG = "ViewEpisodeActivity";
+
+	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
 	private SeekBar seekBar;
 	private TextView textDuration;
@@ -212,9 +217,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
+
 		case android.R.id.home:
 			finish();
 			return true;
+
 		case R.id.item_download:
 			if (getEnclosureId() != 0) {
 				// there is an preferred enclosure
@@ -250,11 +257,10 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		case R.id.item_mark_listened:
 			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
-			// TODO!
-			// dbHelper.getWritableDatabase().update(
-			// DatabaseHelper.Episode._TABLE, values,
-			// String.format("%s = ?", DatabaseHelper.Episode.ID),
-			// new String[] { String.valueOf(getEpisodeId()) });
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI, id),
+					values, null, null);
 			return true;
 
 		case R.id.item_delete:
@@ -263,23 +269,18 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			if (f.isFile()) {
 				f.delete();
 			}
-			// TODO!
-			// values.put(DatabaseHelper.Enclosure.FILE, (String) null);
-			// dbHelper.getReadableDatabase().update(
-			// DatabaseHelper.Enclosure._TABLE, values,
-			// String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-			// new String[] { String.valueOf(getEnclosureId()) });
-			// values.clear();
-			// values.put(DatabaseHelper.Episode.STATE,
-			// DatabaseHelper.Episode.STATE_LISTENED);
-			// dbHelper.getReadableDatabase().update(
-			// DatabaseHelper.Episode._TABLE, values,
-			// String.format("%s = ?", DatabaseHelper.Episode.ID),
-			// new String[] { String.valueOf(getEpisodeId()) });
+			values.put(Episode.DOWNLOAD_ID, 0);
+			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI,
+							getEpisodeId()), values, null, null);
+			// TODO remove from DownloadManager
 			return true;
 
 		default:
 			return BaseActivity.handleGlobalMenu(this, item);
+
 		}
 	}
 
@@ -287,13 +288,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		if (v == null || v.length == 0) {
 			v = new long[] { getEnclosureId() };
 		} else if (v.length == 1) {
-			// TODO!
-			// ContentValues values = new ContentValues();
-			// values.put(DatabaseHelper.Episode.ENCLOSURE, v[0]);
-			// dbHelper.getWritableDatabase().update(
-			// DatabaseHelper.Episode._TABLE, values,
-			// String.format("%s = ?", DatabaseHelper.Episode.ID),
-			// new String[] { String.valueOf(getEpisodeId()) });
+			ContentValues values = new ContentValues();
+			values.put(Episode.ENCLOSURE_ID, v[0]);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI,
+							getEpisodeId()), values, null, null);
 		}
 		Intent intent = new Intent(this, DownloadService.class);
 		intent.putExtra("id", new long[] { getEpisodeId() });
@@ -470,23 +470,23 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private List<EnclosureSimple> getEnclosures() {
-		// TODO!
-		// Cursor cursor = dbHelper.getReadableDatabase().query(
-		// DatabaseHelper.Enclosure._TABLE,
-		// new String[] { DatabaseHelper.Enclosure.ID,
-		// DatabaseHelper.Enclosure.URL },
-		// String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-		// new String[] { String.valueOf(id) }, null, null, null);
-		// List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
-		// while (cursor.moveToNext()) {
-		// EnclosureSimple enclosure = new EnclosureSimple();
-		// enclosure.id = cursor.getLong(cursor
-		// .getColumnIndex(DatabaseHelper.Enclosure.ID));
-		// enclosure.url = cursor.getString(cursor
-		// .getColumnIndex(DatabaseHelper.Enclosure.URL));
-		// enclosures.add(enclosure);
-		// }
-		// cursor.close();
+		Cursor cursor;
+		{
+			String[] projection = { Enclosure._ID, Enclosure.URL };
+			cursor = getContentResolver()
+					.query(VolksempfaengerContentProvider.ENCLOSURE_URI,
+							projection, WHERE_EPISODE_ID,
+							new String[] { String.valueOf(id) }, null);
+		}
+		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
+		while (cursor.moveToNext()) {
+			EnclosureSimple enclosure = new EnclosureSimple();
+			enclosure.id = cursor.getLong(cursor.getColumnIndex(Enclosure._ID));
+			enclosure.url = cursor.getString(cursor
+					.getColumnIndex(Enclosure.URL));
+			enclosures.add(enclosure);
+		}
+		cursor.close();
 		return enclosures;
 	}
 
