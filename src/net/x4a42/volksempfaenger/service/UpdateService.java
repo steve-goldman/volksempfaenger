@@ -114,9 +114,9 @@ public class UpdateService extends IntentService {
 				values.put(Episode.DATE, Utils.toUnixTimestamp(item.getDate()));
 				values.put(Episode.URL, item.getUrl());
 				values.put(Episode.DESCRIPTION, item.getDescription());
-				values.put(Episode.STATUS,
-						extraFirstSync ? Constants.EPISODE_STATE_LISTENED
-								: Constants.EPISODE_STATE_NEW);
+				if (extraFirstSync) {
+					values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+				}
 
 				Uri episodeUri;
 				long episodeId;
