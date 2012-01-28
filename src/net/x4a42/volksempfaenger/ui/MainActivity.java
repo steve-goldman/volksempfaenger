@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import net.x4a42.volksempfaenger.R;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends FragmentActivity {
 
+	private static final String TAG = "MainActivity";
 	private static List<FragmentTab> fragmentTabs;
 	private Menu menu;
 
@@ -33,8 +37,6 @@ public class MainActivity extends FragmentActivity {
 				SubscriptionGridFragment.class));
 		fragmentTabs.add(new FragmentTab("downloads",
 				R.string.title_tab_downloads, DownloadListFragment.class));
-		fragmentTabs.add(new FragmentTab("buttons", R.string.title_tab_buttons,
-				VolksempfaengerFragment.class));
 	}
 
 	private ViewPager viewpager;
@@ -149,6 +151,20 @@ public class MainActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		this.menu = menu;
 		BaseActivity.addGlobalMenu(this, menu);
+		{
+			// Add debug menu item if
+			// /sdcard/Android/data/net.x4a42.volksempfaenger/debug/ exists
+			File debugDir = new File(getExternalFilesDir(null).getParent(),
+					"debug");
+			if (debugDir.isDirectory()) {
+				MenuItem item = menu.add("Debug");
+				item.setIntent(new Intent(this, DebugActivity.class));
+				Log.d(TAG, "Found " + debugDir + ". Enabling debug mode.");
+			} else {
+				Log.d(TAG, "Did not find " + debugDir
+						+ ". Disabling debug mode.");
+			}
+		}
 		return true;
 	}
 
