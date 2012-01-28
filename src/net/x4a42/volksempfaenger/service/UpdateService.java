@@ -52,8 +52,7 @@ public class UpdateService extends IntentService {
 
 		Cursor cursor;
 		{
-			String[] projection = new String[] { Podcast._ID, Podcast.TITLE,
-					Podcast.FEED };
+			String[] projection = { Podcast._ID, Podcast.TITLE, Podcast.FEED };
 
 			if (podcast != null) {
 				// Sync a single podcast
