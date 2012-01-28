@@ -1,7 +1,9 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.Error;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
@@ -10,12 +12,11 @@ import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,13 +30,6 @@ import android.widget.Toast;
 public class AddSubscriptionActivity extends BaseActivity implements
 		OnClickListener {
 
-	public static final int RESULT_SUCCEEDED = 0;
-	public static final int RESULT_DOWNLOAD_FAILED = 1;
-	public static final int RESULT_XML_EXCEPTION = 2;
-	public static final int RESULT_IO_EXCEPTION = 3;
-	public static final int RESULT_DUPLICATE = 4;
-
-	private DatabaseHelper dbHelper;
 	private EditText editTextUrl;
 	private Button buttonAdd;
 	private Button buttonCancel;
@@ -55,8 +49,6 @@ public class AddSubscriptionActivity extends BaseActivity implements
 
 		buttonAdd.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
-
-		dbHelper = DatabaseHelper.getInstance(this);
 	}
 
 	public void onClick(View v) {
@@ -76,9 +68,14 @@ public class AddSubscriptionActivity extends BaseActivity implements
 		new AddFeedTask().execute(feedUrl);
 	}
 
-	public class AddFeedTask extends AsyncTask<String, Void, Integer> {
+	private static enum AddFeedTaskResult {
+		SUCCEEDED, DOWNLOAD_FAILED, XML_EXCEPTION, IO_EXCEPTION, DUPLICATE, INSERT_ERROR
+	}
+
+	public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 
 		private ProgressDialog dialog;
+		private Uri newPodcastUri;
 
 		@Override
 		protected void onPreExecute() {
@@ -88,7 +85,7 @@ public class AddSubscriptionActivity extends BaseActivity implements
 		}
 
 		@Override
-		protected Integer doInBackground(String... params) {
+		protected AddFeedTaskResult doInBackground(String... params) {
 			String feedUrl = params[0];
 			FeedDownloader fd = new FeedDownloader(AddSubscriptionActivity.this);
 			Feed feed;
@@ -96,80 +93,70 @@ public class AddSubscriptionActivity extends BaseActivity implements
 				feed = fd.fetchFeed(feedUrl);
 			} catch (NetException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
-				return RESULT_DOWNLOAD_FAILED;
+				return AddFeedTaskResult.DOWNLOAD_FAILED;
 			} catch (FeedParserException e) {
 				Log.i(getClass().getSimpleName(), "Exception handled", e);
-				return RESULT_XML_EXCEPTION;
+				return AddFeedTaskResult.XML_EXCEPTION;
 			}
-
-			// Open database
-			SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.Podcast.TITLE, feed.getTitle());
-			values.put(DatabaseHelper.Podcast.DESCRIPTION,
-					feed.getDescription());
-			values.put(DatabaseHelper.Podcast.URL, feedUrl);
-			values.put(DatabaseHelper.Podcast.WEBSITE, feed.getWebsite());
+			values.put(Podcast.TITLE, feed.getTitle());
+			values.put(Podcast.DESCRIPTION, feed.getDescription());
+			values.put(Podcast.FEED, feedUrl);
+			values.put(Podcast.WEBSITE, feed.getWebsite());
 
 			try {
-				// Try to add the podcast to the database
-				long podcastId = db.insertOrThrow(
-						DatabaseHelper.Podcast._TABLE, null, values);
-				Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
-						UpdateService.class);
-				updatePodcast.putExtra("id", new long[] { podcastId });
-				updatePodcast.putExtra("first_sync", true);
-				startService(updatePodcast);
-				// Succeeded
-				String feedImage = feed.getImage();
-				if (feedImage != null) {
-					// Try to download podcast logo
-					LogoDownloader ld = new LogoDownloader(
-							AddSubscriptionActivity.this);
-					try {
-						ld.fetchLogo(feedImage, podcastId);
-					} catch (Exception e) {
-						// Who cares?
-					}
-				}
-				return RESULT_SUCCEEDED;
-			} catch (SQLException e) {
-				// Something failed
-				if (e instanceof SQLiteConstraintException) {
-					// UNIQUE contraint on column url failed
-					return RESULT_DUPLICATE;
-				} else {
-					// Some terrible failure happended
-					Log.wtf(getClass().getName(), e);
+				newPodcastUri = getContentResolver().insert(
+						VolksempfaengerContentProvider.PODCAST_URI, values);
+			} catch (Error.DuplicateException e) {
+				return AddFeedTaskResult.DUPLICATE;
+			} catch (Error.InsertException e) {
+				return AddFeedTaskResult.INSERT_ERROR;
+			}
+
+			Intent updatePodcast = new Intent(AddSubscriptionActivity.this,
+					UpdateService.class);
+			updatePodcast.setData(newPodcastUri);
+			updatePodcast.putExtra("first_sync", true);
+			startService(updatePodcast);
+
+			String feedImage = feed.getImage();
+			if (feedImage != null) {
+				// Try to download podcast logo
+				LogoDownloader ld = new LogoDownloader(
+						AddSubscriptionActivity.this);
+				try {
+					ld.fetchLogo(feedImage, ContentUris.parseId(newPodcastUri));
+				} catch (Exception e) {
+					// Who cares?
 				}
 			}
-			return null;
+			return AddFeedTaskResult.SUCCEEDED;
 		}
 
 		@Override
-		protected void onPostExecute(Integer result) {
+		protected void onPostExecute(AddFeedTaskResult result) {
 			dialog.dismiss();
 
 			String message = null;
 
 			switch (result) {
-			case RESULT_SUCCEEDED:
+			case SUCCEEDED:
 				Toast.makeText(AddSubscriptionActivity.this,
 						R.string.message_podcast_successfully_added,
 						Toast.LENGTH_SHORT).show();
 				finish();
 				return;
-			case RESULT_DOWNLOAD_FAILED:
+			case DOWNLOAD_FAILED:
 				message = getString(R.string.message_podcast_feed_download_failed);
 				break;
-			case RESULT_XML_EXCEPTION:
+			case XML_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_parsing_failed);
 				break;
-			case RESULT_IO_EXCEPTION:
+			case IO_EXCEPTION:
 				message = getString(R.string.message_podcast_feed_io_exception);
 				break;
-			case RESULT_DUPLICATE:
+			case DUPLICATE:
 				message = getString(R.string.message_podcast_already_added);
 				break;
 			}

@@ -2,19 +2,20 @@ package net.x4a42.volksempfaenger.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Vector;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -43,7 +45,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private Notification notification;
 	private AudioManager audioManager;
 	private AudioNoisyReceiver audioNoisyReceiver;
-	private DatabaseHelper dbHelper;
 	private Cursor cursor;
 
 	private Handler saveHandler;
@@ -54,79 +55,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private PlayerState playerState = PlayerState.IDLE;
 
-	/**
-	 * Returns the ID of the currently playing episode.
-	 * 
-	 * @return episode ID or 0 if nothing is playing
-	 */
-	public long getEpisodeId() {
-		if (cursor != null) {
-			return cursor.getLong(cursor
-					.getColumnIndex(DatabaseHelper.ExtendedEpisode.ID));
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Returns the ID of the currently playing enclosure.
-	 * 
-	 * @return enclosure ID or 0 if nothing is playing
-	 */
-	public long getEnclosureId() {
-		if (cursor != null) {
-			return cursor
-					.getLong(cursor
-							.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Returns the ID of the currently playing podcast.
-	 * 
-	 * @return podcast ID or 0 if nothing is playing
-	 */
-	public long getPodcastId() {
-		if (cursor != null) {
-			return cursor.getLong(cursor
-					.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Returns the title of the currently playing podcast.
-	 * 
-	 * @return podcast title or null if nothing is playing
-	 */
-	public String getPodcastTitle() {
-		if (cursor != null) {
-			return cursor
-					.getString(cursor
-							.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Returns the title of the currently playing episode.
-	 * 
-	 * @return episode title or null if nothing is playing
-	 */
-	public String getEpisodeTitle() {
-		if (cursor != null) {
-			return cursor
-					.getString(cursor
-							.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
-		} else {
-			return null;
-		}
-	}
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -135,7 +63,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		audioNoisyReceiver = new AudioNoisyReceiver();
 		registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-		dbHelper = DatabaseHelper.getInstance(this);
 		saveHandler = new Handler();
 	}
 
@@ -173,44 +100,35 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		player.prepareAsync();
 	}
 
-	public void playEpisode(long episodeId) throws IllegalArgumentException,
+	public void playEpisode(Uri episode) throws IllegalArgumentException,
 			IOException {
-		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedEpisode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(episodeId) }, null, null, null);
+		cursor = getContentResolver().query(
+				episode,
+				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
+						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
+						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_FILE,
+						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE },
+				null, null, null);
+
 		if (!cursor.moveToFirst()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
 		File enclosureFile;
-		try {
-			enclosureFile = new File(
-					new URI(
-							cursor.getString(cursor
-									.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE))));
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Episode not found");
-		}
+		enclosureFile = getDownloadFile();
 		if (!enclosureFile.isFile()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
 		playFile(enclosureFile.getAbsolutePath());
 		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.Episode.STATE,
-				DatabaseHelper.Episode.STATE_LISTENING);
+		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);
 	}
 
 	private void updateEpisode(ContentValues values) {
-		dbHelper.getWritableDatabase().update(DatabaseHelper.Episode._TABLE,
-				values, String.format("%s = ?", DatabaseHelper.Episode.ID),
-				new String[] { String.valueOf(getEpisodeId()) });
-	}
-
-	private void updateEnclosure(ContentValues values) {
-		dbHelper.getWritableDatabase().update(DatabaseHelper.Enclosure._TABLE,
-				values, String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-				new String[] { String.valueOf(getEnclosureId()) });
+		getContentResolver().update(
+				ContentUris.withAppendedId(
+						VolksempfaengerContentProvider.EPISODE_URI,
+						getEpisodeId()), values, null, null);
 	}
 
 	public void play() {
@@ -447,8 +365,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private void savePosition(long position) {
 		ContentValues values = new ContentValues();
-		values.put(DatabaseHelper.Enclosure.DURATION_LISTENED, position);
-		updateEnclosure(values);
+		values.put(Episode.DURATION_LISTENED, position);
+		updateEpisode(values);
 	}
 
 	private Runnable savePositionTask = new Runnable() {
@@ -457,4 +375,88 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			saveHandler.postDelayed(this, 500);
 		}
 	};
+
+	/**
+	 * Returns the ID of the currently playing episode.
+	 * 
+	 * @return episode ID or 0 if nothing is playing
+	 */
+	public long getEpisodeId() {
+		if (cursor != null) {
+			return cursor.getLong(cursor.getColumnIndex(Episode._ID));
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the ID of the currently playing enclosure.
+	 * 
+	 * @return enclosure ID or 0 if nothing is playing
+	 */
+	public long getEnclosureId() {
+		if (cursor != null) {
+			return cursor.getLong(cursor.getColumnIndex(Episode.ENCLOSURE_ID));
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the ID of the currently playing podcast.
+	 * 
+	 * @return podcast ID or 0 if nothing is playing
+	 */
+	public long getPodcastId() {
+		if (cursor != null) {
+			return cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID));
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the title of the currently playing podcast.
+	 * 
+	 * @return podcast title or null if nothing is playing
+	 */
+	public String getPodcastTitle() {
+		if (cursor != null) {
+			return cursor.getString(cursor
+					.getColumnIndex(Episode.PODCAST_TITLE));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the title of the currently playing episode.
+	 * 
+	 * @return episode title or null if nothing is playing
+	 */
+	public String getEpisodeTitle() {
+		if (cursor != null) {
+			return cursor.getString(cursor.getColumnIndex(Episode.TITLE));
+		} else {
+			return null;
+		}
+	}
+
+	private File getDownloadFile() {
+		Uri uri = getDownloadUri();
+		if (uri == null) {
+			return null;
+		}
+		return new File(uri.getPath());
+	}
+
+	private Uri getDownloadUri() {
+		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_URI);
+		if (!cursor.isNull(cursorIndex)) {
+			return Uri.parse(cursor.getString(cursorIndex));
+		} else {
+			return null;
+		}
+	}
+
 }
