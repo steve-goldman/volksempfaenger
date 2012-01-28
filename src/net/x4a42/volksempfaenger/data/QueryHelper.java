@@ -14,12 +14,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 
 public class QueryHelper extends ContentProviderHelper {
 
-	private static final String PODCAST_WHERE_ID = PODCAST_TABLE + "."
-			+ Podcast._ID + "=?";
-	private static final String EPISODE_WHERE_ID = EPISODE_TABLE + "."
-			+ Episode._ID + "=?";
-	private static final String ENCLOSURE_WHERE_ID = ENCLOSURE_TABLE + "."
-			+ Enclosure._ID + "=?";
 	private static final String EPISODE_JOIN_PODCAST = "INNER JOIN podcast ON episode.podcast_id = podcast._id";
 	private static final String EPISODE_JOIN_ENCLOSURE = "LEFT OUTER JOIN enclosure ON episode.enclosure_id = enclosure._id";
 	private static final Map<String, String> podcastColumnMap;

@@ -9,40 +9,49 @@ public class UpdateHelper extends ContentProviderHelper {
 		super(dbHelper);
 	}
 
+	private int update(String table, ContentValues values, String selection,
+			String[] selectionArgs) {
+		return getWritableDatabase().update(table, values, selection,
+				selectionArgs);
+	}
+
+	// Podcast
+
 	public int updatePodcastDir(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return update(PODCAST_TABLE, values, selection, selectionArgs);
 	}
 
 	public int updatePodcastItem(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return updatePodcastDir(uri, values, PODCAST_WHERE_ID,
+				selectionArray(uri));
 	}
+
+	// Episode
 
 	public int updateEpisodeDir(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return update(EPISODE_TABLE, values, selection, selectionArgs);
 	}
 
 	public int updateEpisodeItem(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return updateEpisodeDir(uri, values, EPISODE_WHERE_ID,
+				selectionArray(uri));
 	}
+
+	// Enclosure
 
 	public int updateEnclosureDir(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return update(ENCLOSURE_TABLE, values, selection, selectionArgs);
 	}
 
 	public int updateEnclosureItem(Uri uri, ContentValues values,
 			String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return updateEnclosureDir(uri, values, ENCLOSURE_WHERE_ID,
+				selectionArray(uri));
 	}
-	
+
 }
