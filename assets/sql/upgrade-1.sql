@@ -47,6 +47,7 @@ CREATE TABLE "enclosure" (
 	"mime" TEXT,
 	"size" INTEGER,
 	UNIQUE ("episode_id", "url")
+);
 INSERT INTO "enclosure" ("_id", "episode_id", "title", "url", "mime", "size")
 SELECT "_id", "episode_id", "title", "url", "mime", "size" FROM "enclosure_backup";
 DROP TABLE "enclosure_backup";
