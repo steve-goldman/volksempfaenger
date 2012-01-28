@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.data;
 
-
 public class DeleteHelper extends ContentProviderHelper {
 
 	protected DeleteHelper(DatabaseHelper dbHelper) {

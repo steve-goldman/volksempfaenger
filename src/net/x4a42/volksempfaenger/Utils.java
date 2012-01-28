@@ -80,8 +80,7 @@ public class Utils {
 	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId) {
 		File podcastLogoFile = getPodcastLogoFile(context, podcastId);
 		if (podcastLogoFile.isFile()) {
-			return BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
+			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
 		} else {
 			return null;
 		}

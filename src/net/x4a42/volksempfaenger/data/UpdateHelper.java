@@ -16,34 +16,32 @@ public class UpdateHelper extends ContentProviderHelper {
 
 	// Podcast
 
-	public int updatePodcastDir(ContentValues values,
-			String selection, String[] selectionArgs) {
+	public int updatePodcastDir(ContentValues values, String selection,
+			String[] selectionArgs) {
 		return update(PODCAST_TABLE, values, selection, selectionArgs);
 	}
 
 	public int updatePodcastItem(long id, ContentValues values,
 			String selection, String[] selectionArgs) {
-		return updatePodcastDir(values, PODCAST_WHERE_ID,
-				selectionArray(id));
+		return updatePodcastDir(values, PODCAST_WHERE_ID, selectionArray(id));
 	}
 
 	// Episode
 
-	public int updateEpisodeDir(ContentValues values,
-			String selection, String[] selectionArgs) {
+	public int updateEpisodeDir(ContentValues values, String selection,
+			String[] selectionArgs) {
 		return update(EPISODE_TABLE, values, selection, selectionArgs);
 	}
 
 	public int updateEpisodeItem(long id, ContentValues values,
 			String selection, String[] selectionArgs) {
-		return updateEpisodeDir(values, EPISODE_WHERE_ID,
-				selectionArray(id));
+		return updateEpisodeDir(values, EPISODE_WHERE_ID, selectionArray(id));
 	}
 
 	// Enclosure
 
-	public int updateEnclosureDir(ContentValues values,
-			String selection, String[] selectionArgs) {
+	public int updateEnclosureDir(ContentValues values, String selection,
+			String[] selectionArgs) {
 		return update(ENCLOSURE_TABLE, values, selection, selectionArgs);
 	}
 
