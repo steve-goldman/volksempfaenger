@@ -77,4 +77,8 @@ public class EnclosureDownloader extends Downloader {
 		return a;
 	}
 
+	public DownloadManager getDownloadManager() {
+		return dm;
+	}
+
 }
