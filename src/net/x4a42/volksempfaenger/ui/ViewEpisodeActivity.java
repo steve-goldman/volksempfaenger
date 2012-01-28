@@ -134,6 +134,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		setIntent(intent);
+
 		// Check if there is an ID
 		Bundle extras = intent.getExtras();
 		if (extras == null) {
@@ -145,10 +147,17 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			finish();
 			return;
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 
 		if (cursor != null) {
+			stopManagingCursor(cursor);
 			cursor.close();
 		}
+
 		cursor = managedQuery(ContentUris.withAppendedId(
 				VolksempfaengerContentProvider.EPISODE_URI, id), new String[] {
 				Episode._ID, Episode.TITLE, Episode.DESCRIPTION,
@@ -159,12 +168,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				Episode.DOWNLOAD_FILE, Episode.DOWNLOAD_STATUS,
 				Episode.DOWNLOAD_TOTAL, Episode.ENCLOSURE_ID }, null, null,
 				null);
-		cursor.moveToFirst();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 
 		if (!cursor.moveToFirst()) {
 			// ID does not exist
@@ -580,9 +583,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			setButtonPlay();
 			break;
 		case PREPARE:
-			service.play();
 			setPlaying();
-			service.seekTo(getDurationListened());
 			break;
 		case STOP:
 			// TODO clean up
