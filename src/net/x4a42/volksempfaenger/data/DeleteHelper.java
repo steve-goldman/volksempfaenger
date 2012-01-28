@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.data;
 
-import android.net.Uri;
 
 public class DeleteHelper extends ContentProviderHelper {
 
@@ -12,34 +11,31 @@ public class DeleteHelper extends ContentProviderHelper {
 		return getWritableDatabase().delete(table, selection, selectionArgs);
 	}
 
-	public int deletePodcastDir(Uri uri, String selection,
-			String[] selectionArgs) {
+	public int deletePodcastDir(String selection, String[] selectionArgs) {
 		return delete(PODCAST_TABLE, selection, selectionArgs);
 	}
 
-	public int deletePodcastItem(Uri uri, String selection,
+	public int deletePodcastItem(long id, String selection,
 			String[] selectionArgs) {
-		return deletePodcastDir(null, PODCAST_WHERE_ID, selectionArray(uri));
+		return deletePodcastDir(PODCAST_WHERE_ID, selectionArray(id));
 	}
 
-	public int deleteEpisodeDir(Uri uri, String selection,
-			String[] selectionArgs) {
+	public int deleteEpisodeDir(String selection, String[] selectionArgs) {
 		return delete(EPISODE_TABLE, selection, selectionArgs);
 	}
 
-	public int deleteEpisodeItem(Uri uri, String selection,
+	public int deleteEpisodeItem(long id, String selection,
 			String[] selectionArgs) {
-		return deleteEpisodeDir(null, EPISODE_WHERE_ID, selectionArray(uri));
+		return deleteEpisodeDir(EPISODE_WHERE_ID, selectionArray(id));
 	}
 
-	public int deleteEnclosureDir(Uri uri, String selection,
-			String[] selectionArgs) {
+	public int deleteEnclosureDir(String selection, String[] selectionArgs) {
 		return delete(ENCLOSURE_TABLE, selection, selectionArgs);
 	}
 
-	public int deleteEnclosureItem(Uri uri, String selection,
+	public int deleteEnclosureItem(long id, String selection,
 			String[] selectionArgs) {
-		return deleteEnclosureDir(null, ENCLOSURE_WHERE_ID, selectionArray(uri));
+		return deleteEnclosureDir(ENCLOSURE_WHERE_ID, selectionArray(id));
 	}
 
 }

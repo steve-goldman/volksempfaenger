@@ -117,7 +117,7 @@ public class QueryHelper extends ContentProviderHelper {
 
 	public Cursor queryPodcastItem(long podcastId, String[] projection) {
 		return queryPodcastDir(projection, PODCAST_WHERE_ID,
-				new String[] { String.valueOf(podcastId) }, null);
+				selectionArray(podcastId), null);
 	}
 
 	public Cursor queryEpisodeDir(String[] projection, String selection,
@@ -213,7 +213,7 @@ public class QueryHelper extends ContentProviderHelper {
 
 	public Cursor queryEpisodeItem(long episodeId, String[] projection) {
 		return queryEpisodeDir(projection, EPISODE_WHERE_ID,
-				new String[] { String.valueOf(episodeId) }, null);
+				selectionArray(episodeId), null);
 	}
 
 	public Cursor queryEnclosureDir(String[] projection, String selection,
@@ -224,7 +224,7 @@ public class QueryHelper extends ContentProviderHelper {
 
 	public Cursor queryEnclosureItem(long enclosureId, String[] projection) {
 		return queryPodcastDir(projection, ENCLOSURE_WHERE_ID,
-				new String[] { String.valueOf(enclosureId) }, null);
+				selectionArray(enclosureId), null);
 	}
 
 }

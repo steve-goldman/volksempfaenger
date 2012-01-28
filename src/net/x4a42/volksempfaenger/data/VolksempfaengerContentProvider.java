@@ -49,6 +49,10 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		return true;
 	}
 
+	private static long parseId(Uri uri) {
+		return ContentUris.parseId(uri);
+	}
+
 	private Mime getTypeMime(Uri uri) {
 		if (!AUTHORITY.equals(uri.getAuthority())) {
 			return null;
@@ -166,28 +170,28 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		int rowsAffected = 0;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			rowsAffected = updateHelper.updatePodcastDir(uri, values,
-					selection, selectionArgs);
+			rowsAffected = updateHelper.updatePodcastDir(values, selection,
+					selectionArgs);
 			break;
 		case PODCAST_ITEM:
-			rowsAffected = updateHelper.updatePodcastItem(uri, values,
+			rowsAffected = updateHelper.updatePodcastItem(parseId(uri), values,
 					selection, selectionArgs);
 			break;
 		case EPISODE_DIR:
-			rowsAffected = updateHelper.updateEpisodeDir(uri, values,
-					selection, selectionArgs);
+			rowsAffected = updateHelper.updateEpisodeDir(values, selection,
+					selectionArgs);
 			break;
 		case EPISODE_ITEM:
-			rowsAffected = updateHelper.updateEpisodeItem(uri, values,
+			rowsAffected = updateHelper.updateEpisodeItem(parseId(uri), values,
 					selection, selectionArgs);
 			break;
 		case ENCLOSURE_DIR:
-			rowsAffected = updateHelper.updateEnclosureDir(uri, values,
-					selection, selectionArgs);
+			rowsAffected = updateHelper.updateEnclosureDir(values, selection,
+					selectionArgs);
 			break;
 		case ENCLOSURE_ITEM:
-			rowsAffected = updateHelper.updateEnclosureItem(uri, values,
-					selection, selectionArgs);
+			rowsAffected = updateHelper.updateEnclosureItem(parseId(uri),
+					values, selection, selectionArgs);
 			break;
 		}
 		if (rowsAffected > 0) {
@@ -201,28 +205,28 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		int rowsAffected = 0;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			rowsAffected = deleteHelper.deletePodcastDir(uri, selection,
+			rowsAffected = deleteHelper.deletePodcastDir(selection,
 					selectionArgs);
 			break;
 		case PODCAST_ITEM:
-			rowsAffected = deleteHelper.deletePodcastItem(uri, selection,
-					selectionArgs);
+			rowsAffected = deleteHelper.deletePodcastItem(parseId(uri),
+					selection, selectionArgs);
 			break;
 		case EPISODE_DIR:
-			rowsAffected = deleteHelper.deleteEpisodeDir(uri, selection,
+			rowsAffected = deleteHelper.deleteEpisodeDir(selection,
 					selectionArgs);
 			break;
 		case EPISODE_ITEM:
-			rowsAffected = deleteHelper.deleteEpisodeItem(uri, selection,
-					selectionArgs);
+			rowsAffected = deleteHelper.deleteEpisodeItem(parseId(uri),
+					selection, selectionArgs);
 			break;
 		case ENCLOSURE_DIR:
-			rowsAffected = deleteHelper.deleteEnclosureDir(uri, selection,
+			rowsAffected = deleteHelper.deleteEnclosureDir(selection,
 					selectionArgs);
 			break;
 		case ENCLOSURE_ITEM:
-			rowsAffected = deleteHelper.deleteEnclosureItem(uri, selection,
-					selectionArgs);
+			rowsAffected = deleteHelper.deleteEnclosureItem(parseId(uri),
+					selection, selectionArgs);
 			break;
 		}
 		if (rowsAffected > 0) {
