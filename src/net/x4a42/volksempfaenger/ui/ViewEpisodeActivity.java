@@ -152,7 +152,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION,
 				Episode.DOWNLOAD_ID, Episode.DOWNLOAD_DONE,
 				Episode.DOWNLOAD_FILE, Episode.DOWNLOAD_STATUS,
-				Episode.DOWNLOAD_TOTAL }, null, null, null);
+				Episode.DOWNLOAD_TOTAL, Episode.ENCLOSURE_ID }, null, null,
+				null);
 		cursor.moveToFirst();
 	}
 
