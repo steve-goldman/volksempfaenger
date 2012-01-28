@@ -4,16 +4,19 @@ import java.io.File;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,7 +45,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 	private Button buttonCancel;
 
 	private long id;
-	private DatabaseHelper dbHelper;
+	private Uri uri;
+	private Cursor cursor;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,8 @@ public class EditSubscriptionActivity extends BaseActivity implements
 			finish();
 			return;
 		}
+		uri = ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.PODCAST_URI, id);
 
 		setContentView(R.layout.edit_subscription);
 
@@ -73,37 +79,31 @@ public class EditSubscriptionActivity extends BaseActivity implements
 		buttonSave.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 
-		dbHelper = DatabaseHelper.getInstance(this);
+		{
+			String[] projection = null; // TODO
+			cursor = managedQuery(uri, projection, null, null, null);
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		Cursor c = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.Podcast._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.Podcast.ID),
-				new String[] { String.valueOf(id) }, null, null, null, "1");
-
-		if (c.getCount() == 0) {
+		if (!cursor.moveToFirst()) {
 			// ID does not exist
 			finish();
 			return;
 		}
 
-		c.moveToFirst();
-
-		podcastTitle.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.TITLE)));
-		podcastUrl.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.URL)));
-		podcastDescription.setText(c.getString(c
-				.getColumnIndex(DatabaseHelper.Podcast.DESCRIPTION)));
+		podcastTitle.setText(cursor.getString(cursor
+				.getColumnIndex(Podcast.TITLE)));
+		podcastUrl
+				.setText(cursor.getString(cursor.getColumnIndex(Podcast.FEED)));
+		podcastDescription.setText(cursor.getString(cursor
+				.getColumnIndex(Podcast.DESCRIPTION)));
 
 		registerForContextMenu(podcastLogo);
 		reloadLogo();
-
-		c.close();
 	}
 
 	@Override
@@ -152,17 +152,13 @@ public class EditSubscriptionActivity extends BaseActivity implements
 			return;
 		case R.id.button_save:
 			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.Podcast.TITLE, podcastTitle.getText()
+			values.put(Podcast.TITLE, podcastTitle.getText().toString());
+			values.put(Podcast.FEED, podcastUrl.getText().toString());
+			values.put(Podcast.DESCRIPTION, podcastDescription.getText()
 					.toString());
-			values.put(DatabaseHelper.Podcast.URL, podcastUrl.getText()
-					.toString());
-			values.put(DatabaseHelper.Podcast.DESCRIPTION, podcastDescription
-					.getText().toString());
 			try {
-				int result = dbHelper.getWritableDatabase().update(
-						DatabaseHelper.Podcast._TABLE, values,
-						String.format("%s = ?", DatabaseHelper.Podcast.ID),
-						new String[] { String.valueOf(id) });
+				int result = getContentResolver().update(uri, values, null,
+						null);
 				if (result > 0) {
 					finish();
 					return;

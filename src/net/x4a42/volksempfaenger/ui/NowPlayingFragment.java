@@ -2,13 +2,15 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.OnPlayerEventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlayerEvent;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -34,14 +36,10 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	private TextView podcast;
 	private ImageView playpause;
 	private PlaybackService service;
-	private DatabaseHelper dbHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		dbHelper = DatabaseHelper.getInstance(getActivity());
-
 		onServiceDisconnected(null);
 	}
 
@@ -123,23 +121,27 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 		if (service.isPlaying()) {
 			episodeId = service.getCurrentEpisode();
-			Cursor cursor = dbHelper.getReadableDatabase().query(
-					DatabaseHelper.ExtendedEpisode._TABLE, null,
-					String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-					new String[] { String.valueOf(episodeId) }, null, null,
-					null);
+
+			Cursor cursor;
+			{
+				String[] projection = { Episode.TITLE, Episode.PODCAST_ID,
+						Episode.PODCAST_TITLE };
+				cursor = getActivity().managedQuery(
+						ContentUris.withAppendedId(
+								VolksempfaengerContentProvider.EPISODE_URI,
+								episodeId), projection, null, null, null);
+			}
+
 			if (!cursor.moveToFirst()) {
 				throw new IllegalArgumentException("Episode not found");
 			}
 
 			episode.setText(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE)));
+					.getColumnIndex(Episode.TITLE)));
 			podcast.setText(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE)));
-			logo.setImageBitmap(Utils.getPodcastLogoBitmap(
-					getActivity(),
-					cursor.getLong(cursor
-							.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID))));
+					.getColumnIndex(Episode.PODCAST_TITLE)));
+			logo.setImageBitmap(Utils.getPodcastLogoBitmap(getActivity(),
+					cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID))));
 
 			getView().setVisibility(View.VISIBLE);
 		} else {
