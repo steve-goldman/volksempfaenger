@@ -2,8 +2,7 @@ package net.x4a42.volksempfaenger.feedparser;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -16,7 +15,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class OpmlParser {
 
-	public static List<String> parse(Reader reader) {
+	public static SubscriptionTree parse(Reader reader) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser;
 		OpmlHandler handler = new OpmlHandler();
@@ -24,7 +23,7 @@ public class OpmlParser {
 		try {
 			parser = factory.newSAXParser();
 			parser.parse(new InputSource(reader), handler);
-			return handler.getUrls();
+			return removeEmptyFolders(handler.getTree());
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,14 +37,27 @@ public class OpmlParser {
 		return null;
 	}
 
+	private static SubscriptionTree removeEmptyFolders(SubscriptionTree tree) {
+		return tree; // TODO
+	}
+
 	private static class OpmlHandler extends DefaultHandler {
-		private LinkedList<String> urls = new LinkedList<String>();
+		private SubscriptionTree tree = new SubscriptionTree("root");
+		private Stack<SubscriptionTree> path = new Stack<SubscriptionTree>();
+		private Stack<Integer> depthStack = new Stack<Integer>();
+		private Integer depth = 0;
+
+		public OpmlHandler() {
+			super();
+			path.push(tree);
+		}
 
 		private final static String OPML_OUTLINE = "outline";
 		private final static String OPML_XML_URL = "xmlUrl";
+		private final static String OPML_TITLE = "title";
 
-		public List<String> getUrls() {
-			return urls;
+		public SubscriptionTree getTree() {
+			return tree;
 		}
 
 		@Override
@@ -57,11 +69,29 @@ public class OpmlParser {
 				return;
 			}
 
-			if (localName == OPML_OUTLINE) {
+			if (localName.equals(OPML_OUTLINE)) {
 				String url = atts.getValue(OPML_XML_URL);
+				String title = atts.getValue(OPML_TITLE);
+				SubscriptionTree newChild;
 				if (url != null) {
-					urls.add(url);
+					newChild = new SubscriptionTree(title, url);
+					path.peek().addChild(newChild);
+				} else if (title != null) {
+					newChild = new SubscriptionTree(title);
+					path.peek().addChild(newChild);
+					path.push(newChild);
+					depthStack.push(depth);
 				}
+			}
+			depth++;
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName) {
+			depth--;
+			if(!depthStack.isEmpty() && depthStack.peek().equals(depth)) {
+				depthStack.pop();
+				path.pop();
 			}
 		}
 	}
