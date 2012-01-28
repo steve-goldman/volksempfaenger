@@ -9,11 +9,13 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -124,17 +126,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private void updateEpisode(ContentValues values) {
-		// TODO!
-		// dbHelper.getWritableDatabase().update(DatabaseHelper.Episode._TABLE,
-		// values, String.format("%s = ?", DatabaseHelper.Episode.ID),
-		// new String[] { String.valueOf(getEpisodeId()) });
-	}
-
-	private void updateEnclosure(ContentValues values) {
-		// TODO!
-		// dbHelper.getWritableDatabase().update(DatabaseHelper.Enclosure._TABLE,
-		// values, String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-		// new String[] { String.valueOf(getEnclosureId()) });
+		getContentResolver().update(
+				ContentUris.withAppendedId(
+						VolksempfaengerContentProvider.EPISODE_URI,
+						getEpisodeId()), values, null, null);
 	}
 
 	public void play() {
@@ -405,7 +400,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private void savePosition(long position) {
 		ContentValues values = new ContentValues();
 		values.put(Episode.DURATION_LISTENED, position);
-		updateEnclosure(values);
+		updateEpisode(values);
 	}
 
 	private Runnable savePositionTask = new Runnable() {
