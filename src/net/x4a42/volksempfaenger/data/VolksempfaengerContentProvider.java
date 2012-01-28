@@ -33,15 +33,19 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	}
 
 	private DatabaseHelper dbHelper;
-	private DownloadManager dlManager;
 	private QueryHelper queryHelper;
+	private InsertHelper insertHelper;
+	private UpdateHelper updateHelper;
+	private DeleteHelper deleteHelper;
 
 	@Override
 	public boolean onCreate() {
 		dbHelper = DatabaseHelper.getInstance(getContext());
-		dlManager = (DownloadManager) getContext().getSystemService(
-				Context.DOWNLOAD_SERVICE);
-		queryHelper = new QueryHelper(dbHelper, dlManager);
+		queryHelper = new QueryHelper(dbHelper, (DownloadManager) getContext()
+				.getSystemService(Context.DOWNLOAD_SERVICE));
+		insertHelper = new InsertHelper(dbHelper);
+		updateHelper = new UpdateHelper(dbHelper);
+		deleteHelper = new DeleteHelper(dbHelper);
 		return true;
 	}
 
@@ -124,6 +128,12 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		case EPISODE_ITEM:
 			return queryHelper.queryEpisodeItem(ContentUris.parseId(uri),
 					projection);
+		case ENCLOSURE_DIR:
+			return queryHelper.queryEnclosureDir(projection, selection,
+					selectionArgs, sortOrder);
+		case ENCLOSURE_ITEM:
+			return queryHelper.queryEnclosureItem(ContentUris.parseId(uri),
+					projection);
 		default:
 			return null;
 		}
@@ -135,13 +145,13 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		Uri newUri = null;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			newUri = queryHelper.insertPodcast(uri, values);
+			newUri = insertHelper.insertPodcast(uri, values);
 			break;
 		case EPISODE_DIR:
-			newUri = queryHelper.insertEpisode(uri, values);
+			newUri = insertHelper.insertEpisode(uri, values);
 			break;
 		case ENCLOSURE_DIR:
-			newUri = queryHelper.insertEnclosure(uri, values);
+			newUri = insertHelper.insertEnclosure(uri, values);
 			break;
 		}
 		if (newUri != null) {
@@ -156,27 +166,27 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		int rowsAffected = 0;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			rowsAffected = queryHelper.updatePodcastDir(uri, values, selection,
-					selectionArgs);
+			rowsAffected = updateHelper.updatePodcastDir(uri, values,
+					selection, selectionArgs);
 			break;
 		case PODCAST_ITEM:
-			rowsAffected = queryHelper.updatePodcastItem(uri, values,
+			rowsAffected = updateHelper.updatePodcastItem(uri, values,
 					selection, selectionArgs);
 			break;
 		case EPISODE_DIR:
-			rowsAffected = queryHelper.updateEpisodeDir(uri, values, selection,
-					selectionArgs);
+			rowsAffected = updateHelper.updateEpisodeDir(uri, values,
+					selection, selectionArgs);
 			break;
 		case EPISODE_ITEM:
-			rowsAffected = queryHelper.updateEpisodeItem(uri, values,
+			rowsAffected = updateHelper.updateEpisodeItem(uri, values,
 					selection, selectionArgs);
 			break;
 		case ENCLOSURE_DIR:
-			rowsAffected = queryHelper.updateEnclosureDir(uri, values,
+			rowsAffected = updateHelper.updateEnclosureDir(uri, values,
 					selection, selectionArgs);
 			break;
 		case ENCLOSURE_ITEM:
-			rowsAffected = queryHelper.updateEnclosureItem(uri, values,
+			rowsAffected = updateHelper.updateEnclosureItem(uri, values,
 					selection, selectionArgs);
 			break;
 		}
@@ -191,27 +201,27 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		int rowsAffected = 0;
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			rowsAffected = queryHelper.deletePodcastDir(uri, selection,
+			rowsAffected = deleteHelper.deletePodcastDir(uri, selection,
 					selectionArgs);
 			break;
 		case PODCAST_ITEM:
-			rowsAffected = queryHelper.deletePodcastItem(uri, selection,
+			rowsAffected = deleteHelper.deletePodcastItem(uri, selection,
 					selectionArgs);
 			break;
 		case EPISODE_DIR:
-			rowsAffected = queryHelper.deleteEpisodeDir(uri, selection,
+			rowsAffected = deleteHelper.deleteEpisodeDir(uri, selection,
 					selectionArgs);
 			break;
 		case EPISODE_ITEM:
-			rowsAffected = queryHelper.deleteEpisodeItem(uri, selection,
+			rowsAffected = deleteHelper.deleteEpisodeItem(uri, selection,
 					selectionArgs);
 			break;
 		case ENCLOSURE_DIR:
-			rowsAffected = queryHelper.deleteEnclosureDir(uri, selection,
+			rowsAffected = deleteHelper.deleteEnclosureDir(uri, selection,
 					selectionArgs);
 			break;
 		case ENCLOSURE_ITEM:
-			rowsAffected = queryHelper.deleteEnclosureItem(uri, selection,
+			rowsAffected = deleteHelper.deleteEnclosureItem(uri, selection,
 					selectionArgs);
 			break;
 		}
