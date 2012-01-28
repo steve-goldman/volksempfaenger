@@ -12,59 +12,38 @@ public class InsertHelper extends ContentProviderHelper {
 		super(dbHelper);
 	}
 
-	public Uri insertPodcast(Uri uri, ContentValues values) {
+	private long insert(String table, ContentValues values) {
 		long id;
 		try {
 			id = getWritableDatabase().insertOrThrow(PODCAST_TABLE, null,
 					values);
+		} catch (SQLiteConstraintException e) {
+			throw new Error.DuplicateException();
 		} catch (SQLException e) {
-			if (e instanceof SQLiteConstraintException) {
-				throw new Error.DuplicateException();
-			} else {
-				throw new Error.InsertException();
-			}
-		}
-		if (id == -1) {
 			throw new Error.InsertException();
 		}
+		if (id == -1) {
+			// This might happen if the row was not inserted but no error
+			// occurred. Sounds pretty strange but this is Android.
+			throw new Error.InsertException();
+		}
+		return id;
+	}
+
+	public Uri insertPodcast(Uri uri, ContentValues values) {
+		long id = insert(PODCAST_TABLE, values);
 		return ContentUris.withAppendedId(
 				VolksempfaengerContentProvider.PODCAST_URI, id);
 	}
 
 	public Uri insertEpisode(Uri uri, ContentValues values) {
-		long id;
-		try {
-			id = getWritableDatabase().insertOrThrow(EPISODE_TABLE, null,
-					values);
-		} catch (SQLException e) {
-			if (e instanceof SQLiteConstraintException) {
-				throw new Error.DuplicateException();
-			} else {
-				throw new Error.InsertException();
-			}
-		}
-		if (id == -1) {
-			throw new Error.InsertException();
-		}
+		long id = insert(EPISODE_TABLE, values);
 		return ContentUris.withAppendedId(
 				VolksempfaengerContentProvider.EPISODE_URI, id);
 	}
 
 	public Uri insertEnclosure(Uri uri, ContentValues values) {
-		long id;
-		try {
-			id = getWritableDatabase().insertOrThrow(ENCLOSURE_TABLE, null,
-					values);
-		} catch (SQLException e) {
-			if (e instanceof SQLiteConstraintException) {
-				throw new Error.DuplicateException();
-			} else {
-				throw new Error.InsertException();
-			}
-		}
-		if (id == -1) {
-			throw new Error.InsertException();
-		}
+		long id = insert(ENCLOSURE_TABLE, values);
 		return ContentUris.withAppendedId(
 				VolksempfaengerContentProvider.ENCLOSURE_URI, id);
 	}
