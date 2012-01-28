@@ -4,13 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.SubscriptionListAdapter;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
+import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.Activity;
 import android.content.Intent;
@@ -163,10 +163,19 @@ public class SubscriptionGridFragment extends Fragment implements
 					try {
 						fstream = new FileInputStream(path);
 						InputStreamReader in = new InputStreamReader(fstream);
-						List<String> urls = OpmlParser
+						SubscriptionTree tree = OpmlParser
 								.parse(new BufferedReader(in));
-						for (String url : urls) {
-							Log.d("OPML Import", url);
+						for (SubscriptionTree node : tree) {
+							if (node.isFolder()) {
+								Log.d("OPML Import",
+										String.valueOf(node.getDepth()) + " "
+												+ node.getTitle());
+							} else {
+								Log.d("OPML Import",
+										String.valueOf(node.getDepth()) + " "
+												+ node.getTitle() + " "
+												+ node.getUrl());
+							}
 						}
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
