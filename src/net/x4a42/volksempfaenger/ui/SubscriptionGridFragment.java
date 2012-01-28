@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
@@ -13,6 +14,10 @@ import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -156,33 +161,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		case PICK_FILE_REQUEST:
 			if (resultCode == Activity.RESULT_OK) {
 				if (data != null) {
-					String path = data.getData().getPath();
-
-					// test opml parser
-					FileInputStream fstream;
-					try {
-						fstream = new FileInputStream(path);
-						InputStreamReader in = new InputStreamReader(fstream);
-						SubscriptionTree tree = OpmlParser
-								.parse(new BufferedReader(in));
-						for (SubscriptionTree node : tree) {
-							if (node.isFolder()) {
-								Log.d("OPML Import",
-										String.valueOf(node.getDepth()) + " "
-												+ node.getTitle());
-							} else {
-								Log.d("OPML Import",
-										String.valueOf(node.getDepth()) + " "
-												+ node.getTitle() + " "
-												+ node.getUrl());
-							}
-						}
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					// TODO import now!
+					importFile(data.getData().getPath());
 				}
 			}
 			break;
@@ -194,5 +173,61 @@ public class SubscriptionGridFragment extends Fragment implements
 				ViewSubscriptionActivity.class);
 		intent.putExtra("id", id);
 		startActivity(intent);
+	}
+
+	private void importFile(String path) {
+		SubscriptionTree tree;
+		FileInputStream fstream;
+		try {
+			fstream = new FileInputStream(path);
+			InputStreamReader in = new InputStreamReader(fstream);
+			tree = OpmlParser.parse(new BufferedReader(in));
+			// TODO remove debug output
+			for (SubscriptionTree node : tree) {
+				if (node.isFolder()) {
+					Log.d("OPML Import", String.valueOf(node.getDepth()) + " "
+							+ node.getTitle());
+				} else {
+					Log.d("OPML Import", String.valueOf(node.getDepth()) + " "
+							+ node.getTitle() + " " + node.getUrl());
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+
+		final ArrayList<SubscriptionTree> items = new ArrayList<SubscriptionTree>();
+		for (SubscriptionTree node : tree) {
+			if (!node.isFolder()) {
+				items.add(node);
+			}
+		}
+		String itemTitles[] = new String[items.size()];
+		for (int i = 0; i < items.size(); i++) {
+			itemTitles[i] = items.get(i).getTitle();
+		}
+
+		AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
+		ab.setTitle(getString(R.string.dialog_choose_import_feeds));
+		OnMultiChoiceClickListener listener = new OnMultiChoiceClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which,
+					boolean isChecked) {
+				// TODO
+			}
+		};
+		ab.setMultiChoiceItems(itemTitles, null, listener);
+		ab.setPositiveButton(getString(R.string.button_import),
+				new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO import now!
+					}
+				});
+		ab.show();
 	}
 }
