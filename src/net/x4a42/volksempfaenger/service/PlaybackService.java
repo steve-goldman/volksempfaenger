@@ -189,11 +189,13 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	public void seekTo(int position) {
-		if (playerState == PlayerState.STARTED
+		if (playerState == PlayerState.PREPARED
+				|| playerState == PlayerState.STARTED
 				|| playerState == PlayerState.PAUSED) {
 			player.seekTo(position);
 		} else {
-			Log.e(TAG, "Unable to seek: player is neither playing nor 'paused'");
+			Log.e(TAG,
+					"Unable to seek: player is neither prepared nor playing nor paused");
 		}
 	}
 
@@ -267,6 +269,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 		startForeground();
 		sendPlayerEvent(PlayerEvent.PREPARE);
+		seekTo(getDurationListened());
+		play();
 	}
 
 	private void startForeground() {
@@ -457,6 +461,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		} else {
 			return null;
 		}
+	}
+
+	private int getDurationListened() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_LISTENED));
 	}
 
 }
