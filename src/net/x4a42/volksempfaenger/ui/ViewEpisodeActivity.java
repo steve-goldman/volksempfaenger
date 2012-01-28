@@ -78,6 +78,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private long id;
 	private Cursor cursor;
+	private Bitmap podcastLogoBitmap;
 
 	private ImageView podcastLogo;
 	private TextView podcastTitle;
@@ -203,6 +204,9 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		if (service != null) {
 			unbindService(this);
 		}
+		if (podcastLogoBitmap != null) {
+			podcastLogoBitmap.recycle();
+		}
 	}
 
 	@Override
@@ -268,7 +272,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
 			File f = getDownloadFile();
-			if (f.isFile()) {
+			if (f != null && f.isFile()) {
 				f.delete();
 			}
 			values.put(Episode.DOWNLOAD_ID, 0);
@@ -614,11 +618,19 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	protected Bitmap getPodcastLogoBitmap() {
 		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+		Bitmap old = podcastLogoBitmap;
 		if (podcastLogoFile.isFile()) {
-			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
+			podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
+					.getAbsolutePath());
 		} else {
-			return BitmapFactory.decodeResource(getResources(),
-					R.drawable.default_logo);
+			podcastLogoBitmap = null;
+		}
+		try {
+			return podcastLogoBitmap;
+		} finally {
+			if (old != null) {
+				old.recycle();
+			}
 		}
 	}
 

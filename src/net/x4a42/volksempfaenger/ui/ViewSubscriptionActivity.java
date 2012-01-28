@@ -47,6 +47,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			+ Episode._ID + " DESC";
 
 	private long id;
+	private Bitmap podcastLogoBitmap;
 
 	private ImageView podcastLogo;
 	private TextView podcastDescription;
@@ -120,9 +121,21 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
 		if (podcastLogoFile.isFile()) {
-			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
+			Bitmap old = podcastLogoBitmap;
+			podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
 					.getAbsolutePath());
 			podcastLogo.setImageBitmap(podcastLogoBitmap);
+			if (old != null) {
+				old.recycle();
+			}
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (podcastLogoBitmap != null) {
+			podcastLogoBitmap.recycle();
 		}
 	}
 
