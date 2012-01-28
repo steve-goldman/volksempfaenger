@@ -120,16 +120,16 @@ public class DownloadService extends Service {
 
 			// here we can finally start the downloads
 
-			String selection = Episode.ENCLOSURE_URL + " IS NOT NULL";
+			String selection = "enclosure.url IS NOT NULL";
 			String orderBy = null;
 
 			if (params == null) {
-				selection += " AND " + Episode.STATUS + " = "
+				selection += " AND episode.status = "
 						+ Constants.EPISODE_STATE_NEW;
 
 				orderBy = String.format("%s DESC", Episode.DATE);
 			} else {
-				selection += " AND " + Episode._ID + " IN ("
+				selection += " AND episode._id IN ("
 						+ Utils.joinArray(params, ",") + ")";
 			}
 
