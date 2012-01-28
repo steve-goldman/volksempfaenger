@@ -1,17 +1,20 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
 
+import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
-import net.x4a42.volksempfaenger.feedparser.FeedParserException;
+import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources.NotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +23,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class DebugActivity extends BaseActivity implements OnClickListener {
+
+	private static final int REQUEST_PICK_FEED = 0;
 
 	private Button buttonStartUpdate;
 	private Button buttonStartDownload;
@@ -47,8 +52,12 @@ public class DebugActivity extends BaseActivity implements OnClickListener {
 
 		switch (v.getId()) {
 		case R.id.button_testfeed:
-			Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
-			testFeedParser();
+			intent = new Intent(Constants.ACTION_OI_PICK_FILE);
+			intent.setData(Uri.fromFile(new File(getExternalFilesDir(null)
+					.getParent(), "debug")));
+			intent.putExtra(Constants.EXTRA_OI_TITLE, "Select feed");
+			startActivityForResult(intent, REQUEST_PICK_FEED);
+			// testFeedParser();
 			return;
 		case R.id.button_startupdate:
 			intent = new Intent(this, UpdateService.class);
@@ -65,12 +74,25 @@ public class DebugActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	public void testFeedParser() {
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_PICK_FEED:
+			if (resultCode == Activity.RESULT_OK) {
+				if (data != null) {
+					File file = new File(data.getData().getPath());
+					testFeedParser(file);
+				}
+			}
+			break;
+		}
+	}
+
+	public void testFeedParser(File file) {
+		Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 		try {
-			// Feed feed = FeedParser.parse(new InputStreamReader(getResources()
-			// .openRawResource(R.raw.atom_test)));
-			// TODO read feed from sdcard
-			Feed feed = null;
+			Feed feed = FeedParser.parse(new FileReader(file));
 			Log.d(TAG, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
 				Log.d(TAG, "URL: " + feed.getUrl());
@@ -111,17 +133,9 @@ public class DebugActivity extends BaseActivity implements OnClickListener {
 					}
 				}
 			}
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			Log.e(TAG, "An error occurred while parsing the feed:", e);
 		}
-		// catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (FeedParserException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 }
