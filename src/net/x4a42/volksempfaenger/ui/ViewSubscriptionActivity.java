@@ -113,7 +113,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		podcastCursor.moveToFirst();
 
-		setTitle(podcastCursor.getString(podcastCursor.getColumnIndex(Podcast.TITLE)));
+		setTitle(podcastCursor.getString(podcastCursor
+				.getColumnIndex(Podcast.TITLE)));
 		updatePodcastDescription(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
 

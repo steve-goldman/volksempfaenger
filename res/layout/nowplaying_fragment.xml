@@ -3,8 +3,8 @@
 
     <fragment
         android:id="@+id/nowplaying"
+        android:name="net.x4a42.volksempfaenger.ui.NowPlayingFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="net.x4a42.volksempfaenger.ui.NowPlayingFragment" />
+        android:layout_height="wrap_content" />
 
 </merge>

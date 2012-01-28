@@ -89,7 +89,7 @@ public class OpmlParser {
 		@Override
 		public void endElement(String uri, String localName, String qName) {
 			depth--;
-			if(!depthStack.isEmpty() && depthStack.peek().equals(depth)) {
+			if (!depthStack.isEmpty() && depthStack.peek().equals(depth)) {
 				depthStack.pop();
 				path.pop();
 			}

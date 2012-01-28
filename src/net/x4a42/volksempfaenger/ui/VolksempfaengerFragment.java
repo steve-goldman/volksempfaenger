@@ -21,8 +21,7 @@ public class VolksempfaengerFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.buttons, container, false);
 
-		buttonListenQueue = (Button) view
-				.findViewById(R.id.button_listenqueue);
+		buttonListenQueue = (Button) view.findViewById(R.id.button_listenqueue);
 		buttonDebug = (Button) view.findViewById(R.id.button_debug);
 
 		buttonListenQueue.setOnClickListener(this);
