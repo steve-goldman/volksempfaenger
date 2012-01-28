@@ -12,7 +12,6 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.ActionBar;
@@ -52,7 +51,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private ImageView podcastLogo;
 	private TextView podcastDescription;
 	private ListView episodeList;
-	private Cursor cursor;
+	private Cursor episodeCursor;
+	private Cursor podcastCursor;
 	private Adapter adapter;
 
 	@Override
@@ -85,12 +85,25 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
 
-		cursor = managedQuery(VolksempfaengerContentProvider.EPISODE_URI,
-				new String[] { Episode._ID, Episode.TITLE, Episode.DATE,
+		// Update podcast information
+		podcastCursor = managedQuery(ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.PODCAST_URI, id),
+				new String[] {/* TODO */}, PODCAST_WHERE,
+				new String[] { String.valueOf(id) }, null);
+
+		if (podcastCursor.getCount() == 0) {
+			// ID does not exist
+			finish();
+			return;
+		}
+
+		episodeCursor = managedQuery(
+				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
+						Episode._ID, Episode.TITLE, Episode.DATE,
 						Episode.STATUS }, EPISODE_WHERE,
 				new String[] { String.valueOf(id) }, EPISODE_SORT);
 
-		adapter = new Adapter(cursor);
+		adapter = new Adapter(episodeCursor);
 		episodeList.setAdapter(adapter);
 	}
 
@@ -98,25 +111,11 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 
-		// Update podcast information
-		Cursor c = managedQuery(ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.PODCAST_URI, id),
-				new String[] {/* TODO */}, PODCAST_WHERE,
-				new String[] { String.valueOf(id) }, null);
+		podcastCursor.moveToFirst();
 
-		if (c.getCount() == 0) {
-			// ID does not exist
-			finish();
-			return;
-		}
-
-		c.moveToFirst();
-
-		setTitle(c.getString(c.getColumnIndex(Podcast.TITLE)));
-		updatePodcastDescription(c.getString(c
+		setTitle(podcastCursor.getString(podcastCursor.getColumnIndex(Podcast.TITLE)));
+		updatePodcastDescription(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
-
-		c.close();
 
 		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
 		if (podcastLogoFile.isFile()) {
@@ -124,9 +123,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 					.getAbsolutePath());
 			podcastLogo.setImageBitmap(podcastLogoBitmap);
 		}
-
-		// Update episode list
-		//cursor.requery();
 	}
 
 	private void updatePodcastDescription(String description) {
