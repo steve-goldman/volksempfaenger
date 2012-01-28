@@ -2,15 +2,16 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Columns.Enclosure;
+import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -20,6 +21,7 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlayerEvent;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -62,6 +65,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private static final String TAG = "ViewEpisodeActivity";
 
+	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
+
 	private SeekBar seekBar;
 	private TextView textDuration;
 	private TextView textPosition;
@@ -72,7 +77,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private Handler updateHandler;
 
 	private long id;
-	private DatabaseHelper dbHelper;
 	private Cursor cursor;
 
 	private ImageView podcastLogo;
@@ -85,93 +89,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private SpannableStringBuilder descriptionSpanned;
 
-	/* Podcast getters */
-	protected long getPodcastId() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_ID));
-	}
-
-	protected String getPodcastTitle() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_TITLE));
-	}
-
-	protected String getPodcastDescription() {
-		return cursor
-				.getString(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.PODCAST_DESCRIPTION));
-	}
-
-	protected Bitmap getPodcastLogoBitmap() {
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
-		if (podcastLogoFile.isFile()) {
-			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
-		} else {
-			return BitmapFactory.decodeResource(getResources(),
-					R.drawable.default_logo);
-		}
-	}
-
-	/* Episode getters */
-	protected long getEpisodeId() {
-		return id;
-	}
-
-	protected String getEpisodeTitle() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_TITLE));
-	}
-
-	protected String getEpisodeDescription() {
-		return cursor
-				.getString(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DESCRIPTION));
-	}
-
-	protected int getEpisodeState() {
-		return cursor.getInt(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_STATE));
-	}
-
-	protected long getEpisodeDate() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.EPISODE_DATE));
-	}
-
-	/* Enclosure getters */
-	private long getEnclosureId() {
-		return cursor.getLong(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_ID));
-	}
-
-	private File getEnclosureFile() {
-		String filename = getEnclosureFileName();
-		if (filename == null || filename.length() == 0) {
-			return null;
-		}
-		try {
-			return new File(new URI(filename));
-		} catch (URISyntaxException e) {
-			return null;
-		}
-	}
-
-	private String getEnclosureFileName() {
-		return cursor.getString(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.ENCLOSURE_FILE));
-	}
-
-	private int getDurationListened() {
-		return cursor
-				.getInt(cursor
-						.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_LISTENED));
-	}
-
-	private int getDurationTotal() {
-		return cursor.getInt(cursor
-				.getColumnIndex(DatabaseHelper.ExtendedEpisode.DURATION_TOTAL));
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -181,8 +98,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			ActionBar actionBar = getActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-
-		dbHelper = DatabaseHelper.getInstance(this);
 
 		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
@@ -232,22 +147,19 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 
 		if (cursor != null) {
-			stopManagingCursor(cursor);
 			cursor.close();
-			cursor = null;
 		}
-		cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.ExtendedEpisode._TABLE, null,
-				String.format("%s = ?", DatabaseHelper.ExtendedEpisode.ID),
-				new String[] { String.valueOf(getEpisodeId()) }, null, null,
+		cursor = managedQuery(ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.EPISODE_URI, id), new String[] {
+				Episode._ID, Episode.TITLE, Episode.DESCRIPTION,
+				Episode.STATUS, Episode.DATE, Episode.DURATION_TOTAL,
+				Episode.DURATION_LISTENED, Episode.PODCAST_ID,
+				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION,
+				Episode.DOWNLOAD_ID, Episode.DOWNLOAD_DONE,
+				Episode.DOWNLOAD_FILE, Episode.DOWNLOAD_STATUS,
+				Episode.DOWNLOAD_TOTAL, Episode.ENCLOSURE_ID }, null, null,
 				null);
-		startManagingCursor(cursor);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		updateHandler.removeCallbacks(updateSliderTask);
+		cursor.moveToFirst();
 	}
 
 	@Override
@@ -277,6 +189,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+		updateHandler.removeCallbacks(updateSliderTask);
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		if (service != null) {
@@ -298,9 +216,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
+
 		case android.R.id.home:
 			finish();
 			return true;
+
 		case R.id.item_download:
 			if (getEnclosureId() != 0) {
 				// there is an preferred enclosure
@@ -335,42 +255,31 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(DatabaseHelper.Episode.STATE,
-					DatabaseHelper.Episode.STATE_LISTENED);
-			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI, id),
+					values, null, null);
 			return true;
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			try {
-				if (getEnclosureFileName() != null) {
-					File f = new File(new URI(getEnclosureFileName()));
-					if (f.isFile()) {
-						f.delete();
-					}
-				}
-			} catch (URISyntaxException e) {
-				Log.w(getClass().getSimpleName(), "Exception handled", e);
+			File f = getDownloadFile();
+			if (f.isFile()) {
+				f.delete();
 			}
-			values.put(DatabaseHelper.Enclosure.FILE, (String) null);
-			dbHelper.getReadableDatabase().update(
-					DatabaseHelper.Enclosure._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Enclosure.ID),
-					new String[] { String.valueOf(getEnclosureId()) });
-			values.clear();
-			values.put(DatabaseHelper.Episode.STATE,
-					DatabaseHelper.Episode.STATE_LISTENED);
-			dbHelper.getReadableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			values.put(Episode.DOWNLOAD_ID, 0);
+			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI,
+							getEpisodeId()), values, null, null);
+			// TODO remove from DownloadManager
 			return true;
 
 		default:
 			return BaseActivity.handleGlobalMenu(this, item);
+
 		}
 	}
 
@@ -379,11 +288,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			v = new long[] { getEnclosureId() };
 		} else if (v.length == 1) {
 			ContentValues values = new ContentValues();
-			values.put(DatabaseHelper.Episode.ENCLOSURE, v[0]);
-			dbHelper.getWritableDatabase().update(
-					DatabaseHelper.Episode._TABLE, values,
-					String.format("%s = ?", DatabaseHelper.Episode.ID),
-					new String[] { String.valueOf(getEpisodeId()) });
+			values.put(Episode.ENCLOSURE_ID, v[0]);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI,
+							getEpisodeId()), values, null, null);
 		}
 		Intent intent = new Intent(this, DownloadService.class);
 		intent.putExtra("id", new long[] { getEpisodeId() });
@@ -406,17 +315,21 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				if (startedPlaying) {
 					togglePlayPause();
 				} else {
-					if (getEpisodeState() < DatabaseHelper.Episode.STATE_READY
-							|| getEnclosureFile() == null
-							|| !getEnclosureFile().isFile()) {
+					if (getEpisodeStatus() < Constants.EPISODE_STATE_READY
+							|| getDownloadFile() == null
+							|| !getDownloadFile().isFile()) {
 						// enclosure file does not exist
-						// TODO: auto download
+						// TODO: auto download, streaming?
+						Log.d(TAG, "getEpisodeStatus(): " + getEpisodeStatus());
+						Log.d(TAG, "getEnclosureFile(): " + getDownloadFile());
 						Toast.makeText(this,
 								R.string.message_enclosure_file_not_available,
 								Toast.LENGTH_SHORT).show();
 					} else {
 						try {
-							service.playEpisode(getEpisodeId());
+							service.playEpisode(ContentUris.withAppendedId(
+									VolksempfaengerContentProvider.EPISODE_URI,
+									getEpisodeId()));
 							startedPlaying = true;
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block
@@ -537,19 +450,20 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private List<EnclosureSimple> getEnclosures() {
-		Cursor cursor = dbHelper.getReadableDatabase().query(
-				DatabaseHelper.Enclosure._TABLE,
-				new String[] { DatabaseHelper.Enclosure.ID,
-						DatabaseHelper.Enclosure.URL },
-				String.format("%s = ?", DatabaseHelper.Enclosure.EPISODE),
-				new String[] { String.valueOf(id) }, null, null, null);
+		Cursor cursor;
+		{
+			String[] projection = { Enclosure._ID, Enclosure.URL };
+			cursor = getContentResolver()
+					.query(VolksempfaengerContentProvider.ENCLOSURE_URI,
+							projection, WHERE_EPISODE_ID,
+							new String[] { String.valueOf(id) }, null);
+		}
 		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
 		while (cursor.moveToNext()) {
 			EnclosureSimple enclosure = new EnclosureSimple();
-			enclosure.id = cursor.getLong(cursor
-					.getColumnIndex(DatabaseHelper.Enclosure.ID));
+			enclosure.id = cursor.getLong(cursor.getColumnIndex(Enclosure._ID));
 			enclosure.url = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.Enclosure.URL));
+					.getColumnIndex(Enclosure.URL));
 			enclosures.add(enclosure);
 		}
 		cursor.close();
@@ -676,12 +590,86 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			seekBar.setEnabled(false);
 			buttonBack.setEnabled(false);
 			buttonForward.setEnabled(false);
-
 			textPosition.setText("00:00:00");
 			textDuration.setText("00:00:00");
 			startedPlaying = false;
 			break;
 		}
+	}
+
+	/* Podcast getters */
+	protected long getPodcastId() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID));
+	}
+
+	protected String getPodcastTitle() {
+		return cursor.getString(cursor.getColumnIndex(Episode.PODCAST_TITLE));
+	}
+
+	protected String getPodcastDescription() {
+		return cursor.getString(cursor
+				.getColumnIndex(Episode.PODCAST_DESCRIPTION));
+	}
+
+	protected Bitmap getPodcastLogoBitmap() {
+		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+		if (podcastLogoFile.isFile()) {
+			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
+		} else {
+			return BitmapFactory.decodeResource(getResources(),
+					R.drawable.default_logo);
+		}
+	}
+
+	/* Episode getters */
+	protected long getEpisodeId() {
+		return id;
+	}
+
+	protected String getEpisodeTitle() {
+		return cursor.getString(cursor.getColumnIndex(Episode.TITLE));
+	}
+
+	protected String getEpisodeDescription() {
+		return cursor.getString(cursor.getColumnIndex(Episode.DESCRIPTION));
+	}
+
+	protected int getEpisodeStatus() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.STATUS));
+	}
+
+	protected long getEpisodeDate() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.DATE));
+	}
+
+	/* Enclosure getters */
+	private long getEnclosureId() {
+		return cursor.getLong(cursor.getColumnIndex(Episode.ENCLOSURE_ID));
+	}
+
+	private File getDownloadFile() {
+		Uri uri = getDownloadUri();
+		if (uri == null) {
+			return null;
+		}
+		return new File(uri.getPath());
+	}
+
+	private Uri getDownloadUri() {
+		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_URI);
+		if (!cursor.isNull(cursorIndex)) {
+			return Uri.parse(cursor.getString(cursorIndex));
+		} else {
+			return null;
+		}
+	}
+
+	private int getDurationListened() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_LISTENED));
+	}
+
+	private int getDurationTotal() {
+		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_TOTAL));
 	}
 
 }

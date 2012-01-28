@@ -151,18 +151,16 @@ public class Columns {
 		public static final String DOWNLOAD_FILE = "download_file";
 
 		/**
+		 * URI of the downloaded file (type String)
+		 */
+		public static final String DOWNLOAD_URI = "download_uri";
+
+		/**
 		 * Status of the download (type int)
 		 * 
 		 * Values: see android.app.DownloadManager.STATUS_*
 		 */
 		public static final String DOWNLOAD_STATUS = "download_status";
-
-		/**
-		 * Progress of the download (type int)
-		 * 
-		 * 0 - 100 if the download is running, otherwise -1
-		 */
-		public static final String DOWNLOAD_PROGRESS = "download_progress";
 
 		/**
 		 * Total size of the download in bytes as reported by DownloadManager
