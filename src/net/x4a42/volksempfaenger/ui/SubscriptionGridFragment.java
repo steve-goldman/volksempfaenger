@@ -51,6 +51,8 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final int PICK_FILE_REQUEST = 0;
 
+	private static final String PODCAST_ORDER = "title ASC";
+
 	private Cursor cursor;
 	private GridView subscriptionList;
 	private Adapter adapter;
@@ -65,7 +67,8 @@ public class SubscriptionGridFragment extends Fragment implements
 				.managedQuery(
 						VolksempfaengerContentProvider.PODCAST_URI,
 						new String[] { Podcast._ID, Podcast.TITLE,
-								Podcast.NEW_EPISODES }, null, null, null);
+								Podcast.NEW_EPISODES }, null, null,
+						PODCAST_ORDER);
 
 		adapter = new Adapter(cursor);
 	}
