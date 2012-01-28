@@ -1,13 +1,11 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
-import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
@@ -69,8 +67,10 @@ public class DebugActivity extends BaseActivity implements OnClickListener {
 
 	public void testFeedParser() {
 		try {
-			Feed feed = FeedParser.parse(new InputStreamReader(getResources()
-					.openRawResource(R.raw.atom_test)));
+			// Feed feed = FeedParser.parse(new InputStreamReader(getResources()
+			// .openRawResource(R.raw.atom_test)));
+			// TODO read feed from sdcard
+			Feed feed = null;
 			Log.d(TAG, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
 				Log.d(TAG, "URL: " + feed.getUrl());
@@ -114,13 +114,14 @@ public class DebugActivity extends BaseActivity implements OnClickListener {
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FeedParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		// catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (FeedParserException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 }
