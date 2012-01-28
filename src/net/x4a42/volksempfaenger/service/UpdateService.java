@@ -52,7 +52,8 @@ public class UpdateService extends IntentService {
 
 		Cursor cursor;
 		{
-			String[] projection = new String[] { Podcast._ID, Podcast.TITLE };
+			String[] projection = new String[] { Podcast._ID, Podcast.TITLE,
+					Podcast.FEED };
 
 			if (podcast != null) {
 				// Sync a single podcast
@@ -68,6 +69,7 @@ public class UpdateService extends IntentService {
 
 		if (cursor.getCount() == 0) {
 			// There are just no podcasts to update.
+			cursor.close();
 			return;
 		}
 
@@ -135,6 +137,7 @@ public class UpdateService extends IntentService {
 						continue;
 					}
 					episodeId = c.getLong(c.getColumnIndex(Episode._ID));
+					c.close();
 					episodeUri = ContentUris.withAppendedId(
 							VolksempfaengerContentProvider.EPISODE_URI,
 							episodeId);
@@ -183,9 +186,10 @@ public class UpdateService extends IntentService {
 						}
 						enclosureId = c
 								.getLong(c.getColumnIndex(Enclosure._ID));
+						c.close();
 						enclosureUri = ContentUris.withAppendedId(
 								VolksempfaengerContentProvider.ENCLOSURE_URI,
-								episodeId);
+								enclosureId);
 						getContentResolver().update(enclosureUri, values, null,
 								null);
 					} catch (Error.InsertException e) {
@@ -219,6 +223,7 @@ public class UpdateService extends IntentService {
 
 			Log.d(TAG, "Updated " + feed.getTitle());
 		}
+		cursor.close();
 
 		// start DownloadService to start automatic downloads if enabled
 		Intent downloadServiceIntent = new Intent(this, DownloadService.class);

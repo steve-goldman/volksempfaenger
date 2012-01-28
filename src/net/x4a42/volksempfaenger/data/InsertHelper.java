@@ -15,8 +15,7 @@ public class InsertHelper extends ContentProviderHelper {
 	private long insert(String table, ContentValues values) {
 		long id;
 		try {
-			id = getWritableDatabase().insertOrThrow(PODCAST_TABLE, null,
-					values);
+			id = getWritableDatabase().insertOrThrow(table, null, values);
 		} catch (SQLiteConstraintException e) {
 			throw new Error.DuplicateException();
 		} catch (SQLException e) {
