@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -53,7 +52,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -80,7 +78,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private EpisodeCursor cursor;
 	private Bitmap podcastLogoBitmap;
 
-	private ImageView podcastLogo;
+	private PodcastLogoView podcastLogo;
 	private TextView podcastTitle;
 	private TextView podcastDescription;
 	private TextView episodeTitle;
@@ -100,7 +98,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
+		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
@@ -185,7 +183,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 
 		podcastTitle.setText(cursor.getPodcastTitle());
-		podcastLogo.setImageBitmap(getPodcastLogoBitmap());
+		podcastLogo.setPodcastId(cursor.getPodcastId());
 		podcastDescription.setText(cursor.getPodcastDescription());
 		episodeTitle.setText(cursor.getTitle());
 		seekBar.setMax(cursor.getDurationTotal());
@@ -604,25 +602,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			textDuration.setText("00:00:00");
 			startedPlaying = false;
 			break;
-		}
-	}
-
-	public Bitmap getPodcastLogoBitmap() {
-		File podcastLogoFile = Utils.getPodcastLogoFile(this,
-				cursor.getPodcastId());
-		Bitmap old = podcastLogoBitmap;
-		if (podcastLogoFile.isFile()) {
-			podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-		} else {
-			podcastLogoBitmap = null;
-		}
-		try {
-			return podcastLogoBitmap;
-		} finally {
-			if (old != null) {
-				old.recycle();
-			}
 		}
 	}
 
