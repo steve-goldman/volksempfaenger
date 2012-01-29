@@ -7,23 +7,19 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
-public class DownloadListFragment extends Fragment implements
+public class DownloadListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private Adapter adapter;
-	private ListView downloadList;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,17 +30,9 @@ public class DownloadListFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		setListAdapter(adapter);
+		setListShown(false);
 		getLoaderManager().initLoader(0, null, this);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.download_list, container, false);
-		downloadList = (ListView) view.findViewById(R.id.download_list);
-		downloadList.setAdapter(adapter);
-		downloadList.setVisibility(View.GONE);
-		return view;
 	}
 
 	private class Adapter extends SimpleCursorAdapter {
@@ -87,14 +75,16 @@ public class DownloadListFragment extends Fragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		adapter.swapCursor(new EpisodeCursor(data));
-		if (downloadList.getVisibility() == View.GONE) {
-			downloadList.setVisibility(View.VISIBLE);
+		if (isResumed()) {
+			setListShown(true);
+		} else {
+			setListShownNoAnimation(true);
 		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		downloadList.setVisibility(View.GONE);
+		setListShown(false);
 		adapter.swapCursor(null);
 	}
 
