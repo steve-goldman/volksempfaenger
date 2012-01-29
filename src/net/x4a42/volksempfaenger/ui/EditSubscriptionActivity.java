@@ -1,7 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.File;
-
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
@@ -15,8 +13,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +24,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 public class EditSubscriptionActivity extends Activity implements
@@ -38,7 +33,7 @@ public class EditSubscriptionActivity extends Activity implements
 	private static final int CONTEXT_DELETE = 1;
 	private static final int CONTEXT_CHOOSE = 2;
 
-	private ImageView podcastLogo;
+	private PodcastLogoView podcastLogo;
 	private EditText podcastTitle;
 	private EditText podcastUrl;
 	private EditText podcastDescription;
@@ -69,7 +64,7 @@ public class EditSubscriptionActivity extends Activity implements
 
 		setContentView(R.layout.edit_subscription);
 
-		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
+		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
 		podcastTitle = (EditText) findViewById(R.id.podcast_title);
 		podcastUrl = (EditText) findViewById(R.id.podcast_url);
 		podcastDescription = (EditText) findViewById(R.id.podcast_description);
@@ -136,14 +131,7 @@ public class EditSubscriptionActivity extends Activity implements
 	}
 
 	private void reloadLogo() {
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
-		if (podcastLogoFile.isFile()) {
-			Bitmap podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-			podcastLogo.setImageBitmap(podcastLogoBitmap);
-		} else {
-			podcastLogo.setImageResource(R.drawable.default_logo);
-		}
+		podcastLogo.setPodcastId(id);
 	}
 
 	public void onClick(View v) {
