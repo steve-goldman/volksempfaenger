@@ -5,8 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.Map;
 
+import net.x4a42.volksempfaenger.data.CacheMap;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -87,16 +87,15 @@ public class Utils {
 	}
 
 	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId,
-			Map<Long, Bitmap> cache) {
-		if (cache.containsKey(podcastId)) {
-			return cache.get(podcastId);
-		} else {
-			Bitmap bitmap = getPodcastLogoBitmap(context, podcastId);
+			CacheMap<Long, Bitmap> cache) {
+		Bitmap bitmap = cache.get(podcastId);
+		if (bitmap == null) {
+			bitmap = getPodcastLogoBitmap(context, podcastId);
 			if (bitmap != null) {
 				cache.put(podcastId, bitmap);
 			}
-			return bitmap;
 		}
+		return bitmap;
 	}
 
 	public static File getDescriptionImageFile(Context context, String url) {

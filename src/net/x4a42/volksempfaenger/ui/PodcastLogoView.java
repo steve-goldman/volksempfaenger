@@ -1,9 +1,8 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.util.HashMap;
-
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.CacheMap;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
@@ -12,10 +11,7 @@ import android.widget.ImageView;
 public class PodcastLogoView extends ImageView {
 
 	private long podcastId;
-
-	// TODO: there must be a better way to do this...
-	// suggestion: weak references to bitmaps
-	private static HashMap<Long, Bitmap> logoCache = new HashMap<Long, Bitmap>();
+	private static CacheMap<Long, Bitmap> logoCache = new CacheMap<Long, Bitmap>();
 
 	public PodcastLogoView(Context context) {
 		super(context);
