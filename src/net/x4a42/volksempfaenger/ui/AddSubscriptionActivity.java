@@ -10,6 +10,7 @@ import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
@@ -27,7 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class AddSubscriptionActivity extends BaseActivity implements
+public class AddSubscriptionActivity extends Activity implements
 		OnClickListener {
 
 	private EditText editTextUrl;

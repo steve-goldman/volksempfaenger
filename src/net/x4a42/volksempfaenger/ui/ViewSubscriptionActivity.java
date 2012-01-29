@@ -147,7 +147,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_subscription, menu);
-		BaseActivity.addGlobalMenu(this, menu);
+		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
 	}
 
@@ -176,7 +176,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			startActivity(intent);
 			return true;
 		default:
-			return BaseActivity.handleGlobalMenu(this, item);
+			return ActivityHelper.handleGlobalMenu(this, item);
 		}
 	}
 

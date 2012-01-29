@@ -4,6 +4,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import android.app.Activity;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,7 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DeleteSubscriptionActivity extends BaseActivity implements
+public class DeleteSubscriptionActivity extends Activity implements
 		OnClickListener {
 	private long id;
 	private Uri uri;
