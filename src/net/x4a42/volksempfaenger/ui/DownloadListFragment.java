@@ -9,8 +9,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +43,7 @@ public class DownloadListFragment extends Fragment implements
 		View view = inflater.inflate(R.layout.download_list, container, false);
 		downloadList = (ListView) view.findViewById(R.id.download_list);
 		downloadList.setAdapter(adapter);
+		downloadList.setVisibility(View.GONE);
 		return view;
 	}
 
@@ -56,7 +57,7 @@ public class DownloadListFragment extends Fragment implements
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			super.bindView(view, context, cursor);
-			EpisodeCursor episodeCursor = new EpisodeCursor(cursor);
+			EpisodeCursor episodeCursor = (EpisodeCursor) cursor;
 			ProgressBar progressBar = (ProgressBar) view
 					.findViewById(R.id.download_progress_bar);
 			long done = episodeCursor.getDownloadDone();
@@ -85,11 +86,15 @@ public class DownloadListFragment extends Fragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		adapter.swapCursor(data);
+		adapter.swapCursor(new EpisodeCursor(data));
+		if (downloadList.getVisibility() == View.GONE) {
+			downloadList.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+		downloadList.setVisibility(View.GONE);
 		adapter.swapCursor(null);
 	}
 
