@@ -74,11 +74,19 @@ public class EpisodeCursor extends CursorWrapper {
 	}
 
 	public long getDownloadDone() {
-		return getLong(COLUMN_DOWNLOAD_DONE);
+		if (isNull(COLUMN_DOWNLOAD_DONE)) {
+			return 0;
+		} else {
+			return getLong(COLUMN_DOWNLOAD_DONE);
+		}
 	}
 
 	public String getDownloadFile() {
-		return getString(COLUMN_DOWNLOAD_FILE);
+		if (isNull(COLUMN_DOWNLOAD_FILE)) {
+			return null;
+		} else {
+			return getString(COLUMN_DOWNLOAD_FILE);
+		}
 	}
 
 	public long getDownloadId() {
@@ -86,15 +94,27 @@ public class EpisodeCursor extends CursorWrapper {
 	}
 
 	public int getDownloadStatus() {
-		return getInt(COLUMN_DOWNLOAD_STATUS);
+		if (isNull(COLUMN_DOWNLOAD_STATUS)) {
+			return -1;
+		} else {
+			return getInt(COLUMN_DOWNLOAD_STATUS);
+		}
 	}
 
 	public long getDownloadTotal() {
-		return getLong(COLUMN_DOWNLOAD_TOTAL);
+		if (isNull(COLUMN_DOWNLOAD_TOTAL)) {
+			return 0;
+		} else {
+			return getLong(COLUMN_DOWNLOAD_TOTAL);
+		}
 	}
 
 	public String getDownloadUri() {
-		return getString(COLUMN_DOWNLOAD_URI);
+		if (isNull(COLUMN_DOWNLOAD_URI)) {
+			return null;
+		} else {
+			return getString(COLUMN_DOWNLOAD_URI);
+		}
 	}
 
 	public long getDurationListened() {
