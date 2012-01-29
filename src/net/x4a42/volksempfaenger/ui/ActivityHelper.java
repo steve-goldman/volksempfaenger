@@ -8,20 +8,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class BaseActivity extends Activity {
-	protected final String TAG = getClass().getSimpleName();
+public class ActivityHelper {
 
-	public VolksempfaengerApplication getApp() {
-		return (VolksempfaengerApplication) super.getApplication();
+	public VolksempfaengerApplication getApp(Activity activity) {
+		return (VolksempfaengerApplication) activity.getApplication();
 	}
 
 	public static void addGlobalMenu(Activity activity, Menu menu) {
 		MenuInflater inflater = activity.getMenuInflater();
 		inflater.inflate(R.menu.global, menu);
-	}
-
-	public void addGlobalMenu(Menu menu) {
-		addGlobalMenu(this, menu);
 	}
 
 	public static boolean handleGlobalMenu(Activity activity, MenuItem item) {
@@ -34,7 +29,4 @@ public class BaseActivity extends Activity {
 		}
 	}
 
-	public boolean handleGlobalMenu(MenuItem item) {
-		return handleGlobalMenu(this, item);
-	}
 }
