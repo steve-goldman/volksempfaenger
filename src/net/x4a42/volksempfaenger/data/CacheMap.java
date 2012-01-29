@@ -24,20 +24,6 @@ public class CacheMap<K, V> {
 		map.clear();
 	}
 
-	public boolean containsKey(Object key) {
-		if (map.containsKey(key)) {
-			V value = map.get(key).get();
-			if (value != null) {
-				return true;
-			} else {
-				map.remove(key);
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
 	public V get(Object key) {
 		SoftReference<V> valueRef = map.get(key);
 		if (valueRef != null) {
