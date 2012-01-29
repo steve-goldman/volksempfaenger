@@ -23,11 +23,27 @@ public class SquareView extends ViewGroup {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		View child = getChildAt(0);
-		int childMeasureSpec = MeasureSpec.makeMeasureSpec(
-				MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY);
-		child.measure(childMeasureSpec, childMeasureSpec);
-		int width = resolveSize(child.getMeasuredWidth(), widthMeasureSpec);
-		setMeasuredDimension(width, width);
+		LayoutParams layoutParams = getLayoutParams();
+		if (layoutParams.width == LayoutParams.WRAP_CONTENT
+				&& layoutParams.height != LayoutParams.WRAP_CONTENT) {
+			View child = getChildAt(0);
+			int childMeasureSpec = MeasureSpec.makeMeasureSpec(
+					MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY);
+			child.measure(childMeasureSpec, childMeasureSpec);
+			int width = resolveSize(child.getMeasuredWidth(), widthMeasureSpec);
+			setMeasuredDimension(width, width);
+		} else if (layoutParams.height == LayoutParams.WRAP_CONTENT
+				&& layoutParams.width != LayoutParams.WRAP_CONTENT) {
+			View child = getChildAt(0);
+			int childMeasureSpec = MeasureSpec
+					.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec),
+							MeasureSpec.EXACTLY);
+			child.measure(childMeasureSpec, childMeasureSpec);
+			int height = resolveSize(child.getMeasuredWidth(),
+					heightMeasureSpec);
+			setMeasuredDimension(height, height);
+		} else {
+			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
 	}
 }
