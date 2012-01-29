@@ -8,13 +8,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SimpleCursorAdapter;
 
 public class DownloadListFragment extends Fragment {
 
@@ -29,7 +29,8 @@ public class DownloadListFragment extends Fragment {
 				VolksempfaengerContentProvider.EPISODE_URI,
 				new String[] { Episode._ID, Episode.TITLE, Episode.DOWNLOAD_ID,
 						Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_DONE,
-						Episode.DOWNLOAD_TOTAL }, Episode.DOWNLOAD_ID + " != 0", null, null);
+						Episode.DOWNLOAD_TOTAL },
+				Episode.DOWNLOAD_ID + " != 0", null, null);
 		EpisodeCursor episodeCursor = new EpisodeCursor(cursor);
 		adapter = new Adapter(episodeCursor);
 	}
@@ -47,7 +48,7 @@ public class DownloadListFragment extends Fragment {
 		public Adapter(Cursor cursor) {
 			super(getActivity(), R.layout.download_list_row, cursor,
 					new String[] { Episode.TITLE },
-					new int[] { R.id.download_title }, 0);
+					new int[] { R.id.download_title });
 		}
 
 		@Override
