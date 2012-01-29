@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
@@ -53,7 +55,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final String PODCAST_ORDER = "title ASC";
 
-	private Cursor cursor;
+	private PodcastCursor cursor;
 	private GridView subscriptionList;
 	private Adapter adapter;
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
@@ -63,12 +65,13 @@ public class SubscriptionGridFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		cursor = getActivity()
-				.managedQuery(
-						VolksempfaengerContentProvider.PODCAST_URI,
-						new String[] { Podcast._ID, Podcast.TITLE,
-								Podcast.NEW_EPISODES }, null, null,
-						PODCAST_ORDER);
+		{
+			Cursor c = getActivity().managedQuery(
+					VolksempfaengerContentProvider.PODCAST_URI,
+					new String[] { Podcast._ID, Podcast.TITLE,
+							Podcast.NEW_EPISODES }, null, null, PODCAST_ORDER);
+			cursor = new PodcastCursor(c);
+		}
 
 		adapter = new Adapter(cursor);
 	}
@@ -87,12 +90,6 @@ public class SubscriptionGridFragment extends Fragment implements
 		subscriptionList.setAdapter(adapter);
 
 		return view;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		// cursor.requery();
 	}
 
 	@Override
@@ -239,27 +236,30 @@ public class SubscriptionGridFragment extends Fragment implements
 	private class Adapter extends SimpleCursorAdapter {
 
 		// TODO: there must be a better way to do this...
-		private HashMap<Long, Bitmap> logoCache;
+		private Map<Long, Bitmap> logoCache;
+		private PodcastCursor cursor;
 
-		public Adapter(Cursor cursor) {
+		public Adapter(PodcastCursor cursor) {
 			super(getActivity(), R.layout.subscription_list_row, cursor,
 					new String[] { Podcast.TITLE },
 					new int[] { R.id.podcast_title });
-			logoCache = new HashMap<Long, Bitmap>(cursor.getCount());
+			this.cursor = cursor;
+			logoCache = new WeakHashMap<Long, Bitmap>(cursor.getCount());
 		}
 
 		@Override
-		public void bindView(View view, Context context, Cursor cursor) {
+		public void bindView(View view, Context context, Cursor c) {
 
 			super.bindView(view, context, cursor);
 
 			TextView newEpisodesText = (TextView) view
 					.findViewById(R.id.new_episodes);
-			long newEpisodes = cursor.getLong(cursor
-					.getColumnIndex(Podcast.NEW_EPISODES));
-			if (newEpisodes > 0) {
-				newEpisodesText.setText(newEpisodes < 10 ? String
-						.valueOf(newEpisodes) : "+");
+			int newEpisodes = cursor.getNewEpisodes();
+			if (newEpisodes > 9) {
+				newEpisodesText.setText("+");
+				newEpisodesText.setVisibility(View.VISIBLE);
+			} else if (newEpisodes > 0) {
+				newEpisodesText.setText(String.valueOf(newEpisodes));
 				newEpisodesText.setVisibility(View.VISIBLE);
 			} else {
 				newEpisodesText.setVisibility(View.INVISIBLE);
@@ -267,7 +267,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 			ImageView podcastLogo = (ImageView) view
 					.findViewById(R.id.podcast_logo);
-			Long podcastId = cursor.getLong(cursor.getColumnIndex(Podcast._ID));
+			Long podcastId = cursor.getId();
 			if (!podcastId.equals(podcastLogo.getTag(R.id.podcast_logo))) {
 				podcastLogo.setTag(R.id.podcast_logo, podcastId);
 				Bitmap podcastLogoBitmap = Utils.getPodcastLogoBitmap(context,
