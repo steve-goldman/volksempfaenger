@@ -10,7 +10,6 @@ import java.util.WeakHashMap;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
@@ -40,7 +39,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -265,10 +263,11 @@ public class SubscriptionGridFragment extends Fragment implements
 				newEpisodesText.setVisibility(View.INVISIBLE);
 			}
 
-			ImageView podcastLogo = (ImageView) view
+			PodcastLogoView podcastLogo = (PodcastLogoView) view
 					.findViewById(R.id.podcast_logo);
-			Long podcastId = cursor.getId();
-			if (!podcastId.equals(podcastLogo.getTag(R.id.podcast_logo))) {
+			podcastLogo.setPodcastId(cursor.getId());
+			
+			/*if (!podcastId.equals(podcastLogo.getTag(R.id.podcast_logo))) {
 				podcastLogo.setTag(R.id.podcast_logo, podcastId);
 				Bitmap podcastLogoBitmap = Utils.getPodcastLogoBitmap(context,
 						podcastId, logoCache);
@@ -277,7 +276,7 @@ public class SubscriptionGridFragment extends Fragment implements
 				} else {
 					podcastLogo.setImageBitmap(podcastLogoBitmap);
 				}
-			}
+			}*/
 		}
 	}
 
