@@ -32,6 +32,7 @@ public class DownloadListFragment extends ListFragment implements
 		super.onActivityCreated(savedInstanceState);
 		setListAdapter(adapter);
 		setListShown(false);
+		setEmptyText(getText(R.string.message_no_downloads));
 		getLoaderManager().initLoader(0, null, this);
 	}
 
@@ -84,7 +85,6 @@ public class DownloadListFragment extends ListFragment implements
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		setListShown(false);
 		adapter.swapCursor(null);
 	}
 

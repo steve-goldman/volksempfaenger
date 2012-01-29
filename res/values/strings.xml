@@ -91,5 +91,6 @@
     <string name="dialog_choose_opml">Choose OPML file</string>
     <string name="button_import">Import</string>
     <string name="dialog_choose_import_feeds">Choose feeds to import</string>
+    <string name="message_no_downloads">No downloads</string>
 
 </resources>

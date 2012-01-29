@@ -196,14 +196,26 @@ public class QueryHelper extends ContentProviderHelper {
 			Cursor dlCursor;
 			cursor = null;
 			Query query = new DownloadManager.Query();
-			long[] ids = new long[dbCursor.getCount()];
-			int downloadIdColumn = dbCursor.getColumnIndex(Episode.DOWNLOAD_ID);
-			while (dbCursor.moveToNext()) {
-				ids[dbCursor.getPosition()] = dbCursor
-						.getLong(downloadIdColumn);
+			if (dbCursor.getCount() > 0) {
+				long[] ids = new long[dbCursor.getCount()];
+				int downloadIdColumn = dbCursor
+						.getColumnIndex(Episode.DOWNLOAD_ID);
+				while (dbCursor.moveToNext()) {
+					ids[dbCursor.getPosition()] = dbCursor
+							.getLong(downloadIdColumn);
+				}
+				dbCursor.moveToPosition(-1);
+
+				query.setFilterById(ids);
+			} else {
+				// WORKAROUND TODO
+				// Apparently the DownloadManager crashes when given an empty
+				// array.
+				// As a workaround in this case we simply filter by id -1.
+				// Let's hope this works ;-)
+				query.setFilterById(new long[] { -1 });
 			}
-			dbCursor.moveToPosition(-1);
-			query.setFilterById(ids);
+
 			dlCursor = dlManager.query(query);
 			cursor = new EpisodeWithDownloadCursor(dbCursor, dlCursor);
 		}
