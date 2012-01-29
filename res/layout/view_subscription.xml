@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <net.x4a42.volksempfaenger.ui.SquareView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <net.x4a42.volksempfaenger.ui.PodcastLogoView
+                android:id="@+id/podcast_logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
+        </net.x4a42.volksempfaenger.ui.SquareView>
+
+        <net.x4a42.volksempfaenger.ui.SquareView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/podcast_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#DDD"
+                android:maxLines="9"
+                android:padding="4dp"
+                android:text="TextView" />
+        </net.x4a42.volksempfaenger.ui.SquareView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#BBB" />
+
+    <ListView
+        android:id="@+id/episode_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+    </ListView>
+
+    <include layout="@layout/nowplaying_fragment" />
+
+</LinearLayout>
