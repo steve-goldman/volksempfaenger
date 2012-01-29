@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="settings_interval_choices">
+        <item>Manuell</item>
+        <item>Stündlich</item>
+        <item>Alle zwei Stunden</item>
+        <item>Alle vier Stunden</item>
+        <item>Alle acht Stundne</item>
+        <item>Alle zwölf Stunden</item>
+        <item>Täglich</item>
+    </string-array>
+    <!-- We need to use a string-array here as ListPreference breaks otherwise -->
+    <string-array name="settings_interval_values">
+
+        <!-- in milliseconds -->
+        <item>0</item>
+        <item>3600000</item>
+        <item>7200000</item>
+        <item>14400000</item>
+        <item>28800000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+    </string-array>
+
+</resources>
