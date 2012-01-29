@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -8,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -20,8 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -31,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -47,9 +42,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			+ Episode._ID + " DESC";
 
 	private long id;
-	private Bitmap podcastLogoBitmap;
 
-	private ImageView podcastLogo;
+	private PodcastLogoView podcastLogo;
 	private TextView podcastDescription;
 	private ListView episodeList;
 	private Cursor episodeCursor;
@@ -81,7 +75,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		podcastLogo = (ImageView) findViewById(R.id.podcast_logo);
+		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
@@ -97,6 +91,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			finish();
 			return;
 		}
+
+		podcastLogo.setPodcastId(id);
 
 		episodeCursor = managedQuery(
 				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
@@ -119,24 +115,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		updatePodcastDescription(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
 
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, id);
-		if (podcastLogoFile.isFile()) {
-			Bitmap old = podcastLogoBitmap;
-			podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
-					.getAbsolutePath());
-			podcastLogo.setImageBitmap(podcastLogoBitmap);
-			if (old != null) {
-				old.recycle();
-			}
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (podcastLogoBitmap != null) {
-			podcastLogoBitmap.recycle();
-		}
 	}
 
 	private void updatePodcastDescription(String description) {
