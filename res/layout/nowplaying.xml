@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <ImageView
+        <net.x4a42.volksempfaenger.ui.PodcastLogoView
             android:id="@+id/logo"
             android:layout_width="48dp"
             android:layout_height="48dp"

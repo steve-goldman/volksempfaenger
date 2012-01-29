@@ -1,7 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -30,7 +29,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	private boolean isPlaying;
 	private long episodeId = -1;
-	private ImageView logo;
+	private PodcastLogoView logo;
 	private LinearLayout info;
 	private TextView episode;
 	private TextView podcast;
@@ -48,7 +47,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.nowplaying, container, false);
 
-		logo = (ImageView) view.findViewById(R.id.logo);
+		logo = (PodcastLogoView) view.findViewById(R.id.logo);
 		info = (LinearLayout) view.findViewById(R.id.info);
 		episode = (TextView) view.findViewById(R.id.episode);
 		podcast = (TextView) view.findViewById(R.id.podcast);
@@ -140,8 +139,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 					.getColumnIndex(Episode.TITLE)));
 			podcast.setText(cursor.getString(cursor
 					.getColumnIndex(Episode.PODCAST_TITLE)));
-			logo.setImageBitmap(Utils.getPodcastLogoBitmap(getActivity(),
-					cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID))));
+			logo.setPodcastId(cursor.getLong(cursor
+					.getColumnIndex(Episode.PODCAST_ID)));
 
 			getView().setVisibility(View.VISIBLE);
 		} else {
