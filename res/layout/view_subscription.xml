@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" >
 
-            <ImageView
+            <net.x4a42.volksempfaenger.ui.PodcastLogoView
                 android:id="@+id/podcast_logo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
