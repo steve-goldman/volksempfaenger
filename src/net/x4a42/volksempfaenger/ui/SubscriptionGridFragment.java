@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
@@ -24,7 +22,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -232,9 +229,6 @@ public class SubscriptionGridFragment extends Fragment implements
 	}
 
 	private class Adapter extends SimpleCursorAdapter {
-
-		// TODO: there must be a better way to do this...
-		private Map<Long, Bitmap> logoCache;
 		private PodcastCursor cursor;
 
 		public Adapter(PodcastCursor cursor) {
@@ -242,7 +236,6 @@ public class SubscriptionGridFragment extends Fragment implements
 					new String[] { Podcast.TITLE },
 					new int[] { R.id.podcast_title });
 			this.cursor = cursor;
-			logoCache = new WeakHashMap<Long, Bitmap>(cursor.getCount());
 		}
 
 		@Override
@@ -266,17 +259,6 @@ public class SubscriptionGridFragment extends Fragment implements
 			PodcastLogoView podcastLogo = (PodcastLogoView) view
 					.findViewById(R.id.podcast_logo);
 			podcastLogo.setPodcastId(cursor.getId());
-			
-			/*if (!podcastId.equals(podcastLogo.getTag(R.id.podcast_logo))) {
-				podcastLogo.setTag(R.id.podcast_logo, podcastId);
-				Bitmap podcastLogoBitmap = Utils.getPodcastLogoBitmap(context,
-						podcastId, logoCache);
-				if (podcastLogoBitmap == null) {
-					podcastLogo.setImageResource(R.drawable.default_logo);
-				} else {
-					podcastLogo.setImageBitmap(podcastLogoBitmap);
-				}
-			}*/
 		}
 	}
 
