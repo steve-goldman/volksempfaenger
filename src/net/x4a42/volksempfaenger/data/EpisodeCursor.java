@@ -1,8 +1,11 @@
 package net.x4a42.volksempfaenger.data;
 
+import java.io.File;
+
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import android.database.Cursor;
 import android.database.CursorWrapper;
+import android.net.Uri;
 
 public class EpisodeCursor extends CursorWrapper {
 
@@ -81,11 +84,20 @@ public class EpisodeCursor extends CursorWrapper {
 		}
 	}
 
-	public String getDownloadFile() {
+	public String getDownloadFileString() {
 		if (isNull(COLUMN_DOWNLOAD_FILE)) {
 			return null;
 		} else {
 			return getString(COLUMN_DOWNLOAD_FILE);
+		}
+	}
+
+	public File getDownloadFile() {
+		String file = getDownloadFileString();
+		if (file == null) {
+			return null;
+		} else {
+			return new File(file);
 		}
 	}
 
@@ -109,7 +121,7 @@ public class EpisodeCursor extends CursorWrapper {
 		}
 	}
 
-	public String getDownloadUri() {
+	public String getDownloadUriString() {
 		if (isNull(COLUMN_DOWNLOAD_URI)) {
 			return null;
 		} else {
@@ -117,12 +129,21 @@ public class EpisodeCursor extends CursorWrapper {
 		}
 	}
 
-	public long getDurationListened() {
-		return getLong(COLUMN_DURATION_LISTENED);
+	public Uri getDownloadUri() {
+		String uri = getDownloadUriString();
+		if (uri == null) {
+			return null;
+		} else {
+			return Uri.parse(uri);
+		}
 	}
 
-	public long getDurationTotal() {
-		return getLong(COLUMN_DURATION_TOTAL);
+	public int getDurationListened() {
+		return getInt(COLUMN_DURATION_LISTENED);
+	}
+
+	public int getDurationTotal() {
+		return getInt(COLUMN_DURATION_TOTAL);
 	}
 
 	public long getEnclosureId() {

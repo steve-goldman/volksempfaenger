@@ -11,6 +11,7 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
@@ -31,7 +32,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -77,7 +77,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private Handler updateHandler;
 
 	private long id;
-	private Cursor cursor;
+	private EpisodeCursor cursor;
 	private Bitmap podcastLogoBitmap;
 
 	private ImageView podcastLogo;
@@ -159,16 +159,19 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			cursor.close();
 		}
 
-		cursor = managedQuery(ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.EPISODE_URI, id), new String[] {
-				Episode._ID, Episode.TITLE, Episode.DESCRIPTION,
-				Episode.STATUS, Episode.DATE, Episode.DURATION_TOTAL,
-				Episode.DURATION_LISTENED, Episode.PODCAST_ID,
-				Episode.PODCAST_TITLE, Episode.PODCAST_DESCRIPTION,
-				Episode.DOWNLOAD_ID, Episode.DOWNLOAD_DONE,
-				Episode.DOWNLOAD_FILE, Episode.DOWNLOAD_STATUS,
-				Episode.DOWNLOAD_TOTAL, Episode.ENCLOSURE_ID }, null, null,
-				null);
+		{
+			Cursor c = managedQuery(ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.EPISODE_URI, id),
+					new String[] { Episode._ID, Episode.TITLE,
+							Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
+							Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
+							Episode.PODCAST_ID, Episode.PODCAST_TITLE,
+							Episode.PODCAST_DESCRIPTION, Episode.DOWNLOAD_ID,
+							Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_FILE,
+							Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
+							Episode.ENCLOSURE_ID }, null, null, null);
+			cursor = new EpisodeCursor(c);
+		}
 
 		if (!cursor.moveToFirst()) {
 			// ID does not exist
@@ -177,18 +180,18 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 
 		if (service != null && service.isPlaying()
-				&& service.getCurrentEpisode() == getEpisodeId()) {
+				&& service.getCurrentEpisode() == cursor.getId()) {
 			setPlaying();
 		}
 
-		podcastTitle.setText(getPodcastTitle());
+		podcastTitle.setText(cursor.getPodcastTitle());
 		podcastLogo.setImageBitmap(getPodcastLogoBitmap());
-		podcastDescription.setText(getPodcastDescription());
-		episodeTitle.setText(getEpisodeTitle());
-		seekBar.setMax(getDurationTotal());
-		seekBar.setProgress(getDurationListened());
-		textPosition.setText(formatTime(getDurationListened()));
-		textDuration.setText(formatTime(getDurationTotal()));
+		podcastDescription.setText(cursor.getPodcastDescription());
+		episodeTitle.setText(cursor.getTitle());
+		seekBar.setMax(cursor.getDurationTotal());
+		seekBar.setProgress(cursor.getDurationListened());
+		textPosition.setText(formatTime(cursor.getDurationListened()));
+		textDuration.setText(formatTime(cursor.getDurationTotal()));
 		updateEpisodeDescription();
 	}
 
@@ -229,7 +232,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return true;
 
 		case R.id.item_download:
-			if (getEnclosureId() != 0) {
+			if (cursor.getEnclosureId() != 0) {
 				// there is an preferred enclosure
 				downloadEnclosure();
 			} else {
@@ -271,7 +274,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			File f = getDownloadFile();
+			File f = cursor.getDownloadFile();
 			if (f != null && f.isFile()) {
 				f.delete();
 			}
@@ -280,7 +283,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			getContentResolver().update(
 					ContentUris.withAppendedId(
 							VolksempfaengerContentProvider.EPISODE_URI,
-							getEpisodeId()), values, null, null);
+							cursor.getId()), values, null, null);
 			// TODO remove from DownloadManager
 			return true;
 
@@ -292,17 +295,17 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private void downloadEnclosure(long... v) {
 		if (v == null || v.length == 0) {
-			v = new long[] { getEnclosureId() };
+			v = new long[] { cursor.getEnclosureId() };
 		} else if (v.length == 1) {
 			ContentValues values = new ContentValues();
 			values.put(Episode.ENCLOSURE_ID, v[0]);
 			getContentResolver().update(
 					ContentUris.withAppendedId(
 							VolksempfaengerContentProvider.EPISODE_URI,
-							getEpisodeId()), values, null, null);
+							cursor.getId()), values, null, null);
 		}
 		Intent intent = new Intent(this, DownloadService.class);
-		intent.putExtra("id", new long[] { getEpisodeId() });
+		intent.putExtra("id", new long[] { cursor.getId() });
 		startService(intent);
 		// the service will send a Toast as user feedback
 	}
@@ -322,13 +325,15 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				if (startedPlaying) {
 					togglePlayPause();
 				} else {
-					if (getEpisodeStatus() < Constants.EPISODE_STATE_READY
-							|| getDownloadFile() == null
-							|| !getDownloadFile().isFile()) {
+					if (cursor.getStatus() < Constants.EPISODE_STATE_READY
+							|| cursor.getDownloadFile() == null
+							|| !cursor.getDownloadFile().isFile()) {
 						// enclosure file does not exist
 						// TODO: auto download, streaming?
-						Log.d(TAG, "getEpisodeStatus(): " + getEpisodeStatus());
-						Log.d(TAG, "getEnclosureFile(): " + getDownloadFile());
+						Log.d(TAG, "getEpisodeStatus(): " + cursor.getStatus());
+						Log.d(TAG,
+								"getEnclosureFile(): "
+										+ cursor.getDownloadFile());
 						Toast.makeText(this,
 								R.string.message_enclosure_file_not_available,
 								Toast.LENGTH_SHORT).show();
@@ -336,7 +341,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 						try {
 							service.playEpisode(ContentUris.withAppendedId(
 									VolksempfaengerContentProvider.EPISODE_URI,
-									getEpisodeId()));
+									cursor.getId()));
 							startedPlaying = true;
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block
@@ -437,7 +442,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		service = ((PlaybackBinder) binder).getService();
 		service.addOnPlayerEventListener(this);
 		if (service.isPlaying()
-				&& service.getCurrentEpisode() == getEpisodeId()) {
+				&& service.getCurrentEpisode() == cursor.getId()) {
 			setPlaying();
 		}
 		bound = true;
@@ -491,13 +496,13 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private void updateEpisodeDescription() {
-		Spanned s = Html.fromHtml(getEpisodeDescription());
+		Spanned s = Html.fromHtml(cursor.getDescription());
 		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
 				: new SpannableStringBuilder(s);
 		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
 				CharacterStyle.class).length == 0) {
 			// use the normal text as there is no html
-			episodeDescription.setText(getEpisodeDescription());
+			episodeDescription.setText(cursor.getDescription());
 		} else {
 			episodeDescription.setText(descriptionSpanned);
 			new ImageLoadTask().execute();
@@ -602,22 +607,9 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 	}
 
-	/* Podcast getters */
-	protected long getPodcastId() {
-		return cursor.getLong(cursor.getColumnIndex(Episode.PODCAST_ID));
-	}
-
-	protected String getPodcastTitle() {
-		return cursor.getString(cursor.getColumnIndex(Episode.PODCAST_TITLE));
-	}
-
-	protected String getPodcastDescription() {
-		return cursor.getString(cursor
-				.getColumnIndex(Episode.PODCAST_DESCRIPTION));
-	}
-
-	protected Bitmap getPodcastLogoBitmap() {
-		File podcastLogoFile = Utils.getPodcastLogoFile(this, getPodcastId());
+	public Bitmap getPodcastLogoBitmap() {
+		File podcastLogoFile = Utils.getPodcastLogoFile(this,
+				cursor.getPodcastId());
 		Bitmap old = podcastLogoBitmap;
 		if (podcastLogoFile.isFile()) {
 			podcastLogoBitmap = BitmapFactory.decodeFile(podcastLogoFile
@@ -632,57 +624,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				old.recycle();
 			}
 		}
-	}
-
-	/* Episode getters */
-	protected long getEpisodeId() {
-		return id;
-	}
-
-	protected String getEpisodeTitle() {
-		return cursor.getString(cursor.getColumnIndex(Episode.TITLE));
-	}
-
-	protected String getEpisodeDescription() {
-		return cursor.getString(cursor.getColumnIndex(Episode.DESCRIPTION));
-	}
-
-	protected int getEpisodeStatus() {
-		return cursor.getInt(cursor.getColumnIndex(Episode.STATUS));
-	}
-
-	protected long getEpisodeDate() {
-		return cursor.getLong(cursor.getColumnIndex(Episode.DATE));
-	}
-
-	/* Enclosure getters */
-	private long getEnclosureId() {
-		return cursor.getLong(cursor.getColumnIndex(Episode.ENCLOSURE_ID));
-	}
-
-	private File getDownloadFile() {
-		Uri uri = getDownloadUri();
-		if (uri == null) {
-			return null;
-		}
-		return new File(uri.getPath());
-	}
-
-	private Uri getDownloadUri() {
-		int cursorIndex = cursor.getColumnIndex(Episode.DOWNLOAD_URI);
-		if (!cursor.isNull(cursorIndex)) {
-			return Uri.parse(cursor.getString(cursorIndex));
-		} else {
-			return null;
-		}
-	}
-
-	private int getDurationListened() {
-		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_LISTENED));
-	}
-
-	private int getDurationTotal() {
-		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_TOTAL));
 	}
 
 }
