@@ -8,12 +8,13 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import net.x4a42.volksempfaenger.R;
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class LicenseActivity extends BaseActivity {
+public class LicenseActivity extends Activity {
 
 	private TextView textLicense;
 	private TextView textAuthors;

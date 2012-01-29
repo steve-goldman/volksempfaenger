@@ -213,7 +213,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_episode, menu);
-		BaseActivity.addGlobalMenu(this, menu);
+		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
 	}
 
@@ -285,7 +285,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return true;
 
 		default:
-			return BaseActivity.handleGlobalMenu(this, item);
+			return ActivityHelper.handleGlobalMenu(this, item);
 
 		}
 	}

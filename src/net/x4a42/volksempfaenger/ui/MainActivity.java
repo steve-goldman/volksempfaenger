@@ -150,7 +150,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		this.menu = menu;
-		BaseActivity.addGlobalMenu(this, menu);
+		ActivityHelper.addGlobalMenu(this, menu);
 		{
 			// Add debug menu item if
 			// /sdcard/Android/data/net.x4a42.volksempfaenger/debug/ exists
@@ -174,7 +174,7 @@ public class MainActivity extends FragmentActivity {
 		case android.R.id.home:
 			viewpager.setCurrentItem(0);
 		default:
-			return BaseActivity.handleGlobalMenu(this, item);
+			return ActivityHelper.handleGlobalMenu(this, item);
 		}
 	}
 

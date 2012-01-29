@@ -9,6 +9,7 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -30,7 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class EditSubscriptionActivity extends BaseActivity implements
+public class EditSubscriptionActivity extends Activity implements
 		OnClickListener {
 
 	private static final int CONTEXT_RELOAD = 0;
