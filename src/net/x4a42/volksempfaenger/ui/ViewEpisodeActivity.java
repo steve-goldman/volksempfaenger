@@ -1,8 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,27 +14,24 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
-import net.x4a42.volksempfaenger.service.PlaybackService.OnPlayerEventListener;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlayerEvent;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -50,34 +45,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewEpisodeActivity extends FragmentActivity implements
-		OnClickListener, OnSeekBarChangeListener, ServiceConnection,
-		OnPlayerEventListener {
+		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = "ViewEpisodeActivity";
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
-	private SeekBar seekBar;
-	private TextView textDuration;
-	private TextView textPosition;
-	private ImageButton buttonPlay, buttonBack, buttonForward;
-	private boolean bound = false;
-	private PlaybackService service;
-	private boolean startedPlaying = false;
-	private Handler updateHandler;
-
+	private Uri uri;
 	private long id;
-	private EpisodeCursor cursor;
+	private EpisodeCursor episodeCursor;
 	private Bitmap podcastLogoBitmap;
 
+	private Button playButton;
 	private PodcastLogoView podcastLogo;
 	private TextView podcastTitle;
 	private TextView podcastDescription;
@@ -98,36 +82,22 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
+		playButton = (Button) findViewById(R.id.play);
+		podcastLogo = (PodcastLogoView) findViewById(R.id.logo);
 		podcastTitle = (TextView) findViewById(R.id.podcast_title);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
-		seekBar = (SeekBar) findViewById(R.id.seekBar1);
-		buttonPlay = (ImageButton) findViewById(R.id.button_play);
-		buttonBack = (ImageButton) findViewById(R.id.button_back);
-		buttonForward = (ImageButton) findViewById(R.id.button_forward);
-		textDuration = (TextView) findViewById(R.id.text_duration);
-		textPosition = (TextView) findViewById(R.id.text_position);
 		contentContainer = findViewById(R.id.contentContainer);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
-		seekBar.setEnabled(false);
-		buttonBack.setEnabled(false);
-		buttonForward.setEnabled(false);
-
-		buttonPlay.setOnClickListener(this);
-		buttonBack.setOnClickListener(this);
-		buttonForward.setOnClickListener(this);
-		seekBar.setOnSeekBarChangeListener(this);
-
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
-		bindService(intent, this, BIND_AUTO_CREATE);
-		updateHandler = new Handler();
 
 		onNewIntent(getIntent());
+
+		getSupportLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -135,76 +105,24 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		super.onNewIntent(intent);
 		setIntent(intent);
 
-		// Check if there is an ID
-		Bundle extras = intent.getExtras();
-		if (extras == null) {
-			finish();
-			return;
+		uri = intent.getData();
+
+		if (uri == null) {
+			id = intent.getLongExtra("id", -1);
+			if (id == -1) {
+				finish();
+				return;
+			}
+			uri = ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.EPISODE_URI, id);
+		} else {
+			id = ContentUris.parseId(uri);
 		}
-		id = extras.getLong("id");
-		if (id <= 0) {
-			finish();
-			return;
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (cursor != null) {
-			stopManagingCursor(cursor);
-			cursor.close();
-		}
-
-		{
-			Cursor c = managedQuery(ContentUris.withAppendedId(
-					VolksempfaengerContentProvider.EPISODE_URI, id),
-					new String[] { Episode._ID, Episode.TITLE,
-							Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
-							Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
-							Episode.PODCAST_ID, Episode.PODCAST_TITLE,
-							Episode.PODCAST_DESCRIPTION, Episode.DOWNLOAD_ID,
-							Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_FILE,
-							Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
-							Episode.ENCLOSURE_ID }, null, null, null);
-			cursor = new EpisodeCursor(c);
-		}
-
-		if (!cursor.moveToFirst()) {
-			// ID does not exist
-			finish();
-			return;
-		}
-
-		if (service != null && service.isPlaying()
-				&& service.getCurrentEpisode() == cursor.getId()) {
-			setPlaying();
-		}
-
-		podcastTitle.setText(cursor.getPodcastTitle());
-		podcastLogo.setPodcastId(cursor.getPodcastId());
-		podcastDescription.setText(cursor.getPodcastDescription());
-		episodeTitle.setText(cursor.getTitle());
-		seekBar.setMax(cursor.getDurationTotal());
-		seekBar.setProgress(cursor.getDurationListened());
-		textPosition.setText(formatTime(cursor.getDurationListened()));
-		textDuration.setText(formatTime(cursor.getDurationTotal()));
-		updateEpisodeDescription();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		updateHandler.removeCallbacks(updateSliderTask);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (service != null) {
-			unbindService(this);
-		}
 		if (podcastLogoBitmap != null) {
 			podcastLogoBitmap.recycle();
 		}
@@ -230,7 +148,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return true;
 
 		case R.id.item_download:
-			if (cursor.getEnclosureId() != 0) {
+			if (episodeCursor.getEnclosureId() != 0) {
 				// there is an preferred enclosure
 				downloadEnclosure();
 			} else {
@@ -272,7 +190,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			File f = cursor.getDownloadFile();
+			File f = episodeCursor.getDownloadFile();
 			if (f != null && f.isFile()) {
 				f.delete();
 			}
@@ -281,7 +199,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			getContentResolver().update(
 					ContentUris.withAppendedId(
 							VolksempfaengerContentProvider.EPISODE_URI,
-							cursor.getId()), values, null, null);
+							episodeCursor.getId()), values, null, null);
 			// TODO remove from DownloadManager
 			return true;
 
@@ -293,165 +211,19 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private void downloadEnclosure(long... v) {
 		if (v == null || v.length == 0) {
-			v = new long[] { cursor.getEnclosureId() };
+			v = new long[] { episodeCursor.getEnclosureId() };
 		} else if (v.length == 1) {
 			ContentValues values = new ContentValues();
 			values.put(Episode.ENCLOSURE_ID, v[0]);
 			getContentResolver().update(
 					ContentUris.withAppendedId(
 							VolksempfaengerContentProvider.EPISODE_URI,
-							cursor.getId()), values, null, null);
+							episodeCursor.getId()), values, null, null);
 		}
 		Intent intent = new Intent(this, DownloadService.class);
-		intent.putExtra("id", new long[] { cursor.getId() });
+		intent.putExtra("id", new long[] { episodeCursor.getId() });
 		startService(intent);
 		// the service will send a Toast as user feedback
-	}
-
-	private Runnable updateSliderTask = new Runnable() {
-		public void run() {
-			seekBar.setProgress(service.getCurrentPosition());
-			updateHandler.postDelayed(this, 500);
-			updateTime();
-		}
-	};
-
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.button_play:
-			if (bound) {
-				if (startedPlaying) {
-					togglePlayPause();
-				} else {
-					if (cursor.getStatus() < Constants.EPISODE_STATE_READY
-							|| cursor.getDownloadFile() == null
-							|| !cursor.getDownloadFile().isFile()) {
-						// enclosure file does not exist
-						// TODO: auto download, streaming?
-						Log.d(TAG, "getEpisodeStatus(): " + cursor.getStatus());
-						Log.d(TAG,
-								"getEnclosureFile(): "
-										+ cursor.getDownloadFile());
-						Toast.makeText(this,
-								R.string.message_enclosure_file_not_available,
-								Toast.LENGTH_SHORT).show();
-					} else {
-						try {
-							service.playEpisode(ContentUris.withAppendedId(
-									VolksempfaengerContentProvider.EPISODE_URI,
-									cursor.getId()));
-							startedPlaying = true;
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-			break;
-		case R.id.button_back:
-			if (bound) {
-				int newPosition = service.getCurrentPosition() - 30000;
-				if (newPosition < 0) {
-					newPosition = 0;
-				}
-				service.seekTo(newPosition);
-			}
-			break;
-		case R.id.button_forward:
-			if (bound) {
-				int newPosition = service.getCurrentPosition() + 30000;
-				int duration = service.getDuration();
-				if (newPosition > duration) {
-					newPosition = duration - 1000;
-				}
-				service.seekTo(newPosition);
-			}
-			break;
-		}
-	}
-
-	private void togglePlayPause() {
-		if (service.isPlaying()) {
-			setButtonPlay();
-			service.pause();
-		} else {
-			setButtonPause();
-			buttonPlay.setImageResource(R.drawable.ic_media_pause);
-			service.play();
-		}
-	}
-
-	private void setPlaying() {
-		startedPlaying = true;
-		setButtonPause();
-		textDuration.setText(formatTime(service.getDuration()));
-		seekBar.setMax(service.getDuration());
-		seekBar.setEnabled(true);
-		buttonBack.setEnabled(true);
-		buttonForward.setEnabled(true);
-		updateHandler.removeCallbacks(updateSliderTask);
-		updateHandler.post(updateSliderTask);
-	}
-
-	private void setButtonPlay() {
-		buttonPlay.setImageResource(R.drawable.ic_media_play);
-	}
-
-	private void setButtonPause() {
-		buttonPlay.setImageResource(R.drawable.ic_media_pause);
-	}
-
-	public void onProgressChanged(SeekBar seekBar, int progress,
-			boolean fromUser) {
-		if (fromUser && startedPlaying) {
-			updateHandler.removeCallbacks(updateSliderTask);
-			service.seekTo(progress);
-			updateTime();
-			updateHandler.post(updateSliderTask);
-		}
-	}
-
-	public void onStartTrackingTouch(SeekBar seekBar) {
-		updateHandler.removeCallbacks(updateSliderTask);
-	}
-
-	public void onStopTrackingTouch(SeekBar seekBar) {
-	}
-
-	private void updateTime() {
-		textPosition.setText(formatTime(service.getCurrentPosition()));
-	}
-
-	private String formatTime(int milliseconds) {
-		int seconds = milliseconds / 1000;
-		int hours = seconds / 3600;
-		int minutes = (seconds / 60) - (hours * 60);
-		int seconds2 = seconds - (minutes * 60) - (hours * 3600);
-		DecimalFormat format = new DecimalFormat("00");
-		return format.format(hours) + ":" + format.format(minutes) + ":"
-				+ format.format(seconds2);
-	}
-
-	public void onServiceConnected(ComponentName name, IBinder binder) {
-		service = ((PlaybackBinder) binder).getService();
-		service.addOnPlayerEventListener(this);
-		if (service.isPlaying()
-				&& service.getCurrentEpisode() == cursor.getId()) {
-			setPlaying();
-		}
-		bound = true;
-	}
-
-	public void onServiceDisconnected(ComponentName name) {
-		Log.e(TAG, "Service disconnected");
-		bound = false;
-	}
-
-	public void onPlayerPrepared() {
 	}
 
 	private class EnclosureSimple {
@@ -491,20 +263,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 		builder.setItems(items, listener);
 		return builder.create();
-	}
-
-	private void updateEpisodeDescription() {
-		Spanned s = Html.fromHtml(cursor.getDescription());
-		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
-				: new SpannableStringBuilder(s);
-		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-				CharacterStyle.class).length == 0) {
-			// use the normal text as there is no html
-			episodeDescription.setText(cursor.getDescription());
-		} else {
-			episodeDescription.setText(descriptionSpanned);
-			new ImageLoadTask().execute();
-		}
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
@@ -584,25 +342,69 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onPlayerEvent(PlayerEvent event) {
-		switch (event) {
-		case PAUSE:
-			setButtonPlay();
-			break;
-		case PREPARE:
-			setPlaying();
-			break;
-		case STOP:
-			// TODO clean up
-			setButtonPlay();
-			seekBar.setEnabled(false);
-			buttonBack.setEnabled(false);
-			buttonForward.setEnabled(false);
-			textPosition.setText("00:00:00");
-			textDuration.setText("00:00:00");
-			startedPlaying = false;
-			break;
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		String[] projection = { Episode._ID, Episode.TITLE,
+				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
+				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
+				Episode.PODCAST_ID, Episode.PODCAST_TITLE,
+				Episode.PODCAST_DESCRIPTION, Episode.DOWNLOAD_ID,
+				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_FILE,
+				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
+				Episode.ENCLOSURE_ID };
+		return new CursorLoader(this, uri, projection, null, null, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		episodeCursor = new EpisodeCursor(cursor);
+		if (!episodeCursor.moveToFirst()) {
+			// the episode does not exist (any more)
+			finish();
+			return;
 		}
+		onEpisodeCursorChanged();
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		episodeCursor = null;
+		onEpisodeCursorChanged();
+	}
+
+	public void onEpisodeCursorChanged() {
+		if (episodeCursor == null)
+			return;
+
+		setTitle(episodeCursor.getPodcastTitle());
+		playButton.setText("Play"); // TODO resource and toggle
+
+		podcastTitle.setText(episodeCursor.getPodcastTitle());
+		podcastLogo.setPodcastId(episodeCursor.getPodcastId());
+		podcastDescription.setText(episodeCursor.getPodcastDescription());
+		episodeTitle.setText(episodeCursor.getTitle());
+
+		Spanned s = Html.fromHtml(episodeCursor.getDescription());
+		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+				: new SpannableStringBuilder(s);
+		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+				CharacterStyle.class).length == 0) {
+			// use the normal text as there is no html
+			episodeDescription.setText(episodeCursor.getDescription());
+		} else {
+			episodeDescription.setText(descriptionSpanned);
+			new ImageLoadTask().execute();
+		}
+	}
+
+	public void onClickPlay(View v) {
+		Intent intent = new Intent(this, PlaybackService.class);
+		intent.setAction(PlaybackService.ACTION_PLAY);
+		intent.setData(uri);
+		startService(intent);
+	}
+
+	public Uri getUri() {
+		return uri;
 	}
 
 }
