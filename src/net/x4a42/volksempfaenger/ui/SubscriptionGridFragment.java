@@ -24,6 +24,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -36,12 +40,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class SubscriptionGridFragment extends Fragment implements
-		OnItemClickListener {
+		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
@@ -50,7 +53,6 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final String PODCAST_ORDER = "title ASC";
 
-	private PodcastCursor cursor;
 	private GridView subscriptionList;
 	private Adapter adapter;
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
@@ -59,16 +61,7 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-
-		{
-			Cursor c = getActivity().managedQuery(
-					VolksempfaengerContentProvider.PODCAST_URI,
-					new String[] { Podcast._ID, Podcast.TITLE,
-							Podcast.NEW_EPISODES }, null, null, PODCAST_ORDER);
-			cursor = new PodcastCursor(c);
-		}
-
-		adapter = new Adapter(cursor);
+		adapter = new Adapter();
 	}
 
 	@Override
@@ -85,6 +78,12 @@ public class SubscriptionGridFragment extends Fragment implements
 		subscriptionList.setAdapter(adapter);
 
 		return view;
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -229,19 +228,17 @@ public class SubscriptionGridFragment extends Fragment implements
 	}
 
 	private class Adapter extends SimpleCursorAdapter {
-		private PodcastCursor cursor;
 
-		public Adapter(PodcastCursor cursor) {
-			super(getActivity(), R.layout.subscription_list_row, cursor,
+		public Adapter() {
+			super(getActivity(), R.layout.subscription_list_row, null,
 					new String[] { Podcast.TITLE },
-					new int[] { R.id.podcast_title });
-			this.cursor = cursor;
+					new int[] { R.id.podcast_title }, 0);
 		}
 
 		@Override
 		public void bindView(View view, Context context, Cursor c) {
-
-			super.bindView(view, context, cursor);
+			super.bindView(view, context, c);
+			PodcastCursor cursor = (PodcastCursor) c;
 
 			TextView newEpisodesText = (TextView) view
 					.findViewById(R.id.new_episodes);
@@ -262,4 +259,21 @@ public class SubscriptionGridFragment extends Fragment implements
 		}
 	}
 
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new CursorLoader(getActivity(),
+				VolksempfaengerContentProvider.PODCAST_URI, new String[] {
+						Podcast._ID, Podcast.TITLE, Podcast.NEW_EPISODES },
+				null, null, PODCAST_ORDER);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		adapter.swapCursor(new PodcastCursor(data));
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		adapter.swapCursor(null);
+	}
 }
