@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#333"
     android:orientation="vertical" >
 
     <View
@@ -11,6 +10,7 @@
         android:background="#09c" />
 
     <LinearLayout
+        android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -22,7 +22,7 @@
             android:background="@android:color/white" />
 
         <LinearLayout
-            android:id="@+id/info"
+            android:id="@+id/episode_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -39,7 +39,6 @@
                 android:gravity="bottom"
                 android:singleLine="true"
                 android:text="Episode Name"
-                android:textColor="#eee"
                 android:textStyle="bold" />
 
             <TextView
@@ -50,15 +49,70 @@
                 android:ellipsize="marquee"
                 android:gravity="top"
                 android:singleLine="true"
-                android:text="Podcast"
-                android:textColor="#eee" />
+                android:text="Podcast" />
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/playpause"
+            android:id="@+id/info_pause"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:src="@drawable/pause" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" >
+    </SeekBar>
+
+    <LinearLayout
+        android:id="@+id/controls"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1" >
+
+        <TextView
+            android:id="@+id/position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="00:00:00" >
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_media_rew" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_media_pause" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_media_ff" >
+        </ImageButton>
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="00:00:00" >
+        </TextView>
     </LinearLayout>
 
 </LinearLayout>

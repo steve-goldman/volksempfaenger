@@ -1,44 +1,62 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.text.DecimalFormat;
+
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
-import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
+import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService;
-import net.x4a42.volksempfaenger.service.PlaybackService.OnPlayerEventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlayerEvent;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class NowPlayingFragment extends Fragment implements ServiceConnection,
-		OnPlayerEventListener, OnClickListener {
+		OnClickListener, OnSeekBarChangeListener, EventListener {
 
+	private Uri episodeUri;
 	private boolean isPlaying;
-	private long episodeId = -1;
-	private PodcastLogoView logo;
+
 	private LinearLayout info;
+	private PodcastLogoView logo;
+	private LinearLayout episodeInfo;
 	private TextView episode;
 	private TextView podcast;
-	private ImageView playpause;
-	private PlaybackService service;
+	private ImageView infoPause;
+	private SeekBar seekbar;
+	private LinearLayout controls;
+	private TextView position;
+	private ImageButton back;
+	private ImageButton pause;
+	private ImageButton forward;
+	private TextView duration;
+
+	private PlaybackRemote remote;
+	private Handler updateHandler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		updateHandler = new Handler();
 		onServiceDisconnected(null);
 	}
 
@@ -47,16 +65,32 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.nowplaying, container, false);
 
-		logo = (PodcastLogoView) view.findViewById(R.id.logo);
 		info = (LinearLayout) view.findViewById(R.id.info);
+		logo = (PodcastLogoView) view.findViewById(R.id.logo);
+		episodeInfo = (LinearLayout) view.findViewById(R.id.episode_info);
 		episode = (TextView) view.findViewById(R.id.episode);
 		podcast = (TextView) view.findViewById(R.id.podcast);
-		playpause = (ImageView) view.findViewById(R.id.playpause);
+		infoPause = (ImageView) view.findViewById(R.id.info_pause);
+		seekbar = (SeekBar) view.findViewById(R.id.seekbar);
+		controls = (LinearLayout) view.findViewById(R.id.controls);
+		position = (TextView) view.findViewById(R.id.position);
+		back = (ImageButton) view.findViewById(R.id.back);
+		pause = (ImageButton) view.findViewById(R.id.pause);
+		forward = (ImageButton) view.findViewById(R.id.forward);
+		duration = (TextView) view.findViewById(R.id.duration);
 
-		info.setClickable(true);
-		info.setOnClickListener(this);
-		playpause.setClickable(true);
-		playpause.setOnClickListener(this);
+		episodeInfo.setClickable(true);
+		episodeInfo.setOnClickListener(this);
+		infoPause.setClickable(true);
+		infoPause.setOnClickListener(this);
+		seekbar.setEnabled(true);
+		seekbar.setOnSeekBarChangeListener(this);
+		back.setClickable(true);
+		back.setOnClickListener(this);
+		pause.setClickable(true);
+		pause.setOnClickListener(this);
+		forward.setClickable(true);
+		forward.setOnClickListener(this);
 
 		return view;
 	}
@@ -65,11 +99,12 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	public void onResume() {
 		super.onResume();
 
-		if (service == null) {
+		if (remote == null) {
 			onServiceDisconnected(null);
 		} else {
-			service.addOnPlayerEventListener(this);
-			onPlayerEvent(null);
+			startUpdater();
+			remote.registerEventListener(this);
+			onPlaybackEvent(null);
 		}
 	}
 
@@ -77,8 +112,10 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	public void onPause() {
 		super.onPause();
 
-		if (service != null) {
-			service.removeOnPlayerEventListener(this);
+		stopUpdater();
+
+		if (remote != null) {
+			remote.unregisterEventListener(this);
 		}
 	}
 
@@ -86,7 +123,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (service != null) {
+		if (remote != null) {
 			getActivity().unbindService(this);
 		}
 	}
@@ -94,14 +131,14 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		System.out.println(name);
-		service = ((PlaybackBinder) binder).getService();
-		service.addOnPlayerEventListener(this);
-		onPlayerEvent(null);
+		remote = ((PlaybackBinder) binder).getRemote();
+		remote.registerEventListener(this);
+		onPlaybackEvent(null);
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
-		service = null;
+		remote = null;
 
 		Intent intent = new Intent(getActivity(), PlaybackService.class);
 		getActivity().startService(intent);
@@ -109,63 +146,174 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	@Override
-	public void onPlayerEvent(PlayerEvent event) {
-		if (service.isPlaying() == isPlaying && isPlaying
-				&& service.getCurrentEpisode() == episodeId) {
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.episode_info:
+			onClickInfo(v);
+			break;
+		case R.id.info_pause:
+		case R.id.pause:
+			onClickPause(v);
+			break;
+		case R.id.back:
+			onClickBack(v);
+			break;
+		case R.id.forward:
+			onClickForward(v);
+			break;
+		}
+	}
+
+	public void onClickInfo(View v) {
+		Intent intent = new Intent(getActivity(), ViewEpisodeActivity.class);
+		if (remote != null) {
+			intent.setData(remote.getEpisodeUri());
+		}
+		startActivity(intent);
+	}
+
+	public void onClickPause(View v) {
+		if (remote != null) {
+			remote.pause();
+		}
+	}
+
+	public void onClickBack(View v) {
+		if (remote != null) {
+			remote.movePosition(-30000);
+		}
+	}
+
+	public void onClickForward(View v) {
+		if (remote != null) {
+			remote.movePosition(30000);
+		}
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		if (fromUser) {
+			// updateHandler.removeCallbacks(updateSliderTask);
+			remote.seekTo(progress);
+			updateTime();
+			// updateHandler.post(updateSliderTask);
+		}
+
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// updateHandler.removeCallbacks(updateSliderTask);
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
+
+	private void hideFragment() {
+		getView().setVisibility(View.GONE);
+	}
+
+	private void showFragment() {
+		getView().setVisibility(View.VISIBLE);
+	}
+
+	private void hideExtendedControls() {
+		seekbar.setVisibility(View.GONE);
+		controls.setVisibility(View.GONE);
+	}
+
+	private void showExtendedControls(EpisodeCursor cursor) {
+		startUpdater();
+		seekbar.setMax(cursor.getDurationTotal());
+		seekbar.setProgress(cursor.getDurationListened());
+		seekbar.setMax(remote.getDuration());
+		position.setText(formatTime(cursor.getDurationListened()));
+		duration.setText(formatTime(cursor.getDurationTotal()));
+		seekbar.setVisibility(View.VISIBLE);
+		controls.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void onPlaybackEvent(Event event) {
+		if (remote.isPlaying() == isPlaying && isPlaying
+				&& remote.getEpisodeUri().equals(episodeUri)) {
 			// nothing changed
 			return;
 		}
 
-		isPlaying = service.isPlaying();
+		isPlaying = remote.isPlaying();
+		episodeUri = remote.getEpisodeUri();
 
-		if (service.isPlaying()) {
-			episodeId = service.getCurrentEpisode();
-
-			Cursor cursor;
+		if (isPlaying) {
+			EpisodeCursor cursor;
 			{
 				String[] projection = { Episode.TITLE, Episode.PODCAST_ID,
-						Episode.PODCAST_TITLE };
-				cursor = getActivity().managedQuery(
-						ContentUris.withAppendedId(
-								VolksempfaengerContentProvider.EPISODE_URI,
-								episodeId), projection, null, null, null);
+						Episode.PODCAST_TITLE, Episode.DURATION_LISTENED,
+						Episode.DURATION_TOTAL };
+				cursor = new EpisodeCursor(getActivity().managedQuery(
+						episodeUri, projection, null, null, null));
 			}
 
 			if (!cursor.moveToFirst()) {
 				throw new IllegalArgumentException("Episode not found");
 			}
 
-			episode.setText(cursor.getString(cursor
-					.getColumnIndex(Episode.TITLE)));
-			podcast.setText(cursor.getString(cursor
-					.getColumnIndex(Episode.PODCAST_TITLE)));
-			logo.setPodcastId(cursor.getLong(cursor
-					.getColumnIndex(Episode.PODCAST_ID)));
+			episode.setText(cursor.getTitle());
+			podcast.setText(cursor.getPodcastTitle());
+			logo.setPodcastId(cursor.getPodcastId());
 
-			getView().setVisibility(View.VISIBLE);
+			if (getActivity() instanceof ViewEpisodeActivity) {
+				ViewEpisodeActivity activity = (ViewEpisodeActivity) getActivity();
+				Uri activityUri = activity.getUri();
+				Uri remoteUri = remote.getEpisodeUri();
+				if (activityUri != null && remoteUri != null
+						&& remoteUri.equals(activityUri)) {
+					showExtendedControls(cursor);
+				} else {
+					hideExtendedControls();
+				}
+			} else {
+				hideExtendedControls();
+			}
+
+			showFragment();
 		} else {
-			episodeId = -1;
-			getView().setVisibility(View.GONE);
-		}
-
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.info:
-			if (episodeId != -1) {
-				Intent intent = new Intent(getActivity(),
-						ViewEpisodeActivity.class);
-				intent.putExtra("id", episodeId);
-				startActivity(intent);
-			}
-			break;
-		case R.id.playpause:
-			if (service != null) {
-				service.pause();
-			}
-			break;
+			episodeUri = null;
+			hideFragment();
 		}
 	}
+
+	private Runnable updateSliderTask = new Runnable() {
+		public void run() {
+			seekbar.setProgress(remote.getPosition());
+			updateHandler.postDelayed(this, 500);
+			updateTime();
+		}
+	};
+
+	private void startUpdater() {
+		stopUpdater();
+		updateHandler.post(updateSliderTask);
+	}
+
+	private void stopUpdater() {
+		updateHandler.removeCallbacks(updateSliderTask);
+	}
+
+	private void updateTime() {
+		position.setText(formatTime(remote.getPosition()));
+	}
+
+	private static String formatTime(int milliseconds) {
+		int seconds = milliseconds / 1000;
+		int hours = seconds / 3600;
+		int minutes = (seconds / 60) - (hours * 60);
+		int seconds2 = seconds - (minutes * 60) - (hours * 3600);
+		DecimalFormat format = new DecimalFormat("00");
+		return format.format(hours) + ":" + format.format(minutes) + ":"
+				+ format.format(seconds2);
+	}
+
 }

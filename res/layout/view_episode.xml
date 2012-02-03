@@ -22,7 +22,7 @@
                 android:orientation="horizontal" >
 
                 <net.x4a42.volksempfaenger.ui.PodcastLogoView
-                    android:id="@+id/podcast_logo"
+                    android:id="@+id/logo"
                     style="@style/podcastLogoLarge" />
 
                 <LinearLayout
@@ -53,6 +53,12 @@
                 android:layout_marginTop="12sp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
+            <Button
+                android:id="@+id/play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickPlay" />
+
             <TextView
                 android:id="@+id/episode_description"
                 android:layout_width="match_parent"
@@ -64,69 +70,6 @@
             </TextView>
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_weight="1" >
-
-            <TextView
-                android:id="@+id/text_position"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="00:00:00" >
-            </TextView>
-
-            <ImageButton
-                android:id="@+id/button_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_media_rew" >
-            </ImageButton>
-
-            <ImageButton
-                android:id="@+id/button_play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_media_play" >
-            </ImageButton>
-
-            <ImageButton
-                android:id="@+id/button_forward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_media_ff" >
-            </ImageButton>
-
-            <TextView
-                android:id="@+id/text_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="00:00:00" >
-            </TextView>
-        </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/seekBar1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1" >
-        </SeekBar>
-    </LinearLayout>
 
     <include layout="@layout/nowplaying_fragment" />
 
