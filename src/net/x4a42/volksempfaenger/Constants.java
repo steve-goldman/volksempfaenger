@@ -6,4 +6,9 @@ public final class Constants {
 
 	// Extras
 	public final static String EXTRA_OI_TITLE = "org.openintents.extra.TITLE";
+
+	// URLs
+	public static final String URL_BUGTRACKER = "https://bitbucket.org/julianbrost/volksempfaenger/issues";
+	public static final String URL_WEBSITE = "https://bitbucket.org/julianbrost/volksempfaenger";
+	public static final String URL_WIKI = "https://bitbucket.org/julianbrost/volksempfaenger/wiki";
 }
