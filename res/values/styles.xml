@@ -18,6 +18,7 @@
 
     <style name="podcastLogo">
         <item name="android:src">@drawable/default_logo</item>
+        <item name="android:background">#fff</item>
     </style>
 
     <style name="podcastLogoSmall" parent="podcastLogo">
