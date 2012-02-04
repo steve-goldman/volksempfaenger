@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Volksempfaenger" parent="@android:style/Theme.Light"></style>
+
+    <style name="Theme.Settings" parent="@android:style/Theme.Black"></style>
+
+    <style name="TextAppearance.Widget.Title" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#DDD</item>
+    </style>
+
+    <style name="emptyListView">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+    </style>
+
+    <style name="podcastLogo">
+        <item name="android:src">@drawable/default_logo</item>
+    </style>
+
+    <style name="podcastLogoSmall" parent="podcastLogo">
+        <item name="android:layout_width">64dp</item>
+        <item name="android:layout_height">64dp</item>
+    </style>
+
+    <style name="podcastLogoLarge" parent="podcastLogo">
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">96dp</item>
+    </style>
+
+    <style name="licenseText">
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="NowPlaying"></style>
+
+    <style name="NowPlaying.Fragment">
+        <item name="android:background">#333</item>
+    </style>
+
+    <style name="NowPlaying.Text">
+        <item name="android:textColor">#eee</item>
+    </style>
+
+    <style name="NowPlaying.Button">
+        <item name="android:background">@drawable/borderless_button</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="NowPlaying.Separator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#09c</item>
+    </style>
+
+    <style name="NowPlaying.Logo">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">#fff</item>
+    </style>
+
+    <style name="NowPlaying.Seekbar"></style>
+
+</resources>
