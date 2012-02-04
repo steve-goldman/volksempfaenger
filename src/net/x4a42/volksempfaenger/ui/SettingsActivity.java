@@ -1,9 +1,9 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import net.x4a42.volksempfaenger.VolksempfaengerUrls;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -78,11 +78,11 @@ public class SettingsActivity extends PreferenceActivity implements
 				.setInputType(InputType.TYPE_CLASS_NUMBER);
 
 		prefAboutVersion.setSummary(app.getVersionName());
-		prefAboutWebsite.setSummary(VolksempfaengerUrls.WEBSITE);
+		prefAboutWebsite.setSummary(Constants.URL_WEBSITE);
 		prefAboutWebsite.setOnPreferenceClickListener(this);
-		prefAboutWiki.setSummary(VolksempfaengerUrls.WIKI);
+		prefAboutWiki.setSummary(Constants.URL_WIKI);
 		prefAboutWiki.setOnPreferenceClickListener(this);
-		prefAboutBugtracker.setSummary(VolksempfaengerUrls.BUGTRACKER);
+		prefAboutBugtracker.setSummary(Constants.URL_BUGTRACKER);
 		prefAboutBugtracker.setOnPreferenceClickListener(this);
 		prefAboutLicense.setOnPreferenceClickListener(this);
 	}
@@ -139,15 +139,15 @@ public class SettingsActivity extends PreferenceActivity implements
 	public boolean onPreferenceClick(Preference pref) {
 		if (pref == prefAboutWebsite) {
 			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse(VolksempfaengerUrls.WEBSITE)));
+					Uri.parse(Constants.URL_WEBSITE)));
 			return true;
 		} else if (pref == prefAboutWiki) {
 			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse(VolksempfaengerUrls.WIKI)));
+					Uri.parse(Constants.URL_WIKI)));
 			return true;
 		} else if (pref == prefAboutBugtracker) {
 			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse(VolksempfaengerUrls.BUGTRACKER)));
+					Uri.parse(Constants.URL_BUGTRACKER)));
 			return true;
 		} else if (pref == prefAboutLicense) {
 			Intent intent = new Intent(this, LicenseActivity.class);
