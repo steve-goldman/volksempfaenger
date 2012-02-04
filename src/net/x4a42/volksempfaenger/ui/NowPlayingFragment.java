@@ -12,7 +12,6 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
@@ -20,13 +19,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -219,7 +216,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	private void hideExtendedControls() {
 		seekbar.setVisibility(View.GONE);
 		controls.setVisibility(View.GONE);
-		infoPause.setVisibility(View.VISIBLE);
+		info.setVisibility(View.VISIBLE);
 	}
 
 	private void showExtendedControls(EpisodeCursor cursor) {
@@ -229,7 +226,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		seekbar.setMax(remote.getDuration());
 		position.setText(formatTime(cursor.getDurationListened()));
 		duration.setText(formatTime(cursor.getDurationTotal()));
-		infoPause.setVisibility(View.GONE);
+		info.setVisibility(View.GONE);
 		seekbar.setVisibility(View.VISIBLE);
 		controls.setVisibility(View.VISIBLE);
 	}
