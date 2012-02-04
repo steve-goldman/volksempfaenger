@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.ui;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.SortByStatusCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.content.Context;
 import android.database.Cursor;
@@ -75,7 +76,7 @@ public class DownloadListFragment extends ListFragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		adapter.swapCursor(new EpisodeCursor(data));
+		adapter.swapCursor(new EpisodeCursor(new SortByStatusCursor(data)));
 		if (isResumed()) {
 			setListShown(true);
 		} else {
