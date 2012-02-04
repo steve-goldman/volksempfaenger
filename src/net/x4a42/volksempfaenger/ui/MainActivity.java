@@ -154,15 +154,17 @@ public class MainActivity extends FragmentActivity {
 		{
 			// Add debug menu item if
 			// /sdcard/Android/data/net.x4a42.volksempfaenger/debug/ exists
-			File debugDir = new File(getExternalFilesDir(null).getParent(),
-					"debug");
-			if (debugDir.isDirectory()) {
-				MenuItem item = menu.add("Debug");
-				item.setIntent(new Intent(this, DebugActivity.class));
-				Log.d(TAG, "Found " + debugDir + ". Enabling debug mode.");
-			} else {
-				Log.d(TAG, "Did not find " + debugDir
-						+ ". Disabling debug mode.");
+			File ext = getExternalFilesDir(null);
+			if (ext != null) {
+				File debugDir = new File(ext.getParent(), "debug");
+				if (debugDir != null && debugDir.isDirectory()) {
+					MenuItem item = menu.add("Debug");
+					item.setIntent(new Intent(this, DebugActivity.class));
+					Log.d(TAG, "Found " + debugDir + ". Enabling debug mode.");
+				} else {
+					Log.d(TAG, "Did not find " + debugDir
+							+ ". Disabling debug mode.");
+				}
 			}
 		}
 		return true;
