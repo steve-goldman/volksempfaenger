@@ -14,8 +14,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class DownloadListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
@@ -35,6 +39,20 @@ public class DownloadListFragment extends ListFragment implements
 		setListShown(false);
 		setEmptyText(getText(R.string.message_no_downloads));
 		getLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = super.onCreateView(inflater, container, savedInstanceState);
+
+		// TODO find a better way to do this
+		// ID is taken from the support library source:
+		// static final int INTERNAL_EMPTY_ID = 0x00ff0001;
+		((TextView) view.findViewById(0x00ff0001)).setTextSize(
+				TypedValue.COMPLEX_UNIT_SP, 22);
+
+		return view;
 	}
 
 	private class Adapter extends SimpleCursorAdapter {
