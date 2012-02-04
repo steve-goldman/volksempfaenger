@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NowPlaying.Fragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#09c" />
+    <View style="@style/NowPlaying.Separator" />
 
     <LinearLayout
         android:id="@+id/info"
@@ -17,21 +15,23 @@
 
         <net.x4a42.volksempfaenger.ui.PodcastLogoView
             android:id="@+id/logo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:color/white" />
+            style="@style/NowPlaying.Logo" />
 
         <LinearLayout
             android:id="@+id/episode_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@drawable/borderless_button"
+            android:clickable="true"
+            android:focusable="true"
             android:orientation="vertical"
             android:paddingLeft="8dp"
             android:paddingRight="8dp" >
 
             <TextView
                 android:id="@+id/episode"
+                style="@style/NowPlaying.Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -43,6 +43,7 @@
 
             <TextView
                 android:id="@+id/podcast"
+                style="@style/NowPlaying.Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -52,15 +53,15 @@
                 android:text="Podcast" />
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/info_pause"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/pause" />
+            style="@style/NowPlaying.Button"
+            android:src="@drawable/ic_media_pause" />
     </LinearLayout>
 
     <SeekBar
         android:id="@+id/seekbar"
+        style="@style/NowPlaying.Seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -69,48 +70,49 @@
 
     <LinearLayout
         android:id="@+id/controls"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1" >
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/position"
+            style="@style/NowPlaying.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="00:00:00" >
         </TextView>
 
         <ImageButton
             android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_media_rew" >
         </ImageButton>
 
         <ImageButton
             android:id="@+id/pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_media_pause" >
         </ImageButton>
 
         <ImageButton
             android:id="@+id/forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_media_ff" >
         </ImageButton>
 
         <TextView
             android:id="@+id/duration"
+            style="@style/NowPlaying.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="00:00:00" >
         </TextView>
     </LinearLayout>

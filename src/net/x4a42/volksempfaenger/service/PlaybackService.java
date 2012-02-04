@@ -163,7 +163,7 @@ public class PlaybackService extends Service implements EventListener {
 		}
 		File enclosureFile;
 		enclosureFile = cursor.getDownloadFile();
-		if (!enclosureFile.isFile()) {
+		if (enclosureFile == null || !enclosureFile.isFile()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
 		helper.open(enclosureFile.getAbsolutePath());

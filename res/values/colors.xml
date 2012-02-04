@@ -3,6 +3,9 @@
 
     <color name="episode_description_text">#111</color>
     <color name="episode_description_link">#147</color>
+    <color name="borderless_button">#00000000</color>
+    <color name="borderless_button_pressed">#ff33b5e5</color>
+    <color name="borderless_button_focused">#ff0099cc</color>
 
     <!-- TODO: Choose better colors -->
     <color name="episode_title_new">#000</color>

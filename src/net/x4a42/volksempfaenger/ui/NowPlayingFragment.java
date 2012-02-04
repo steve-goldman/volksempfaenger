@@ -12,6 +12,7 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,7 +43,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	private LinearLayout episodeInfo;
 	private TextView episode;
 	private TextView podcast;
-	private ImageView infoPause;
+	private ImageButton infoPause;
 	private SeekBar seekbar;
 	private LinearLayout controls;
 	private TextView position;
@@ -70,7 +72,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		episodeInfo = (LinearLayout) view.findViewById(R.id.episode_info);
 		episode = (TextView) view.findViewById(R.id.episode);
 		podcast = (TextView) view.findViewById(R.id.podcast);
-		infoPause = (ImageView) view.findViewById(R.id.info_pause);
+		infoPause = (ImageButton) view.findViewById(R.id.info_pause);
 		seekbar = (SeekBar) view.findViewById(R.id.seekbar);
 		controls = (LinearLayout) view.findViewById(R.id.controls);
 		position = (TextView) view.findViewById(R.id.position);
@@ -79,17 +81,12 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		forward = (ImageButton) view.findViewById(R.id.forward);
 		duration = (TextView) view.findViewById(R.id.duration);
 
-		episodeInfo.setClickable(true);
 		episodeInfo.setOnClickListener(this);
-		infoPause.setClickable(true);
 		infoPause.setOnClickListener(this);
 		seekbar.setEnabled(true);
 		seekbar.setOnSeekBarChangeListener(this);
-		back.setClickable(true);
 		back.setOnClickListener(this);
-		pause.setClickable(true);
 		pause.setOnClickListener(this);
-		forward.setClickable(true);
 		forward.setOnClickListener(this);
 
 		return view;
@@ -194,17 +191,17 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		if (fromUser) {
-			// updateHandler.removeCallbacks(updateSliderTask);
+			stopUpdater();
 			remote.seekTo(progress);
 			updateTime();
-			// updateHandler.post(updateSliderTask);
+			startUpdater();
 		}
 
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		// updateHandler.removeCallbacks(updateSliderTask);
+		stopUpdater();
 	}
 
 	@Override
@@ -222,6 +219,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	private void hideExtendedControls() {
 		seekbar.setVisibility(View.GONE);
 		controls.setVisibility(View.GONE);
+		infoPause.setVisibility(View.VISIBLE);
 	}
 
 	private void showExtendedControls(EpisodeCursor cursor) {
@@ -231,6 +229,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		seekbar.setMax(remote.getDuration());
 		position.setText(formatTime(cursor.getDurationListened()));
 		duration.setText(formatTime(cursor.getDurationTotal()));
+		infoPause.setVisibility(View.GONE);
 		seekbar.setVisibility(View.VISIBLE);
 		controls.setVisibility(View.VISIBLE);
 	}

@@ -34,4 +34,34 @@
         <item name="android:padding">6dp</item>
     </style>
 
+    <style name="NowPlaying"></style>
+
+    <style name="NowPlaying.Fragment">
+        <item name="android:background">#333</item>
+    </style>
+
+    <style name="NowPlaying.Text">
+        <item name="android:textColor">#eee</item>
+    </style>
+
+    <style name="NowPlaying.Button">
+        <item name="android:background">@drawable/borderless_button</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="NowPlaying.Separator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#09c</item>
+    </style>
+
+    <style name="NowPlaying.Logo">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">#fff</item>
+    </style>
+
+    <style name="NowPlaying.Seekbar"></style>
+
 </resources>
