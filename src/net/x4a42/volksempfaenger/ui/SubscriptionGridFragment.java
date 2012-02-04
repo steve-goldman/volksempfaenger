@@ -53,7 +53,9 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final String PODCAST_ORDER = "title ASC";
 
-	private GridView subscriptionList;
+	private GridView grid;
+	private View loading;
+	private View empty;
 	private Adapter adapter;
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
@@ -70,12 +72,15 @@ public class SubscriptionGridFragment extends Fragment implements
 		View view = inflater.inflate(R.layout.subscription_list, container,
 				false);
 
-		subscriptionList = (GridView) view.findViewById(R.id.subscription_list);
-		subscriptionList.setEmptyView(view
-				.findViewById(R.id.subscription_list_empty));
-		subscriptionList.setOnItemClickListener(this);
-		subscriptionList.setOnCreateContextMenuListener(this);
-		subscriptionList.setAdapter(adapter);
+		grid = (GridView) view.findViewById(R.id.grid);
+		loading = view.findViewById(R.id.loading);
+		empty = view.findViewById(R.id.empty);
+
+		grid.setOnItemClickListener(this);
+		grid.setOnCreateContextMenuListener(this);
+		grid.setAdapter(adapter);
+
+		show(GLE.LOADING);
 
 		return view;
 	}
@@ -269,11 +274,44 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		adapter.swapCursor(new PodcastCursor(data));
+		if (data.getCount() == 0) {
+			show(GLE.EMPTY);
+			adapter.swapCursor(null);
+		} else {
+			adapter.swapCursor(new PodcastCursor(data));
+			show(GLE.GRID);
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		adapter.swapCursor(null);
+		show(GLE.LOADING);
+	}
+
+	private enum GLE { // TODO find a meaningful name
+		GRID, LOADING, EMPTY
+	}
+
+	private void show(GLE gle) {
+		switch (gle) {
+		case GRID:
+			empty.setVisibility(View.GONE);
+			loading.setVisibility(View.GONE);
+			grid.setVisibility(View.VISIBLE);
+			break;
+
+		case LOADING:
+			grid.setVisibility(View.GONE);
+			empty.setVisibility(View.GONE);
+			loading.setVisibility(View.VISIBLE);
+			break;
+
+		case EMPTY:
+			grid.setVisibility(View.GONE);
+			loading.setVisibility(View.GONE);
+			empty.setVisibility(View.VISIBLE);
+			break;
+		}
 	}
 }
