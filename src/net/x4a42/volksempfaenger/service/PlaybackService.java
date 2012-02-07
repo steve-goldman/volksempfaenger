@@ -55,6 +55,10 @@ public class PlaybackService extends Service implements EventListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (intent == null) {
+			return START_STICKY;
+		}
+
 		if (ACTION_PLAY.equals(intent.getAction())) {
 			try {
 				playEpisode(intent.getData());
