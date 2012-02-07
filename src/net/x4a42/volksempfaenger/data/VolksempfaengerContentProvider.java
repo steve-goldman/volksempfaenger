@@ -53,6 +53,17 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		return ContentUris.parseId(uri);
 	}
 
+	private void notifyUri(Uri uri, Mime type) {
+		getContext().getContentResolver().notifyChange(uri, null);
+		if (type == Mime.PODCAST_ITEM) {
+			getContext().getContentResolver().notifyChange(PODCAST_URI, null);
+		} else if (type == Mime.EPISODE_ITEM) {
+			getContext().getContentResolver().notifyChange(EPISODE_URI, null);
+		} else if (type == Mime.ENCLOSURE_ITEM) {
+			getContext().getContentResolver().notifyChange(ENCLOSURE_URI, null);
+		}
+	}
+
 	private Mime getTypeMime(Uri uri) {
 		if (!AUTHORITY.equals(uri.getAuthority())) {
 			return null;
@@ -119,35 +130,49 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
+		Cursor cursor = null;
+
 		switch (getTypeMime(uri)) {
 		case PODCAST_DIR:
-			return queryHelper.queryPodcastDir(projection, selection,
+			cursor = queryHelper.queryPodcastDir(projection, selection,
 					selectionArgs, sortOrder);
+			break;
 		case PODCAST_ITEM:
-			return queryHelper.queryPodcastItem(ContentUris.parseId(uri),
+			cursor = queryHelper.queryPodcastItem(ContentUris.parseId(uri),
 					projection);
+			break;
 		case EPISODE_DIR:
-			return queryHelper.queryEpisodeDir(projection, selection,
+			cursor = queryHelper.queryEpisodeDir(projection, selection,
 					selectionArgs, sortOrder);
+			break;
 		case EPISODE_ITEM:
-			return queryHelper.queryEpisodeItem(ContentUris.parseId(uri),
+			cursor = queryHelper.queryEpisodeItem(ContentUris.parseId(uri),
 					projection);
+			break;
 		case ENCLOSURE_DIR:
-			return queryHelper.queryEnclosureDir(projection, selection,
+			cursor = queryHelper.queryEnclosureDir(projection, selection,
 					selectionArgs, sortOrder);
+			break;
 		case ENCLOSURE_ITEM:
-			return queryHelper.queryEnclosureItem(ContentUris.parseId(uri),
+			cursor = queryHelper.queryEnclosureItem(ContentUris.parseId(uri),
 					projection);
-		default:
-			return null;
+			break;
 		}
+
+		if (cursor != null) {
+			cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		}
+
+		return cursor;
 	}
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		// TODO: Filter keys
+		Mime type = getTypeMime(uri);
 		Uri newUri = null;
-		switch (getTypeMime(uri)) {
+
+		switch (type) {
 		case PODCAST_DIR:
 			newUri = insertHelper.insertPodcast(uri, values);
 			break;
@@ -158,17 +183,21 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 			newUri = insertHelper.insertEnclosure(uri, values);
 			break;
 		}
+
 		if (newUri != null) {
-			getContext().getContentResolver().notifyChange(newUri, null);
+			notifyUri(uri, type);
 		}
+
 		return newUri;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
+		Mime type = getTypeMime(uri);
 		int rowsAffected = 0;
-		switch (getTypeMime(uri)) {
+
+		switch (type) {
 		case PODCAST_DIR:
 			rowsAffected = updateHelper.updatePodcastDir(values, selection,
 					selectionArgs);
@@ -194,16 +223,20 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 					values, selection, selectionArgs);
 			break;
 		}
+
 		if (rowsAffected > 0) {
-			getContext().getContentResolver().notifyChange(uri, null);
+			notifyUri(uri, type);
 		}
+
 		return rowsAffected;
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		Mime type = getTypeMime(uri);
 		int rowsAffected = 0;
-		switch (getTypeMime(uri)) {
+
+		switch (type) {
 		case PODCAST_DIR:
 			rowsAffected = deleteHelper.deletePodcastDir(selection,
 					selectionArgs);
@@ -229,9 +262,11 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 					selection, selectionArgs);
 			break;
 		}
+
 		if (rowsAffected > 0) {
-			getContext().getContentResolver().notifyChange(uri, null);
+			notifyUri(uri, type);
 		}
+
 		return rowsAffected;
 	}
 
