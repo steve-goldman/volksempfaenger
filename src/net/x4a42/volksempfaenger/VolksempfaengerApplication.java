@@ -23,14 +23,12 @@ public class VolksempfaengerApplication extends Application implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// get package info
 		packageinfo = getPackageInfo(this);
-		// get shared preferences
+
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		settings.registerOnSharedPreferenceChangeListener(this);
-		// set update alarm
+
 		setUpdateAlarm();
-		// setCleanCacheAlarm
 		setCleanCacheAlarm();
 	}
 
