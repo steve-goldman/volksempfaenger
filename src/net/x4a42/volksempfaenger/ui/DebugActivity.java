@@ -90,8 +90,9 @@ public class DebugActivity extends Activity implements OnClickListener {
 		if (ext != null) {
 			File feedDir = new File(ext.getParent(), "debug/feeds/");
 			if (feedDir != null && feedDir.isDirectory()) {
-				for(File file : feedDir.listFiles()) {
-					if(file.isFile()) {
+				long start = System.currentTimeMillis();
+				for (File file : feedDir.listFiles()) {
+					if (file.isFile()) {
 						try {
 							Feed feed = FeedParser.parse(new FileReader(file));
 							Log.d(TAG, file.getAbsolutePath());
@@ -114,6 +115,10 @@ public class DebugActivity extends Activity implements OnClickListener {
 					}
 				}
 				Toast.makeText(this, "Parsed", Toast.LENGTH_SHORT).show();
+				Log.d("FeedParser",
+						"Time "
+								+ String.valueOf(System.currentTimeMillis()
+										- start));
 			} else {
 				Log.d(TAG,
 						"Did not find /sdcard/Android/data/net.x4a42.volksempfaenger/debug/feeds/");
