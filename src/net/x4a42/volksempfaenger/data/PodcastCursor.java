@@ -1,8 +1,10 @@
 package net.x4a42.volksempfaenger.data;
 
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.database.CursorWrapper;
+import android.net.Uri;
 
 /**
  * CursorWrapper for Cursors of the podcast table with advanced methods for
@@ -21,7 +23,8 @@ public class PodcastCursor extends CursorWrapper {
 	/**
 	 * Creates a PodcastCursor.
 	 * 
-	 * @param cursor The underlying cursor to wrap.
+	 * @param cursor
+	 *            The underlying cursor to wrap.
 	 */
 	public PodcastCursor(Cursor cursor) {
 		super(cursor);
@@ -32,6 +35,14 @@ public class PodcastCursor extends CursorWrapper {
 		COLUMN_NEW_EPISODES = getColumnIndex(Podcast.NEW_EPISODES);
 		COLUMN_TITLE = getColumnIndex(Podcast.TITLE);
 		COLUMN_WEBSITE = getColumnIndex(Podcast.WEBSITE);
+	}
+
+	/**
+	 * @return Podcast Uri.
+	 */
+	public Uri getUri() {
+		return ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.PODCAST_URI, getId());
 	}
 
 	/**
