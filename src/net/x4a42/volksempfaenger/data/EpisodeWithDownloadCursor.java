@@ -18,6 +18,7 @@ import android.util.Log;
 public class EpisodeWithDownloadCursor implements Cursor {
 
 	private static final String TAG = "EpisodeWithDownloadCursor";
+	private static final boolean DEBUG = false;
 	private static Map<String, String> dlColumnMap;
 	private Map<Integer, Integer> dbToDlMap;
 	private String[] dlColumns;
@@ -63,9 +64,11 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		}
 		dlCursor.moveToPosition(-1);
 
-		Log.d(TAG, "Generated the following dlIdToDlPos:");
-		for (Long db : dlIdToDlPos.keySet()) {
-			Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
+		if (DEBUG) {
+			Log.d(TAG, "Generated the following dlIdToDlPos:");
+			for (Long db : dlIdToDlPos.keySet()) {
+				Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
+			}
 		}
 
 		Integer dlPos;
@@ -80,9 +83,11 @@ public class EpisodeWithDownloadCursor implements Cursor {
 
 		dbToDlMap = temp;
 
-		Log.d(TAG, "Generated the following dbToDlMap:");
-		for (Integer db : temp.keySet()) {
-			Log.d(TAG, db + " -> " + temp.get(db));
+		if (DEBUG) {
+			Log.d(TAG, "Generated the following dbToDlMap:");
+			for (Integer db : temp.keySet()) {
+				Log.d(TAG, db + " -> " + temp.get(db));
+			}
 		}
 	}
 
