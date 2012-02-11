@@ -11,6 +11,12 @@
         android:text="Test FeedParser" />
 
     <Button
+        android:id="@+id/button_testfeeds"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Test FeedParser (multiple feeds)" />
+
+    <Button
         android:id="@+id/button_startupdate"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
