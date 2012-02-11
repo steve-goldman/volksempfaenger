@@ -12,15 +12,19 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.ActionBar;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +46,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			+ Episode._ID + " DESC";
 
 	private long id;
+	private Uri uri;
 
 	private PodcastLogoView podcastLogo;
 	private TextView podcastDescription;
@@ -49,6 +54,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private Cursor episodeCursor;
 	private Cursor podcastCursor;
 	private Adapter adapter;
+	private boolean isUpdating;
+	private UpdateServiceStatus.UiReceiver updateReceiver;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +72,11 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			finish();
 			return;
 		}
+
+		uri = ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.PODCAST_URI, id);
+
+		updateReceiver = new UpdateReceiver();
 
 		initRowColorMap();
 
@@ -108,6 +120,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 
+		UpdateServiceStatus.registerReceiver(updateReceiver);
+
 		podcastCursor.moveToFirst();
 
 		setTitle(podcastCursor.getString(podcastCursor
@@ -115,6 +129,12 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		updatePodcastDescription(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
 
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		UpdateServiceStatus.unregisterReceiver(updateReceiver);
 	}
 
 	private void updatePodcastDescription(String description) {
@@ -127,6 +147,22 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		inflater.inflate(R.menu.view_subscription, menu);
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean result = super.onPrepareOptionsMenu(menu);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			MenuItem update = menu.findItem(R.id.item_update);
+			if (isUpdating) {
+				update.setActionView(R.layout.actionbar_updating);
+			} else {
+				update.setActionView(null);
+			}
+		}
+
+		return result;
 	}
 
 	@Override
@@ -210,4 +246,28 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			episodeDate.setText(DateFormat.getDateInstance().format(date));
 		}
 	}
+
+	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+
+		public UpdateReceiver() {
+			setActivity(ViewSubscriptionActivity.this);
+		}
+
+		@Override
+		public void receiveUi(Status status) {
+			Log.d("SubscriptionGridFragment", status.toString());
+			if (status.isUpdating()) {
+				if (!isUpdating && uri.equals(status.getUri())) {
+					isUpdating = true;
+					invalidateOptionsMenu();
+				}
+			} else {
+				if (isUpdating && uri.equals(status.getUri())) {
+					isUpdating = false;
+					invalidateOptionsMenu();
+				}
+			}
+		}
+	}
+
 }
