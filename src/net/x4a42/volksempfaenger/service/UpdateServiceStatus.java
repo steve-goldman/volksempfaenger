@@ -56,12 +56,15 @@ public class UpdateServiceStatus {
 
 	public static void stopUpdate() {
 		isUpdating = false;
+		uri = null;
 		sendStatus(new Status(false, null));
 	}
 
 	public static void registerReceiver(Receiver receiver) {
 		if (isUpdating) {
 			receiver.receive(new Status(true, uri));
+		} else {
+			receiver.receive(new Status(false, null));
 		}
 		receivers.add(receiver);
 	}
