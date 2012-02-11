@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Stack;
 
@@ -564,115 +563,115 @@ public class FeedParser {
 					}
 				}
 			}
-			return  format.parse(datestring);
-		}
-
-		static final HashMap<String, Namespace> nsTable = new HashMap<String, Namespace>();
-		static {
-			nsTable.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
-			nsTable.put("http://backend.userland.com/RSS2", Namespace.RSS);
-			nsTable.put("http://purl.org/rss/1.0/modules/content/",
-					Namespace.RSS_CONTENT);
-			nsTable.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			nsTable.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
-					Namespace.ITUNES);
-			nsTable.put("", Namespace.NONE);
+			return format.parse(datestring);
 		}
 
 		private static Namespace getNamespace(String nsString) {
-			Namespace ns = nsTable.get(nsString);
-
-			if (ns == null) {
-				ns = Namespace.UNKNOWN;
+			nsString = nsString.intern();
+			if (nsString == "http://www.w3.org/2005/Atom") {
+				return Namespace.ATOM;
+			} else if (nsString == "http://backend.userland.com/RSS2") {
+				return Namespace.RSS;
+			} else if (nsString == "http://purl.org/rss/1.0/modules/content/") {
+				return Namespace.RSS_CONTENT;
+			} else if (nsString == "http://www.w3.org/1999/xhtml") {
+				return Namespace.XHTML;
+			} else if (nsString == "http://www.itunes.com/dtds/podcast-1.0.dtd") {
+				return Namespace.ITUNES;
+			} else if (nsString == "") {
+				return Namespace.NONE;
+			} else {
+				return Namespace.UNKNOWN;
 			}
-			return ns;
-		}
-
-		static final HashMap<String, Tag> atomTable = new HashMap<String, Tag>();
-		static final HashMap<String, Tag> rssTable = new HashMap<String, Tag>();
-		static final HashMap<String, Tag> itunesTable = new HashMap<String, Tag>();
-		static {
-			atomTable.put("feed", Tag.ATOM_FEED);
-			atomTable.put("title", Tag.ATOM_TITLE);
-			atomTable.put("entry", Tag.ATOM_ENTRY);
-			atomTable.put("link", Tag.ATOM_LINK);
-			atomTable.put("content", Tag.ATOM_CONTENT);
-			atomTable.put("published", Tag.ATOM_PUBLISHED);
-			atomTable.put("updated", Tag.ATOM_UPDATED);
-			atomTable.put("subtitle", Tag.ATOM_SUBTITLE);
-			atomTable.put("id", Tag.ATOM_ID);
-			atomTable.put("icon", Tag.ATOM_ICON);
-		}
-
-		static {
-			rssTable.put("rss", Tag.RSS_TOPLEVEL);
-			rssTable.put("channel", Tag.RSS_CHANNEL);
-			rssTable.put("item", Tag.RSS_ITEM);
-			rssTable.put("title", Tag.RSS_TITLE);
-			rssTable.put("link", Tag.RSS_LINK);
-			rssTable.put("description", Tag.RSS_DESCRIPTION);
-			rssTable.put("enclosure", Tag.RSS_ENCLOSURE);
-			rssTable.put("pubDate", Tag.RSS_PUB_DATE);
-			rssTable.put("guid", Tag.RSS_GUID);
-			rssTable.put("image", Tag.RSS_IMAGE);
-			rssTable.put("url", Tag.RSS_URL);
-		}
-
-		static {
-			itunesTable.put("image", Tag.ITUNES_IMAGE);
-			itunesTable.put("summary", Tag.ITUNES_SUMMARY);
 		}
 
 		private static Tag getTag(Namespace ns, String tagString) {
-			Tag tag = null;
+			tagString = tagString.intern();
 			if (ns == Namespace.ATOM) {
-				tag = atomTable.get(tagString);
-			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
-				tag = rssTable.get(tagString);
-			} else if (ns == Namespace.RSS_CONTENT) {
-				if (tagString.equals("encoded")) {
-					tag = Tag.RSS_CONTENT_ENCODED;
+				if (tagString == "feed") {
+					return Tag.ATOM_FEED;
+				} else if (tagString == "title") {
+					return Tag.ATOM_TITLE;
+				} else if (tagString == "entry") {
+					return Tag.ATOM_ENTRY;
+				} else if (tagString == "link") {
+					return Tag.ATOM_LINK;
+				} else if (tagString == "content") {
+					return Tag.ATOM_CONTENT;
+				} else if (tagString == "published") {
+					return Tag.ATOM_PUBLISHED;
+				} else if (tagString == "updated") {
+					return Tag.ATOM_UPDATED;
+				} else if (tagString == "subtitle") {
+					return Tag.ATOM_SUBTITLE;
+				} else if (tagString == "id") {
+					return Tag.ATOM_ID;
+				} else if (tagString == "icon") {
+					return Tag.ATOM_ICON;
+				} else {
+					return Tag.UNKNOWN;
 				}
-			} else if (ns == Namespace.ITUNES) {
-				tag = itunesTable.get(tagString);
-			}
+			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
 
-			if (tag == null) {
-				tag = Tag.UNKNOWN;
+				if (tagString == "rss") {
+					return Tag.RSS_TOPLEVEL;
+				} else if (tagString == "channel") {
+					return Tag.RSS_CHANNEL;
+				} else if (tagString == "item") {
+					return Tag.RSS_ITEM;
+				} else if (tagString == "title") {
+					return Tag.RSS_TITLE;
+				} else if (tagString == "link") {
+					return Tag.RSS_LINK;
+				} else if (tagString == "description") {
+					return Tag.RSS_DESCRIPTION;
+				} else if (tagString == "enclosure") {
+					return Tag.RSS_ENCLOSURE;
+				} else if (tagString == "pubDate") {
+					return Tag.RSS_PUB_DATE;
+				} else if (tagString == "guid") {
+					return Tag.RSS_GUID;
+				} else if (tagString == "image") {
+					return Tag.RSS_IMAGE;
+				} else if (tagString == "url") {
+					return Tag.RSS_URL;
+				} else if (ns == Namespace.RSS_CONTENT) {
+					if (tagString == "encoded") {
+						return Tag.RSS_CONTENT_ENCODED;
+					}
+				} else if (ns == Namespace.ITUNES) {
+					if (tagString == "image") {
+						return Tag.ITUNES_IMAGE;
+					} else if (tagString == "summary") {
+						return Tag.ITUNES_SUMMARY;
+					}
+				}
 			}
-			return tag;
-		}
-
-		static final HashMap<String, AtomRel> atomRelTable = new HashMap<String, AtomRel>();
-		static {
-			atomRelTable.put("enclosure", AtomRel.ENCLOSURE);
-			atomRelTable.put("alternate", AtomRel.ALTERNATE);
-			atomRelTable.put("self", AtomRel.SELF);
+			return Tag.UNKNOWN;
 		}
 
 		private static AtomRel getAtomRel(String relString) {
-			AtomRel rel = atomRelTable.get(relString);
-
-			if (rel == null) {
-				rel = AtomRel.UNKNOWN;
+			relString = relString.intern();
+			if (relString == "enclosure") {
+				return AtomRel.ENCLOSURE;
+			} else if (relString == "alternate") {
+				return AtomRel.ALTERNATE;
+			} else if (relString == "self") {
+				return AtomRel.SELF;
 			}
-			return rel;
+			return AtomRel.UNKNOWN;
 
-		}
-
-		static final HashMap<String, Mime> mimeTable = new HashMap<String, Mime>();
-		static {
-			mimeTable.put("text/html", Mime.HTML);
-			mimeTable.put("text/xhtml", Mime.XHTML);
 		}
 
 		private static Mime getMime(String mimeString) {
-			Mime mime = mimeTable.get(mimeString);
+			mimeString = mimeString.intern();
 
-			if (mime == null) {
-				mime = Mime.UNKNOWN;
+			if (mimeString == "text/html") {
+				return Mime.HTML;
+			} else if (mimeString == "text/xhtml") {
+				return Mime.XHTML;
 			}
-			return mime;
+			return Mime.UNKNOWN;
 
 		}
 
