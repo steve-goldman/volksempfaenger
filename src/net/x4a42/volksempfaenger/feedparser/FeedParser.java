@@ -309,7 +309,7 @@ public class FeedParser {
 			case ATOM_PUBLISHED:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
+						feedItem.setDate(parseAtomDate(buffer.toString()));
 						currentAtomItemHasPublished = true;
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
@@ -324,7 +324,7 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY
 						&& !currentAtomItemHasPublished) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
+						feedItem.setDate(parseAtomDate(buffer.toString()));
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -371,7 +371,12 @@ public class FeedParser {
 				break;
 			case RSS_PUB_DATE:
 				if (parents.peek() == Tag.RSS_ITEM) {
-					feedItem.setDate(parseRssDate(buffer.toString().trim()));
+					try {
+						feedItem.setDate(parseRssDate(buffer.toString()));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				break;
 			case RSS_LINK:
@@ -449,30 +454,45 @@ public class FeedParser {
 
 		private Date parseAtomDate(String datestring)
 				throws java.text.ParseException, IndexOutOfBoundsException {
-			// original version by Chad Okere (ceothrow1 at gmail dotcom)
-			// http://cokere.com/RFC3339Date.txt
+			datestring = datestring.trim().toUpperCase();
 			// dirty version - write a new one TODO
-
-			Date d = new Date();
+			// Modified version of http://cokere.com/RFC3339Date.txt
+			/*
+			 * I was working on an Atom (http://www.w3.org/2005/Atom) parser and
+			 * discovered that I could not parse dates in the format defined by
+			 * RFC 3339 using the SimpleDateFormat class. The reason was the ':'
+			 * in the time zone. This code strips out the colon if it's there
+			 * and tries four different formats on the resulting string
+			 * depending on if it has a time zone, or if it has a fractional
+			 * second part. There is a probably a better way to do this, and a
+			 * more proper way. But this is a really small addition to a
+			 * codebase (You don't need a jar, just throw this function in some
+			 * static Utility class if you have one).
+			 * 
+			 * Feel free to use this in your code, but I'd appreciate it if you
+			 * keep this note in the code if you distribute it. Thanks!
+			 * 
+			 * For people who might be googling: The date format parsed by this
+			 * goes by: atomDateConstruct, xsd:dateTime, RFC3339 and is
+			 * compatable with: ISO.8601.1988, W3C.NOTE-datetime-19980827 and
+			 * W3C.REC-xmlschema-2-20041028 (that I know of)
+			 * 
+			 * 
+			 * Copyright 2007, Chad Okere (ceothrow1 at gmail dotcom) OMG NO
+			 * WARRENTY EXPRESSED OR IMPLIED!!!1
+			 */
 
 			// if there is no time zone, we don't need to do any special
 			// parsing.
-			if (datestring.endsWith("Z")) {
+			if (datestring.charAt(datestring.length() - 1) == 'Z') {
 				try {
-					SimpleDateFormat s = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss'Z'");// spec for RFC3339
-					d = s.parse(datestring);
-				} catch (java.text.ParseException pe) {// try again with
-														// optional decimals
-					SimpleDateFormat s = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");// spec for
-																// RFC3339 (with
-																// fractional
-																// seconds)
-					s.setLenient(true);
-					d = s.parse(datestring);
+					// spec for RFC3339
+					return formats[8].parse(datestring);
+				} catch (java.text.ParseException pe) {
+					// try again with optional decimals
+					// spec for RFC3339 (with fractional seconds)
+					return formats[9].parse(datestring);
 				}
-				return d;
 			}
 
 			// step one, split off the timezone.
@@ -485,23 +505,13 @@ public class FeedParser {
 			secondpart = secondpart.substring(0, secondpart.indexOf(':'))
 					+ secondpart.substring(secondpart.indexOf(':') + 1);
 			datestring = firstpart + secondpart;
-			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");// spec
-																				// for
-																				// RFC3339
 			try {
-				d = s.parse(datestring);
-			} catch (java.text.ParseException pe) { // try again with optional
-													// decimals
-				s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"); // spec
-																			// for
-																			// RFC3339
-																			// (with
-																			// fractional
-																			// seconds)
-				s.setLenient(true);
-				d = s.parse(datestring);
+				return formats[10].parse(datestring);// spec for RFC3339
+			} catch (java.text.ParseException pe) {
+				// try again with optional decimals
+				// spec for RFC3339 (with fractional seconds)
+				return formats[11].parse(datestring);
 			}
-			return d;
 		}
 
 		private static final SimpleDateFormat formats[] = new SimpleDateFormat[] {
@@ -512,11 +522,20 @@ public class FeedParser {
 				new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
 				new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
-				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
+				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") };
 
-		private Date parseRssDate(String datestring) {
+		static {
+			formats[9].setLenient(true);
+			formats[11].setLenient(true);
+		}
+
+		private Date parseRssDate(String datestring) throws ParseException {
 			// dirty version - write a new one TODO
-			Date date = null;
+			datestring = datestring.trim();
 			SimpleDateFormat format;
 			if (datestring.charAt(4) == ' ') {
 				if (datestring.charAt(13) == ' ') {
@@ -547,13 +566,7 @@ public class FeedParser {
 					}
 				}
 			}
-			try {
-				date = format.parse(datestring);
-			} catch (ParseException e) {
-				date = null;
-			}
-			// date can be null here
-			return date;
+			return  format.parse(datestring);
 		}
 
 		static final Map<String, Namespace> nsTable;
