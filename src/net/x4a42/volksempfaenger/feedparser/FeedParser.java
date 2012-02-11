@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -569,18 +567,16 @@ public class FeedParser {
 			return  format.parse(datestring);
 		}
 
-		static final Map<String, Namespace> nsTable;
+		static final HashMap<String, Namespace> nsTable = new HashMap<String, Namespace>();
 		static {
-			Map<String, Namespace> temp = new HashMap<String, Namespace>();
-			temp.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
-			temp.put("http://backend.userland.com/RSS2", Namespace.RSS);
-			temp.put("http://purl.org/rss/1.0/modules/content/",
+			nsTable.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
+			nsTable.put("http://backend.userland.com/RSS2", Namespace.RSS);
+			nsTable.put("http://purl.org/rss/1.0/modules/content/",
 					Namespace.RSS_CONTENT);
-			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
+			nsTable.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
+			nsTable.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
 					Namespace.ITUNES);
-			temp.put("", Namespace.NONE);
-			nsTable = Collections.unmodifiableMap(temp);
+			nsTable.put("", Namespace.NONE);
 		}
 
 		private static Namespace getNamespace(String nsString) {
@@ -592,45 +588,39 @@ public class FeedParser {
 			return ns;
 		}
 
-		static final Map<String, Tag> atomTable;
-		static final Map<String, Tag> rssTable;
-		static final Map<String, Tag> itunesTable;
+		static final HashMap<String, Tag> atomTable = new HashMap<String, Tag>();
+		static final HashMap<String, Tag> rssTable = new HashMap<String, Tag>();
+		static final HashMap<String, Tag> itunesTable = new HashMap<String, Tag>();
 		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("feed", Tag.ATOM_FEED);
-			temp.put("title", Tag.ATOM_TITLE);
-			temp.put("entry", Tag.ATOM_ENTRY);
-			temp.put("link", Tag.ATOM_LINK);
-			temp.put("content", Tag.ATOM_CONTENT);
-			temp.put("published", Tag.ATOM_PUBLISHED);
-			temp.put("updated", Tag.ATOM_UPDATED);
-			temp.put("subtitle", Tag.ATOM_SUBTITLE);
-			temp.put("id", Tag.ATOM_ID);
-			temp.put("icon", Tag.ATOM_ICON);
-			atomTable = Collections.unmodifiableMap(temp);
+			atomTable.put("feed", Tag.ATOM_FEED);
+			atomTable.put("title", Tag.ATOM_TITLE);
+			atomTable.put("entry", Tag.ATOM_ENTRY);
+			atomTable.put("link", Tag.ATOM_LINK);
+			atomTable.put("content", Tag.ATOM_CONTENT);
+			atomTable.put("published", Tag.ATOM_PUBLISHED);
+			atomTable.put("updated", Tag.ATOM_UPDATED);
+			atomTable.put("subtitle", Tag.ATOM_SUBTITLE);
+			atomTable.put("id", Tag.ATOM_ID);
+			atomTable.put("icon", Tag.ATOM_ICON);
 		}
 
 		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("rss", Tag.RSS_TOPLEVEL);
-			temp.put("channel", Tag.RSS_CHANNEL);
-			temp.put("item", Tag.RSS_ITEM);
-			temp.put("title", Tag.RSS_TITLE);
-			temp.put("link", Tag.RSS_LINK);
-			temp.put("description", Tag.RSS_DESCRIPTION);
-			temp.put("enclosure", Tag.RSS_ENCLOSURE);
-			temp.put("pubDate", Tag.RSS_PUB_DATE);
-			temp.put("guid", Tag.RSS_GUID);
-			temp.put("image", Tag.RSS_IMAGE);
-			temp.put("url", Tag.RSS_URL);
-			rssTable = Collections.unmodifiableMap(temp);
+			rssTable.put("rss", Tag.RSS_TOPLEVEL);
+			rssTable.put("channel", Tag.RSS_CHANNEL);
+			rssTable.put("item", Tag.RSS_ITEM);
+			rssTable.put("title", Tag.RSS_TITLE);
+			rssTable.put("link", Tag.RSS_LINK);
+			rssTable.put("description", Tag.RSS_DESCRIPTION);
+			rssTable.put("enclosure", Tag.RSS_ENCLOSURE);
+			rssTable.put("pubDate", Tag.RSS_PUB_DATE);
+			rssTable.put("guid", Tag.RSS_GUID);
+			rssTable.put("image", Tag.RSS_IMAGE);
+			rssTable.put("url", Tag.RSS_URL);
 		}
 
 		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("image", Tag.ITUNES_IMAGE);
-			temp.put("summary", Tag.ITUNES_SUMMARY);
-			itunesTable = Collections.unmodifiableMap(temp);
+			itunesTable.put("image", Tag.ITUNES_IMAGE);
+			itunesTable.put("summary", Tag.ITUNES_SUMMARY);
 		}
 
 		private static Tag getTag(Namespace ns, String tagString) {
@@ -653,13 +643,11 @@ public class FeedParser {
 			return tag;
 		}
 
-		static final Map<String, AtomRel> atomRelTable;
+		static final HashMap<String, AtomRel> atomRelTable = new HashMap<String, AtomRel>();
 		static {
-			Map<String, AtomRel> temp = new HashMap<String, AtomRel>();
-			temp.put("enclosure", AtomRel.ENCLOSURE);
-			temp.put("alternate", AtomRel.ALTERNATE);
-			temp.put("self", AtomRel.SELF);
-			atomRelTable = Collections.unmodifiableMap(temp);
+			atomRelTable.put("enclosure", AtomRel.ENCLOSURE);
+			atomRelTable.put("alternate", AtomRel.ALTERNATE);
+			atomRelTable.put("self", AtomRel.SELF);
 		}
 
 		private static AtomRel getAtomRel(String relString) {
@@ -672,12 +660,10 @@ public class FeedParser {
 
 		}
 
-		static final Map<String, Mime> mimeTable;
+		static final HashMap<String, Mime> mimeTable = new HashMap<String, Mime>();
 		static {
-			Map<String, Mime> temp = new HashMap<String, Mime>();
-			temp.put("text/html", Mime.HTML);
-			temp.put("text/xhtml", Mime.XHTML);
-			mimeTable = Collections.unmodifiableMap(temp);
+			mimeTable.put("text/html", Mime.HTML);
+			mimeTable.put("text/xhtml", Mime.XHTML);
 		}
 
 		private static Mime getMime(String mimeString) {
