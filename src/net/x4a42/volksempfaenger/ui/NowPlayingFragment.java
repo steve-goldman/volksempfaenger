@@ -187,7 +187,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		if (fromUser) {
+		if (fromUser && remote != null) {
 			stopUpdater();
 			remote.seekTo(progress);
 			updateTime();
