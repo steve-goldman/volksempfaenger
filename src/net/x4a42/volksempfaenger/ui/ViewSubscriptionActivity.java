@@ -174,10 +174,14 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			return true;
 		case R.id.item_update:
 			intent = new Intent(this, UpdateService.class);
-			intent.putExtra("id", new long[] { id });
+			intent.setData(uri);
 			startService(intent);
-			Toast.makeText(this, R.string.message_update_started,
-					Toast.LENGTH_SHORT).show();
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+				// In Honeycomb+ the icon in the ActionBar starts spinning so we
+				// do not need a Toast as feedback.
+				Toast.makeText(this, R.string.message_update_started,
+						Toast.LENGTH_SHORT).show();
+			}
 			return true;
 		case R.id.item_edit:
 			intent = new Intent(this, EditSubscriptionActivity.class);

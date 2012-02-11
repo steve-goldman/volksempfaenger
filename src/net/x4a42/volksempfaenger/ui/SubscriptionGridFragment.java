@@ -139,8 +139,12 @@ public class SubscriptionGridFragment extends Fragment implements
 		case R.id.item_update:
 			getActivity().startService(
 					new Intent(getActivity(), UpdateService.class));
-			Toast.makeText(getActivity(), R.string.message_update_started,
-					Toast.LENGTH_SHORT).show();
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+				// In Honeycomb+ the icon in the ActionBar starts spinning so we
+				// do not need a Toast as feedback.
+				Toast.makeText(getActivity(), R.string.message_update_started,
+						Toast.LENGTH_SHORT).show();
+			}
 			return true;
 		case R.id.import_items:
 			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);
