@@ -38,11 +38,12 @@ public class FeedParser {
 			}
 			return feed;
 		} catch (ParserConfigurationException e) {
-			throw new FeedParserException();
+			throw new FeedParserException(e);
 		} catch (SAXException e) {
-			throw new FeedParserException();
+			throw new FeedParserException(e);
 		} catch (NullPointerException e) {
-			throw new FeedParserException("NullPointerException inside Parser");
+			throw new FeedParserException("NullPointerException inside Parser",
+					e);
 		}
 	}
 
@@ -187,7 +188,12 @@ public class FeedParser {
 					xhtmlMode = true;
 				}
 			case ATOM_LINK:
-				AtomRel rel = getAtomRel(atts.getValue(ATOM_ATTR_REL));
+				String relString = atts.getValue(ATOM_ATTR_REL);
+				AtomRel rel = AtomRel.UNKNOWN;
+				if (relString != null) {
+					rel = getAtomRel(relString);
+					relString = null;
+				}
 				switch (rel) {
 				case ENCLOSURE:
 					if (parents.peek() == Tag.ATOM_ENTRY) {
@@ -205,7 +211,12 @@ public class FeedParser {
 					}
 					break;
 				case ALTERNATE:
-					Mime type = getMime(atts.getValue(ATOM_ATTR_TYPE));
+					String mimeString = atts.getValue(ATOM_ATTR_TYPE);
+					Mime type = Mime.UNKNOWN;
+					if (mimeString != null) {
+						type = getMime(mimeString);
+						mimeString = null;
+					}
 					if (parents.peek() == Tag.ATOM_ENTRY) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
