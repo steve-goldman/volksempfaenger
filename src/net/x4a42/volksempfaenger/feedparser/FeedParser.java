@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -201,7 +198,7 @@ public class FeedParser {
 						enclosure.setTitle(atts.getValue(ATOM_ATTR_TITLE));
 
 						String length = atts.getValue(ATOM_ATTR_LENGTH);
-						if (length != null) {
+						if (length != null && length.length() > 0) {
 							enclosure.setSize(Long.parseLong(length.trim()));
 						}
 						feedItem.getEnclosures().add(enclosure);
@@ -255,7 +252,7 @@ public class FeedParser {
 					enclosure.setMime(atts.getValue(RSS_ATTR_TYPE));
 
 					String length = atts.getValue(RSS_ATTR_LENGTH);
-					if (length != null) {
+					if (length != null && length.length() > 0) {
 						enclosure.setSize(Long.parseLong(length.trim()));
 					}
 					feedItem.getEnclosures().add(enclosure);
@@ -309,7 +306,7 @@ public class FeedParser {
 			case ATOM_PUBLISHED:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
+						feedItem.setDate(parseAtomDate(buffer.toString()));
 						currentAtomItemHasPublished = true;
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
@@ -324,7 +321,7 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY
 						&& !currentAtomItemHasPublished) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString().trim()));
+						feedItem.setDate(parseAtomDate(buffer.toString()));
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -371,7 +368,12 @@ public class FeedParser {
 				break;
 			case RSS_PUB_DATE:
 				if (parents.peek() == Tag.RSS_ITEM) {
-					feedItem.setDate(parseRssDate(buffer.toString().trim()));
+					try {
+						feedItem.setDate(parseRssDate(buffer.toString()));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				break;
 			case RSS_LINK:
@@ -449,30 +451,45 @@ public class FeedParser {
 
 		private Date parseAtomDate(String datestring)
 				throws java.text.ParseException, IndexOutOfBoundsException {
-			// original version by Chad Okere (ceothrow1 at gmail dotcom)
-			// http://cokere.com/RFC3339Date.txt
+			datestring = datestring.trim().toUpperCase();
 			// dirty version - write a new one TODO
-
-			Date d = new Date();
+			// Modified version of http://cokere.com/RFC3339Date.txt
+			/*
+			 * I was working on an Atom (http://www.w3.org/2005/Atom) parser and
+			 * discovered that I could not parse dates in the format defined by
+			 * RFC 3339 using the SimpleDateFormat class. The reason was the ':'
+			 * in the time zone. This code strips out the colon if it's there
+			 * and tries four different formats on the resulting string
+			 * depending on if it has a time zone, or if it has a fractional
+			 * second part. There is a probably a better way to do this, and a
+			 * more proper way. But this is a really small addition to a
+			 * codebase (You don't need a jar, just throw this function in some
+			 * static Utility class if you have one).
+			 * 
+			 * Feel free to use this in your code, but I'd appreciate it if you
+			 * keep this note in the code if you distribute it. Thanks!
+			 * 
+			 * For people who might be googling: The date format parsed by this
+			 * goes by: atomDateConstruct, xsd:dateTime, RFC3339 and is
+			 * compatable with: ISO.8601.1988, W3C.NOTE-datetime-19980827 and
+			 * W3C.REC-xmlschema-2-20041028 (that I know of)
+			 * 
+			 * 
+			 * Copyright 2007, Chad Okere (ceothrow1 at gmail dotcom) OMG NO
+			 * WARRENTY EXPRESSED OR IMPLIED!!!1
+			 */
 
 			// if there is no time zone, we don't need to do any special
 			// parsing.
-			if (datestring.endsWith("Z")) {
+			if (datestring.charAt(datestring.length() - 1) == 'Z') {
 				try {
-					SimpleDateFormat s = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss'Z'");// spec for RFC3339
-					d = s.parse(datestring);
-				} catch (java.text.ParseException pe) {// try again with
-														// optional decimals
-					SimpleDateFormat s = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");// spec for
-																// RFC3339 (with
-																// fractional
-																// seconds)
-					s.setLenient(true);
-					d = s.parse(datestring);
+					// spec for RFC3339
+					return formats[8].parse(datestring);
+				} catch (java.text.ParseException pe) {
+					// try again with optional decimals
+					// spec for RFC3339 (with fractional seconds)
+					return formats[9].parse(datestring);
 				}
-				return d;
 			}
 
 			// step one, split off the timezone.
@@ -485,23 +502,13 @@ public class FeedParser {
 			secondpart = secondpart.substring(0, secondpart.indexOf(':'))
 					+ secondpart.substring(secondpart.indexOf(':') + 1);
 			datestring = firstpart + secondpart;
-			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");// spec
-																				// for
-																				// RFC3339
 			try {
-				d = s.parse(datestring);
-			} catch (java.text.ParseException pe) { // try again with optional
-													// decimals
-				s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"); // spec
-																			// for
-																			// RFC3339
-																			// (with
-																			// fractional
-																			// seconds)
-				s.setLenient(true);
-				d = s.parse(datestring);
+				return formats[10].parse(datestring);// spec for RFC3339
+			} catch (java.text.ParseException pe) {
+				// try again with optional decimals
+				// spec for RFC3339 (with fractional seconds)
+				return formats[11].parse(datestring);
 			}
-			return d;
 		}
 
 		private static final SimpleDateFormat formats[] = new SimpleDateFormat[] {
@@ -512,11 +519,20 @@ public class FeedParser {
 				new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
 				new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
-				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US), };
+				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") };
 
-		private Date parseRssDate(String datestring) {
+		static {
+			formats[9].setLenient(true);
+			formats[11].setLenient(true);
+		}
+
+		private Date parseRssDate(String datestring) throws ParseException {
 			// dirty version - write a new one TODO
-			Date date = null;
+			datestring = datestring.trim();
 			SimpleDateFormat format;
 			if (datestring.charAt(4) == ' ') {
 				if (datestring.charAt(13) == ' ') {
@@ -547,133 +563,115 @@ public class FeedParser {
 					}
 				}
 			}
-			try {
-				date = format.parse(datestring);
-			} catch (ParseException e) {
-				date = null;
-			}
-			// date can be null here
-			return date;
-		}
-
-		static final Map<String, Namespace> nsTable;
-		static {
-			Map<String, Namespace> temp = new HashMap<String, Namespace>();
-			temp.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
-			temp.put("http://backend.userland.com/RSS2", Namespace.RSS);
-			temp.put("http://purl.org/rss/1.0/modules/content/",
-					Namespace.RSS_CONTENT);
-			temp.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			temp.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
-					Namespace.ITUNES);
-			temp.put("", Namespace.NONE);
-			nsTable = Collections.unmodifiableMap(temp);
+			return format.parse(datestring);
 		}
 
 		private static Namespace getNamespace(String nsString) {
-			Namespace ns = nsTable.get(nsString);
-
-			if (ns == null) {
-				ns = Namespace.UNKNOWN;
+			nsString = nsString.intern();
+			if (nsString == "http://www.w3.org/2005/Atom") {
+				return Namespace.ATOM;
+			} else if (nsString == "http://backend.userland.com/RSS2") {
+				return Namespace.RSS;
+			} else if (nsString == "http://purl.org/rss/1.0/modules/content/") {
+				return Namespace.RSS_CONTENT;
+			} else if (nsString == "http://www.w3.org/1999/xhtml") {
+				return Namespace.XHTML;
+			} else if (nsString == "http://www.itunes.com/dtds/podcast-1.0.dtd") {
+				return Namespace.ITUNES;
+			} else if (nsString == "") {
+				return Namespace.NONE;
+			} else {
+				return Namespace.UNKNOWN;
 			}
-			return ns;
-		}
-
-		static final Map<String, Tag> atomTable;
-		static final Map<String, Tag> rssTable;
-		static final Map<String, Tag> itunesTable;
-		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("feed", Tag.ATOM_FEED);
-			temp.put("title", Tag.ATOM_TITLE);
-			temp.put("entry", Tag.ATOM_ENTRY);
-			temp.put("link", Tag.ATOM_LINK);
-			temp.put("content", Tag.ATOM_CONTENT);
-			temp.put("published", Tag.ATOM_PUBLISHED);
-			temp.put("updated", Tag.ATOM_UPDATED);
-			temp.put("subtitle", Tag.ATOM_SUBTITLE);
-			temp.put("id", Tag.ATOM_ID);
-			temp.put("icon", Tag.ATOM_ICON);
-			atomTable = Collections.unmodifiableMap(temp);
-		}
-
-		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("rss", Tag.RSS_TOPLEVEL);
-			temp.put("channel", Tag.RSS_CHANNEL);
-			temp.put("item", Tag.RSS_ITEM);
-			temp.put("title", Tag.RSS_TITLE);
-			temp.put("link", Tag.RSS_LINK);
-			temp.put("description", Tag.RSS_DESCRIPTION);
-			temp.put("enclosure", Tag.RSS_ENCLOSURE);
-			temp.put("pubDate", Tag.RSS_PUB_DATE);
-			temp.put("guid", Tag.RSS_GUID);
-			temp.put("image", Tag.RSS_IMAGE);
-			temp.put("url", Tag.RSS_URL);
-			rssTable = Collections.unmodifiableMap(temp);
-		}
-
-		static {
-			Map<String, Tag> temp = new HashMap<String, Tag>();
-			temp.put("image", Tag.ITUNES_IMAGE);
-			temp.put("summary", Tag.ITUNES_SUMMARY);
-			itunesTable = Collections.unmodifiableMap(temp);
 		}
 
 		private static Tag getTag(Namespace ns, String tagString) {
-			Tag tag = null;
+			tagString = tagString.intern();
 			if (ns == Namespace.ATOM) {
-				tag = atomTable.get(tagString);
-			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
-				tag = rssTable.get(tagString);
-			} else if (ns == Namespace.RSS_CONTENT) {
-				if (tagString.equals("encoded")) {
-					tag = Tag.RSS_CONTENT_ENCODED;
+				if (tagString == "feed") {
+					return Tag.ATOM_FEED;
+				} else if (tagString == "title") {
+					return Tag.ATOM_TITLE;
+				} else if (tagString == "entry") {
+					return Tag.ATOM_ENTRY;
+				} else if (tagString == "link") {
+					return Tag.ATOM_LINK;
+				} else if (tagString == "content") {
+					return Tag.ATOM_CONTENT;
+				} else if (tagString == "published") {
+					return Tag.ATOM_PUBLISHED;
+				} else if (tagString == "updated") {
+					return Tag.ATOM_UPDATED;
+				} else if (tagString == "subtitle") {
+					return Tag.ATOM_SUBTITLE;
+				} else if (tagString == "id") {
+					return Tag.ATOM_ID;
+				} else if (tagString == "icon") {
+					return Tag.ATOM_ICON;
+				} else {
+					return Tag.UNKNOWN;
 				}
-			} else if (ns == Namespace.ITUNES) {
-				tag = itunesTable.get(tagString);
-			}
+			} else if (ns == Namespace.RSS || ns == Namespace.NONE) {
 
-			if (tag == null) {
-				tag = Tag.UNKNOWN;
+				if (tagString == "rss") {
+					return Tag.RSS_TOPLEVEL;
+				} else if (tagString == "channel") {
+					return Tag.RSS_CHANNEL;
+				} else if (tagString == "item") {
+					return Tag.RSS_ITEM;
+				} else if (tagString == "title") {
+					return Tag.RSS_TITLE;
+				} else if (tagString == "link") {
+					return Tag.RSS_LINK;
+				} else if (tagString == "description") {
+					return Tag.RSS_DESCRIPTION;
+				} else if (tagString == "enclosure") {
+					return Tag.RSS_ENCLOSURE;
+				} else if (tagString == "pubDate") {
+					return Tag.RSS_PUB_DATE;
+				} else if (tagString == "guid") {
+					return Tag.RSS_GUID;
+				} else if (tagString == "image") {
+					return Tag.RSS_IMAGE;
+				} else if (tagString == "url") {
+					return Tag.RSS_URL;
+				} else if (ns == Namespace.RSS_CONTENT) {
+					if (tagString == "encoded") {
+						return Tag.RSS_CONTENT_ENCODED;
+					}
+				} else if (ns == Namespace.ITUNES) {
+					if (tagString == "image") {
+						return Tag.ITUNES_IMAGE;
+					} else if (tagString == "summary") {
+						return Tag.ITUNES_SUMMARY;
+					}
+				}
 			}
-			return tag;
-		}
-
-		static final Map<String, AtomRel> atomRelTable;
-		static {
-			Map<String, AtomRel> temp = new HashMap<String, AtomRel>();
-			temp.put("enclosure", AtomRel.ENCLOSURE);
-			temp.put("alternate", AtomRel.ALTERNATE);
-			temp.put("self", AtomRel.SELF);
-			atomRelTable = Collections.unmodifiableMap(temp);
+			return Tag.UNKNOWN;
 		}
 
 		private static AtomRel getAtomRel(String relString) {
-			AtomRel rel = atomRelTable.get(relString);
-
-			if (rel == null) {
-				rel = AtomRel.UNKNOWN;
+			relString = relString.intern();
+			if (relString == "enclosure") {
+				return AtomRel.ENCLOSURE;
+			} else if (relString == "alternate") {
+				return AtomRel.ALTERNATE;
+			} else if (relString == "self") {
+				return AtomRel.SELF;
 			}
-			return rel;
+			return AtomRel.UNKNOWN;
 
-		}
-
-		static final Map<String, Mime> mimeTable;
-		static {
-			Map<String, Mime> temp = new HashMap<String, Mime>();
-			temp.put("text/html", Mime.HTML);
-			temp.put("text/xhtml", Mime.XHTML);
-			mimeTable = Collections.unmodifiableMap(temp);
 		}
 
 		private static Mime getMime(String mimeString) {
-			Mime mime = mimeTable.get(mimeString);
+			mimeString = mimeString.intern();
 
-			if (mime == null) {
-				mime = Mime.UNKNOWN;
+			if (mimeString == "text/html") {
+				return Mime.HTML;
+			} else if (mimeString == "text/xhtml") {
+				return Mime.XHTML;
 			}
-			return mime;
+			return Mime.UNKNOWN;
 
 		}
 

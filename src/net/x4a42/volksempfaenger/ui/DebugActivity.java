@@ -1,7 +1,9 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
@@ -9,6 +11,7 @@ import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
+import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.UpdateService;
@@ -31,6 +34,7 @@ public class DebugActivity extends Activity implements OnClickListener {
 	private Button buttonStartDownload;
 	private Button buttonStartClean;
 	private Button buttonTestFeed;
+	private Button buttonTestMultipleFeeds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,13 @@ public class DebugActivity extends Activity implements OnClickListener {
 		buttonStartDownload = (Button) findViewById(R.id.button_startdownload);
 		buttonStartClean = (Button) findViewById(R.id.button_startclean);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
+		buttonTestMultipleFeeds = (Button) findViewById(R.id.button_testfeeds);
 
 		buttonStartUpdate.setOnClickListener(this);
 		buttonStartDownload.setOnClickListener(this);
 		buttonStartClean.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
+		buttonTestMultipleFeeds.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -72,7 +78,53 @@ public class DebugActivity extends Activity implements OnClickListener {
 			intent = new Intent(this, DownloadService.class);
 			startService(intent);
 			return;
+		case R.id.button_testfeeds:
+			testMultipleFeeds();
 		}
+	}
+
+	private void testMultipleFeeds() {
+		// parse all feeds in
+		// /sdcard/Android/data/net.x4a42.volksempfaenger/debug/feeds/
+		File ext = getExternalFilesDir(null);
+		if (ext != null) {
+			File feedDir = new File(ext.getParent(), "debug/feeds/");
+			if (feedDir != null && feedDir.isDirectory()) {
+				long start = System.currentTimeMillis();
+				for (File file : feedDir.listFiles()) {
+					if (file.isFile()) {
+						try {
+							Feed feed = FeedParser.parse(new FileReader(file));
+							Log.d(TAG, file.getAbsolutePath());
+							if (feed.getWebsite() != null) {
+								Log.d(TAG, "Website: " + feed.getWebsite());
+							}
+							if (feed.getUrl() != null) {
+								Log.d(TAG, "URL: " + feed.getUrl());
+							}
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (FeedParserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+				Toast.makeText(this, "Parsed", Toast.LENGTH_SHORT).show();
+				Log.d("FeedParser",
+						"Time "
+								+ String.valueOf(System.currentTimeMillis()
+										- start));
+			} else {
+				Log.d(TAG,
+						"Did not find /sdcard/Android/data/net.x4a42.volksempfaenger/debug/feeds/");
+			}
+		}
+
 	}
 
 	@Override
