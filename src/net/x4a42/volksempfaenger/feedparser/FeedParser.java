@@ -201,7 +201,7 @@ public class FeedParser {
 						enclosure.setTitle(atts.getValue(ATOM_ATTR_TITLE));
 
 						String length = atts.getValue(ATOM_ATTR_LENGTH);
-						if (length != null) {
+						if (length != null && length.length() > 0) {
 							enclosure.setSize(Long.parseLong(length.trim()));
 						}
 						feedItem.getEnclosures().add(enclosure);
@@ -255,7 +255,7 @@ public class FeedParser {
 					enclosure.setMime(atts.getValue(RSS_ATTR_TYPE));
 
 					String length = atts.getValue(RSS_ATTR_LENGTH);
-					if (length != null) {
+					if (length != null && length.length() > 0) {
 						enclosure.setSize(Long.parseLong(length.trim()));
 					}
 					feedItem.getEnclosures().add(enclosure);
