@@ -14,6 +14,8 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +24,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -59,6 +62,9 @@ public class SubscriptionGridFragment extends Fragment implements
 	private Adapter adapter;
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
+	private boolean isUpdating = false;
+	private UpdateServiceStatus.UiReceiver updateReceiver = new UpdateReceiver();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,12 +94,39 @@ public class SubscriptionGridFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		updateReceiver.setActivity(getActivity());
 		getLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		UpdateServiceStatus.registerReceiver(updateReceiver);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		UpdateServiceStatus.unregisterReceiver(updateReceiver);
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.subscription_list, menu);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			MenuItem update = menu.findItem(R.id.item_update);
+			if (isUpdating) {
+				update.setActionView(R.layout.actionbar_updating);
+			} else {
+				update.setActionView(null);
+			}
+		}
 	}
 
 	@Override
@@ -314,4 +347,24 @@ public class SubscriptionGridFragment extends Fragment implements
 			break;
 		}
 	}
+
+	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+
+		@Override
+		public void receiveUi(Status status) {
+			Log.d("SubscriptionGridFragment", status.toString());
+			if (status.isUpdating()) {
+				if (!isUpdating) {
+					isUpdating = true;
+					getActivity().invalidateOptionsMenu();
+				}
+			} else {
+				if (isUpdating && status.getUri() == null) {
+					isUpdating = false;
+					getActivity().invalidateOptionsMenu();
+				}
+			}
+		}
+	}
+
 }

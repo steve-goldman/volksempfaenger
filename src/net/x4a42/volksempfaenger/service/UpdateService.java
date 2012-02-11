@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.Error;
+import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
@@ -50,19 +51,19 @@ public class UpdateService extends IntentService {
 			return;
 		}
 
-		Cursor cursor;
+		PodcastCursor cursor;
 		{
 			String[] projection = { Podcast._ID, Podcast.TITLE, Podcast.FEED };
 
 			if (podcast != null) {
 				// Sync a single podcast
-				cursor = getContentResolver().query(podcast, projection, null,
-						null, null);
+				cursor = new PodcastCursor(getContentResolver().query(podcast,
+						projection, null, null, null));
 			} else {
 				lastRun = System.currentTimeMillis();
-				cursor = getContentResolver().query(
+				cursor = new PodcastCursor(getContentResolver().query(
 						VolksempfaengerContentProvider.PODCAST_URI, projection,
-						null, null, null);
+						null, null, null));
 			}
 		}
 
@@ -74,7 +75,12 @@ public class UpdateService extends IntentService {
 
 		FeedDownloader feedDownloader = new FeedDownloader(this);
 
+		UpdateServiceStatus.lock();
+		UpdateServiceStatus.startUpdate();
+
 		while (cursor.moveToNext()) {
+			UpdateServiceStatus.startUpdate(cursor.getUri());
+
 			Log.d(TAG,
 					"Updating "
 							+ cursor.getString(cursor
@@ -221,12 +227,16 @@ public class UpdateService extends IntentService {
 			}
 
 			Log.d(TAG, "Updated " + feed.getTitle());
+
+			UpdateServiceStatus.stopUpdate(cursor.getUri());
 		}
 		cursor.close();
 
+		UpdateServiceStatus.stopUpdate();
+		UpdateServiceStatus.unlock();
+
 		// start DownloadService to start automatic downloads if enabled
-		Intent downloadServiceIntent = new Intent(this, DownloadService.class);
-		startService(downloadServiceIntent);
+		startService(new Intent(this, DownloadService.class));
 	}
 
 	public static long getLastRun() {
