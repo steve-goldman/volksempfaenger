@@ -3,14 +3,13 @@ package net.x4a42.volksempfaenger.data;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.net.Uri;
 
 /**
  * CursorWrapper for Cursors of the podcast table with advanced methods for
  * getting specific columns.
  */
-public class PodcastCursor extends CursorWrapper {
+public class PodcastCursor extends ExtendedCursorWrapper {
 
 	private int COLUMN_ID;
 	private int COLUMN_DESCRIPTION;

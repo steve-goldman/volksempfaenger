@@ -2,9 +2,8 @@ package net.x4a42.volksempfaenger.data;
 
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 
-public class EnclosureCursor extends CursorWrapper {
+public class EnclosureCursor extends ExtendedCursorWrapper {
 
 	private int COLUMN_ID;
 	private int COLUMN_EPISODE_ID;

@@ -4,10 +4,9 @@ import java.io.File;
 
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.net.Uri;
 
-public class EpisodeCursor extends CursorWrapper {
+public class EpisodeCursor extends ExtendedCursorWrapper {
 
 	private int COLUMN_ID;
 	private int COLUMN_DATE;
