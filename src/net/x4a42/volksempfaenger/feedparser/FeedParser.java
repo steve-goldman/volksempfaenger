@@ -646,16 +646,16 @@ public class FeedParser {
 					return Tag.RSS_IMAGE;
 				} else if (tagString == "url") {
 					return Tag.RSS_URL;
-				} else if (ns == Namespace.RSS_CONTENT) {
-					if (tagString == "encoded") {
-						return Tag.RSS_CONTENT_ENCODED;
-					}
-				} else if (ns == Namespace.ITUNES) {
-					if (tagString == "image") {
-						return Tag.ITUNES_IMAGE;
-					} else if (tagString == "summary") {
-						return Tag.ITUNES_SUMMARY;
-					}
+				}
+			} else if (ns == Namespace.RSS_CONTENT) {
+				if (tagString == "encoded") {
+					return Tag.RSS_CONTENT_ENCODED;
+				}
+			} else if (ns == Namespace.ITUNES) {
+				if (tagString == "image") {
+					return Tag.ITUNES_IMAGE;
+				} else if (tagString == "summary") {
+					return Tag.ITUNES_SUMMARY;
 				}
 			}
 			return Tag.UNKNOWN;
