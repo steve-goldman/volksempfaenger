@@ -101,13 +101,19 @@ public class SubscriptionGridFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		UpdateServiceStatus.registerReceiver(updateReceiver);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			UpdateServiceStatus.registerReceiver(updateReceiver);
+		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			UpdateServiceStatus.unregisterReceiver(updateReceiver);
+		}
 	}
 
 	@Override
