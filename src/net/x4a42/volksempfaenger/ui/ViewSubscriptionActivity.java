@@ -120,7 +120,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 
-		UpdateServiceStatus.registerReceiver(updateReceiver);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			UpdateServiceStatus.registerReceiver(updateReceiver);
+		}
 
 		podcastCursor.moveToFirst();
 
@@ -134,7 +136,10 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	@Override
 	public void onPause() {
 		super.onPause();
-		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			UpdateServiceStatus.unregisterReceiver(updateReceiver);
+		}
 	}
 
 	private void updatePodcastDescription(String description) {
