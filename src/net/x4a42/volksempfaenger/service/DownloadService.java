@@ -15,7 +15,6 @@ import net.x4a42.volksempfaenger.net.EnclosureDownloader;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,15 +33,20 @@ import android.widget.Toast;
 public class DownloadService extends Service {
 
 	private VolksempfaengerApplication app;
-	private int phonePlugged;
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
 
-	private class DownloadTask extends AsyncTask<Long, Integer, Void> {
+	private class DownloadTask extends AsyncTask<Void, Integer, Void> {
+
+		private long[] extraIds;
+
+		public DownloadTask(long[] extraIds) {
+			this.extraIds = extraIds;
+		}
 
 		@Override
-		protected Void doInBackground(Long... params) {
+		protected Void doInBackground(Void... params) {
 			Log.d(getClass().getSimpleName(), "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
@@ -53,6 +57,9 @@ public class DownloadService extends Service {
 			// enabled
 			networkAllowed |= NETWORK_WIFI;
 
+			Intent batteryIntent = registerReceiver(null, new IntentFilter(
+					Intent.ACTION_BATTERY_CHANGED));
+
 			if (!prefs
 					.getBoolean(
 							PreferenceKeys.DOWNLOAD_WIFI,
@@ -61,7 +68,7 @@ public class DownloadService extends Service {
 				networkAllowed |= NETWORK_MOBILE;
 			}
 
-			if (params == null) {
+			if (extraIds == null) {
 				// check if automatic downloads are allowed
 
 				if (!prefs
@@ -73,6 +80,9 @@ public class DownloadService extends Service {
 							"automatic downloading is disabled");
 					return null;
 				}
+
+				int phonePlugged = batteryIntent.getIntExtra(
+						BatteryManager.EXTRA_PLUGGED, -1);
 
 				if (phonePlugged == 0
 						&& prefs.getBoolean(
@@ -123,14 +133,14 @@ public class DownloadService extends Service {
 			String selection = "enclosure.url IS NOT NULL";
 			String orderBy = null;
 
-			if (params == null) {
+			if (extraIds == null) {
 				selection += " AND episode.status = "
 						+ Constants.EPISODE_STATE_NEW;
 
 				orderBy = String.format("%s DESC", Episode.DATE);
 			} else {
 				selection += " AND episode._id IN ("
-						+ Utils.joinArray(params, ",") + ")";
+						+ Utils.joinArray(extraIds, ",") + ")";
 			}
 
 			Cursor cursor;
@@ -148,8 +158,8 @@ public class DownloadService extends Service {
 					(networkAllowed & NETWORK_MOBILE) != 0);
 			DownloadManager dm = ed.getDownloadManager();
 
-			int freeSlots = params == null ? ed.getFreeDownloadSlots() : cursor
-					.getCount();
+			int freeSlots = extraIds == null ? ed.getFreeDownloadSlots()
+					: cursor.getCount();
 
 			Log.d(getClass().getSimpleName(), String.format(
 					"starting downloads inQueue:%d freeSlots:%d",
@@ -178,7 +188,7 @@ public class DownloadService extends Service {
 									// the file was successfully downloaded and
 									// does
 									// still exist
-									if (params != null) {
+									if (extraIds != null) {
 										publishProgress(R.string.message_download_episode_already_downloaded);
 									}
 									freeSlots++;
@@ -204,7 +214,7 @@ public class DownloadService extends Service {
 						case DownloadManager.STATUS_RUNNING:
 						case DownloadManager.STATUS_PAUSED:
 							// the download is already running
-							if (params != null) {
+							if (extraIds != null) {
 								publishProgress(R.string.message_download_already_running);
 							}
 							freeSlots++;
@@ -233,7 +243,7 @@ public class DownloadService extends Service {
 								VolksempfaengerContentProvider.EPISODE_URI,
 								episodeId), values, null, null);
 
-				if (params != null) {
+				if (extraIds != null) {
 					publishProgress(R.string.message_download_started);
 				}
 			}
@@ -254,23 +264,6 @@ public class DownloadService extends Service {
 
 	}
 
-	private class BatteryChangedReceiver extends BroadcastReceiver {
-		private Long[] extraId;
-
-		public BatteryChangedReceiver(Long[] extraId) {
-			this.extraId = extraId;
-		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			unregisterReceiver(this);
-			phonePlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-
-			// the charging state is now known so we can start the DownloadTask
-			new DownloadTask().execute(extraId);
-		}
-	}
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -281,20 +274,8 @@ public class DownloadService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(getClass().getSimpleName(), "onStartCommand()");
 
-		Long[] id = null;
 		long[] extraId = intent.getLongArrayExtra("id");
-		if (extraId != null && extraId.length > 0) {
-			if (extraId.length != 0) {
-				id = new Long[extraId.length];
-				for (int i = 0; i < id.length; i++) {
-					id[i] = extraId[i];
-				}
-			}
-		}
-
-		// we need to register this broadcast receiver to get the charging state
-		registerReceiver(new BatteryChangedReceiver(id), new IntentFilter(
-				Intent.ACTION_BATTERY_CHANGED));
+		new DownloadTask(extraId).execute();
 
 		return START_STICKY;
 	}
