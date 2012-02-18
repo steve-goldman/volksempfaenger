@@ -40,6 +40,10 @@ public class PlaybackHelper implements OnPreparedListener,
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 	}
 
+	public AudioManager getAudioManager() {
+		return audioManager;
+	}
+
 	/**
 	 * Reset the player.
 	 */
