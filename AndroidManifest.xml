@@ -72,8 +72,9 @@
         </receiver>
 
         <provider
-            android:name="net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider"
-            android:authorities="net.x4a42.volksempfaenger" />
+            android:name=".data.VolksempfaengerContentProvider"
+            android:authorities="net.x4a42.volksempfaenger"
+            android:exported="false" />
     </application>
 
 </manifest>
