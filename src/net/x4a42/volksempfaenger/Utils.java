@@ -178,4 +178,12 @@ public class Utils {
 		return filename;
 	}
 
+	public static void internStringArray(String[] strings) {
+		for (int i = 0; i < strings.length; i++) {
+			if (strings[i] != null) {
+				strings[i] = strings[i].intern();
+			}
+		}
+	}
+
 }

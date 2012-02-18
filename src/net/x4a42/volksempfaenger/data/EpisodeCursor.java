@@ -12,7 +12,6 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 	private int COLUMN_DATE;
 	private int COLUMN_DESCRIPTION;
 	private int COLUMN_DOWNLOAD_DONE;
-	private int COLUMN_DOWNLOAD_FILE;
 	private int COLUMN_DOWNLOAD_ID;
 	private int COLUMN_DOWNLOAD_STATUS;
 	private int COLUMN_DOWNLOAD_TOTAL;
@@ -40,7 +39,6 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 		COLUMN_DATE = getColumnIndex(Episode.DATE);
 		COLUMN_DESCRIPTION = getColumnIndex(Episode.DESCRIPTION);
 		COLUMN_DOWNLOAD_DONE = getColumnIndex(Episode.DOWNLOAD_DONE);
-		COLUMN_DOWNLOAD_FILE = getColumnIndex(Episode.DOWNLOAD_FILE);
 		COLUMN_DOWNLOAD_ID = getColumnIndex(Episode.DOWNLOAD_ID);
 		COLUMN_DOWNLOAD_STATUS = getColumnIndex(Episode.DOWNLOAD_STATUS);
 		COLUMN_DOWNLOAD_TOTAL = getColumnIndex(Episode.DOWNLOAD_TOTAL);
@@ -83,20 +81,12 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 		}
 	}
 
-	public String getDownloadFileString() {
-		if (isNull(COLUMN_DOWNLOAD_FILE)) {
-			return null;
-		} else {
-			return getString(COLUMN_DOWNLOAD_FILE);
-		}
-	}
-
 	public File getDownloadFile() {
-		String file = getDownloadFileString();
-		if (file == null) {
+		Uri uri = getDownloadUri();
+		if (uri == null) {
 			return null;
 		} else {
-			return new File(file);
+			return new File(uri.getPath());
 		}
 	}
 

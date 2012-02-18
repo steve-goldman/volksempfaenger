@@ -19,10 +19,15 @@ public class SortByStatusCursor extends CursorWrapper implements Cursor {
 
 		final int[] status = new int[cursor.getCount()];
 		cursor.moveToFirst();
+		int statusCol = cursor.getColumnIndex(Episode.DOWNLOAD_STATUS);
 		for (int i = 0; i < cursor.getCount(); i++) {
 			order[i] = i;
-			status[i] = cursor.getInt(cursor
-					.getColumnIndex(Episode.DOWNLOAD_STATUS));
+			if (!cursor.isNull(statusCol)) {
+				status[i] = cursor.getInt(statusCol);
+			} else {
+				// TODO: we should do something if it is null...
+				status[i] = Integer.MAX_VALUE;
+			}
 			cursor.moveToNext();
 		}
 		Arrays.sort(order, new Comparator<Integer>() {
