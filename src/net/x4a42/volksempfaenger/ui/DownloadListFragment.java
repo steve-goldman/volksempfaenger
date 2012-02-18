@@ -5,6 +5,7 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.SortByStatusCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -71,15 +72,43 @@ public class DownloadListFragment extends ListFragment implements
 			EpisodeCursor episodeCursor = (EpisodeCursor) cursor;
 			ProgressBar progressBar = (ProgressBar) view
 					.findViewById(R.id.download_progress_bar);
-			long done = episodeCursor.getDownloadDone();
-			long total = episodeCursor.getDownloadTotal();
-			if (done > Integer.MAX_VALUE || total > Integer.MAX_VALUE) {
-				Log.wtf("DownloadListFragment",
-						"Size > Integer.MAX_VALUE not yet supported"); // TODO
-				return;
+			TextView statusText = (TextView) view
+					.findViewById(R.id.download_status);
+			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_RUNNING) {
+				progressBar.setVisibility(View.VISIBLE);
+				statusText.setVisibility(View.GONE);
+				long done = episodeCursor.getDownloadDone();
+				long total = episodeCursor.getDownloadTotal();
+				if (done > Integer.MAX_VALUE || total > Integer.MAX_VALUE) {
+					Log.wtf("DownloadListFragment",
+							"Size > Integer.MAX_VALUE not yet supported"); // TODO
+					return;
+				}
+				progressBar.setMax((int) total);
+				progressBar.setProgress((int) done);
+			} else {
+				progressBar.setVisibility(View.GONE);
+				statusText.setVisibility(View.VISIBLE);
+				String text;
+				switch (episodeCursor.getDownloadStatus()) {
+				case DownloadManager.STATUS_FAILED:
+					text = getString(R.string.download_status_failed);
+					break;
+				case DownloadManager.STATUS_PAUSED:
+					text = getString(R.string.download_status_paused);
+					break;
+				case DownloadManager.STATUS_PENDING:
+					text = getString(R.string.download_status_pending);
+					break;
+				case DownloadManager.STATUS_SUCCESSFUL:
+					text = getString(R.string.download_status_successful);
+					break;
+				default:
+					text = "Invalid status";
+				}
+				statusText.setText(text);
+
 			}
-			progressBar.setMax((int) total);
-			progressBar.setProgress((int) done);
 			PodcastLogoView logoView = (PodcastLogoView) view
 					.findViewById(R.id.podcast_logo);
 			logoView.setPodcastId(episodeCursor.getPodcastId());

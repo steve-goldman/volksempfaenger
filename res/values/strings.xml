@@ -81,5 +81,9 @@
     <string name="button_import">Import</string>
     <string name="dialog_choose_import_feeds">Choose feeds to import</string>
     <string name="message_no_downloads">No downloads</string>
+    <string name="download_status_failed">Failed</string>
+    <string name="download_status_paused">Paused</string>
+    <string name="download_status_pending">Pending</string>
+    <string name="download_status_successful">Successful</string>
 
 </resources>
