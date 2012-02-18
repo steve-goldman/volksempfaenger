@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
@@ -123,6 +124,9 @@ public class QueryHelper extends ContentProviderHelper {
 	public Cursor queryEpisodeDir(String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 
+		// intern all strings in the projection array
+		Utils.internStringArray(projection);
+
 		boolean joinPodcast = false;
 		boolean joinEnclosure = false;
 		boolean joinDownload = false;
@@ -130,21 +134,19 @@ public class QueryHelper extends ContentProviderHelper {
 		int removeCols = 0;
 		for (String col : projection) {
 			if (!joinPodcast
-					&& (Episode.PODCAST_DESCRIPTION.equals(col)
-							|| Episode.PODCAST_FEED.equals(col)
-							|| Episode.PODCAST_TITLE.equals(col) || Episode.PODCAST_WEBSITE
-								.equals(col))) {
+					&& (col == Episode.PODCAST_DESCRIPTION
+							|| col == Episode.PODCAST_FEED
+							|| col == Episode.PODCAST_TITLE || col == Episode.PODCAST_WEBSITE)) {
 				joinPodcast = true;
 			} else if (!joinEnclosure
 					&& (Episode.ENCLOSURE_MIME.equals(col)
 							|| Episode.ENCLOSURE_SIZE.equals(col)
-							|| Episode.ENCLOSURE_TITLE.equals(col) || Episode.ENCLOSURE_URL
-								.equals(col))) {
+							|| Episode.ENCLOSURE_TITLE.equals(col) || col == Episode.ENCLOSURE_URL)) {
 				joinEnclosure = true;
-			} else if (Episode.DOWNLOAD_DONE.equals(col)
-					|| Episode.DOWNLOAD_FILE.equals(col)
-					|| Episode.DOWNLOAD_STATUS.equals(col)
-					|| Episode.DOWNLOAD_TOTAL.equals(col)) {
+			} else if (col == Episode.DOWNLOAD_DONE
+					|| col == Episode.DOWNLOAD_STATUS
+					|| col == Episode.DOWNLOAD_TOTAL
+					|| col == Episode.DOWNLOAD_URI) {
 				joinDownload = true;
 				removeCols++;
 			}
@@ -155,10 +157,9 @@ public class QueryHelper extends ContentProviderHelper {
 			String[] temp = new String[projection.length - removeCols];
 			int i = 0;
 			for (String col : projection) {
-				if (!(Episode.DOWNLOAD_DONE.equals(col)
-						|| Episode.DOWNLOAD_FILE.equals(col)
-						|| Episode.DOWNLOAD_STATUS.equals(col) || Episode.DOWNLOAD_TOTAL
-							.equals(col))) {
+				if (!(col == Episode.DOWNLOAD_DONE
+						|| col == Episode.DOWNLOAD_STATUS
+						|| col == Episode.DOWNLOAD_TOTAL || col == Episode.DOWNLOAD_URI)) {
 					temp[i++] = col;
 				}
 			}

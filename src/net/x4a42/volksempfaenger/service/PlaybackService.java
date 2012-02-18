@@ -23,6 +23,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 public class PlaybackService extends Service implements EventListener {
 
@@ -158,15 +159,14 @@ public class PlaybackService extends Service implements EventListener {
 				episode,
 				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
 						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
-						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_FILE,
+						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_URI,
 						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE },
 				null, null, null));
 
 		if (!cursor.moveToFirst()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
-		File enclosureFile;
-		enclosureFile = cursor.getDownloadFile();
+		File enclosureFile = cursor.getDownloadFile();
 		if (enclosureFile == null || !enclosureFile.isFile()) {
 			throw new IllegalArgumentException("Episode not found");
 		}

@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.data;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,137 +17,109 @@ import android.util.Log;
 public class EpisodeWithDownloadCursor implements Cursor {
 
 	private static final String TAG = "EpisodeWithDownloadCursor";
-	private static final boolean DEBUG = false;
-	private static Map<String, String> dlColumnMap;
-	private Map<Integer, Integer> dbToDlMap;
-	private String[] dlColumns;
-	private Cursor dbCursor;
-	private Cursor dlCursor;
-	private int dbDownloadId;
-	private int dlDownloadId;
-
-	static {
-		Map<String, String> temp = new HashMap<String, String>();
-		temp.put(Episode.DOWNLOAD_DONE,
-				DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
-		temp.put(Episode.DOWNLOAD_FILE, DownloadManager.COLUMN_LOCAL_FILENAME);
-		temp.put(Episode.DOWNLOAD_STATUS, DownloadManager.COLUMN_STATUS);
-		temp.put(Episode.DOWNLOAD_TOTAL,
-				DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
-		temp.put(Episode.DOWNLOAD_URI, DownloadManager.COLUMN_LOCAL_URI);
-		dlColumnMap = Collections.unmodifiableMap(temp);
-	}
+	private static final boolean DEBUG = true;
+	private Cursor databaseCursor;
+	private Cursor downloadCursor;
+	private int[] positionMap;
+	private int databaseWidth;
+	private int downloadWidth;
+	private int totalWidth;
 
 	public EpisodeWithDownloadCursor(Cursor dbCursor, Cursor dlCursor) {
-		this.dbCursor = dbCursor;
-		this.dlCursor = dlCursor;
-		this.dlColumns = new String[dlColumnMap.size()];
-		dlColumnMap.keySet().toArray(dlColumns);
-
-		dbDownloadId = dbCursor.getColumnIndex(Episode.DOWNLOAD_ID);
-		dlDownloadId = dbCursor.getColumnIndex(DownloadManager.COLUMN_ID);
-
-		updateIdMappings();
-	}
-
-	/**
-	 * Generate mappings from the position in dbCursor to the position in
-	 * dlCursor based on the download ID in both cursor.
-	 */
-	private void updateIdMappings() {
-		int length = dlCursor.getCount();
-		Map<Long, Integer> dlIdToDlPos = new HashMap<Long, Integer>(length);
-		while (dlCursor.moveToNext()) {
-			dlIdToDlPos.put(dlCursor.getLong(dlDownloadId),
-					dlCursor.getPosition());
+		{
+			String[] from = new String[] { Episode.DOWNLOAD_ID,
+					Episode.DOWNLOAD_DONE, /* Episode.DOWNLOAD_FILE, */
+					Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
+					Episode.DOWNLOAD_URI };
+			String[] to = new String[] {
+					DownloadManager.COLUMN_ID,
+					DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR,
+					// DownloadManager.COLUMN_LOCAL_FILENAME,
+					DownloadManager.COLUMN_STATUS,
+					DownloadManager.COLUMN_TOTAL_SIZE_BYTES,
+					DownloadManager.COLUMN_LOCAL_URI };
+			dlCursor = new ColumnMapCursor(dlCursor, from, to);
 		}
-		dlCursor.moveToPosition(-1);
-
-		if (DEBUG) {
-			Log.d(TAG, "Generated the following dlIdToDlPos:");
-			for (Long db : dlIdToDlPos.keySet()) {
-				Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
-			}
-		}
-
-		Integer dlPos;
-		HashMap<Integer, Integer> temp = new HashMap<Integer, Integer>(length);
-		while (dbCursor.moveToNext()) {
-			dlPos = dlIdToDlPos.get(dbCursor.getLong(dbDownloadId));
-			if (dlPos != null) {
-				temp.put(dbCursor.getPosition(), dlPos);
-			}
-		}
-		dbCursor.moveToPosition(-1);
-
-		dbToDlMap = temp;
-
-		if (DEBUG) {
-			Log.d(TAG, "Generated the following dbToDlMap:");
-			for (Integer db : temp.keySet()) {
-				Log.d(TAG, db + " -> " + temp.get(db));
-			}
-		}
-	}
-
-	private boolean isDbCursor(int index) {
-		return index < dbCursor.getColumnCount();
+		databaseCursor = dbCursor;
+		downloadCursor = dlCursor;
+		update();
 	}
 
 	@Override
 	public void close() {
-		dbCursor.close();
-		dlCursor.close();
+		databaseCursor.close();
+		downloadCursor.close();
+		databaseCursor = null;
+		downloadCursor = null;
+		positionMap = null;
 	}
 
 	@Override
 	public void copyStringToBuffer(int columnIndex, CharArrayBuffer buffer) {
-		if (isDbCursor(columnIndex)) {
-			dbCursor.copyStringToBuffer(columnIndex, buffer);
-		} else {
-			dlCursor.copyStringToBuffer(
-					columnIndex - dbCursor.getColumnCount(), buffer);
-		}
+		getCursor(columnIndex).copyStringToBuffer(getColumn(columnIndex),
+				buffer);
 	}
 
 	@Override
 	public void deactivate() {
-		dbCursor.deactivate();
-		dlCursor.deactivate();
+		databaseCursor.deactivate();
+		downloadCursor.deactivate();
 	}
 
 	@Override
 	public byte[] getBlob(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getBlob(columnIndex)
-				: dlCursor.getBlob(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getBlob(getColumn(columnIndex));
+	}
+
+	/**
+	 * Helper method that returns the column index in the sub-cursor for the
+	 * given column in this cursor.
+	 * 
+	 * @param columnIndex
+	 *            Column index in this cursor.
+	 * @return Column index in sub-cursor.
+	 */
+	private int getColumn(int columnIndex) {
+		if (columnIndex < databaseWidth) {
+			return columnIndex;
+		} else {
+			return columnIndex - databaseWidth;
+		}
 	}
 
 	@Override
 	public int getColumnCount() {
-		return dbCursor.getColumnCount() + dlColumnMap.size();
+		return totalWidth;
 	}
 
 	@Override
 	public int getColumnIndex(String columnName) {
-		return dlColumnMap.containsKey(columnName) ? dbCursor.getColumnCount()
-				+ dlCursor.getColumnIndex(dlColumnMap.get(columnName))
-				: dbCursor.getColumnIndex(columnName);
+		try {
+			return getColumnIndexOrThrow(columnName);
+		} catch (IllegalArgumentException e) {
+			return -1;
+		}
 	}
 
 	@Override
 	public int getColumnIndexOrThrow(String columnName)
 			throws IllegalArgumentException {
-		return dlColumnMap.containsKey(columnName) ? dbCursor.getColumnCount()
-				+ dlCursor.getColumnIndexOrThrow(dlColumnMap.get(columnName))
-				: dbCursor.getColumnIndexOrThrow(columnName);
+		try {
+			return databaseCursor.getColumnIndexOrThrow(columnName);
+		} catch (IllegalArgumentException e) {
+			return downloadCursor.getColumnIndexOrThrow(columnName)
+					+ databaseWidth;
+		}
 	}
 
 	@Override
 	public String getColumnName(int columnIndex) {
-		if (isDbCursor(columnIndex)) {
-			return dbCursor.getColumnName(columnIndex);
-		} else if (columnIndex < dbCursor.getColumnCount() + dlColumns.length) {
-			return dlColumns[columnIndex - dbCursor.getColumnCount()];
+		if (columnIndex < 0) {
+			return null;
+		} else if (columnIndex < databaseWidth) {
+			return databaseCursor.getColumnName(columnIndex);
+		} else if (columnIndex < (databaseWidth + downloadWidth)) {
+			return downloadCursor.getColumnName(columnIndex - databaseWidth);
 		} else {
 			return null;
 		}
@@ -156,183 +127,199 @@ public class EpisodeWithDownloadCursor implements Cursor {
 
 	@Override
 	public String[] getColumnNames() {
-		String[] db = dbCursor.getColumnNames();
-		String[] names = new String[db.length + dlColumns.length];
+		String[] db = databaseCursor.getColumnNames();
+		String[] dl = downloadCursor.getColumnNames();
+		String[] names = new String[db.length + dl.length];
+		int n = 0;
 		for (int i = 0; i < db.length; i++) {
-			names[i] = db[i];
+			names[n++] = db[i];
 		}
-		for (int i = 0; i < dlColumns.length; i++) {
-			names[db.length + i] = dlColumns[i];
+		for (int i = 0; i < dl.length; i++) {
+			names[n++] = dl[i];
 		}
 		return names;
+
 	}
 
 	@Override
 	public int getCount() {
-		return dbCursor.getCount();
+		return databaseCursor.getCount();
+	}
+
+	/**
+	 * Helper method to return the Cursor a specific column belongs to.
+	 * 
+	 * @param columnIndex
+	 *            Column index in this cursor.
+	 * @return Sub-cursor this column belongs to.
+	 */
+	private Cursor getCursor(int columnIndex) {
+		if (columnIndex < databaseWidth) {
+			return databaseCursor;
+		} else {
+			return downloadCursor;
+		}
 	}
 
 	@Override
 	public double getDouble(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getDouble(columnIndex)
-				: dlCursor.getDouble(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getDouble(getColumn(columnIndex));
 	}
 
 	@Override
 	public Bundle getExtras() {
 		Bundle bundle = new Bundle();
-		bundle.putAll(dbCursor.getExtras());
-		bundle.putAll(dlCursor.getExtras());
+		bundle.putAll(databaseCursor.getExtras());
+		bundle.putAll(downloadCursor.getExtras());
 		return bundle;
 	}
 
 	@Override
 	public float getFloat(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getFloat(columnIndex)
-				: dlCursor.getFloat(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getFloat(getColumn(columnIndex));
 	}
 
 	@Override
 	public int getInt(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getInt(columnIndex)
-				: dlCursor.getInt(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getInt(getColumn(columnIndex));
 	}
 
 	@Override
 	public long getLong(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getLong(columnIndex)
-				: dlCursor.getLong(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getLong(getColumn(columnIndex));
 	}
 
 	@Override
 	public int getPosition() {
-		return dbCursor.getPosition();
+		return databaseCursor.getPosition();
 	}
 
 	@Override
 	public short getShort(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getShort(columnIndex)
-				: dlCursor.getShort(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getShort(getColumn(columnIndex));
 	}
 
 	@Override
 	public String getString(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getString(columnIndex)
-				: dlCursor.getString(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getString(getColumn(columnIndex));
 	}
 
 	@Override
 	public int getType(int columnIndex) {
-		return isDbCursor(columnIndex) ? dbCursor.getType(columnIndex)
-				: dlCursor.getType(columnIndex - dbCursor.getColumnCount());
+		return getCursor(columnIndex).getType(getColumn(columnIndex));
 	}
 
 	@Override
 	public boolean getWantsAllOnMoveCalls() {
-		return dbCursor.getWantsAllOnMoveCalls();
+		return databaseCursor.getWantsAllOnMoveCalls();
 	}
 
 	@Override
 	public boolean isAfterLast() {
-		return dbCursor.isAfterLast();
+		return databaseCursor.isAfterLast();
 	}
 
 	@Override
 	public boolean isBeforeFirst() {
-		return dbCursor.isBeforeFirst();
+		return databaseCursor.isBeforeFirst();
 	}
 
 	@Override
 	public boolean isClosed() {
-		return dbCursor.isClosed() || dlCursor.isClosed();
+		return databaseCursor.isClosed() || downloadCursor.isClosed();
 	}
 
 	@Override
 	public boolean isFirst() {
-		return dbCursor.isFirst();
+		return databaseCursor.isFirst();
 	}
 
 	@Override
 	public boolean isLast() {
-		return dbCursor.isLast();
+		return databaseCursor.isLast();
 	}
 
 	@Override
 	public boolean isNull(int columnIndex) {
-		if (isDbCursor(columnIndex)) {
-			return dbCursor.isNull(columnIndex);
+		Cursor c = getCursor(columnIndex);
+		if (c.isBeforeFirst() || c.isAfterLast()) {
+			return true;
 		} else {
-			if (dlCursor.isBeforeFirst() || dlCursor.isAfterLast()) {
-				return true;
-			} else {
-				return dlCursor.isNull(columnIndex - dbCursor.getColumnCount());
-			}
+			return c.isNull(getColumn(columnIndex));
 		}
-	}
-
-	private void moveDlCursor() {
-		Integer dlPos = dbToDlMap.get(dbCursor.getPosition());
-		dlCursor.moveToPosition(dlPos == null ? -1 : dlPos);
 	}
 
 	@Override
 	public boolean move(int offset) {
-		boolean result = dbCursor.move(offset);
-		moveDlCursor();
+		boolean result = databaseCursor.move(offset);
+		moveDownloadCursor();
 		return result;
+	}
+
+	/**
+	 * Helper method to move the download cursor to the right row after this
+	 * cursor has been moved.
+	 */
+	private void moveDownloadCursor() {
+		if (databaseCursor.isBeforeFirst() || databaseCursor.isAfterLast()) {
+			downloadCursor.moveToPosition(-1);
+		} else {
+			downloadCursor.moveToPosition(positionMap[databaseCursor
+					.getPosition()]);
+		}
 	}
 
 	@Override
 	public boolean moveToFirst() {
-		boolean result = dbCursor.moveToFirst();
-		moveDlCursor();
+		boolean result = databaseCursor.moveToFirst();
+		moveDownloadCursor();
 		return result;
 	}
 
 	@Override
 	public boolean moveToLast() {
-		boolean result = dbCursor.moveToLast();
-		moveDlCursor();
+		boolean result = databaseCursor.moveToLast();
+		moveDownloadCursor();
 		return result;
 	}
 
 	@Override
 	public boolean moveToNext() {
-		boolean result = dbCursor.moveToNext();
-		moveDlCursor();
+		boolean result = databaseCursor.moveToNext();
+		moveDownloadCursor();
 		return result;
 	}
 
 	@Override
 	public boolean moveToPosition(int position) {
-		boolean result = dbCursor.moveToPosition(position);
-		moveDlCursor();
+		boolean result = databaseCursor.moveToPosition(position);
+		moveDownloadCursor();
 		return result;
 	}
 
 	@Override
 	public boolean moveToPrevious() {
-		boolean result = dbCursor.moveToPrevious();
-		moveDlCursor();
+		boolean result = databaseCursor.moveToPrevious();
+		moveDownloadCursor();
 		return result;
 	}
 
 	@Override
 	public void registerContentObserver(ContentObserver observer) {
-		dbCursor.registerContentObserver(observer);
-		dlCursor.registerContentObserver(observer);
+		databaseCursor.registerContentObserver(observer);
+		downloadCursor.registerContentObserver(observer);
 	}
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-		dbCursor.registerDataSetObserver(observer);
-		dlCursor.registerDataSetObserver(observer);
+		databaseCursor.registerDataSetObserver(observer);
+		downloadCursor.registerDataSetObserver(observer);
 	}
 
 	@Override
 	public boolean requery() {
-		if (dbCursor.requery() && dlCursor.requery()) {
-			updateIdMappings();
+		if (databaseCursor.requery() && downloadCursor.requery()) {
+			update();
 			return true;
 		} else {
 			return false;
@@ -341,27 +328,77 @@ public class EpisodeWithDownloadCursor implements Cursor {
 
 	@Override
 	public Bundle respond(Bundle extras) {
-		extras = dbCursor.respond(extras);
-		extras = dlCursor.respond(extras);
+		extras = databaseCursor.respond(extras);
+		extras = downloadCursor.respond(extras);
 		return extras;
 	}
 
 	@Override
 	public void setNotificationUri(ContentResolver cr, Uri uri) {
-		dbCursor.setNotificationUri(cr, uri);
-		dlCursor.setNotificationUri(cr, uri);
+		databaseCursor.setNotificationUri(cr, uri);
+		downloadCursor.setNotificationUri(cr, uri);
 	}
 
 	@Override
 	public void unregisterContentObserver(ContentObserver observer) {
-		dbCursor.unregisterContentObserver(observer);
-		dlCursor.unregisterContentObserver(observer);
+		databaseCursor.unregisterContentObserver(observer);
+		downloadCursor.unregisterContentObserver(observer);
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-		dbCursor.unregisterDataSetObserver(observer);
-		dlCursor.unregisterDataSetObserver(observer);
+		databaseCursor.unregisterDataSetObserver(observer);
+		downloadCursor.unregisterDataSetObserver(observer);
 	}
 
+	/**
+	 * Generate mappings from the position in dbCursor to the position in
+	 * dlCursor based on the download ID in both cursor.
+	 */
+	private void update() {
+		databaseWidth = databaseCursor.getColumnCount();
+		downloadWidth = downloadCursor.getColumnCount();
+		totalWidth = databaseWidth + downloadWidth;
+
+		// create mapping: download id -> position in download cursor
+		Map<Long, Integer> dlIdToDlPos = new HashMap<Long, Integer>(
+				downloadCursor.getCount());
+		{
+			int idCol = downloadCursor
+					.getColumnIndexOrThrow(Episode.DOWNLOAD_ID);
+			while (downloadCursor.moveToNext()) {
+				dlIdToDlPos.put(downloadCursor.getLong(idCol),
+						downloadCursor.getPosition());
+			}
+		}
+		downloadCursor.moveToPosition(-1);
+
+		if (DEBUG) {
+			Log.d(TAG, "Generated the following dlIdToDlPos:");
+			for (Long db : dlIdToDlPos.keySet()) {
+				Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
+			}
+		}
+
+		// create mapping: position in database cursor -> position in download
+		// cursor
+		positionMap = new int[databaseCursor.getCount()];
+		{
+			int idCol = databaseCursor
+					.getColumnIndexOrThrow(Episode.DOWNLOAD_ID);
+			Integer p;
+			while (databaseCursor.moveToNext()) {
+				p = dlIdToDlPos.get(databaseCursor.getLong(idCol));
+				positionMap[databaseCursor.getPosition()] = p == null ? -1 : p;
+			}
+		}
+		databaseCursor.moveToPosition(-1);
+
+		if (DEBUG) {
+			Log.d(TAG, "Generated the following dbToDlMap:");
+			for (int i = 0; i < positionMap.length; i++) {
+				Log.d(TAG, i + " -> " + positionMap[i]);
+			}
+		}
+	}
 }

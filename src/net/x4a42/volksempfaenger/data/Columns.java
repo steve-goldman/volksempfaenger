@@ -146,11 +146,6 @@ public class Columns {
 		public static final String DOWNLOAD_ID = "download_id";
 
 		/**
-		 * Local path of the downloaded file (type String)
-		 */
-		public static final String DOWNLOAD_FILE = "download_file";
-
-		/**
 		 * URI of the downloaded file (type String)
 		 */
 		public static final String DOWNLOAD_URI = "download_uri";

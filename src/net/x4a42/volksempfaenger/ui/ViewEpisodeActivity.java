@@ -190,9 +190,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			File f = episodeCursor.getDownloadFile();
-			if (f != null && f.isFile()) {
-				f.delete();
+			Uri uri = episodeCursor.getDownloadUri();
+			if (uri != null) {
+				File file = new File(uri.getPath());
+				if (file != null && file.isFile()) {
+					file.delete();
+				}
 			}
 			values.put(Episode.DOWNLOAD_ID, 0);
 			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
@@ -348,7 +351,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE,
 				Episode.PODCAST_DESCRIPTION, Episode.DOWNLOAD_ID,
-				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_FILE,
+				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_URI,
 				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
 				Episode.ENCLOSURE_ID };
 		return new CursorLoader(this, uri, projection, null, null, null);
