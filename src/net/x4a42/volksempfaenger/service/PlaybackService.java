@@ -8,40 +8,43 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
+import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
+import android.view.KeyEvent;
 
 public class PlaybackService extends Service implements EventListener {
 
-	private static final String TAG = "PlaybackService";
-	private static final int NOTIFICATION_ID = 0x59d54313;
-
+	public static final String TAG = "PlaybackService";
 	public static final String ACTION_PLAY = "net.x4a42.volksempfaenger.intent.action.PLAY";
 
+	private static final int NOTIFICATION_ID = 0x59d54313;
+	private static final boolean useRemoteControlReceiver = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+
+	private Uri uri;
 	private Notification notification;
 	private EpisodeCursor cursor;
-
 	private Handler saveHandler;
-
 	private PlaybackBinder binder;
 	private PlaybackRemote remote;
 	private PlaybackHelper helper;
-
-	private Uri uri;
+	private RemoteControlClient remoteControlClient;
 
 	@Override
 	public void onCreate() {
@@ -52,15 +55,37 @@ public class PlaybackService extends Service implements EventListener {
 		remote = new PlaybackRemote();
 		helper = new PlaybackHelper(this);
 		helper.registerEventListener(this);
+
+		ComponentName mediaButtonEventReceiver = new ComponentName(
+				getPackageName(), MediaButtonEventReceiver.class.getName());
+
+		AudioManager am = helper.getAudioManager();
+		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
+
+		if (useRemoteControlReceiver) {
+			PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
+					getApplicationContext(), 0, new Intent(
+							Intent.ACTION_MEDIA_BUTTON)
+							.setComponent(mediaButtonEventReceiver), 0);
+			// create and register the remote control client
+			remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+			am.registerRemoteControlClient(remoteControlClient);
+		}
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		String action;
 		if (intent == null) {
 			return START_STICKY;
+		} else if ((action = intent.getAction()) == null) {
+			return START_STICKY;
+		} else {
+			action = action.intern();
 		}
 
-		if (ACTION_PLAY.equals(intent.getAction())) {
+		if (action == ACTION_PLAY) {
+
 			try {
 				playEpisode(intent.getData());
 			} catch (IllegalArgumentException e) {
@@ -70,7 +95,33 @@ public class PlaybackService extends Service implements EventListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+		} else if (action == Intent.ACTION_MEDIA_BUTTON) {
+
+			KeyEvent event = (KeyEvent) intent
+					.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+
+			if (event != null) {
+				switch (event.getKeyCode()) {
+				case KeyEvent.KEYCODE_MEDIA_PLAY:
+					remote.play();
+					break;
+
+				case KeyEvent.KEYCODE_MEDIA_PAUSE:
+					remote.pause();
+					break;
+
+				case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+					if (remote.isPlaying()) {
+						remote.pause();
+					} else {
+						remote.play();
+					}
+				}
+			}
+
 		}
+
 		return START_STICKY;
 	}
 
@@ -255,6 +306,10 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerPlay() {
 		saveHandler.post(savePositionTask);
+		if (useRemoteControlReceiver) {
+			remoteControlClient
+					.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+		}
 	}
 
 	private void onPlayerReset() {
@@ -264,6 +319,10 @@ public class PlaybackService extends Service implements EventListener {
 	private void onPlayerEnd() {
 		onPlayerPause();
 		savePosition(0);
+		if (useRemoteControlReceiver) {
+			remoteControlClient
+					.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+		}
 		cursor = null;
 		uri = null;
 	}
@@ -271,12 +330,20 @@ public class PlaybackService extends Service implements EventListener {
 	private void onPlayerStop() {
 		onPlayerPause();
 		savePosition();
+		if (useRemoteControlReceiver) {
+			remoteControlClient
+					.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+		}
 		cursor = null;
 		uri = null;
 	}
 
 	private void onPlayerPause() {
 		saveHandler.removeCallbacks(savePositionTask);
+		if (useRemoteControlReceiver) {
+			remoteControlClient
+					.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+		}
 		stopForeground();
 	}
 
