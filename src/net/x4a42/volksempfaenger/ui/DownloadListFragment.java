@@ -78,10 +78,11 @@ public class DownloadListFragment extends ListFragment implements
 						"Size > Integer.MAX_VALUE not yet supported"); // TODO
 				return;
 			}
-
 			progressBar.setMax((int) total);
 			progressBar.setProgress((int) done);
-
+			PodcastLogoView logoView = (PodcastLogoView) view
+					.findViewById(R.id.podcast_logo);
+			logoView.setPodcastId(episodeCursor.getPodcastId());
 		}
 	}
 
@@ -89,9 +90,9 @@ public class DownloadListFragment extends ListFragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(getActivity(),
 				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
-						Episode._ID, Episode.TITLE, Episode.DOWNLOAD_ID,
-						Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_DONE,
-						Episode.DOWNLOAD_TOTAL },
+						Episode.PODCAST_ID, Episode._ID, Episode.TITLE,
+						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_STATUS,
+						Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_TOTAL },
 				Episode.DOWNLOAD_ID + " != 0", null, null);
 	}
 

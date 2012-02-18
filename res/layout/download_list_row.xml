@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="5dp" >
+    android:layout_height="match_parent" >
+
+    <net.x4a42.volksempfaenger.ui.SquareView
+        android:id="@+id/square"
+        style="@style/podcastLogoSmall"
+        android:background="@android:color/white" >
+
+        <net.x4a42.volksempfaenger.ui.PodcastLogoView
+            android:id="@+id/podcast_logo"
+            style="@style/podcastLogoSmall" />
+    </net.x4a42.volksempfaenger.ui.SquareView>
 
     <TextView
         android:id="@+id/download_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/square"
         android:text="Title" />
 
     <ProgressBar
@@ -17,6 +26,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/download_title" />
+        android:layout_alignLeft="@id/download_title"
+        android:layout_below="@id/download_title" />
 
 </RelativeLayout>
