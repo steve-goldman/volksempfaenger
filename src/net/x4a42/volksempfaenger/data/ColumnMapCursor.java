@@ -1,11 +1,13 @@
 package net.x4a42.volksempfaenger.data;
 
+import android.database.CharArrayBuffer;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
 public class ColumnMapCursor extends CursorWrapper {
 
 	private String[] columns;
+
 	private int[] map;
 
 	public ColumnMapCursor(Cursor cursor, String[] from, String[] to) {
@@ -16,6 +18,16 @@ public class ColumnMapCursor extends CursorWrapper {
 		for (int i = 0; i < map.length; i++) {
 			map[i] = cursor.getColumnIndex(to[i]);
 		}
+	}
+
+	@Override
+	public void copyStringToBuffer(int columnIndex, CharArrayBuffer buffer) {
+		super.copyStringToBuffer(map[columnIndex], buffer);
+	}
+
+	@Override
+	public byte[] getBlob(int columnIndex) {
+		return super.getBlob(map[columnIndex]);
 	}
 
 	@Override
@@ -88,13 +100,13 @@ public class ColumnMapCursor extends CursorWrapper {
 	}
 
 	@Override
-	public byte[] getBlob(int columnIndex) {
-		return super.getBlob(map[columnIndex]);
+	public int getType(int columnIndex) {
+		return super.getType(map[columnIndex]);
 	}
 
 	@Override
-	public int getType(int columnIndex) {
-		return super.getType(map[columnIndex]);
+	public boolean isNull(int columnIndex) {
+		return super.isNull(map[columnIndex]);
 	}
 
 }
