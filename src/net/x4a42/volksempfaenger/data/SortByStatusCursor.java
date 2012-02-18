@@ -34,7 +34,7 @@ public class SortByStatusCursor extends CursorWrapper implements Cursor {
 
 			@Override
 			public int compare(Integer lhs, Integer rhs) {
-				return status[rhs.intValue()] - status[lhs.intValue()];
+				return status[lhs.intValue()] - status[rhs.intValue()];
 			}
 		});
 		moveToFirst();
