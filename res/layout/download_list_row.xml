@@ -6,14 +6,14 @@
 
     <net.x4a42.volksempfaenger.ui.SquareView
         android:id="@+id/square"
-        style="@style/podcastLogoSmall"
+        style="@style/PodcastLogo.Small"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@android:color/white" >
 
         <net.x4a42.volksempfaenger.ui.PodcastLogoView
             android:id="@+id/podcast_logo"
-            style="@style/podcastLogoSmall" />
+            style="@style/PodcastLogo.Small" />
     </net.x4a42.volksempfaenger.ui.SquareView>
 
     <TextView
