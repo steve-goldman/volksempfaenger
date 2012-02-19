@@ -4,17 +4,11 @@
     android:layout_height="match_parent"
     android:paddingRight="8dp" >
 
-    <net.x4a42.volksempfaenger.ui.SquareView
-        android:id="@+id/square"
+    <net.x4a42.volksempfaenger.ui.PodcastLogoView
+        android:id="@+id/podcast_logo"
         style="@style/PodcastLogo.Small"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/white" >
-
-        <net.x4a42.volksempfaenger.ui.PodcastLogoView
-            android:id="@+id/podcast_logo"
-            style="@style/PodcastLogo.Small" />
-    </net.x4a42.volksempfaenger.ui.SquareView>
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/download_title"
@@ -24,7 +18,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="4dp"
-        android:layout_toRightOf="@id/square"
+        android:layout_toRightOf="@id/podcast_logo"
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
