@@ -23,7 +23,7 @@
 
                 <net.x4a42.volksempfaenger.ui.PodcastLogoView
                     android:id="@+id/logo"
-                    style="@style/podcastLogoLarge" />
+                    style="@style/PodcastLogo.Large" />
 
                 <LinearLayout
                     android:layout_width="0dp"

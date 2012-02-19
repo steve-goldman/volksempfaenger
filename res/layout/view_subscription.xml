@@ -11,7 +11,7 @@
 
         <net.x4a42.volksempfaenger.ui.PodcastLogoView
             android:id="@+id/podcast_logo"
-            style="@style/podcastLogoLarge" />
+            style="@style/PodcastLogo.Large" />
 
         <TextView
             android:id="@+id/podcast_description"
