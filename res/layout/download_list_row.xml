@@ -2,11 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal" >
+    android:paddingRight="8dp" >
 
     <net.x4a42.volksempfaenger.ui.SquareView
         android:id="@+id/square"
         style="@style/podcastLogoSmall"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:background="@android:color/white" >
 
         <net.x4a42.volksempfaenger.ui.PodcastLogoView
@@ -20,7 +22,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/square"
+        android:ellipsize="marquee"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
         android:text="Title" />
 
     <ProgressBar
