@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
 
     <string name="app_name">Volksempfänger</string>
@@ -8,6 +8,7 @@
     <string name="title_settings">Volksempfänger Einstellungen</string>
     <string name="title_tab_subscriptions">Abonnements</string>
     <string name="title_tab_downloads">Downloads</string>
+    <string name="title_context_change_logo">Logo ändern</string>
     <string name="description_add_subscription">Gibt die Podcast-URL an, um diesen zu abonnieren</string>
     <string name="menu_add">Hinzufügen</string>
     <string name="menu_edit">Bearbeiten</string>
@@ -15,10 +16,11 @@
     <string name="menu_settings">Einstellungen</string>
     <string name="menu_download">Herunterladen</string>
     <string name="menu_mark_listened">Als gehört markieren</string>
+    <string name="menu_update">Aktualisieren</string>
     <string name="context_edit">Bearbeiten</string>
     <string name="context_delete">Löschen</string>
     <string name="context_reload">Neuladen</string>
-    <string name="context_choose">Wähle&#8230;</string>
+    <string name="context_choose">Wähle…</string>
     <string name="hint_http">http://</string>
     <string name="yes">Ja</string>
     <string name="ok">OK</string>
@@ -28,9 +30,9 @@
     <string name="unknown">unbekannt</string>
     <string name="dialog_error_title">Ein Fehler ist aufgetreten</string>
     <string name="dialog_add_progress_title">Abonnement wird hinzugefügt</string>
-    <string name="dialog_add_progress_message">Bitte warten&#8230;</string>
+    <string name="dialog_add_progress_message">Bitte warten…</string>
     <string name="dialog_reload_logo_progress_title">Logo wird geladen</string>
-    <string name="dialog_reload_logo_progress_message">Bitte warten&#8230;</string>
+    <string name="dialog_reload_logo_progress_message">Bitte warten…</string>
     <string name="dialog_choose_download_enclosure">Datei wählen</string>
     <string name="message_error">Irgendetwas ist schiefgelaufen</string>
     <string name="message_podcast_already_added">Du hast diesen Podcast bereits abonniert</string>
@@ -41,7 +43,11 @@
     <string name="message_podcast_feed_parsing_failed">Podcast-XML konnte nicht geparst werden</string>
     <string name="message_podcast_feed_io_exception">IOException</string>
     <string name="message_no_subscriptions">Keine Abonnements</string>
+    <string name="message_download_started">Der Download wurde gestartet</string>
+    <string name="message_download_already_running">Der Download läuft bereits</string>
+    <string name="message_download_episode_already_downloaded">Diese Episode wurde bereits heruntergeladen</string>
     <string name="message_episode_without_enclosure">Dieser Folge wurde keine Datei angehängt</string>
+    <string name="message_update_started">Aktualisierung wurde gestartet</string>
     <string name="settings_download">Download</string>
     <string name="settings_download_interval">Aktualisierungsinterval</string>
     <string name="settings_download_auto">Automatischer Download</string>
@@ -65,5 +71,24 @@
     <string name="settings_summary_storage">Einstellungen für lokalen Speicher</string>
     <string name="settings_summary_about">Informationen über Volksempfänger</string>
     <string name="settings_summary_about_license">Lizenzinformationen anzeigen</string>
+    <string name="menu_import">Importieren</string>
+    <string name="dialog_choose_opml">Wähle OPML-Datei</string>
+    <string name="button_import">Importieren</string>
+    <string name="dialog_choose_import_feeds">Wähle Feeds zum Importieren</string>
+    <string name="message_no_downloads">Keine Downloads</string>
+    <string name="download_status_failed">Fehlgeschlagen</string>
+    <string name="download_status_paused">Pausiert</string>
+    <string name="download_status_pending">Ausstehend</string>
+    <string name="download_status_successful">Erfolgreich</string>
+
+    <string-array name="settings_interval_choices">
+        <item>Manuell</item>
+        <item>Stündlich</item>
+        <item>Alle zwei Stunden</item>
+        <item>Alle vier Stunden</item>
+        <item>Alle acht Stundne</item>
+        <item>Alle zwölf Stunden</item>
+        <item>Täglich</item>
+    </string-array>
 
 </resources>

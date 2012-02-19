@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- strings to be translated -->
 <resources>
 
     <string name="app_name">Volksempfänger</string>
@@ -20,7 +21,7 @@
     <string name="context_edit">Edit</string>
     <string name="context_delete">Delete</string>
     <string name="context_reload">Reload</string>
-    <string name="context_choose">Choose&#8230;</string>
+    <string name="context_choose">Choose…</string>
     <string name="hint_http">http://</string>
     <string name="yes">Yes</string>
     <string name="ok">OK</string>
@@ -30,9 +31,9 @@
     <string name="unknown">unknown</string>
     <string name="dialog_error_title">An error occurred</string>
     <string name="dialog_add_progress_title">Adding Subscription</string>
-    <string name="dialog_add_progress_message">Please wait&#8230;</string>
+    <string name="dialog_add_progress_message">Please wait…</string>
     <string name="dialog_reload_logo_progress_title">Reloading Logo</string>
-    <string name="dialog_reload_logo_progress_message">Please wait&#8230;</string>
+    <string name="dialog_reload_logo_progress_message">Please wait…</string>
     <string name="dialog_choose_download_enclosure">Choose a file</string>
     <string name="message_error">Something went wrong</string>
     <string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
@@ -71,11 +72,6 @@
     <string name="settings_summary_storage">Local podcast storage settings</string>
     <string name="settings_summary_about">Information about Volksempfänger</string>
     <string name="settings_summary_about_license">Show license information</string>
-    <string name="settings_default_download_interval">0</string>
-    <string name="settings_default_download_auto">true</string>
-    <string name="settings_default_download_wifi">true</string>
-    <string name="settings_default_download_charging">false</string>
-    <string name="settings_default_download_concurrent">1</string>
     <string name="menu_import">Import</string>
     <string name="dialog_choose_opml">Choose OPML file</string>
     <string name="button_import">Import</string>
@@ -85,5 +81,15 @@
     <string name="download_status_paused">Paused</string>
     <string name="download_status_pending">Pending</string>
     <string name="download_status_successful">Successful</string>
+
+    <string-array name="settings_interval_choices">
+        <item>Manually</item>
+        <item>Every hour</item>
+        <item>Every two hours</item>
+        <item>Every four hours</item>
+        <item>Every eight hours</item>
+        <item>Every twelve hours</item>
+        <item>Every day</item>
+    </string-array>
 
 </resources>
