@@ -81,6 +81,7 @@
     <string name="download_status_paused">Paused</string>
     <string name="download_status_pending">Pending</string>
     <string name="download_status_successful">Successful</string>
+    <string name="empty_description">no description</string>
 
     <string-array name="settings_interval_choices">
         <item>Manually</item>
