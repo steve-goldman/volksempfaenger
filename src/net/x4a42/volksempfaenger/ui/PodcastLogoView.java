@@ -70,17 +70,14 @@ public class PodcastLogoView extends ImageView {
 
 		@Override
 		protected Bitmap doInBackground(Void... params) {
-			Bitmap logo = Utils.getPodcastLogoBitmap(getContext(), id);
-			if (logo != null) {
-				cache.put(id, logo);
-			}
-			return logo;
+			return Utils.getPodcastLogoBitmap(getContext(), id);
 		}
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
 				setImageBitmap(result);
+				cache.put(id, result);
 			} else {
 				setImageResource(R.drawable.default_logo);
 			}
@@ -89,6 +86,7 @@ public class PodcastLogoView extends ImageView {
 		@Override
 		protected void onCancelled(Bitmap result) {
 			init();
+			cache.put(id, result);
 		}
 
 	}
