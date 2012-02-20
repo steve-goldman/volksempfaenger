@@ -31,8 +31,15 @@ public class PodcastLogoView extends ImageView {
 		reset();
 	}
 
-	private void reset() {
+	public void reset() {
+		reset(true);
+	}
+
+	private void reset(boolean resetId) {
 		setImageResource(R.drawable.default_logo);
+		if (resetId) {
+			podcastId = -1;
+		}
 	}
 
 	public void setPodcastId(long id) {
@@ -81,13 +88,13 @@ public class PodcastLogoView extends ImageView {
 				setImageBitmap(result);
 				cache.put(id, result);
 			} else {
-				reset();
+				reset(false);
 			}
 		}
 
 		@Override
 		protected void onCancelled(Bitmap result) {
-			reset();
+			reset(false);
 			if (result != null) {
 				cache.put(id, result);
 			}

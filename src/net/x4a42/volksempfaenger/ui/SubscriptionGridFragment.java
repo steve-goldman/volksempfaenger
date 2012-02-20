@@ -49,6 +49,8 @@ import android.widget.Toast;
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+	public static final String TAG = "SubscriptionGridFragment";
+
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
 
@@ -281,6 +283,22 @@ public class SubscriptionGridFragment extends Fragment implements
 			super(getActivity(), R.layout.subscription_list_row, null,
 					new String[] { Podcast.TITLE },
 					new int[] { R.id.podcast_title }, 0);
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			try {
+				if (convertView != null) {
+					PodcastLogoView podcastLogo = (PodcastLogoView) convertView
+							.findViewById(R.id.podcast_logo);
+					if (podcastLogo != null) {
+						podcastLogo.reset();
+					}
+				}
+			} catch (ClassCastException e) {
+				Log.d(TAG, e.toString());
+			}
+			return super.getView(position, convertView, parent);
 		}
 
 		@Override
