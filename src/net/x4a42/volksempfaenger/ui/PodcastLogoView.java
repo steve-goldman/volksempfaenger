@@ -18,20 +18,20 @@ public class PodcastLogoView extends ImageView {
 
 	public PodcastLogoView(Context context) {
 		super(context);
-		init();
+		reset();
 	}
 
 	public PodcastLogoView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		reset();
 	}
 
 	public PodcastLogoView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+		reset();
 	}
 
-	private void init() {
+	private void reset() {
 		setImageResource(R.drawable.default_logo);
 	}
 
@@ -43,6 +43,8 @@ public class PodcastLogoView extends ImageView {
 
 		if (lastTask != null) {
 			lastTask.cancel(false);
+		} else {
+			reset();
 		}
 
 		Bitmap logo = cache.get(id);
@@ -79,14 +81,16 @@ public class PodcastLogoView extends ImageView {
 				setImageBitmap(result);
 				cache.put(id, result);
 			} else {
-				setImageResource(R.drawable.default_logo);
+				reset();
 			}
 		}
 
 		@Override
 		protected void onCancelled(Bitmap result) {
-			init();
-			cache.put(id, result);
+			reset();
+			if (result != null) {
+				cache.put(id, result);
+			}
 		}
 
 	}
