@@ -70,6 +70,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private View contentContainer;
 
+	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
 	private SpannableStringBuilder descriptionSpanned;
 
 	@Override
@@ -96,8 +97,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		startService(intent);
 
 		onNewIntent(getIntent());
-
-		getSupportLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -117,6 +116,13 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 					VolksempfaengerContentProvider.EPISODE_URI, id);
 		} else {
 			id = ContentUris.parseId(uri);
+		}
+
+		LoaderManager lm = getSupportLoaderManager();
+		if (lm.getLoader(0) == null) {
+			lm.initLoader(0, null, this);
+		} else {
+			lm.restartLoader(0, null, this);
 		}
 	}
 
@@ -269,6 +275,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	private class ImageLoadTask extends AsyncTask<Void, ImageSpan, Void> {
+
 		private DescriptionImageDownloader imageDownloader;
 		private int viewWidth;
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -286,6 +293,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 			for (ImageSpan img : descriptionSpanned.getSpans(0,
 					descriptionSpanned.length(), ImageSpan.class)) {
+
+				if (isCancelled()) {
+					return null;
+				}
+
 				if (!getImageFile(img).isFile()) {
 					try {
 						imageDownloader.fetchImage(img.getSource());
@@ -295,6 +307,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 								e);
 					}
 				}
+
+				if (isCancelled()) {
+					return null;
+				}
+
 				publishProgress(img);
 			}
 
@@ -326,12 +343,25 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				ImageSpan newImg = new ImageSpan(d, src);
 				int start = descriptionSpanned.getSpanStart(img);
 				int end = descriptionSpanned.getSpanEnd(img);
+				if (start == -1 || end == -1) {
+					return;
+				}
 				descriptionSpanned.removeSpan(img);
 				descriptionSpanned.setSpan(newImg, start, end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				// explicitly update description
 				episodeDescription.setText(descriptionSpanned);
 			}
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			lastImageLoadTask = null;
+		}
+
+		@Override
+		protected void onCancelled(Void result) {
+			lastImageLoadTask = null;
 		}
 
 		private File getImageFile(ImageSpan img) {
@@ -386,6 +416,10 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		podcastDescription.setText(episodeCursor.getPodcastDescription());
 		episodeTitle.setText(episodeCursor.getTitle());
 
+		if (lastImageLoadTask != null) {
+			lastImageLoadTask.cancel(true);
+		}
+
 		Spanned s = Html.fromHtml(episodeCursor.getDescription());
 		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
 				: new SpannableStringBuilder(s);
@@ -395,7 +429,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			episodeDescription.setText(episodeCursor.getDescription());
 		} else {
 			episodeDescription.setText(descriptionSpanned);
-			new ImageLoadTask().execute();
+			lastImageLoadTask = new ImageLoadTask().execute();
 		}
 	}
 
