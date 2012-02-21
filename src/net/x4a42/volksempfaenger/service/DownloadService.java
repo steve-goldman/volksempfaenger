@@ -32,10 +32,12 @@ import android.widget.Toast;
 
 public class DownloadService extends Service {
 
-	private VolksempfaengerApplication app;
+	public static final String TAG = "DownloadService";
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
+
+	private VolksempfaengerApplication app;
 
 	private class DownloadTask extends AsyncTask<Void, Integer, Void> {
 

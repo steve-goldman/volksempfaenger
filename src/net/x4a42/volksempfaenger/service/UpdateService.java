@@ -27,7 +27,8 @@ import android.util.Log;
 
 public class UpdateService extends IntentService {
 
-	private static final String TAG = "UpdateService";
+	public static final String TAG = "UpdateService";
+
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=? AND "
 			+ Episode.FEED_ITEM_ID + "=?";
 	private static final String ENCLOSURE_WHERE = Enclosure.EPISODE_ID

@@ -11,6 +11,7 @@ import android.util.Log;
 public class UpdateServiceStatus {
 
 	public static final String TAG = "UpdateSeriviceStatus";
+
 	private static boolean isLocked = false;
 	private static boolean isUpdating = false;
 	private static Uri uri = null;

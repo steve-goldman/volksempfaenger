@@ -27,7 +27,8 @@ import android.widget.Toast;
 
 public class DebugActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "DebugActivity";
+	public static final String TAG = "DebugActivity";
+
 	private static final int REQUEST_PICK_FEED = 0;
 
 	private Button buttonStartUpdate;

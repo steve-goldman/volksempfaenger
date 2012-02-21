@@ -39,6 +39,8 @@ import android.widget.Toast;
 public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnItemClickListener {
 
+	public static final String TAG = "ViewSubscriptionActivity";
+
 	private static Map<Integer, Integer> rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";

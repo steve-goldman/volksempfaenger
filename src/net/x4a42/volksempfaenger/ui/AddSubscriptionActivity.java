@@ -31,6 +31,8 @@ import android.widget.Toast;
 public class AddSubscriptionActivity extends Activity implements
 		OnClickListener {
 
+	public static final String TAG = "AddSubscriptionActivity";
+
 	private EditText editTextUrl;
 	private Button buttonAdd;
 	private Button buttonCancel;

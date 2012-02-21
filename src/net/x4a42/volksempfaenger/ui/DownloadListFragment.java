@@ -27,6 +27,8 @@ import android.widget.TextView;
 public class DownloadListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
+	public static final String TAG = "DownloadListFragment";
+
 	private Adapter adapter;
 
 	@Override
