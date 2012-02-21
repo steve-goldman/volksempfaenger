@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-	private static final String TAG = "DatabaseHelper";
+	public static final String TAG = "DatabaseHelper";
 
 	private static final String DB_NAME = "podcast.db";
 	private static final int DB_VERSION = 2;

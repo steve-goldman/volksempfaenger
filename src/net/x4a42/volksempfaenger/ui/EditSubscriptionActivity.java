@@ -29,6 +29,8 @@ import android.widget.Toast;
 public class EditSubscriptionActivity extends Activity implements
 		OnClickListener {
 
+	public static final String TAG = "EditSubscriptionActivity";
+
 	private static final int CONTEXT_RELOAD = 0;
 	private static final int CONTEXT_DELETE = 1;
 	private static final int CONTEXT_CHOOSE = 2;

@@ -9,17 +9,15 @@ import android.os.IBinder;
 
 public class CleanCacheService extends Service {
 
+	public static final String TAG = "CleanCacheService";
+
 	private class CleanCacheTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-
 			File cache = getExternalCacheDir();
-
 			File images = new File(cache, "images");
-
 			long minTime = System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000;
-
 			File[] imageFiles = images.listFiles();
 			if (imageFiles != null) {
 				for (File f : imageFiles) {
@@ -27,9 +25,7 @@ public class CleanCacheService extends Service {
 						f.delete();
 					}
 				}
-
 			}
-
 			return null;
 		}
 
@@ -42,11 +38,8 @@ public class CleanCacheService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
 		new CleanCacheTask().execute();
-
 		return START_STICKY;
-
 	}
 
 	@Override

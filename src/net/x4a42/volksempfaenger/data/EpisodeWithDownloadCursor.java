@@ -16,8 +16,9 @@ import android.util.Log;
 
 public class EpisodeWithDownloadCursor implements Cursor {
 
-	private static final String TAG = "EpisodeWithDownloadCursor";
-	private static final boolean DEBUG = true;
+	public static final String TAG = "EpisodeWithDownloadCursor";
+
+	private static final boolean DEBUG = false;
 	private Cursor databaseCursor;
 	private Cursor downloadCursor;
 	private int[] positionMap;

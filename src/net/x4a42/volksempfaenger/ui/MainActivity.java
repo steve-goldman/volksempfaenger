@@ -26,7 +26,8 @@ import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends FragmentActivity {
 
-	private static final String TAG = "MainActivity";
+	public static final String TAG = "MainActivity";
+
 	private static List<FragmentTab> fragmentTabs;
 	private Menu menu;
 

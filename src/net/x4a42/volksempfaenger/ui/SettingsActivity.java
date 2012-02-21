@@ -23,6 +23,9 @@ import android.widget.EditText;
 
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
+
+	public static final String TAG = "SettingsActivity";
+
 	private ListPreference prefDownloadInterval;
 	// private CheckBoxPreference prefDownloadAuto;
 	// private CheckBoxPreference prefDownloadWifi;

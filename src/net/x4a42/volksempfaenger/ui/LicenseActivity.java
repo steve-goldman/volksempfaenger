@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 public class LicenseActivity extends Activity {
 
+	public static final String TAG = "LicenseActivity";
+
 	private TextView textLicense;
 	private TextView textAuthors;
 

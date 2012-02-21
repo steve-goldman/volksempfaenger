@@ -52,7 +52,7 @@ import android.widget.Toast;
 public class ViewEpisodeActivity extends FragmentActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-	private static final String TAG = "ViewEpisodeActivity";
+	public static final String TAG = "ViewEpisodeActivity";
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
