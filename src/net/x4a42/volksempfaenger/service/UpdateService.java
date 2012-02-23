@@ -76,6 +76,9 @@ public class UpdateService extends IntentService {
 
 		FeedDownloader feedDownloader = new FeedDownloader(this);
 
+		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
+		timeStart = System.currentTimeMillis();
+
 		UpdateServiceStatus.lock();
 		UpdateServiceStatus.startUpdate();
 
@@ -86,6 +89,8 @@ public class UpdateService extends IntentService {
 					"Updating "
 							+ cursor.getString(cursor
 									.getColumnIndex(Podcast.TITLE)));
+
+			timeFeedStart = System.currentTimeMillis();
 
 			long podcastId = cursor.getLong(cursor.getColumnIndex(Podcast._ID));
 
@@ -227,7 +232,9 @@ public class UpdateService extends IntentService {
 						null);
 			}
 
-			Log.d(TAG, "Updated " + feed.getTitle());
+			timeFeedEnd = System.currentTimeMillis();
+			Log.d(TAG, "Updated " + feed.getTitle() + " (took "
+					+ (timeFeedEnd - timeFeedStart) + "ms)");
 
 			UpdateServiceStatus.stopUpdate(cursor.getUri());
 		}
@@ -235,6 +242,9 @@ public class UpdateService extends IntentService {
 
 		UpdateServiceStatus.stopUpdate();
 		UpdateServiceStatus.unlock();
+
+		timeEnd = System.currentTimeMillis();
+		Log.d(TAG, "Update took " + (timeEnd - timeStart) + "ms");
 
 		// start DownloadService to start automatic downloads if enabled
 		startService(new Intent(this, DownloadService.class));
