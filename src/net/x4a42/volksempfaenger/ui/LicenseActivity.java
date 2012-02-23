@@ -29,18 +29,21 @@ public class LicenseActivity extends Activity {
 		textLicense = (TextView) findViewById(R.id.license);
 		textAuthors = (TextView) findViewById(R.id.authors);
 
-		new LoadAssetTask("LICENSE", textLicense).execute();
-		new LoadAssetTask("AUTHORS", textAuthors).execute();
+		new LoadAssetTask("LICENSE", textLicense, true).execute();
+		new LoadAssetTask("AUTHORS", textAuthors, false).execute();
 	}
 
 	private class LoadAssetTask extends AsyncTask<Void, Void, String> {
 
 		String source;
 		TextView target;
+		boolean skipSingleLineBreak;
 
-		public LoadAssetTask(String source, TextView target) {
+		public LoadAssetTask(String source, TextView target,
+				boolean skipSingleLineBreak) {
 			this.source = source;
 			this.target = target;
+			this.skipSingleLineBreak = skipSingleLineBreak;
 		}
 
 		@Override
@@ -50,12 +53,21 @@ public class LicenseActivity extends Activity {
 				is = getResources().getAssets().open(source,
 						AssetManager.ACCESS_BUFFER);
 				Writer wr = new StringWriter();
-				char[] buf = new char[1024];
 				Reader rd = new BufferedReader(new InputStreamReader(is,
 						"utf-8"));
-				int n;
-				while ((n = rd.read(buf)) != -1) {
-					wr.write(buf, 0, n);
+				int n, nn;
+				while ((n = rd.read()) != -1) {
+					if (skipSingleLineBreak && n == '\n') {
+						nn = rd.read();
+						if (nn == '\n') {
+							wr.write('\n');
+						}
+						if (nn != -1) {
+							wr.write(nn);
+						}
+					} else {
+						wr.write(n);
+					}
 				}
 				return wr.toString();
 			} catch (Exception e) {
