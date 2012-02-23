@@ -380,7 +380,6 @@ public class SubscriptionGridFragment extends Fragment implements
 
 		@Override
 		public void receiveUi(Status status) {
-			Log.d("SubscriptionGridFragment", status.toString());
 			if (status.isUpdating()) {
 				if (!isUpdating) {
 					isUpdating = true;
