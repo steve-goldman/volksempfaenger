@@ -63,20 +63,20 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Check if there is an ID
-		Bundle extras = getIntent().getExtras();
-		if (extras == null) {
-			finish();
-			return;
-		}
-		id = extras.getLong("id");
-		if (id <= 0) {
-			finish();
-			return;
-		}
+		Intent intent = getIntent();
+		uri = intent.getData();
 
-		uri = ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.PODCAST_URI, id);
+		if (uri == null) {
+			id = intent.getLongExtra("id", -1);
+			if (id == -1) {
+				finish();
+				return;
+			}
+			uri = ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.EPISODE_URI, id);
+		} else {
+			id = ContentUris.parseId(uri);
+		}
 
 		updateReceiver = new UpdateReceiver();
 
