@@ -440,6 +440,10 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		return uri;
 	}
 
+	public Uri getPodcastUri() {
+		return episodeCursor == null ? null : episodeCursor.getPodcastUri();
+	}
+
 	@Override
 	public void onUpPressed() {
 		finish();

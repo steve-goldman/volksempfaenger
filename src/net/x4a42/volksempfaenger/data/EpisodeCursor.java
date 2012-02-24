@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.data;
 import java.io.File;
 
 import net.x4a42.volksempfaenger.data.Columns.Episode;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -173,6 +174,11 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 
 	public String getPodcastTitle() {
 		return getString(COLUMN_PODCAST_TITLE);
+	}
+
+	public Uri getPodcastUri() {
+		return ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.PODCAST_URI, getPodcastId());
 	}
 
 	public String getPodcastWebsite() {
