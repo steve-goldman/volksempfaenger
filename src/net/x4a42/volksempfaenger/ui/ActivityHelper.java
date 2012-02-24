@@ -21,11 +21,22 @@ public class ActivityHelper {
 
 	public static boolean handleGlobalMenu(Activity activity, MenuItem item) {
 		switch (item.getItemId()) {
+
 		case R.id.item_settings:
 			activity.startActivity(new Intent(activity, SettingsActivity.class));
 			return true;
+
+		case android.R.id.home:
+			if (activity instanceof OnUpPressedCallback) {
+				((OnUpPressedCallback) activity).onUpPressed();
+				return true;
+			} else {
+				return false;
+			}
+
 		default:
 			return false;
+
 		}
 	}
 

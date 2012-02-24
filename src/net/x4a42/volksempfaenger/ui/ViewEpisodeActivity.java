@@ -50,7 +50,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewEpisodeActivity extends FragmentActivity implements
-		LoaderManager.LoaderCallbacks<Cursor> {
+		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback {
 
 	public static final String TAG = "ViewEpisodeActivity";
 
@@ -148,10 +148,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
-
-		case android.R.id.home:
-			finish();
-			return true;
 
 		case R.id.item_download:
 			if (episodeCursor.getEnclosureId() != 0) {
@@ -442,6 +438,11 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	public Uri getUri() {
 		return uri;
+	}
+
+	@Override
+	public void onUpPressed() {
+		finish();
 	}
 
 }

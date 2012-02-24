@@ -22,7 +22,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 public class SettingsActivity extends PreferenceActivity implements
-		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
+		OnSharedPreferenceChangeListener, OnPreferenceClickListener, OnUpPressedCallback {
 
 	public static final String TAG = "SettingsActivity";
 
@@ -161,13 +161,12 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		default:
-			return false;
-		}
+		return ActivityHelper.handleGlobalMenu(this, item);
+	}
+
+	@Override
+	public void onUpPressed() {
+		finish();
 	}
 
 }

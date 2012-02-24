@@ -37,7 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
-		OnItemClickListener {
+		OnItemClickListener, OnUpPressedCallback {
 
 	public static final String TAG = "ViewSubscriptionActivity";
 
@@ -176,9 +176,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
+
 		case R.id.item_update:
 			intent = new Intent(this, UpdateService.class);
 			intent.setData(uri);
@@ -190,18 +188,22 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 						Toast.LENGTH_SHORT).show();
 			}
 			return true;
+
 		case R.id.item_edit:
 			intent = new Intent(this, EditSubscriptionActivity.class);
 			intent.putExtra("id", id);
 			startActivity(intent);
 			return true;
+
 		case R.id.item_delete:
 			intent = new Intent(this, DeleteSubscriptionActivity.class);
 			intent.putExtra("id", id);
 			startActivity(intent);
 			return true;
+
 		default:
 			return ActivityHelper.handleGlobalMenu(this, item);
+
 		}
 	}
 
@@ -279,6 +281,11 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onUpPressed() {
+		finish();
 	}
 
 }

@@ -24,7 +24,8 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements
+		OnUpPressedCallback {
 
 	public static final String TAG = "MainActivity";
 
@@ -173,12 +174,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			viewpager.setCurrentItem(0);
-		default:
-			return ActivityHelper.handleGlobalMenu(this, item);
-		}
+		return ActivityHelper.handleGlobalMenu(this, item);
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {
@@ -237,6 +233,11 @@ public class MainActivity extends FragmentActivity {
 			this.string = string;
 			this.fragment = fragment;
 		}
+	}
+
+	@Override
+	public void onUpPressed() {
+		viewpager.setCurrentItem(0);
 	}
 
 }
