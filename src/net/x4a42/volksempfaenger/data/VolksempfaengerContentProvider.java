@@ -60,21 +60,9 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		return ContentUris.parseId(uri);
 	}
 
-	private void _notifyUri(Uri uri) {
+	private void notifyUri(Uri uri, Mime type) {
 		Log.d(TAG, "notifying " + uri);
 		contentResolver.notifyChange(uri, null);
-	}
-
-	private void notifyUri(Uri uri, Mime type) {
-		_notifyUri(uri);
-		// TODO research if the following is needed at all
-		if (type == Mime.PODCAST_ITEM) {
-			_notifyUri(PODCAST_URI);
-		} else if (type == Mime.EPISODE_ITEM) {
-			_notifyUri(EPISODE_URI);
-		} else if (type == Mime.ENCLOSURE_ITEM) {
-			_notifyUri(ENCLOSURE_URI);
-		}
 	}
 
 	public static Mime getTypeMime(Uri uri) {
