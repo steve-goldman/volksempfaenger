@@ -4,20 +4,25 @@ import java.util.List;
 
 import android.app.DownloadManager;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 public class VolksempfaengerContentProvider extends ContentProvider {
 
+	public static final String TAG = "VolksempfaengerContentProvider";
 	public static final String AUTHORITY = "net.x4a42.volksempfaenger";
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 	public static final Uri PODCAST_URI = Uri.parse("content://" + AUTHORITY
 			+ "/podcast");
 	public static final Uri EPISODE_URI = Uri.parse("content://" + AUTHORITY
 			+ "/episode");
+	public static final Uri EPISODETIME_URI = Uri.parse("content://"
+			+ AUTHORITY + "/episodetime");
 	public static final Uri ENCLOSURE_URI = Uri.parse("content://" + AUTHORITY
 			+ "/enclosure");
 
@@ -28,10 +33,11 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	public static final String MIME_ENCLOSURE_DIR = "vnd.android.cursor.dir/vnd.volksempfaenger.enclosure";
 	public static final String MIME_ENCLOSURE_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.enclosure";
 
-	private enum Mime {
-		PODCAST_DIR, PODCAST_ITEM, EPISODE_DIR, EPISODE_ITEM, ENCLOSURE_DIR, ENCLOSURE_ITEM
+	public enum Mime {
+		PODCAST_DIR, PODCAST_ITEM, EPISODE_DIR, EPISODE_ITEM, EPISODETIME_ITEM, ENCLOSURE_DIR, ENCLOSURE_ITEM
 	}
 
+	private ContentResolver contentResolver;
 	private DatabaseHelper dbHelper;
 	private QueryHelper queryHelper;
 	private InsertHelper insertHelper;
@@ -40,6 +46,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+		contentResolver = getContext().getContentResolver();
 		dbHelper = DatabaseHelper.getInstance(getContext());
 		queryHelper = new QueryHelper(dbHelper, (DownloadManager) getContext()
 				.getSystemService(Context.DOWNLOAD_SERVICE));
@@ -53,18 +60,24 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		return ContentUris.parseId(uri);
 	}
 
+	private void _notifyUri(Uri uri) {
+		Log.d(TAG, "notifying " + uri);
+		contentResolver.notifyChange(uri, null);
+	}
+
 	private void notifyUri(Uri uri, Mime type) {
-		getContext().getContentResolver().notifyChange(uri, null);
+		_notifyUri(uri);
+		// TODO research if the following is needed at all
 		if (type == Mime.PODCAST_ITEM) {
-			getContext().getContentResolver().notifyChange(PODCAST_URI, null);
+			_notifyUri(PODCAST_URI);
 		} else if (type == Mime.EPISODE_ITEM) {
-			getContext().getContentResolver().notifyChange(EPISODE_URI, null);
+			_notifyUri(EPISODE_URI);
 		} else if (type == Mime.ENCLOSURE_ITEM) {
-			getContext().getContentResolver().notifyChange(ENCLOSURE_URI, null);
+			_notifyUri(ENCLOSURE_URI);
 		}
 	}
 
-	private Mime getTypeMime(Uri uri) {
+	public static Mime getTypeMime(Uri uri) {
 		if (!AUTHORITY.equals(uri.getAuthority())) {
 			return null;
 		}
@@ -93,6 +106,8 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 			default:
 				return null;
 			}
+		} else if ("episodetime".equals(type)) {
+			return segments.size() == 2 ? Mime.EPISODETIME_ITEM : null;
 		} else if ("enclosure".equals(type)) {
 			switch (segments.size()) {
 			case 1:
@@ -117,6 +132,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		case EPISODE_DIR:
 			return MIME_EPISODE_DIR;
 		case EPISODE_ITEM:
+		case EPISODETIME_ITEM:
 			return MIME_EPISODE_ITEM;
 		case ENCLOSURE_DIR:
 			return MIME_ENCLOSURE_DIR;
@@ -146,6 +162,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 					selectionArgs, sortOrder);
 			break;
 		case EPISODE_ITEM:
+		case EPISODETIME_ITEM:
 			cursor = queryHelper.queryEpisodeItem(ContentUris.parseId(uri),
 					projection);
 			break;
@@ -211,6 +228,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 					selectionArgs);
 			break;
 		case EPISODE_ITEM:
+		case EPISODETIME_ITEM:
 			rowsAffected = updateHelper.updateEpisodeItem(parseId(uri), values,
 					selection, selectionArgs);
 			break;
