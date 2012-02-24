@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
@@ -16,6 +17,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -38,6 +40,7 @@ public class PlaybackService extends Service implements EventListener {
 	private static final boolean useRemoteControlReceiver = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
 	private Uri uri;
+	private Uri uriTime;
 	private Notification notification;
 	private EpisodeCursor cursor;
 	private Handler saveHandler;
@@ -205,7 +208,11 @@ public class PlaybackService extends Service implements EventListener {
 	 */
 	private void playEpisode(Uri episode) throws IllegalArgumentException,
 			IOException {
+		assert (VolksempfaengerContentProvider.getTypeMime(episode) == VolksempfaengerContentProvider.Mime.EPISODE_ITEM);
 		uri = episode;
+		uriTime = ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.EPISODETIME_URI,
+				ContentUris.parseId(episode));
 		cursor = new EpisodeCursor(getContentResolver().query(
 				episode,
 				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
@@ -259,9 +266,11 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void savePosition(int position) {
-		ContentValues values = new ContentValues();
-		values.put(Episode.DURATION_LISTENED, position);
-		updateEpisode(values);
+		if (uriTime != null) {
+			ContentValues values = new ContentValues();
+			values.put(Episode.DURATION_LISTENED, position);
+			getContentResolver().update(uriTime, values, null, null);
+		}
 	}
 
 	private Runnable savePositionTask = new Runnable() {
@@ -325,6 +334,7 @@ public class PlaybackService extends Service implements EventListener {
 		}
 		cursor = null;
 		uri = null;
+		uriTime = null;
 	}
 
 	private void onPlayerStop() {
@@ -336,6 +346,7 @@ public class PlaybackService extends Service implements EventListener {
 		}
 		cursor = null;
 		uri = null;
+		uriTime = null;
 	}
 
 	private void onPlayerPause() {
