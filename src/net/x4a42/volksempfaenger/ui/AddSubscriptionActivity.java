@@ -40,6 +40,7 @@ public class AddSubscriptionActivity extends Activity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTitle(R.string.title_add_subscription);
 		setContentView(R.layout.add_subscription);
 
 		LayoutParams params = getWindow().getAttributes();
@@ -52,6 +53,16 @@ public class AddSubscriptionActivity extends Activity implements
 
 		buttonAdd.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		Uri data = getIntent().getData();
+		if (data != null) {
+			editTextUrl.setText(data.toString());
+		}
 	}
 
 	public void onClick(View v) {
