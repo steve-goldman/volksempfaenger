@@ -34,8 +34,6 @@ public class SettingsActivity extends PreferenceActivity implements
 	private EditTextPreference prefStorageLocation;
 	private Preference prefAboutVersion;
 	private Preference prefAboutWebsite;
-	private Preference prefAboutWiki;
-	private Preference prefAboutBugtracker;
 	private Preference prefAboutLicense;
 
 	private VolksempfaengerApplication app;
@@ -69,9 +67,6 @@ public class SettingsActivity extends PreferenceActivity implements
 				.findPreference(PreferenceKeys.ABOUT_VERSION);
 		prefAboutWebsite = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_WEBSITE);
-		prefAboutWiki = prefscreen.findPreference(PreferenceKeys.ABOUT_WIKI);
-		prefAboutBugtracker = prefscreen
-				.findPreference(PreferenceKeys.ABOUT_BUGTRACKER);
 		prefAboutLicense = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_LICENSE);
 
@@ -83,10 +78,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		prefAboutVersion.setSummary(app.getVersionName());
 		prefAboutWebsite.setSummary(Constants.URL_WEBSITE);
 		prefAboutWebsite.setOnPreferenceClickListener(this);
-		prefAboutWiki.setSummary(Constants.URL_WIKI);
-		prefAboutWiki.setOnPreferenceClickListener(this);
-		prefAboutBugtracker.setSummary(Constants.URL_BUGTRACKER);
-		prefAboutBugtracker.setOnPreferenceClickListener(this);
 		prefAboutLicense.setOnPreferenceClickListener(this);
 	}
 
@@ -143,14 +134,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		if (pref == prefAboutWebsite) {
 			startActivity(new Intent("android.intent.action.VIEW",
 					Uri.parse(Constants.URL_WEBSITE)));
-			return true;
-		} else if (pref == prefAboutWiki) {
-			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse(Constants.URL_WIKI)));
-			return true;
-		} else if (pref == prefAboutBugtracker) {
-			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse(Constants.URL_BUGTRACKER)));
 			return true;
 		} else if (pref == prefAboutLicense) {
 			Intent intent = new Intent(this, LicenseActivity.class);
