@@ -18,6 +18,7 @@
     <string name="menu_download">Download</string>
     <string name="menu_mark_listened">Mark as listened</string>
     <string name="menu_update">Update</string>
+    <string name="menu_feedback">Feedback</string>
     <string name="context_edit">Edit</string>
     <string name="context_delete">Delete</string>
     <string name="context_reload">Reload</string>
