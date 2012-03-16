@@ -7,6 +7,6 @@ public final class Constants {
 	// Extras
 	public static final String EXTRA_OI_TITLE = "org.openintents.extra.TITLE";
 
-	// URLs
 	public static final String URL_WEBSITE = "http://volksempfaenger.0x4a42.net/";
+	public static final String[] FEEDBACK_TO = { "volksempfaenger-support@0x4a42.net" };
 }
