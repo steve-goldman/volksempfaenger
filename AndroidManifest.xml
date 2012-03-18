@@ -76,6 +76,9 @@
             android:name=".ui.EditSubscriptionActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.ExternalStorageMissingActivity"
+            android:theme="@style/Theme.CriticalError" />
+        <activity
             android:name=".ui.LicenseActivity"
             android:theme="@style/Theme.Settings" />
         <activity

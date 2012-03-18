@@ -5,6 +5,8 @@
 
     <style name="Theme.Settings" parent="@android:style/Theme.Black"></style>
 
+    <style name="Theme.CriticalError" parent="@android:style/Theme.Black.NoTitleBar"></style>
+
     <style name="TextAppearance.Widget.Title" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">#DDD</item>
     </style>

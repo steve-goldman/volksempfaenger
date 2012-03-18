@@ -68,6 +68,7 @@ public class DeleteSubscriptionActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
+		ExternalStorageHelper.assertExternalStorageReadable(this);
 
 		if (!cursor.moveToFirst()) {
 			// ID does not exist
