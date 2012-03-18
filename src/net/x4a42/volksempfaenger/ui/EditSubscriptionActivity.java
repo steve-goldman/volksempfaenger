@@ -86,6 +86,7 @@ public class EditSubscriptionActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
+		ExternalStorageHelper.assertExternalStorageWritable(this);
 
 		if (!cursor.moveToFirst()) {
 			// ID does not exist

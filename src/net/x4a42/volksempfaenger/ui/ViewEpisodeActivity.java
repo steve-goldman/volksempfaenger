@@ -127,6 +127,12 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		ExternalStorageHelper.assertExternalStorageWritable(this);
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		if (podcastLogoBitmap != null) {

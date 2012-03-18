@@ -121,6 +121,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
+		ExternalStorageHelper.assertExternalStorageReadable(this);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			UpdateServiceStatus.registerReceiver(updateReceiver);

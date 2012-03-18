@@ -55,6 +55,12 @@ public class DebugActivity extends Activity implements OnClickListener {
 		buttonTestMultipleFeeds.setOnClickListener(this);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		ExternalStorageHelper.assertExternalStorageReadable(this);
+	}
+
 	public void onClick(View v) {
 		Intent intent;
 

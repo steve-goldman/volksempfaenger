@@ -143,6 +143,12 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		ExternalStorageHelper.assertExternalStorageReadable(this);
+	}
+
+	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Workaround for Bug #19917
 		// http://code.google.com/p/android/issues/detail?id=19917

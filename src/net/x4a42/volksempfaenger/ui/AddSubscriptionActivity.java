@@ -65,6 +65,12 @@ public class AddSubscriptionActivity extends Activity implements
 		}
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		ExternalStorageHelper.assertExternalStorageWritable(this);
+	}
+
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button_add:
