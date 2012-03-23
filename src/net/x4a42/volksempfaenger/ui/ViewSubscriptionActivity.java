@@ -73,7 +73,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 				return;
 			}
 			uri = ContentUris.withAppendedId(
-					VolksempfaengerContentProvider.EPISODE_URI, id);
+					VolksempfaengerContentProvider.PODCAST_URI, id);
 		} else {
 			id = ContentUris.parseId(uri);
 		}
