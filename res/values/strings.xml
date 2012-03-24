@@ -30,12 +30,14 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="unknown">unknown</string>
+    <string name="install">Install</string>
     <string name="dialog_error_title">An error occurred</string>
     <string name="dialog_add_progress_title">Adding Subscription</string>
     <string name="dialog_add_progress_message">Please wait…</string>
     <string name="dialog_reload_logo_progress_title">Reloading Logo</string>
     <string name="dialog_reload_logo_progress_message">Please wait…</string>
     <string name="dialog_choose_download_enclosure">Choose a file</string>
+    <string name="dialog_filemanager_missing_message">You do not have a file manager installed. Do you want to install OpenIntents File Manager?</string>
     <string name="message_error">Something went wrong</string>
     <string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
     <string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
@@ -50,6 +52,7 @@
     <string name="message_download_episode_already_downloaded">This episode has already been downloaded</string>
     <string name="message_episode_without_enclosure">There is no file attached to this episode</string>
     <string name="message_update_started">Updated started</string>
+    <string name="message_play_store_missing">You do not have the Google Play Store installed on your phone. Please download the APK from the OpenIntents website and install it.</string>
     <string name="settings_download">Download</string>
     <string name="settings_download_interval">Refresh interval</string>
     <string name="settings_download_auto">Auto Download</string>

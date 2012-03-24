@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
@@ -18,11 +19,14 @@ import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
@@ -158,12 +162,57 @@ public class SubscriptionGridFragment extends Fragment implements
 			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);
 			intent.putExtra(Constants.EXTRA_OI_TITLE,
 					getString(R.string.dialog_choose_opml));
-			startActivityForResult(intent, PICK_FILE_REQUEST);
+
+			// check if any app handles the pick file intent
+			List<ResolveInfo> list = getActivity().getPackageManager()
+					.queryIntentActivities(intent,
+							PackageManager.MATCH_DEFAULT_ONLY);
+			if (list.size() > 0) {
+				startActivityForResult(intent, PICK_FILE_REQUEST);
+			} else {
+				Log.d(TAG, "Could not start " + Constants.ACTION_OI_PICK_FILE
+						+ " Intent");
+				new AlertDialog.Builder(getActivity())
+						.setMessage(R.string.dialog_filemanager_missing_message)
+						.setPositiveButton(R.string.install,
+								installFileManagerDialogOnClickListener)
+						.setNegativeButton(R.string.cancel,
+								installFileManagerDialogOnClickListener).show();
+			}
+
 			return true;
 		default:
 			return false;
 		}
 	}
+
+	DialogInterface.OnClickListener installFileManagerDialogOnClickListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch (which) {
+
+			case DialogInterface.BUTTON_POSITIVE:
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				try {
+					intent.setData(Constants.OI_FILEMANGER_URI_PLAY);
+					startActivity(intent);
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(getActivity(),
+							R.string.message_play_store_missing,
+							Toast.LENGTH_LONG).show();
+					intent.setData(Constants.OI_FILEMANGER_URI_HTTP);
+					startActivity(intent);
+				}
+				break;
+
+			case DialogInterface.BUTTON_NEGATIVE:
+				dialog.cancel();
+				break;
+
+			}
+		}
+	};
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
