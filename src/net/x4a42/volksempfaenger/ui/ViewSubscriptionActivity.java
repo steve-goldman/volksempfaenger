@@ -1,10 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.text.DateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
@@ -39,7 +36,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 	public static final String TAG = "ViewSubscriptionActivity";
 
-	private static Map<Integer, Integer> rowColorMap;
+	private static int[] rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
@@ -203,18 +200,17 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			return;
 		}
 		Resources res = getResources();
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		map.put(Constants.EPISODE_STATE_NEW,
-				res.getColor(R.color.episode_title_new));
-		map.put(Constants.EPISODE_STATE_DOWNLOADING,
-				res.getColor(R.color.episode_title_downloading));
-		map.put(Constants.EPISODE_STATE_READY,
-				res.getColor(R.color.episode_title_ready));
-		map.put(Constants.EPISODE_STATE_LISTENING,
-				res.getColor(R.color.episode_title_listening));
-		map.put(Constants.EPISODE_STATE_LISTENED,
-				res.getColor(R.color.episode_title_listened));
-		rowColorMap = Collections.unmodifiableMap(map);
+		rowColorMap = new int[5];
+		rowColorMap[Constants.EPISODE_STATE_NEW] = res
+				.getColor(R.color.episode_title_new);
+		rowColorMap[Constants.EPISODE_STATE_DOWNLOADING] = res
+				.getColor(R.color.episode_title_downloading);
+		rowColorMap[Constants.EPISODE_STATE_READY] = res
+				.getColor(R.color.episode_title_ready);
+		rowColorMap[Constants.EPISODE_STATE_LISTENING] = res
+				.getColor(R.color.episode_title_listening);
+		rowColorMap[Constants.EPISODE_STATE_LISTENED] = res
+				.getColor(R.color.episode_title_listened);
 	}
 
 	public class Adapter extends SimpleCursorAdapter {
@@ -234,7 +230,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 					.getColumnIndex(Episode.STATUS));
 			TextView episodeTitle = (TextView) row
 					.findViewById(R.id.episode_title);
-			episodeTitle.setTextColor(rowColorMap.get(episodeState));
+			episodeTitle.setTextColor(rowColorMap[episodeState]);
 
 			Date date = new Date(cursor.getLong(cursor
 					.getColumnIndex(Episode.DATE)) * 1000);
