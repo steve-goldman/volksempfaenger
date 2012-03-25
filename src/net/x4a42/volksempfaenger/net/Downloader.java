@@ -10,7 +10,6 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.net.http.HttpResponseCache;
-import android.os.Build;
 import android.util.Log;
 
 public abstract class Downloader {
@@ -26,8 +25,6 @@ public abstract class Downloader {
 	}
 
 	private void initCache() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR2)
-			return;
 		if (cache != null)
 			return;
 		synchronized (Downloader.class) {
