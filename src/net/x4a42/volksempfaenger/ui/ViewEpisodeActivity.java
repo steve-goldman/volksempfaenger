@@ -16,22 +16,21 @@ import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -78,10 +77,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_episode);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			ActionBar actionBar = getActionBar();
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		playButton = (Button) findViewById(R.id.play);
 		podcastLogo = (PodcastLogoView) findViewById(R.id.logo);
@@ -118,7 +115,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			id = ContentUris.parseId(uri);
 		}
 
-		LoaderManager lm = getSupportLoaderManager();
+		LoaderManager lm = getLoaderManager();
 		if (lm.getLoader(0) == null) {
 			lm.initLoader(0, null, this);
 		} else {

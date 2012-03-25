@@ -7,22 +7,17 @@ import java.util.List;
 import net.x4a42.volksempfaenger.R;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
-import android.widget.TabHost.TabSpec;
 
 public class MainActivity extends FragmentActivity implements
 		OnUpPressedCallback {
@@ -30,7 +25,6 @@ public class MainActivity extends FragmentActivity implements
 	public static final String TAG = "MainActivity";
 
 	private static List<FragmentTab> fragmentTabs;
-	private Menu menu;
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
@@ -53,84 +47,38 @@ public class MainActivity extends FragmentActivity implements
 		viewpager.setAdapter(new PagerAdapter());
 		viewpager.setPageMargin(10);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		ActionBar actionbar = getActionBar();
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionbar.setHomeButtonEnabled(true);
 
-			// ActionBar is only available on Honeycomb and later
-			ActionBar actionbar = getActionBar();
-			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-			actionbar.setHomeButtonEnabled(true);
-
-			// create a TabListener that simply changes the page in the
-			// ViewPager
-			ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-				public void onTabSelected(Tab tab, FragmentTransaction ft) {
-					viewpager.setCurrentItem(tab.getPosition());
-				}
-
-				public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-				}
-
-				public void onTabReselected(Tab tab, FragmentTransaction ft) {
-				}
-			};
-
-			// iterate over all tabs and add them to the ActionBar
-			for (FragmentTab ft : fragmentTabs) {
-				actionbar.addTab(actionbar.newTab().setText(ft.string)
-						.setTabListener(tabListener));
+		// create a TabListener that simply changes the page in the
+		// ViewPager
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+				viewpager.setCurrentItem(tab.getPosition());
 			}
 
-			// add an OnPageChangeListener that switches to the correct tab in
-			// the ActionBar
-			viewpager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
-				@Override
-				public void onPageSelected(int position) {
-					getActionBar().setSelectedNavigationItem(position);
-				}
-			});
-
-		} else {
-
-			// for Gingerbread we use a TabHost as fallback
-			final TabHost tabs = (TabHost) findViewById(R.id.tabhost);
-			tabs.setup();
-
-			// iterate over all tabs and add them to the TabHost
-			for (FragmentTab ft : fragmentTabs) {
-				TabSpec tabSpec = tabs.newTabSpec(ft.tag).setIndicator(
-						getString(ft.string));
-				tabSpec.setContent(R.id.empty_view);
-				tabs.addTab(tabSpec);
+			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 			}
 
-			// set an OnTabChangeListener that changes the page in the ViewPager
-			tabs.setOnTabChangedListener(new OnTabChangeListener() {
-				@Override
-				public void onTabChanged(String tabId) {
-					int pos = tabs.getCurrentTab();
-					viewpager.setCurrentItem(pos);
-				}
-			});
+			public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			}
+		};
 
-			// add an OnPageChangeListener that switches to the correct tab in
-			// the TabHost
-			viewpager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
-				@Override
-				public void onPageSelected(int position) {
-					tabs.setCurrentTab(position);
-					if (menu == null) {
-						return;
-					}
-					menu.clear();
-					onCreateOptionsMenu(menu);
-					MenuInflater inflater = getMenuInflater();
-					PagerAdapter adapter = (PagerAdapter) viewpager
-							.getAdapter();
-					adapter.fragments[position].onCreateOptionsMenu(menu,
-							inflater);
-				}
-			});
+		// iterate over all tabs and add them to the ActionBar
+		for (FragmentTab ft : fragmentTabs) {
+			actionbar.addTab(actionbar.newTab().setText(ft.string)
+					.setTabListener(tabListener));
 		}
+
+		// add an OnPageChangeListener that switches to the correct tab in
+		// the ActionBar
+		viewpager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				getActionBar().setSelectedNavigationItem(position);
+			}
+		});
 
 		if (getIntent().hasExtra("tag")) {
 			String tag = getIntent().getStringExtra("tag");
@@ -157,7 +105,6 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menu = menu;
 		ActivityHelper.addGlobalMenu(this, menu);
 		{
 			// Add debug menu item if
@@ -184,18 +131,19 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {
-		private Fragment[] fragments;
+		private android.support.v4.app.Fragment[] fragments;
 
 		public PagerAdapter() {
 			super(getSupportFragmentManager());
-			fragments = new Fragment[fragmentTabs.size()];
+			fragments = new android.support.v4.app.Fragment[fragmentTabs.size()];
 		}
 
 		@Override
-		public Fragment getItem(int position) {
-			Fragment fragment = null;
+		public android.support.v4.app.Fragment getItem(int position) {
+			android.support.v4.app.Fragment fragment = null;
 			if (fragments[position] == null) {
-				fragment = Fragment.instantiate(MainActivity.this,
+				fragment = android.support.v4.app.Fragment.instantiate(
+						MainActivity.this,
 						fragmentTabs.get(position).fragment.getName());
 				fragments[position] = fragment;
 			} else {

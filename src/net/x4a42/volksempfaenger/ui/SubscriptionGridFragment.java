@@ -19,22 +19,20 @@ import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -47,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,18 +107,14 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			UpdateServiceStatus.registerReceiver(updateReceiver);
-		}
+		UpdateServiceStatus.registerReceiver(updateReceiver);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			UpdateServiceStatus.unregisterReceiver(updateReceiver);
-		}
+		UpdateServiceStatus.unregisterReceiver(updateReceiver);
 	}
 
 	@Override
@@ -131,13 +126,11 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			MenuItem update = menu.findItem(R.id.item_update);
-			if (isUpdating) {
-				update.setActionView(R.layout.actionbar_updating);
-			} else {
-				update.setActionView(null);
-			}
+		MenuItem update = menu.findItem(R.id.item_update);
+		if (isUpdating) {
+			update.setActionView(R.layout.actionbar_updating);
+		} else {
+			update.setActionView(null);
 		}
 	}
 
@@ -151,12 +144,6 @@ public class SubscriptionGridFragment extends Fragment implements
 		case R.id.item_update:
 			getActivity().startService(
 					new Intent(getActivity(), UpdateService.class));
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-				// In Honeycomb+ the icon in the ActionBar starts spinning so we
-				// do not need a Toast as feedback.
-				Toast.makeText(getActivity(), R.string.message_update_started,
-						Toast.LENGTH_SHORT).show();
-			}
 			return true;
 		case R.id.import_items:
 			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);

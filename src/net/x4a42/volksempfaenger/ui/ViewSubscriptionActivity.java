@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -34,7 +33,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnItemClickListener, OnUpPressedCallback {
@@ -84,10 +82,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		setContentView(R.layout.view_subscription);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			ActionBar actionBar = getActionBar();
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
@@ -123,9 +119,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		super.onResume();
 		ExternalStorageHelper.assertExternalStorageReadable(this);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			UpdateServiceStatus.registerReceiver(updateReceiver);
-		}
+		UpdateServiceStatus.registerReceiver(updateReceiver);
 
 		podcastCursor.moveToFirst();
 
@@ -140,9 +134,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public void onPause() {
 		super.onPause();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			UpdateServiceStatus.unregisterReceiver(updateReceiver);
-		}
+		UpdateServiceStatus.unregisterReceiver(updateReceiver);
 	}
 
 	private void updatePodcastDescription(String description) {
@@ -161,13 +153,11 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean result = super.onPrepareOptionsMenu(menu);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			MenuItem update = menu.findItem(R.id.item_update);
-			if (isUpdating) {
-				update.setActionView(R.layout.actionbar_updating);
-			} else {
-				update.setActionView(null);
-			}
+		MenuItem update = menu.findItem(R.id.item_update);
+		if (isUpdating) {
+			update.setActionView(R.layout.actionbar_updating);
+		} else {
+			update.setActionView(null);
 		}
 
 		return result;
@@ -182,12 +172,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			intent = new Intent(this, UpdateService.class);
 			intent.setData(uri);
 			startService(intent);
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-				// In Honeycomb+ the icon in the ActionBar starts spinning so we
-				// do not need a Toast as feedback.
-				Toast.makeText(this, R.string.message_update_started,
-						Toast.LENGTH_SHORT).show();
-			}
 			return true;
 
 		case R.id.item_edit:

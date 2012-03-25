@@ -67,4 +67,12 @@
 
     <style name="NowPlaying.Seekbar"></style>
 
+    <style name="Theme.Volksempfaenger" parent="@android:style/Theme.Holo.Light"></style>
+
+    <style name="Theme.Settings" parent="@android:style/Theme.Holo"></style>
+
+    <style name="Theme.CriticalError" parent="@android:style/Theme.Holo.NoActionBar"></style>
+
+    <style name="Theme.Volksempfaenger" parent="@android:Theme.Holo.Light.DarkActionBar"></style>
+
 </resources>

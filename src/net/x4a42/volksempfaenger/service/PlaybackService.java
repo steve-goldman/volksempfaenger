@@ -26,7 +26,6 @@ import android.media.AudioManager;
 import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.KeyEvent;
@@ -37,7 +36,6 @@ public class PlaybackService extends Service implements EventListener {
 	public static final String ACTION_PLAY = "net.x4a42.volksempfaenger.intent.action.PLAY";
 
 	private static final int NOTIFICATION_ID = 0x59d54313;
-	private static final boolean useRemoteControlReceiver = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
 	private Uri uri;
 	private Uri uriTime;
@@ -65,15 +63,14 @@ public class PlaybackService extends Service implements EventListener {
 		AudioManager am = helper.getAudioManager();
 		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
 
-		if (useRemoteControlReceiver) {
-			PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
-					getApplicationContext(), 0, new Intent(
-							Intent.ACTION_MEDIA_BUTTON)
-							.setComponent(mediaButtonEventReceiver), 0);
-			// create and register the remote control client
-			remoteControlClient = new RemoteControlClient(mediaPendingIntent);
-			am.registerRemoteControlClient(remoteControlClient);
-		}
+		PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
+				getApplicationContext(), 0, new Intent(
+						Intent.ACTION_MEDIA_BUTTON)
+						.setComponent(mediaButtonEventReceiver), 0);
+		// create and register the remote control client
+		remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+		am.registerRemoteControlClient(remoteControlClient);
+
 	}
 
 	@Override
@@ -315,10 +312,9 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerPlay() {
 		saveHandler.post(savePositionTask);
-		if (useRemoteControlReceiver) {
-			remoteControlClient
-					.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-		}
+		remoteControlClient
+				.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+
 	}
 
 	private void onPlayerReset() {
@@ -328,10 +324,9 @@ public class PlaybackService extends Service implements EventListener {
 	private void onPlayerEnd() {
 		onPlayerPause();
 		savePosition(0);
-		if (useRemoteControlReceiver) {
-			remoteControlClient
-					.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-		}
+		remoteControlClient
+				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+
 		cursor = null;
 		uri = null;
 		uriTime = null;
@@ -340,10 +335,9 @@ public class PlaybackService extends Service implements EventListener {
 	private void onPlayerStop() {
 		onPlayerPause();
 		savePosition();
-		if (useRemoteControlReceiver) {
-			remoteControlClient
-					.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-		}
+		remoteControlClient
+				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+
 		cursor = null;
 		uri = null;
 		uriTime = null;
@@ -351,10 +345,9 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerPause() {
 		saveHandler.removeCallbacks(savePositionTask);
-		if (useRemoteControlReceiver) {
-			remoteControlClient
-					.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
-		}
+		remoteControlClient
+				.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+
 		stopForeground();
 	}
 
@@ -379,34 +372,24 @@ public class PlaybackService extends Service implements EventListener {
 				NowPlayingActivity.EXTRA_LAUNCHED_FROM_NOTIFICATION, true);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
-					cursor.getPodcastId());
-			if (podcastLogo != null) {
-				Resources res = getResources();
-				podcastLogo = Bitmap
-						.createScaledBitmap(
-								podcastLogo,
-								res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
-								res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
-								false);
-			}
-			notification = new Notification.Builder(this)
-					.setSmallIcon(R.drawable.notification)
-					.setLargeIcon(podcastLogo)
-					.setContentTitle(cursor.getTitle())
-					.setContentText(cursor.getPodcastTitle())
-					.setContentIntent(pendingIntent).setOngoing(true)
-					.setWhen(0).getNotification();
-		} else {
-			// Gingerbread (API 10) does not support Notification.Builder
-			notification = new Notification(R.drawable.notification, null,
-					System.currentTimeMillis());
-			notification.flags |= Notification.FLAG_ONGOING_EVENT;
-
-			notification.setLatestEventInfo(this, cursor.getTitle(),
-					cursor.getPodcastTitle(), pendingIntent);
+		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
+				cursor.getPodcastId());
+		if (podcastLogo != null) {
+			Resources res = getResources();
+			podcastLogo = Bitmap
+					.createScaledBitmap(
+							podcastLogo,
+							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
+							false);
 		}
+		notification = new Notification.Builder(this)
+				.setSmallIcon(R.drawable.notification)
+				.setLargeIcon(podcastLogo).setContentTitle(cursor.getTitle())
+				.setContentText(cursor.getPodcastTitle())
+				.setContentIntent(pendingIntent).setOngoing(true).setWhen(0)
+				.getNotification();
+
 		return notification;
 	}
 
