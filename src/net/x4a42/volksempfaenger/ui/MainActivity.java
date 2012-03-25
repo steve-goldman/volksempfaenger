@@ -7,10 +7,10 @@ import java.util.List;
 import net.x4a42.volksempfaenger.R;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -131,19 +131,18 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {
-		private android.support.v4.app.Fragment[] fragments;
+		private Fragment[] fragments;
 
 		public PagerAdapter() {
 			super(getSupportFragmentManager());
-			fragments = new android.support.v4.app.Fragment[fragmentTabs.size()];
+			fragments = new Fragment[fragmentTabs.size()];
 		}
 
 		@Override
-		public android.support.v4.app.Fragment getItem(int position) {
-			android.support.v4.app.Fragment fragment = null;
+		public Fragment getItem(int position) {
+			Fragment fragment = null;
 			if (fragments[position] == null) {
-				fragment = android.support.v4.app.Fragment.instantiate(
-						MainActivity.this,
+				fragment = Fragment.instantiate(MainActivity.this,
 						fragmentTabs.get(position).fragment.getName());
 				fragments[position] = fragment;
 			} else {
