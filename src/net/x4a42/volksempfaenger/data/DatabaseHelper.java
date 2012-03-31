@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String TAG = "DatabaseHelper";
 
 	private static final String DB_NAME = "podcast.db";
-	private static final int DB_VERSION = 2;
+	private static final int DB_VERSION = 3;
 
 	public static final String TABLE_PODCAST = "podcast";
 	public static final String TABLE_EPISODE = "episode";

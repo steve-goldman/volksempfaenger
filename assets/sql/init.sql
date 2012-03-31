@@ -20,6 +20,7 @@ CREATE TABLE "episode" (
 	"duration_listened" INTEGER,
 	"enclosure_id" INTEGER REFERENCES "enclosure" ("_id"),
 	"download_id" INTEGER,
+	"hash" TEXT,
 	UNIQUE ("podcast_id", "feed_item_id")
 );
 
