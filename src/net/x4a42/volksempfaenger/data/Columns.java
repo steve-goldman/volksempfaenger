@@ -177,6 +177,11 @@ public class Columns {
 		 * Current position in the podcast in seconds (type int)
 		 */
 		public static final String DURATION_LISTENED = "duration_listened";
+
+		/**
+		 * Hash to increase the update speed (type String; SHA1 hex)
+		 */
+		public static final String HASH = "hash";
 	}
 
 	/**
