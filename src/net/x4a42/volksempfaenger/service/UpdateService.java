@@ -1,12 +1,16 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import net.x4a42.volksempfaenger.BuildConfig;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.Error;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
@@ -29,7 +33,8 @@ public class UpdateService extends IntentService {
 
 	public static final String TAG = "UpdateService";
 
-	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=? AND "
+	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
+	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE + " AND "
 			+ Episode.FEED_ITEM_ID + "=?";
 	private static final String ENCLOSURE_WHERE = Enclosure.EPISODE_ID
 			+ "=? AND " + Enclosure.URL + "=?";
@@ -115,6 +120,19 @@ public class UpdateService extends IntentService {
 
 			// TODO: update podcast table
 
+			Map<String, String> episodeHashMap;
+			{
+				EpisodeCursor c = new EpisodeCursor(getContentResolver().query(
+						VolksempfaengerContentProvider.EPISODE_URI,
+						new String[] { Episode._ID, Episode.FEED_ITEM_ID,
+								Episode.HASH }, EPISODE_WHERE,
+						new String[] { String.valueOf(podcastId) }, null));
+				episodeHashMap = new HashMap<String, String>(c.getCount());
+				while (c.moveToNext()) {
+					episodeHashMap.put(c.getFeeddItemId(), c.getHash());
+				}
+			}
+
 			Uri latestEpisodeUri = null;
 			Date latestEpisodeDate = null;
 
@@ -126,6 +144,19 @@ public class UpdateService extends IntentService {
 				values.put(Episode.DATE, Utils.toUnixTimestamp(item.getDate()));
 				values.put(Episode.URL, item.getUrl());
 				values.put(Episode.DESCRIPTION, item.getDescription());
+
+				String newHash = Utils.hashContentValues(values);
+				String oldHash = episodeHashMap.get(item.getItemId());
+				if (newHash.equals(oldHash)) {
+					if (BuildConfig.DEBUG) {
+						Log.d(TAG,
+								"Skipping already existing item: "
+										+ item.getTitle());
+					}
+					continue;
+				}
+
+				values.put(Episode.HASH, newHash);
 				if (extraFirstSync) {
 					values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
 				}
@@ -140,7 +171,7 @@ public class UpdateService extends IntentService {
 					Cursor c = getContentResolver().query(
 							VolksempfaengerContentProvider.EPISODE_URI,
 							new String[] { Episode._ID },
-							EPISODE_WHERE,
+							EPISODE_WHERE_ITEM_ID,
 							new String[] { String.valueOf(podcastId),
 									item.getItemId() }, null);
 					if (!c.moveToFirst()) {
