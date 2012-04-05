@@ -74,6 +74,7 @@ public class QueryHelper extends ContentProviderHelper {
 		temp.put(Episode.STATUS, "episode.status AS " + Episode.STATUS);
 		temp.put(Episode.TITLE, "episode.title AS " + Episode.TITLE);
 		temp.put(Episode.URL, "episode.url AS " + Episode.URL);
+		temp.put(Episode.HASH, "episode.hash AS " + Episode.HASH);
 		episodeColumnMap = Collections.unmodifiableMap(temp);
 
 		// enclosureColumnMap

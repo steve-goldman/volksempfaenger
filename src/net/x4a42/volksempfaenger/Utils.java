@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import net.x4a42.volksempfaenger.data.CacheMap;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -184,6 +188,19 @@ public class Utils {
 				strings[i] = strings[i].intern();
 			}
 		}
+	}
+
+	public static String hashContentValues(ContentValues values) {
+		ArrayList<String> keys = new ArrayList<String>(values.keySet());
+		Collections.sort(keys);
+		StringBuilder b = new StringBuilder();
+		for (String key : keys) {
+			b.append(key);
+			b.append((char) 0);
+			b.append(values.getAsString(key));
+			b.append((char) 0);
+		}
+		return sha1.hash(b.toString());
 	}
 
 }
