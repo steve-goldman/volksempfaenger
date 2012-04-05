@@ -33,6 +33,7 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 	private int COLUMN_STATUS;
 	private int COLUMN_TITLE;
 	private int COLUMN_URL;
+	private int COLUMN_HASH;
 
 	public EpisodeCursor(Cursor cursor) {
 		super(cursor);
@@ -60,6 +61,7 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 		COLUMN_STATUS = getColumnIndex(Episode.STATUS);
 		COLUMN_TITLE = getColumnIndex(Episode.TITLE);
 		COLUMN_URL = getColumnIndex(Episode.URL);
+		COLUMN_HASH = getColumnIndex(Episode.HASH);
 	}
 
 	public long getId() {
@@ -195,6 +197,10 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 
 	public String getUrl() {
 		return getString(COLUMN_URL);
+	}
+
+	public String getHash() {
+		return getString(COLUMN_HASH);
 	}
 
 }
