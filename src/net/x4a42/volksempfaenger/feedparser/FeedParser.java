@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Stack;
@@ -36,6 +38,12 @@ public class FeedParser {
 					throw new NotAFeedException();
 				}
 			}
+			Collections.sort(feed.getItems(), new Comparator<FeedItem>() {
+				@Override
+				public int compare(FeedItem lhs, FeedItem rhs) {
+					return rhs.getDate().compareTo(lhs.getDate());
+				}
+			});
 			return feed;
 		} catch (ParserConfigurationException e) {
 			throw new FeedParserException(e);
@@ -347,7 +355,7 @@ public class FeedParser {
 				break;
 			case ATOM_ENTRY:
 				if (feedItem.getItemId() != null) {
-					feed.getItems().add(0, feedItem);
+					feed.getItems().add(feedItem);
 				}
 				feedItem = null;
 				break;
@@ -424,7 +432,7 @@ public class FeedParser {
 				break;
 			case RSS_ITEM:
 				if (feedItem.getItemId() != null) {
-					feed.getItems().add(0, feedItem);
+					feed.getItems().add(feedItem);
 				}
 				feedItem = null;
 				currentRssItemHasHtml = false;
