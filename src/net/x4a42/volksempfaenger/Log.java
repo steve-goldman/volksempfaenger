@@ -87,62 +87,62 @@ public class Log {
 
 	// Custom methods
 	public static int d(Object tagObj, String msg) {
-		return android.util.Log.d(getTag(tagObj), msg);
+		return d(getTag(tagObj), msg);
 	}
 
 	public static int d(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.d(getTag(tagObj), msg, tr);
+		return d(getTag(tagObj), msg, tr);
 	}
 
 	public static int e(Object tagObj, String msg) {
-		return android.util.Log.e(getTag(tagObj), msg);
+		return e(getTag(tagObj), msg);
 	}
 
 	public static int e(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.e(getTag(tagObj), msg, tr);
+		return e(getTag(tagObj), msg, tr);
 	}
 
 	public static int i(Object tagObj, String msg) {
-		return android.util.Log.i(getTag(tagObj), msg);
+		return i(getTag(tagObj), msg);
 	}
 
 	public static int i(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.i(getTag(tagObj), msg, tr);
+		return i(getTag(tagObj), msg, tr);
 	}
 
 	public static int println(int priority, Object tagObj, String msg) {
-		return android.util.Log.println(priority, getTag(tagObj), msg);
+		return println(priority, getTag(tagObj), msg);
 	}
 
 	public static int v(Object tagObj, String msg) {
-		return android.util.Log.v(getTag(tagObj), msg);
+		return v(getTag(tagObj), msg);
 	}
 
 	public static int v(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.v(getTag(tagObj), msg, tr);
+		return v(getTag(tagObj), msg, tr);
 	}
 
 	public static int w(Object tagObj, Throwable tr) {
-		return android.util.Log.w(getTag(tagObj), tr);
+		return w(getTag(tagObj), tr);
 	}
 
 	public static int w(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.w(getTag(tagObj), msg, tr);
+		return w(getTag(tagObj), msg, tr);
 	}
 
 	public static int w(Object tagObj, String msg) {
-		return android.util.Log.w(getTag(tagObj), msg);
+		return w(getTag(tagObj), msg);
 	}
 
 	public static int wtf(Object tagObj, Throwable tr) {
-		return android.util.Log.wtf(getTag(tagObj), tr);
+		return wtf(getTag(tagObj), tr);
 	}
 
 	public static int wtf(Object tagObj, String msg) {
-		return android.util.Log.wtf(getTag(tagObj), msg);
+		return wtf(getTag(tagObj), msg);
 	}
 
 	public static int wtf(Object tagObj, String msg, Throwable tr) {
-		return android.util.Log.w(getTag(tagObj), msg, tr);
+		return wtf(getTag(tagObj), msg, tr);
 	}
 }
