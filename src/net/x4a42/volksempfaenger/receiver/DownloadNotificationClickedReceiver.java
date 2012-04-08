@@ -10,7 +10,7 @@ public class DownloadNotificationClickedReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Intent newIntent = new Intent(context, MainActivity.class);
-		newIntent.putExtra("tag", "downloads");
+		newIntent.putExtra("tag", MainActivity.downloadsTag);
 		newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(newIntent);
 	}
