@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
@@ -31,6 +32,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -39,7 +41,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
-import net.x4a42.volksempfaenger.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,7 +51,6 @@ import android.widget.Toast;
 
 public class ViewEpisodeActivity extends FragmentActivity implements
 		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback {
-
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -301,8 +301,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 						imageDownloader.fetchImage(img.getSource());
 					} catch (Exception e) {
 						// Who cares?
-						Log.d(this, "Exception handled",
-								e);
+						Log.d(this, "Exception handled", e);
 					}
 				}
 
@@ -448,7 +447,9 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	@Override
 	public void onUpPressed() {
-		finish();
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.putExtra("tag", MainActivity.subscriptionsTag);
+		NavUtils.navigateUpTo(this, intent);
 	}
 
 }

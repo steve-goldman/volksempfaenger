@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -15,22 +16,22 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import net.x4a42.volksempfaenger.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity implements
 		OnUpPressedCallback {
 
-
 	private static List<FragmentTab> fragmentTabs;
+	public final static String subscriptionsTag = "subscriptions";
+	public final static String downloadsTag = "downloads";
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
-		fragmentTabs.add(new FragmentTab("subscriptions",
+		fragmentTabs.add(new FragmentTab(subscriptionsTag,
 				R.string.title_tab_subscriptions,
 				SubscriptionGridFragment.class));
-		fragmentTabs.add(new FragmentTab("downloads",
+		fragmentTabs.add(new FragmentTab(downloadsTag,
 				R.string.title_tab_downloads, DownloadListFragment.class));
 	}
 
@@ -78,6 +79,13 @@ public class MainActivity extends FragmentActivity implements
 				getActionBar().setSelectedNavigationItem(position);
 			}
 		});
+
+		onNewIntent(getIntent());
+	}
+
+	@Override
+	public void onNewIntent(Intent intent) {
+		setIntent(intent);
 
 		if (getIntent().hasExtra("tag")) {
 			String tag = getIntent().getStringExtra("tag");
