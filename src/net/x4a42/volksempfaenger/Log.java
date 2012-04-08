@@ -18,11 +18,11 @@ public class Log {
 
 	// Standard android.util.Log methods
 	public static int d(String tag, String msg) {
-		return android.util.Log.d(tag, msg);
+		return BuildConfig.DEBUG ? android.util.Log.d(tag, msg) : 0;
 	}
 
 	public static int d(String tag, String msg, Throwable tr) {
-		return android.util.Log.d(tag, msg, tr);
+		return BuildConfig.DEBUG ? android.util.Log.d(tag, msg, tr) : 0;
 	}
 
 	public static int e(String tag, String msg) {
