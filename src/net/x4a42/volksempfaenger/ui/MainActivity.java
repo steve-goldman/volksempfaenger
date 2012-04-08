@@ -104,13 +104,6 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// Workaround for Bug #19917
-		// http://code.google.com/p/android/issues/detail?id=19917
-		// TODO: fix this!
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		ActivityHelper.addGlobalMenu(this, menu);
 		{
