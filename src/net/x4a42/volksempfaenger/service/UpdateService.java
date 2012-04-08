@@ -31,7 +31,6 @@ import net.x4a42.volksempfaenger.Log;
 
 public class UpdateService extends IntentService {
 
-
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE + " AND "
 			+ Episode.FEED_ITEM_ID + "=?";
@@ -147,11 +146,9 @@ public class UpdateService extends IntentService {
 				String newHash = Utils.hashContentValues(values);
 				String oldHash = episodeHashMap.get(item.getItemId());
 				if (newHash.equals(oldHash)) {
-					if (BuildConfig.DEBUG) {
-						Log.d(this,
-								"Skipping already existing item: "
-										+ item.getTitle());
-					}
+					Log.d(this,
+							"Skipping already existing item: "
+									+ item.getTitle());
 					continue;
 				}
 

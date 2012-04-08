@@ -3,6 +3,8 @@ package net.x4a42.volksempfaenger.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.x4a42.volksempfaenger.BuildConfig;
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
@@ -12,12 +14,9 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
-import net.x4a42.volksempfaenger.Log;
 
 public class EpisodeWithDownloadCursor implements Cursor {
 
-
-	private static final boolean DEBUG = false;
 	private Cursor databaseCursor;
 	private Cursor downloadCursor;
 	private int[] positionMap;
@@ -373,7 +372,7 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		}
 		downloadCursor.moveToPosition(-1);
 
-		if (DEBUG) {
+		if (BuildConfig.DEBUG) {
 			Log.d(this, "Generated the following dlIdToDlPos:");
 			for (Long db : dlIdToDlPos.keySet()) {
 				Log.d(this, db + " -> " + dlIdToDlPos.get(db));
@@ -394,7 +393,7 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		}
 		databaseCursor.moveToPosition(-1);
 
-		if (DEBUG) {
+		if (BuildConfig.DEBUG) {
 			Log.d(this, "Generated the following dbToDlMap:");
 			for (int i = 0; i < positionMap.length; i++) {
 				Log.d(this, i + " -> " + positionMap[i]);
