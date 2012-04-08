@@ -13,24 +13,16 @@
         android:layout_marginRight="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bottom_bar"
-        android:paddingTop="5dp" >
+    <LinearLayout style="@style/Theme.ButtonBar" >
 
         <Button
             android:id="@+id/button_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/Theme.DialogButton"
             android:text="@string/cancel" />
 
         <Button
             android:id="@+id/button_ok"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/Theme.DialogButton"
             android:text="@string/yes" />
     </LinearLayout>
 
