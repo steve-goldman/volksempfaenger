@@ -8,12 +8,49 @@ public class Log {
 	public static final int VERBOSE = android.util.Log.VERBOSE;
 	public static final int WARN = android.util.Log.WARN;
 
-	public static String getTag(Class<? extends Object> cls) {
+	private static String getDebugTag() {
+		StackTraceElement[] stackTraceElements = Thread.currentThread()
+				.getStackTrace();
+
+		boolean inLogClass = false;
+		String logClassName = Log.class.getName().intern();
+		String stackClassName;
+
+		for (StackTraceElement stackTraceElement : stackTraceElements) {
+			stackClassName = stackTraceElement.getClassName().intern();
+			if (inLogClass && stackClassName != logClassName) {
+				return stackTraceElement.getFileName() + ':'
+						+ stackTraceElement.getLineNumber();
+			} else if (!inLogClass && stackClassName == logClassName) {
+				inLogClass = true;
+			}
+		}
+
+		return null;
+	}
+
+	private static String getClassTag(Class<? extends Object> cls) {
 		return cls == null ? "<null>" : cls.getSimpleName();
 	}
 
+	public static String getTag(Class<? extends Object> cls) {
+		if (BuildConfig.DEBUG) {
+			String tag = getDebugTag();
+			if (tag != null) {
+				return tag;
+			}
+		}
+		return getClassTag(cls);
+	}
+
 	private static String getTag(Object obj) {
-		return obj == null ? "<null>" : getTag(obj.getClass());
+		if (BuildConfig.DEBUG) {
+			String tag = getDebugTag();
+			if (tag != null) {
+				return tag;
+			}
+		}
+		return obj == null ? "<null>" : getClassTag(obj.getClass());
 	}
 
 	// Standard android.util.Log methods
