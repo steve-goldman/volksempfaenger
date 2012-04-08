@@ -60,8 +60,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private Button playButton;
 	private PodcastLogoView podcastLogo;
-	private TextView podcastTitle;
-	private TextView podcastDescription;
 	private TextView episodeTitle;
 	private TextView episodeDescription;
 
@@ -80,8 +78,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		playButton = (Button) findViewById(R.id.play);
 		podcastLogo = (PodcastLogoView) findViewById(R.id.logo);
-		podcastTitle = (TextView) findViewById(R.id.podcast_title);
-		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
 		contentContainer = findViewById(R.id.contentContainer);
@@ -375,8 +371,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		String[] projection = { Episode._ID, Episode.TITLE,
 				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
 				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
-				Episode.PODCAST_ID, Episode.PODCAST_TITLE,
-				Episode.PODCAST_DESCRIPTION, Episode.DOWNLOAD_ID,
+				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
 				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_URI,
 				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
 				Episode.ENCLOSURE_ID };
@@ -407,9 +402,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		setTitle(episodeCursor.getPodcastTitle());
 		playButton.setText("Play"); // TODO resource and toggle
 
-		podcastTitle.setText(episodeCursor.getPodcastTitle());
 		podcastLogo.setPodcastId(episodeCursor.getPodcastId());
-		podcastDescription.setText(episodeCursor.getPodcastDescription());
 		episodeTitle.setText(episodeCursor.getTitle());
 
 		if (lastImageLoadTask != null) {
