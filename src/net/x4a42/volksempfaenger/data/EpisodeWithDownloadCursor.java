@@ -12,11 +12,10 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class EpisodeWithDownloadCursor implements Cursor {
 
-	public static final String TAG = "EpisodeWithDownloadCursor";
 
 	private static final boolean DEBUG = false;
 	private Cursor databaseCursor;
@@ -375,9 +374,9 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		downloadCursor.moveToPosition(-1);
 
 		if (DEBUG) {
-			Log.d(TAG, "Generated the following dlIdToDlPos:");
+			Log.d(this, "Generated the following dlIdToDlPos:");
 			for (Long db : dlIdToDlPos.keySet()) {
-				Log.d(TAG, db + " -> " + dlIdToDlPos.get(db));
+				Log.d(this, db + " -> " + dlIdToDlPos.get(db));
 			}
 		}
 
@@ -396,9 +395,9 @@ public class EpisodeWithDownloadCursor implements Cursor {
 		databaseCursor.moveToPosition(-1);
 
 		if (DEBUG) {
-			Log.d(TAG, "Generated the following dbToDlMap:");
+			Log.d(this, "Generated the following dbToDlMap:");
 			for (int i = 0; i < positionMap.length; i++) {
-				Log.d(TAG, i + " -> " + positionMap[i]);
+				Log.d(this, i + " -> " + positionMap[i]);
 			}
 		}
 	}

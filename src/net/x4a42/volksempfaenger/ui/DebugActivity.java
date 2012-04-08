@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import net.x4a42.volksempfaenger.Constants;
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
@@ -19,15 +20,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
 public class DebugActivity extends Activity implements OnClickListener {
-
-	public static final String TAG = "DebugActivity";
 
 	private static final int REQUEST_PICK_FEED = 0;
 
@@ -102,12 +100,12 @@ public class DebugActivity extends Activity implements OnClickListener {
 					if (file.isFile()) {
 						try {
 							Feed feed = FeedParser.parse(new FileReader(file));
-							Log.d(TAG, file.getAbsolutePath());
+							Log.d(this, file.getAbsolutePath());
 							if (feed.getWebsite() != null) {
-								Log.d(TAG, "Website: " + feed.getWebsite());
+								Log.d(this, "Website: " + feed.getWebsite());
 							}
 							if (feed.getUrl() != null) {
-								Log.d(TAG, "URL: " + feed.getUrl());
+								Log.d(this, "URL: " + feed.getUrl());
 							}
 						} catch (FileNotFoundException e) {
 							// TODO Auto-generated catch block
@@ -122,12 +120,12 @@ public class DebugActivity extends Activity implements OnClickListener {
 					}
 				}
 				Toast.makeText(this, "Parsed", Toast.LENGTH_SHORT).show();
-				Log.d("FeedParser",
+				Log.d(this,
 						"Time "
 								+ String.valueOf(System.currentTimeMillis()
 										- start));
 			} else {
-				Log.d(TAG,
+				Log.d(this,
 						"Did not find /sdcard/Android/data/net.x4a42.volksempfaenger/debug/feeds/");
 			}
 		}
@@ -153,48 +151,48 @@ public class DebugActivity extends Activity implements OnClickListener {
 		Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 		try {
 			Feed feed = FeedParser.parse(new FileReader(file));
-			Log.d(TAG, "Title: " + feed.getTitle());
+			Log.d(this, "Title: " + feed.getTitle());
 			if (feed.getUrl() != null) {
-				Log.d(TAG, "URL: " + feed.getUrl());
+				Log.d(this, "URL: " + feed.getUrl());
 			}
 			if (feed.getWebsite() != null) {
-				Log.d(TAG, "Website: " + feed.getWebsite());
+				Log.d(this, "Website: " + feed.getWebsite());
 			}
 			if (feed.getDescription() != null) {
-				Log.d(TAG, "Description: " + feed.getDescription());
+				Log.d(this, "Description: " + feed.getDescription());
 			}
 
 			for (FeedItem item : feed.getItems()) {
-				Log.d(TAG, "Item title: " + item.getTitle());
-				Log.d(TAG, "Item ID: " + item.getItemId());
+				Log.d(this, "Item title: " + item.getTitle());
+				Log.d(this, "Item ID: " + item.getItemId());
 				if (item.getDate() != null) {
-					Log.d(TAG, item.getDate().toString());
+					Log.d(this, item.getDate().toString());
 				}
 				if (item.getUrl() != null) {
-					Log.d(TAG, item.getUrl());
+					Log.d(this, item.getUrl());
 				}
 				if (item.getDescription() != null) {
-					Log.d(TAG, item.getDescription());
+					Log.d(this, item.getDescription());
 				}
 				for (Enclosure enc : item.getEnclosures()) {
-					Log.d(TAG, "Enclosure");
+					Log.d(this, "Enclosure");
 					if (enc.getTitle() != null) {
-						Log.d(TAG, enc.getTitle());
+						Log.d(this, enc.getTitle());
 					}
 					if (enc.getUrl() != null) {
-						Log.d(TAG, enc.getUrl());
+						Log.d(this, enc.getUrl());
 					}
 					if (enc.getMime() != null) {
-						Log.d(TAG, enc.getMime());
+						Log.d(this, enc.getMime());
 					}
 					if (enc.getSize() != 0) {
-						Log.d(TAG,
+						Log.d(this,
 								"Size: " + (new Long(enc.getSize())).toString());
 					}
 				}
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "An error occurred while parsing the feed:", e);
+			Log.e(this, "An error occurred while parsing the feed:", e);
 		}
 	}
 

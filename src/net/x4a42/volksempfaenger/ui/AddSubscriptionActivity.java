@@ -20,7 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -31,7 +31,6 @@ import android.widget.Toast;
 public class AddSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-	public static final String TAG = "AddSubscriptionActivity";
 
 	private EditText editTextUrl;
 	private Button buttonAdd;
@@ -112,10 +111,10 @@ public class AddSubscriptionActivity extends Activity implements
 			try {
 				feed = fd.fetchFeed(feedUrl);
 			} catch (NetException e) {
-				Log.i(getClass().getSimpleName(), "Exception handled", e);
+				Log.i(this, "Exception handled", e);
 				return AddFeedTaskResult.DOWNLOAD_FAILED;
 			} catch (FeedParserException e) {
-				Log.i(getClass().getSimpleName(), "Exception handled", e);
+				Log.i(this, "Exception handled", e);
 				return AddFeedTaskResult.XML_EXCEPTION;
 			}
 

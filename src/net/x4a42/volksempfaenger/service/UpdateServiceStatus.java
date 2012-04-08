@@ -4,13 +4,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.x4a42.volksempfaenger.Log;
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Log;
 
 public class UpdateServiceStatus {
-
-	public static final String TAG = "UpdateSeriviceStatus";
 
 	private static boolean isLocked = false;
 	private static boolean isUpdating = false;
@@ -27,7 +25,7 @@ public class UpdateServiceStatus {
 			try {
 				UpdateServiceStatus.class.wait();
 			} catch (InterruptedException e) {
-				Log.w(TAG, e);
+				Log.w(Log.getTag(UpdateService.class), e);
 			}
 		}
 		isLocked = true;

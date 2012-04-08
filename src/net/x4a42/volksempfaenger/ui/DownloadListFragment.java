@@ -14,7 +14,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +26,6 @@ import android.widget.TextView;
 
 public class DownloadListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
-
-	public static final String TAG = "DownloadListFragment";
 
 	private Adapter adapter;
 
@@ -82,8 +80,7 @@ public class DownloadListFragment extends ListFragment implements
 				long done = episodeCursor.getDownloadDone();
 				long total = episodeCursor.getDownloadTotal();
 				if (done > Integer.MAX_VALUE || total > Integer.MAX_VALUE) {
-					Log.wtf("DownloadListFragment",
-							"Size > Integer.MAX_VALUE not yet supported"); // TODO
+					Log.wtf(this, "Size > Integer.MAX_VALUE not yet supported"); // TODO
 					return;
 				}
 				progressBar.setMax((int) total);

@@ -20,7 +20,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,8 +33,6 @@ import android.widget.TextView;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnItemClickListener, OnUpPressedCallback {
-
-	public static final String TAG = "ViewSubscriptionActivity";
 
 	private static int[] rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
@@ -249,7 +247,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 		@Override
 		public void receiveUi(Status status) {
-			Log.d("SubscriptionGridFragment", status.toString());
+			Log.d(this, status.toString());
 			if (status.isUpdating()) {
 				if (!isUpdating && uri.equals(status.getUri())) {
 					isUpdating = true;

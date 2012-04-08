@@ -27,12 +27,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.IBinder;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.widget.Toast;
 
 public class DownloadService extends Service {
 
-	public static final String TAG = "DownloadService";
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
@@ -49,7 +48,7 @@ public class DownloadService extends Service {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			Log.d(getClass().getSimpleName(), "doInBackground()");
+			Log.d(this, "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
 
@@ -78,7 +77,7 @@ public class DownloadService extends Service {
 								PreferenceKeys.DOWNLOAD_AUTO,
 								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
 					// automatic downloading is disabled
-					Log.d(getClass().getSimpleName(),
+					Log.d(this,
 							"automatic downloading is disabled");
 					return null;
 				}
@@ -92,7 +91,7 @@ public class DownloadService extends Service {
 								Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
 					// downloading is only allowed while charging but phone is
 					// not plugged in
-					Log.d(getClass().getSimpleName(), "phone is not plugged in");
+					Log.d(this, "phone is not plugged in");
 					return null;
 				}
 
@@ -103,7 +102,7 @@ public class DownloadService extends Service {
 
 				if (!cm.getBackgroundDataSetting()) {
 					// background data is disabled
-					Log.d(getClass().getSimpleName(),
+					Log.d(this,
 							"background data is disabled");
 					return null;
 				}
@@ -123,7 +122,7 @@ public class DownloadService extends Service {
 
 				if ((networkType & networkAllowed) == 0) {
 					// no allowed network connection
-					Log.d(getClass().getSimpleName(),
+					Log.d(this,
 							"network type is not allowed");
 					return null;
 				}
@@ -163,7 +162,7 @@ public class DownloadService extends Service {
 			int freeSlots = extraIds == null ? ed.getFreeDownloadSlots()
 					: cursor.getCount();
 
-			Log.d(getClass().getSimpleName(), String.format(
+			Log.d(this, String.format(
 					"starting downloads inQueue:%d freeSlots:%d",
 					cursor.getCount(), freeSlots));
 
@@ -274,7 +273,7 @@ public class DownloadService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(getClass().getSimpleName(), "onStartCommand()");
+		Log.d(this, "onStartCommand()");
 
 		long[] extraId = intent.getLongArrayExtra("id");
 		new DownloadTask(extraId).execute();

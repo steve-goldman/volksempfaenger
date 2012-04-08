@@ -8,7 +8,7 @@ import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import android.content.Context;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class FeedDownloader extends Downloader {
 
@@ -30,7 +30,7 @@ public class FeedDownloader extends Downloader {
 		} catch (FeedParserException e) {
 			throw e;
 		} catch (Exception e) {
-			Log.i(getClass().getSimpleName(), "Handled Exception:", e);
+			Log.i(this, "Handled Exception:", e);
 			throw new NetException(e);
 		}
 	}

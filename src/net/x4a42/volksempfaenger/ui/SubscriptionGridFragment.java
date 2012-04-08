@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Constants;
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
@@ -33,7 +34,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -51,8 +51,6 @@ import android.widget.Toast;
 
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
-
-	public static final String TAG = "SubscriptionGridFragment";
 
 	private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
@@ -157,7 +155,7 @@ public class SubscriptionGridFragment extends Fragment implements
 			if (list.size() > 0) {
 				startActivityForResult(intent, PICK_FILE_REQUEST);
 			} else {
-				Log.d(TAG, "Could not start " + Constants.ACTION_OI_PICK_FILE
+				Log.d(this, "Could not start " + Constants.ACTION_OI_PICK_FILE
 						+ " Intent");
 				new AlertDialog.Builder(getActivity())
 						.setMessage(R.string.dialog_filemanager_missing_message)
@@ -267,11 +265,13 @@ public class SubscriptionGridFragment extends Fragment implements
 			// TODO remove debug output
 			for (SubscriptionTree node : tree) {
 				if (node.isFolder()) {
-					Log.d("OPML Import", String.valueOf(node.getDepth()) + " "
-							+ node.getTitle());
+					Log.d(this,
+							String.valueOf(node.getDepth()) + " "
+									+ node.getTitle());
 				} else {
-					Log.d("OPML Import", String.valueOf(node.getDepth()) + " "
-							+ node.getTitle() + " " + node.getUrl());
+					Log.d(this,
+							String.valueOf(node.getDepth()) + " "
+									+ node.getTitle() + " " + node.getUrl());
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -332,7 +332,7 @@ public class SubscriptionGridFragment extends Fragment implements
 					}
 				}
 			} catch (ClassCastException e) {
-				Log.d(TAG, e.toString());
+				Log.d(this, e.toString());
 			}
 			return super.getView(position, convertView, parent);
 		}

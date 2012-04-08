@@ -15,14 +15,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity implements
 		OnUpPressedCallback {
 
-	public static final String TAG = "MainActivity";
 
 	private static List<FragmentTab> fragmentTabs;
 
@@ -115,9 +114,9 @@ public class MainActivity extends FragmentActivity implements
 				if (debugDir != null && debugDir.isDirectory()) {
 					MenuItem item = menu.add("Debug");
 					item.setIntent(new Intent(this, DebugActivity.class));
-					Log.d(TAG, "Found " + debugDir + ". Enabling debug mode.");
+					Log.d(this, "Found " + debugDir + ". Enabling debug mode.");
 				} else {
-					Log.d(TAG, "Did not find " + debugDir
+					Log.d(this, "Did not find " + debugDir
 							+ ". Disabling debug mode.");
 				}
 			}

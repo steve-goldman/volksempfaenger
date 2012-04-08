@@ -13,7 +13,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class VolksempfaengerApplication extends Application implements
 		OnSharedPreferenceChangeListener {
@@ -36,7 +35,7 @@ public class VolksempfaengerApplication extends Application implements
 		try {
 			return c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
 		} catch (NameNotFoundException e) {
-			Log.wtf(VolksempfaengerApplication.class.getName(), e);
+			Log.wtf(Log.getTag(VolksempfaengerApplication.class), e);
 			return null;
 		}
 	}
@@ -84,12 +83,11 @@ public class VolksempfaengerApplication extends Application implements
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 		if (interval == 0) {
-			Log.d(getClass().getSimpleName(), "setUpdateAlarm(): disabled");
+			Log.d(this, "setUpdateAlarm(): disabled");
 
 			am.cancel(pending);
 		} else {
-			Log.d(getClass().getSimpleName(), "setUpdateAlarm(): " + interval
-					+ "ms");
+			Log.d(this, "setUpdateAlarm(): " + interval + "ms");
 
 			long next;
 			long last = UpdateService.getLastRun();

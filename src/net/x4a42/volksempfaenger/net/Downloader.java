@@ -10,11 +10,10 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.net.http.HttpResponseCache;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public abstract class Downloader {
 
-	public static final String TAG = "Downloader";
 
 	private Context context;
 	private static HttpResponseCache cache;
@@ -38,7 +37,7 @@ public abstract class Downloader {
 						"http");
 				HttpResponseCache.install(path, 16 * 1024 * 1024 /* 16 MiB */);
 			} catch (Exception e) {
-				Log.i(TAG, "Could not install HttpResponseCache", e);
+				Log.i(this, "Could not install HttpResponseCache", e);
 			}
 		}
 	}

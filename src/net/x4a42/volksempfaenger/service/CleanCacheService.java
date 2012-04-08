@@ -9,7 +9,6 @@ import android.os.IBinder;
 
 public class CleanCacheService extends Service {
 
-	public static final String TAG = "CleanCacheService";
 
 	private class CleanCacheTask extends AsyncTask<Void, Void, Void> {
 

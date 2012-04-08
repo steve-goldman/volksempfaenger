@@ -19,7 +19,6 @@ import android.widget.Toast;
 public class DeleteSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-	public static final String TAG = "DeleteSubscriptionActivity";
 
 	private long id;
 	private Uri uri;

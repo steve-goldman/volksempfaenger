@@ -10,11 +10,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class VolksempfaengerContentProvider extends ContentProvider {
 
-	public static final String TAG = "VolksempfaengerContentProvider";
 	public static final String AUTHORITY = "net.x4a42.volksempfaenger";
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 	public static final Uri PODCAST_URI = Uri.parse("content://" + AUTHORITY
@@ -61,7 +60,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	}
 
 	private void notifyUri(Uri uri, Mime type) {
-		Log.d(TAG, "notifying " + uri);
+		Log.d(this, "notifying " + uri);
 		contentResolver.notifyChange(uri, null);
 	}
 

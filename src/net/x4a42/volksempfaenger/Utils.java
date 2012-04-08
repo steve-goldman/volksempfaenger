@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
 
 import net.x4a42.volksempfaenger.data.CacheMap;
 import android.content.ContentValues;
@@ -16,7 +15,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class Utils {
 	public static String joinArray(Object[] objects, CharSequence sep) {
@@ -146,18 +144,18 @@ public class Utils {
 			try {
 				md = MessageDigest.getInstance("SHA-1");
 			} catch (NoSuchAlgorithmException e) {
-				Log.wtf(Utils.class.getName(), e);
+				Log.wtf(Log.getTag(Utils.class), e);
 				return null;
 			}
 			byte[] sha1hash = new byte[40];
 			try {
 				md.update(text.getBytes("utf8"), 0, text.length());
 			} catch (UnsupportedEncodingException e) {
-				Log.w(Utils.class.getName(), e);
+				Log.w(Log.getTag(Utils.class), e);
 				try {
 					md.update(text.getBytes("iso-8859-1"), 0, text.length());
 				} catch (UnsupportedEncodingException e1) {
-					Log.wtf(Utils.class.getName(), e);
+					Log.wtf(Log.getTag(Utils.class), e);
 					return null;
 				}
 			}

@@ -27,11 +27,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class UpdateService extends IntentService {
 
-	public static final String TAG = "UpdateService";
 
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE + " AND "
@@ -90,7 +89,7 @@ public class UpdateService extends IntentService {
 		while (cursor.moveToNext()) {
 			UpdateServiceStatus.startUpdate(cursor.getUri());
 
-			Log.d(TAG,
+			Log.d(this,
 					"Updating "
 							+ cursor.getString(cursor
 									.getColumnIndex(Podcast.TITLE)));
@@ -108,11 +107,11 @@ public class UpdateService extends IntentService {
 				feed = feedDownloader.fetchFeed(podcastFeed);
 			} catch (NetException e) {
 				// TODO Auto-generated catch block
-				Log.w(TAG, e);
+				Log.w(this, e);
 				continue;
 			} catch (FeedParserException e) {
 				// TODO Auto-generated catch block
-				Log.w(TAG, e);
+				Log.w(this, e);
 				continue;
 			}
 
@@ -149,7 +148,7 @@ public class UpdateService extends IntentService {
 				String oldHash = episodeHashMap.get(item.getItemId());
 				if (newHash.equals(oldHash)) {
 					if (BuildConfig.DEBUG) {
-						Log.d(TAG,
+						Log.d(this,
 								"Skipping already existing item: "
 										+ item.getTitle());
 					}
@@ -185,7 +184,7 @@ public class UpdateService extends IntentService {
 							episodeId);
 					getContentResolver().update(episodeUri, values, null, null);
 				} catch (Error.InsertException e) {
-					Log.wtf(TAG, e);
+					Log.wtf(this, e);
 					return;
 				}
 
@@ -235,7 +234,7 @@ public class UpdateService extends IntentService {
 						getContentResolver().update(enclosureUri, values, null,
 								null);
 					} catch (Error.InsertException e) {
-						Log.wtf(TAG, e);
+						Log.wtf(this, e);
 						return;
 					}
 
@@ -264,7 +263,7 @@ public class UpdateService extends IntentService {
 			}
 
 			timeFeedEnd = System.currentTimeMillis();
-			Log.d(TAG, "Updated " + feed.getTitle() + " (took "
+			Log.d(this, "Updated " + feed.getTitle() + " (took "
 					+ (timeFeedEnd - timeFeedStart) + "ms)");
 
 			UpdateServiceStatus.stopUpdate(cursor.getUri());
@@ -275,7 +274,7 @@ public class UpdateService extends IntentService {
 		UpdateServiceStatus.unlock();
 
 		timeEnd = System.currentTimeMillis();
-		Log.d(TAG, "Update took " + (timeEnd - timeStart) + "ms");
+		Log.d(this, "Update took " + (timeEnd - timeStart) + "ms");
 
 		// start DownloadService to start automatic downloads if enabled
 		startService(new Intent(this, DownloadService.class));

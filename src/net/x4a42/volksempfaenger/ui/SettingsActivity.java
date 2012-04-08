@@ -24,7 +24,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener,
 		OnUpPressedCallback {
 
-	public static final String TAG = "SettingsActivity";
 
 	private ListPreference prefDownloadInterval;
 	// private CheckBoxPreference prefDownloadAuto;

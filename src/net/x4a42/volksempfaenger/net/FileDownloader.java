@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 
 import net.x4a42.volksempfaenger.data.StorageException;
 import android.content.Context;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class FileDownloader extends Downloader {
 
@@ -47,7 +47,7 @@ public class FileDownloader extends Downloader {
 
 		} catch (Exception e) {
 
-			Log.i(getClass().getSimpleName(), "Handled Exception:", e);
+			Log.i(this, "Handled Exception:", e);
 			if (deleteTargetOnFailure) {
 				target.delete();
 			}

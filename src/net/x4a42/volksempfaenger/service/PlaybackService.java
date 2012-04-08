@@ -32,7 +32,6 @@ import android.view.KeyEvent;
 
 public class PlaybackService extends Service implements EventListener {
 
-	public static final String TAG = "PlaybackService";
 	public static final String ACTION_PLAY = "net.x4a42.volksempfaenger.intent.action.PLAY";
 
 	private static final int NOTIFICATION_ID = 0x59d54313;

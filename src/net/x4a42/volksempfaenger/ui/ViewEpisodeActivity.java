@@ -39,7 +39,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -51,7 +51,6 @@ import android.widget.Toast;
 public class ViewEpisodeActivity extends FragmentActivity implements
 		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback {
 
-	public static final String TAG = "ViewEpisodeActivity";
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -302,7 +301,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 						imageDownloader.fetchImage(img.getSource());
 					} catch (Exception e) {
 						// Who cares?
-						Log.d(getClass().getSimpleName(), "Exception handled",
+						Log.d(this, "Exception handled",
 								e);
 					}
 				}

@@ -32,7 +32,6 @@ import android.widget.TextView;
 public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		OnClickListener, OnSeekBarChangeListener, EventListener {
 
-	public static final String TAG = "NowPlayingFragment";
 
 	private Uri episodeUri;
 	private boolean isPlaying;

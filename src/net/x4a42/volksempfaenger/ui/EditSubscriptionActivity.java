@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -29,7 +29,6 @@ import android.widget.Toast;
 public class EditSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-	public static final String TAG = "EditSubscriptionActivity";
 
 	private static final int CONTEXT_RELOAD = 0;
 	private static final int CONTEXT_DELETE = 1;
@@ -164,7 +163,7 @@ public class EditSubscriptionActivity extends Activity implements
 							Toast.LENGTH_LONG).show();
 				} else {
 					// Some terrible failure happended
-					Log.wtf(getClass().getName(), e);
+					Log.wtf(this, e);
 				}
 			}
 			return;
@@ -205,7 +204,7 @@ public class EditSubscriptionActivity extends Activity implements
 					ld.fetchLogo(feedImage, id);
 				}
 			} catch (Exception e) {
-				Log.w(getClass().getName(), e);
+				Log.w(this, e);
 				return false;
 			}
 			// It didn't fail

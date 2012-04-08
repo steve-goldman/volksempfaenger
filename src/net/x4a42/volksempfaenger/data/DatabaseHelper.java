@@ -9,11 +9,10 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import net.x4a42.volksempfaenger.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-	public static final String TAG = "DatabaseHelper";
 
 	private static final String DB_NAME = "podcast.db";
 	private static final int DB_VERSION = 3;
@@ -54,13 +53,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Log.d(TAG, "creating new database");
+		Log.d(this, "creating new database");
 		db.beginTransaction();
 		try {
 			executeSqlFromAsset(db, "sql/init.sql");
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
-			Log.wtf(TAG, e);
+			Log.wtf(this, e);
 		} finally {
 			db.endTransaction();
 		}
@@ -71,13 +70,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.beginTransaction();
 		try {
 			for (int i = oldVersion; i < newVersion; i++) {
-				Log.d(TAG, "upgrading database from version " + i
+				Log.d(this, "upgrading database from version " + i
 						+ " to version " + (i + 1));
 				executeSqlFromAsset(db, "sql/upgrade-" + i + ".sql");
 			}
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
-			Log.wtf(TAG, e);
+			Log.wtf(this, e);
 		} finally {
 			db.endTransaction();
 		}
@@ -92,8 +91,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		while ((c = in.read()) != -1) {
 			if (c == ';') {
 				String sql = wr.toString();
-				Log.d(TAG, "Executing the following SQL:");
-				Log.d(TAG, sql);
+				Log.d(this, "Executing the following SQL:");
+				Log.d(this, sql);
 				db.execSQL(sql);
 				wr = new StringWriter();
 			} else {
