@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Volksempfaenger" parent="@android:style/Theme.Light"></style>
+    <style name="Theme.Volksempfaenger" parent="@android:Theme.Holo.Light.DarkActionBar"></style>
 
-    <style name="Theme.Settings" parent="@android:style/Theme.Black"></style>
+    <style name="Theme.Settings" parent="@android:style/Theme.Holo"></style>
 
-    <style name="Theme.CriticalError" parent="@android:style/Theme.Black.NoTitleBar"></style>
+    <style name="Theme.CriticalError" parent="@android:style/Theme.Holo.NoActionBar"></style>
+
+    <style name="Theme.Dialog" parent="@android:style/Theme.Holo.Light.Dialog"></style>
+
+    <style name="Theme.DialogButton" parent="@android:style/Widget.Holo.Light.Button.Borderless.Small">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+1</style>
+
+    <style name="Theme.ButtonBar" parent="@android:style/Holo.Light.ButtonBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
     <style name="TextAppearance.Widget.Title" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">#DDD</item>
@@ -66,13 +79,5 @@
     </style>
 
     <style name="NowPlaying.Seekbar"></style>
-
-    <style name="Theme.Volksempfaenger" parent="@android:style/Theme.Holo.Light"></style>
-
-    <style name="Theme.Settings" parent="@android:style/Theme.Holo"></style>
-
-    <style name="Theme.CriticalError" parent="@android:style/Theme.Holo.NoActionBar"></style>
-
-    <style name="Theme.Volksempfaenger" parent="@android:Theme.Holo.Light.DarkActionBar"></style>
 
 </resources>

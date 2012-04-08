@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name=".ui.AddSubscriptionActivity"
-            android:theme="@android:style/Theme.Dialog"
+            android:theme="@style/Theme.Dialog"
             android:windowSoftInputMode="stateVisible" >
 
             <!-- Intent filters taken from http://stackoverflow.com/a/5502710/731539 -->
@@ -71,7 +71,7 @@
         <activity
             android:name=".ui.DeleteSubscriptionActivity"
             android:label="@string/title_delete_subscription"
-            android:theme="@android:style/Theme.Dialog" />
+            android:theme="@style/Theme.Dialog" />
         <activity
             android:name=".ui.EditSubscriptionActivity"
             android:windowSoftInputMode="adjustResize" />
