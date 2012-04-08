@@ -38,7 +38,7 @@
                 android:ellipsize="marquee"
                 android:gravity="bottom"
                 android:singleLine="true"
-                android:text="Episode Name"
+                android:text="@string/episode_name"
                 android:textStyle="bold" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:ellipsize="marquee"
                 android:gravity="top"
                 android:singleLine="true"
-                android:text="Podcast" />
+                android:text="@string/podcast" />
         </LinearLayout>
 
         <ImageButton

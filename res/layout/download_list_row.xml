@@ -22,7 +22,7 @@
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="Title" />
+        android:text="@string/download_title" />
 
     <ProgressBar
         android:id="@+id/download_progress_bar"
@@ -38,6 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/download_title"
         android:layout_below="@+id/download_title"
-        android:text="Status" />
+        android:text="@string/download_status" />
 
 </RelativeLayout>
