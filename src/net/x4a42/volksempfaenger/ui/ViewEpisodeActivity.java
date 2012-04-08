@@ -32,7 +32,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -447,9 +446,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	@Override
 	public void onUpPressed() {
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.putExtra("tag", MainActivity.subscriptionsTag);
-		NavUtils.navigateUpTo(this, intent);
+		finish();
 	}
 
 }
