@@ -96,5 +96,10 @@
         <item>Every twelve hours</item>
         <item>Every day</item>
     </string-array>
+    <string name="download_status">Status</string>
+    <string name="download_title">Title</string>
+    <string name="episode_name">Episode Name</string>
+    <string name="podcast">Podcast</string>
+    <string name="message_insert_sdcard">Please insert an external storage medium in order to use Volksempfänger</string>
 
 </resources>

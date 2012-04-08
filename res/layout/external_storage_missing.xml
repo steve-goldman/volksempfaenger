@@ -17,6 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Please insert an external storage medium in order to use Volksempfänger" />
+        android:text="@string/message_insert_sdcard" />
 
 </LinearLayout>
