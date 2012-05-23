@@ -17,6 +17,7 @@ import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -58,12 +59,15 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private EpisodeCursor episodeCursor;
 	private Bitmap podcastLogoBitmap;
 
+	private Button downloadButton;
 	private Button playButton;
+	private Button pauseButton;
+	private Button deleteButton;
+	private Button markListenedButton;
+
 	private PodcastLogoView podcastLogo;
 	private TextView episodeTitle;
 	private TextView episodeDescription;
-
-	private View contentContainer;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
 	private SpannableStringBuilder descriptionSpanned;
@@ -76,11 +80,15 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
+		downloadButton = (Button) findViewById(R.id.download);
 		playButton = (Button) findViewById(R.id.play);
+		pauseButton = (Button) findViewById(R.id.pause);
+		deleteButton = (Button) findViewById(R.id.delete);
+		markListenedButton = (Button) findViewById(R.id.marklistened);
+
 		podcastLogo = (PodcastLogoView) findViewById(R.id.logo);
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
-		contentContainer = findViewById(R.id.contentContainer);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -278,7 +286,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			imageDownloader = new DescriptionImageDownloader(
 					ViewEpisodeActivity.this);
 			getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			viewWidth = contentContainer.getMeasuredWidth();
+			viewWidth = episodeDescription.getMeasuredWidth();
 		}
 
 		@Override
@@ -400,7 +408,14 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			return;
 
 		setTitle(episodeCursor.getPodcastTitle());
-		playButton.setText("Play"); // TODO resource and toggle
+
+		if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+			downloadButton.setVisibility(View.GONE);
+			deleteButton.setVisibility(View.VISIBLE);
+		} else {
+			downloadButton.setVisibility(View.VISIBLE);
+			deleteButton.setVisibility(View.GONE);
+		}
 
 		podcastLogo.setPodcastId(episodeCursor.getPodcastId());
 		episodeTitle.setText(episodeCursor.getTitle());
@@ -422,11 +437,27 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		}
 	}
 
+	public void onClickDownload(View v) {
+	}
+
 	public void onClickPlay(View v) {
 		Intent intent = new Intent(this, PlaybackService.class);
 		intent.setAction(PlaybackService.ACTION_PLAY);
 		intent.setData(uri);
 		startService(intent);
+	}
+
+	public void onClickPause(View v) {
+		// Intent intent = new Intent(this, PlaybackService.class);
+		// intent.setAction(PlaybackService.ACTION_PAUSE);
+		// intent.setData(uri);
+		// startService(intent);
+	}
+
+	public void onClickDelete(View v) {
+	}
+
+	public void onClickMarkListened(View v) {
 	}
 
 	public Uri getUri() {
