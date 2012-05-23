@@ -13,7 +13,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-1</style>
+    </style>
 
     <style name="Theme.ButtonBar" parent="@android:style/Holo.Light.ButtonBar">
         <item name="android:layout_width">match_parent</item>
@@ -79,5 +79,10 @@
     </style>
 
     <style name="NowPlaying.Seekbar"></style>
+
+    <style name="EpisodeActionButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
 </resources>
