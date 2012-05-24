@@ -9,6 +9,7 @@ public class FeedItem {
 	private Feed feed;
 	private Date date;
 	private List<Enclosure> enclosures = new ArrayList<Enclosure>();
+	private String flattrUrl;
 
 	public String getTitle() {
 		return title;
@@ -38,6 +39,10 @@ public class FeedItem {
 		return itemId;
 	}
 
+	public String getFlattrUrl() {
+		return flattrUrl;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -60,5 +65,9 @@ public class FeedItem {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
+	}
+
+	public void setFlattrUrl(String flattrUrl) {
+		this.flattrUrl = flattrUrl;
 	}
 }
