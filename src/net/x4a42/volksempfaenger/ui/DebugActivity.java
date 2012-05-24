@@ -101,11 +101,11 @@ public class DebugActivity extends Activity implements OnClickListener {
 						try {
 							Feed feed = FeedParser.parse(new FileReader(file));
 							Log.d(this, file.getAbsolutePath());
-							if (feed.getWebsite() != null) {
-								Log.d(this, "Website: " + feed.getWebsite());
+							if (feed.website != null) {
+								Log.d(this, "Website: " + feed.website);
 							}
-							if (feed.getUrl() != null) {
-								Log.d(this, "URL: " + feed.getUrl());
+							if (feed.url != null) {
+								Log.d(this, "URL: " + feed.url);
 							}
 						} catch (FileNotFoundException e) {
 							// TODO Auto-generated catch block
@@ -151,43 +151,42 @@ public class DebugActivity extends Activity implements OnClickListener {
 		Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 		try {
 			Feed feed = FeedParser.parse(new FileReader(file));
-			Log.d(this, "Title: " + feed.getTitle());
-			if (feed.getUrl() != null) {
-				Log.d(this, "URL: " + feed.getUrl());
+			Log.d(this, "Title: " + feed.title);
+			if (feed.url != null) {
+				Log.d(this, "URL: " + feed.url);
 			}
-			if (feed.getWebsite() != null) {
-				Log.d(this, "Website: " + feed.getWebsite());
+			if (feed.website != null) {
+				Log.d(this, "Website: " + feed.website);
 			}
-			if (feed.getDescription() != null) {
-				Log.d(this, "Description: " + feed.getDescription());
+			if (feed.description != null) {
+				Log.d(this, "Description: " + feed.description);
 			}
 
-			for (FeedItem item : feed.getItems()) {
-				Log.d(this, "Item title: " + item.getTitle());
-				Log.d(this, "Item ID: " + item.getItemId());
-				if (item.getDate() != null) {
-					Log.d(this, item.getDate().toString());
+			for (FeedItem item : feed.items) {
+				Log.d(this, "Item title: " + item.title);
+				Log.d(this, "Item ID: " + item.itemId);
+				if (item.date != null) {
+					Log.d(this, item.date.toString());
 				}
-				if (item.getUrl() != null) {
-					Log.d(this, item.getUrl());
+				if (item.url != null) {
+					Log.d(this, item.url);
 				}
-				if (item.getDescription() != null) {
-					Log.d(this, item.getDescription());
+				if (item.description != null) {
+					Log.d(this, item.description);
 				}
-				for (Enclosure enc : item.getEnclosures()) {
+				for (Enclosure enc : item.enclosures) {
 					Log.d(this, "Enclosure");
-					if (enc.getTitle() != null) {
-						Log.d(this, enc.getTitle());
+					if (enc.title != null) {
+						Log.d(this, enc.title);
 					}
-					if (enc.getUrl() != null) {
-						Log.d(this, enc.getUrl());
+					if (enc.url != null) {
+						Log.d(this, enc.url);
 					}
-					if (enc.getMime() != null) {
-						Log.d(this, enc.getMime());
+					if (enc.mime != null) {
+						Log.d(this, enc.mime);
 					}
-					if (enc.getSize() != 0) {
-						Log.d(this,
-								"Size: " + (new Long(enc.getSize())).toString());
+					if (enc.size != 0) {
+						Log.d(this, "Size: " + (new Long(enc.size)).toString());
 					}
 				}
 			}

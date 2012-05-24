@@ -36,15 +36,15 @@ public class FeedParser {
 				throw new NotAFeedException();
 			}
 			Feed feed = handler.feed;
-			for (FeedItem item : feed.getItems()) {
-				if (item.getDate() == null) {
+			for (FeedItem item : feed.items) {
+				if (item.date == null) {
 					throw new NotAFeedException();
 				}
 			}
-			Collections.sort(feed.getItems(), new Comparator<FeedItem>() {
+			Collections.sort(feed.items, new Comparator<FeedItem>() {
 				@Override
 				public int compare(FeedItem lhs, FeedItem rhs) {
-					return rhs.getDate().compareTo(lhs.getDate());
+					return rhs.date.compareTo(lhs.date);
 				}
 			});
 			return feed;
@@ -186,7 +186,7 @@ public class FeedParser {
 			switch (tag) {
 			case ATOM_ENTRY:
 				feedItem = new FeedItem();
-				feedItem.setFeed(feed);
+				feedItem.feed = feed;
 				currentItemHasITunesSummaryAlternative = false;
 				currentAtomItemHasPublished = false;
 				break;
@@ -205,16 +205,16 @@ public class FeedParser {
 				case ENCLOSURE:
 					if (parents.peek() == Tag.ATOM_ENTRY) {
 						Enclosure enclosure = new Enclosure();
-						enclosure.setFeedItem(feedItem);
-						enclosure.setUrl(atts.getValue(ATOM_ATTR_HREF));
-						enclosure.setMime(atts.getValue(ATOM_ATTR_TYPE));
-						enclosure.setTitle(atts.getValue(ATOM_ATTR_TITLE));
+						enclosure.feedItem = feedItem;
+						enclosure.url = atts.getValue(ATOM_ATTR_HREF);
+						enclosure.mime = atts.getValue(ATOM_ATTR_TYPE);
+						enclosure.title = atts.getValue(ATOM_ATTR_TITLE);
 
 						String length = atts.getValue(ATOM_ATTR_LENGTH);
 						if (length != null && length.length() > 0) {
-							enclosure.setSize(Long.parseLong(length.trim()));
+							enclosure.size = Long.parseLong(length.trim());
 						}
-						feedItem.getEnclosures().add(enclosure);
+						feedItem.enclosures.add(enclosure);
 					}
 					break;
 				case ALTERNATE:
@@ -232,20 +232,20 @@ public class FeedParser {
 							// this uses the LAST alternate link as the
 							// URL for
 							// the FeedItem
-							feedItem.setUrl(atts.getValue(ATOM_ATTR_HREF));
+							feedItem.url = atts.getValue(ATOM_ATTR_HREF);
 						}
 					} else if (parents.peek() == Tag.ATOM_FEED) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
 							// same issue as above with multiple
 							// alternate links
-							feed.setWebsite(atts.getValue(ATOM_ATTR_HREF));
+							feed.website = atts.getValue(ATOM_ATTR_HREF);
 						}
 					}
 					break;
 				case SELF:
 					if (parents.peek() == Tag.ATOM_FEED) {
-						feed.setUrl(atts.getValue(ATOM_ATTR_HREF));
+						feed.url = atts.getValue(ATOM_ATTR_HREF);
 					}
 					break;
 				case PAYMENT:
@@ -254,7 +254,7 @@ public class FeedParser {
 						String url = atts.getValue(ATOM_ATTR_HREF);
 						try {
 							if (new URL(url).getHost().equals("flattr.com")) {
-								feedItem.setFlattrUrl(url);
+								feedItem.flattrUrl = url;
 							}
 						} catch (MalformedURLException e) {
 							// ignore if url is malformed
@@ -271,22 +271,22 @@ public class FeedParser {
 			switch (tag) {
 			case RSS_ITEM:
 				feedItem = new FeedItem();
-				feedItem.setFeed(feed);
+				feedItem.feed = feed;
 				currentRssItemHasHtml = false;
 				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
 					Enclosure enclosure = new Enclosure();
-					enclosure.setFeedItem(feedItem);
-					enclosure.setUrl(atts.getValue(RSS_ATTR_URL));
-					enclosure.setMime(atts.getValue(RSS_ATTR_TYPE));
+					enclosure.feedItem = feedItem;
+					enclosure.url = atts.getValue(RSS_ATTR_URL);
+					enclosure.mime = atts.getValue(RSS_ATTR_TYPE);
 
 					String length = atts.getValue(RSS_ATTR_LENGTH);
 					if (length != null && length.length() > 0) {
-						enclosure.setSize(Long.parseLong(length.trim()));
+						enclosure.size = Long.parseLong(length.trim());
 					}
-					feedItem.getEnclosures().add(enclosure);
+					feedItem.enclosures.add(enclosure);
 				}
 				break;
 			}
@@ -309,7 +309,7 @@ public class FeedParser {
 		private void onStartTagITunes(Tag tag, Attributes atts) {
 			if (tag == Tag.ITUNES_IMAGE
 					&& (parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED)) {
-				feed.setImage(atts.getValue("href"));
+				feed.image = atts.getValue("href");
 				hasITunesImage = true;
 			}
 		}
@@ -319,10 +319,10 @@ public class FeedParser {
 			case ATOM_TITLE:
 				if (parents.peek() == Tag.ATOM_FEED) {
 					// feed title
-					feed.setTitle(buffer.toString().trim());
+					feed.title = buffer.toString().trim();
 				} else if (parents.peek() == Tag.ATOM_ENTRY) {
 					// entry title
-					feedItem.setTitle(buffer.toString().trim());
+					feedItem.title = buffer.toString().trim();
 				}
 				break;
 			case ATOM_CONTENT:
@@ -330,14 +330,14 @@ public class FeedParser {
 					xhtmlMode = false;
 				}
 				if (parents.peek() == Tag.ATOM_ENTRY) {
-					feedItem.setDescription(buffer.toString().trim());
+					feedItem.description = buffer.toString().trim();
 					currentItemHasITunesSummaryAlternative = true;
 				}
 				break;
 			case ATOM_PUBLISHED:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString()));
+						feedItem.date = parseAtomDate(buffer.toString());
 						currentAtomItemHasPublished = true;
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
@@ -352,7 +352,7 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_ENTRY
 						&& !currentAtomItemHasPublished) {
 					try {
-						feedItem.setDate(parseAtomDate(buffer.toString()));
+						feedItem.date = parseAtomDate(buffer.toString());
 					} catch (IndexOutOfBoundsException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -363,22 +363,22 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_SUBTITLE:
-				feed.setDescription(buffer.toString().trim());
+				feed.description = buffer.toString().trim();
 				break;
 			case ATOM_ENTRY:
-				if (feedItem.getItemId() != null) {
-					feed.getItems().add(feedItem);
+				if (feedItem.itemId != null) {
+					feed.items.add(feedItem);
 				}
 				feedItem = null;
 				break;
 			case ATOM_ID:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
-					feedItem.setItemId(buffer.toString().trim());
+					feedItem.itemId = buffer.toString().trim();
 				}
 				break;
 			case ATOM_ICON:
 				if (parents.peek() == Tag.ATOM_FEED && !hasITunesImage) {
-					feed.setImage(buffer.toString().trim());
+					feed.image = buffer.toString().trim();
 				}
 				break;
 			}
@@ -389,18 +389,18 @@ public class FeedParser {
 			case RSS_TITLE:
 				switch (parents.peek()) {
 				case RSS_CHANNEL:
-					feed.setTitle(buffer.toString().trim());
+					feed.title = buffer.toString().trim();
 					break;
 
 				case RSS_ITEM:
-					feedItem.setTitle(buffer.toString().trim());
+					feedItem.title = buffer.toString().trim();
 					break;
 				}
 				break;
 			case RSS_PUB_DATE:
 				if (parents.peek() == Tag.RSS_ITEM) {
 					try {
-						feedItem.setDate(parseRssDate(buffer.toString()));
+						feedItem.date = parseRssDate(buffer.toString());
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -410,10 +410,10 @@ public class FeedParser {
 			case RSS_LINK:
 				switch (parents.peek()) {
 				case RSS_ITEM:
-					feedItem.setUrl(buffer.toString().trim());
+					feedItem.url = buffer.toString().trim();
 					break;
 				case RSS_CHANNEL:
-					feed.setWebsite(buffer.toString().trim());
+					feed.website = buffer.toString().trim();
 					break;
 				}
 				break;
@@ -421,11 +421,11 @@ public class FeedParser {
 				if (!currentRssItemHasHtml) {
 					switch (parents.peek()) {
 					case RSS_ITEM:
-						feedItem.setDescription(buffer.toString().trim());
+						feedItem.description = buffer.toString().trim();
 						currentItemHasITunesSummaryAlternative = true;
 						break;
 					case RSS_CHANNEL:
-						feed.setDescription(buffer.toString().trim());
+						feed.description = buffer.toString().trim();
 						break;
 					}
 				}
@@ -434,31 +434,31 @@ public class FeedParser {
 				currentRssItemHasHtml = true;
 				switch (parents.peek()) {
 				case RSS_ITEM:
-					feedItem.setDescription(buffer.toString().trim());
+					feedItem.description = buffer.toString().trim();
 					currentItemHasITunesSummaryAlternative = true;
 					break;
 				case RSS_CHANNEL:
-					feed.setDescription(buffer.toString().trim());
+					feed.description = buffer.toString().trim();
 					break;
 				}
 				break;
 			case RSS_ITEM:
-				if (feedItem.getItemId() != null) {
-					feed.getItems().add(feedItem);
+				if (feedItem.itemId != null) {
+					feed.items.add(feedItem);
 				}
 				feedItem = null;
 				currentRssItemHasHtml = false;
 				break;
 			case RSS_GUID:
 				if (parents.peek() == Tag.RSS_ITEM) {
-					feedItem.setItemId(buffer.toString().trim());
+					feedItem.itemId = buffer.toString().trim();
 				}
 				break;
 			case RSS_URL:
 				if (parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
 					Tag copy = parents.pop();
 					if (parents.peek() == Tag.RSS_CHANNEL) {
-						feed.setImage(buffer.toString().trim());
+						feed.image = buffer.toString().trim();
 					}
 					parents.push(copy);
 				}
@@ -476,7 +476,7 @@ public class FeedParser {
 			if (tag == Tag.ITUNES_SUMMARY
 					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)
 					&& !currentItemHasITunesSummaryAlternative) {
-				feedItem.setDescription(buffer.toString().trim());
+				feedItem.description = buffer.toString().trim();
 			}
 		}
 
