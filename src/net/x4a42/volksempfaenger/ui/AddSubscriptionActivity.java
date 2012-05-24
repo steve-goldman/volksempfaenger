@@ -43,7 +43,7 @@ public class AddSubscriptionActivity extends Activity implements
 		setContentView(R.layout.add_subscription);
 
 		LayoutParams params = getWindow().getAttributes();
-		params.width = LayoutParams.FILL_PARENT;
+		params.width = LayoutParams.MATCH_PARENT;
 		getWindow().setAttributes(params);
 
 		editTextUrl = (EditText) findViewById(R.id.edittext_url);

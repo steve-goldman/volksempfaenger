@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.x4a42.volksempfaenger.BuildConfig;
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
@@ -26,8 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import net.x4a42.volksempfaenger.Log;
 
 public class UpdateService extends IntentService {
 
@@ -48,8 +48,9 @@ public class UpdateService extends IntentService {
 		boolean extraFirstSync = intent.getBooleanExtra("first_sync", false);
 
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-		if (podcast == null && !cm.getBackgroundDataSetting()) {
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (podcast == null
+				&& netInfo.getState() == NetworkInfo.State.DISCONNECTED) {
 			// If podcast == null, we sync all podcasts in the background. Thus
 			// we just return if background data is disabled.
 			return;

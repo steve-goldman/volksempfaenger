@@ -100,13 +100,6 @@ public class DownloadService extends Service {
 				// get network state
 				ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-				if (!cm.getBackgroundDataSetting()) {
-					// background data is disabled
-					Log.d(this,
-							"background data is disabled");
-					return null;
-				}
-
 				NetworkInfo netInfo = cm.getActiveNetworkInfo();
 				if (netInfo != null
 						&& netInfo.getState() == NetworkInfo.State.CONNECTED) {

@@ -185,8 +185,8 @@ public class QueryHelper extends ContentProviderHelper {
 				episodeQueryBuilder.setTables(DatabaseHelper.TABLE_EPISODE);
 			}
 
-			episodeQueryBuilder.buildQuery(projection, selection,
-					selectionArgs, null, null, sortOrder, null);
+			episodeQueryBuilder.buildQuery(projection, selection, null, null,
+					sortOrder, null);
 
 			cursor = episodeQueryBuilder
 					.query(getReadableDatabase(), projection, selection,
