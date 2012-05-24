@@ -49,7 +49,7 @@ public class DeleteSubscriptionActivity extends Activity implements
 		setContentView(R.layout.delete_subscription);
 
 		LayoutParams params = getWindow().getAttributes();
-		params.width = LayoutParams.FILL_PARENT;
+		params.width = LayoutParams.MATCH_PARENT;
 		getWindow().setAttributes(params);
 
 		textMessage = (TextView) findViewById(R.id.text_message);

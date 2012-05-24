@@ -316,6 +316,7 @@ public class EpisodeWithDownloadCursor implements Cursor {
 	}
 
 	@Override
+	@Deprecated
 	public boolean requery() {
 		if (databaseCursor.requery() && downloadCursor.requery()) {
 			update();
