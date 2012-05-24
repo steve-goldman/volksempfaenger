@@ -31,7 +31,6 @@ import android.widget.Toast;
 public class AddSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-
 	private EditText editTextUrl;
 	private Button buttonAdd;
 	private Button buttonCancel;
@@ -119,10 +118,10 @@ public class AddSubscriptionActivity extends Activity implements
 			}
 
 			ContentValues values = new ContentValues();
-			values.put(Podcast.TITLE, feed.getTitle());
-			values.put(Podcast.DESCRIPTION, feed.getDescription());
+			values.put(Podcast.TITLE, feed.title);
+			values.put(Podcast.DESCRIPTION, feed.description);
 			values.put(Podcast.FEED, feedUrl);
-			values.put(Podcast.WEBSITE, feed.getWebsite());
+			values.put(Podcast.WEBSITE, feed.website);
 
 			try {
 				newPodcastUri = getContentResolver().insert(
@@ -139,7 +138,7 @@ public class AddSubscriptionActivity extends Activity implements
 			updatePodcast.putExtra("first_sync", true);
 			startService(updatePodcast);
 
-			String feedImage = feed.getImage();
+			String feedImage = feed.image;
 			if (feedImage != null) {
 				// Try to download podcast logo
 				LogoDownloader ld = new LogoDownloader(

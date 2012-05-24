@@ -135,21 +135,19 @@ public class UpdateService extends IntentService {
 			Uri latestEpisodeUri = null;
 			Date latestEpisodeDate = null;
 
-			for (FeedItem item : feed.getItems()) {
+			for (FeedItem item : feed.items) {
 				values.clear();
 				values.put(Episode.PODCAST_ID, podcastId);
-				values.put(Episode.FEED_ITEM_ID, item.getItemId());
-				values.put(Episode.TITLE, item.getTitle());
-				values.put(Episode.DATE, Utils.toUnixTimestamp(item.getDate()));
-				values.put(Episode.URL, item.getUrl());
-				values.put(Episode.DESCRIPTION, item.getDescription());
+				values.put(Episode.FEED_ITEM_ID, item.itemId);
+				values.put(Episode.TITLE, item.title);
+				values.put(Episode.DATE, Utils.toUnixTimestamp(item.date));
+				values.put(Episode.URL, item.url);
+				values.put(Episode.DESCRIPTION, item.description);
 
 				String newHash = Utils.hashContentValues(values);
-				String oldHash = episodeHashMap.get(item.getItemId());
+				String oldHash = episodeHashMap.get(item.itemId);
 				if (newHash.equals(oldHash)) {
-					Log.d(this,
-							"Skipping already existing item: "
-									+ item.getTitle());
+					Log.d(this, "Skipping already existing item: " + item.title);
 					continue;
 				}
 
@@ -170,7 +168,7 @@ public class UpdateService extends IntentService {
 							new String[] { Episode._ID },
 							EPISODE_WHERE_ITEM_ID,
 							new String[] { String.valueOf(podcastId),
-									item.getItemId() }, null);
+									item.itemId }, null);
 					if (!c.moveToFirst()) {
 						// this should never happen actually
 						continue;
@@ -188,22 +186,21 @@ public class UpdateService extends IntentService {
 
 				if (extraFirstSync) {
 					if (latestEpisodeDate == null
-							|| latestEpisodeDate.before(item.getDate())) {
-						latestEpisodeDate = item.getDate();
+							|| latestEpisodeDate.before(item.date)) {
+						latestEpisodeDate = item.date;
 						latestEpisodeUri = episodeUri;
 					}
 				}
 
 				long mainEnclosureId = 0;
 
-				for (net.x4a42.volksempfaenger.feedparser.Enclosure enclosure : item
-						.getEnclosures()) {
+				for (net.x4a42.volksempfaenger.feedparser.Enclosure enclosure : item.enclosures) {
 					values.clear();
 					values.put(Enclosure.EPISODE_ID, episodeId);
-					values.put(Enclosure.TITLE, enclosure.getTitle());
-					values.put(Enclosure.URL, enclosure.getUrl());
-					values.put(Enclosure.MIME, enclosure.getMime());
-					values.put(Enclosure.SIZE, enclosure.getSize());
+					values.put(Enclosure.TITLE, enclosure.title);
+					values.put(Enclosure.URL, enclosure.url);
+					values.put(Enclosure.MIME, enclosure.mime);
+					values.put(Enclosure.SIZE, enclosure.size);
 
 					Uri enclosureUri;
 					long enclosureId;
@@ -218,7 +215,7 @@ public class UpdateService extends IntentService {
 								new String[] { Enclosure._ID },
 								ENCLOSURE_WHERE,
 								new String[] { String.valueOf(episodeId),
-										enclosure.getUrl() }, null);
+										enclosure.url }, null);
 						if (!c.moveToFirst()) {
 							// this should never happen actually
 							continue;
@@ -237,7 +234,7 @@ public class UpdateService extends IntentService {
 					}
 
 					// Try to find the main enclosure that will get downloaded
-					if (item.getEnclosures().size() == 1) {
+					if (item.enclosures.size() == 1) {
 						// This is the only enclosure so it's the main one
 						mainEnclosureId = enclosureId;
 					} else {
@@ -261,7 +258,7 @@ public class UpdateService extends IntentService {
 			}
 
 			timeFeedEnd = System.currentTimeMillis();
-			Log.d(this, "Updated " + feed.getTitle() + " (took "
+			Log.d(this, "Updated " + feed.title + " (took "
 					+ (timeFeedEnd - timeFeedStart) + "ms)");
 
 			UpdateServiceStatus.stopUpdate(cursor.getUri());

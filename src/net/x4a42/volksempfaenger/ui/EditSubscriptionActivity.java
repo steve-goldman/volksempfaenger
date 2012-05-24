@@ -29,7 +29,6 @@ import android.widget.Toast;
 public class EditSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-
 	private static final int CONTEXT_RELOAD = 0;
 	private static final int CONTEXT_DELETE = 1;
 	private static final int CONTEXT_CHOOSE = 2;
@@ -195,7 +194,7 @@ public class EditSubscriptionActivity extends Activity implements
 					EditSubscriptionActivity.this);
 			try {
 				Feed feed = fd.fetchFeed(feedUrl);
-				String feedImage = feed.getImage();
+				String feedImage = feed.image;
 				if (feedImage != null) {
 					// Try to download podcast logo
 					LogoDownloader ld = new LogoDownloader(
