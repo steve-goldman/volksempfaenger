@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.feedparser;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -66,7 +68,7 @@ public class FeedParser {
 		}
 
 		private static enum AtomRel {
-			ENCLOSURE, ALTERNATE, SELF, UNKNOWN
+			ENCLOSURE, ALTERNATE, SELF, UNKNOWN, PAYMENT
 		}
 
 		private static enum Mime {
@@ -244,6 +246,19 @@ public class FeedParser {
 				case SELF:
 					if (parents.peek() == Tag.ATOM_FEED) {
 						feed.setUrl(atts.getValue(ATOM_ATTR_HREF));
+					}
+					break;
+				case PAYMENT:
+					if (parents.peek() == Tag.ATOM_ENTRY
+							|| parents.peek() == Tag.RSS_ITEM) {
+						String url = atts.getValue(ATOM_ATTR_HREF);
+						try {
+							if (new URL(url).getHost().equals("flattr.com")) {
+								feedItem.setFlattrUrl(url);
+							}
+						} catch (MalformedURLException e) {
+							// ignore if url is malformed
+						}
 					}
 					break;
 				}
@@ -685,11 +700,12 @@ public class FeedParser {
 			itunesTags.put("summary", Tag.ITUNES_SUMMARY);
 		}
 		private final static HashMap<String, AtomRel> atomRels = new HashMap<String, AtomRel>(
-				(int) (3 / load) + 1, load);
+				(int) (4 / load) + 1, load);
 		static {
 			atomRels.put("enclosure", AtomRel.ENCLOSURE);
 			atomRels.put("alternate", AtomRel.ALTERNATE);
 			atomRels.put("self", AtomRel.SELF);
+			atomRels.put("payment", AtomRel.PAYMENT);
 		}
 		private final static HashMap<String, Mime> mimes = new HashMap<String, Mime>(
 				(int) (2 / load) + 1, load);
