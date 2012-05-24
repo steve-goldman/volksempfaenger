@@ -11,10 +11,16 @@
         android:padding="8dp" >
 
         <LinearLayout
-            android:id="@+id/contentContainer"
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/episode_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -27,43 +33,46 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingLeft="8dp" >
+                    android:orientation="vertical" >
 
-                    <TextView
-                        android:id="@+id/podcast_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                    <Button
+                        android:id="@+id/download"
+                        style="@style/EpisodeActionButton"
+                        android:onClick="onClickDownload"
+                        android:text="@string/episode_download" />
 
-                    <TextView
-                        android:id="@+id/podcast_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                    <Button
+                        android:id="@+id/play"
+                        style="@style/EpisodeActionButton"
+                        android:onClick="onClickPlay"
+                        android:text="@string/episode_play" />
+
+                    <Button
+                        android:id="@+id/pause"
+                        style="@style/EpisodeActionButton"
+                        android:onClick="onClickPause"
+                        android:text="@string/episode_pause" />
+
+                    <Button
+                        android:id="@+id/delete"
+                        style="@style/EpisodeActionButton"
+                        android:onClick="onClickDelete"
+                        android:text="@string/episode_delete" />
+
+                    <Button
+                        android:id="@+id/marklistened"
+                        style="@style/EpisodeActionButton"
+                        android:onClick="onClickMarkListened"
+                        android:text="@string/episode_marklistened" />
                 </LinearLayout>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/episode_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12sp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <Button
-                android:id="@+id/play"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClickPlay" />
 
             <TextView
                 android:id="@+id/episode_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/episode_description_text"
                 android:textColorHighlight="@color/episode_description_text"
                 android:textColorLink="@color/episode_description_link" >
