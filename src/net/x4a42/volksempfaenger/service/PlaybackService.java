@@ -366,6 +366,7 @@ public class PlaybackService extends Service implements EventListener {
 	private Notification makeNotification() {
 		Notification notification;
 		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
+		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		notificationIntent.setData(uri);
 		notificationIntent.putExtra(
 				ViewEpisodeActivity.EXTRA_LAUNCHED_FROM_NOTIFICATION, true);
