@@ -8,14 +8,18 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.ActionBar;
+import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -33,7 +37,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
-		OnItemClickListener, OnUpPressedCallback {
+		OnItemClickListener, OnUpPressedCallback,
+		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static int[] rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
@@ -103,15 +108,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 				.getColumnIndex(Podcast.DESCRIPTION)));
 
 		podcastLogo.setPodcastId(id);
-
-		Cursor episodeCursor = getContentResolver().query(
-				VolksempfaengerContentProvider.EPISODE_URI,
-				new String[] { Episode._ID, Episode.TITLE, Episode.DATE,
-						Episode.STATUS }, EPISODE_WHERE,
-				new String[] { String.valueOf(id) }, EPISODE_SORT);
-
-		adapter = new Adapter(episodeCursor);
+		adapter = new Adapter();
 		episodeList.setAdapter(adapter);
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -210,9 +209,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 	public class Adapter extends SimpleCursorAdapter {
 
-		public Adapter(Cursor cursor) {
+		public Adapter() {
 			super(ViewSubscriptionActivity.this,
-					R.layout.view_subscription_row, cursor,
+					R.layout.view_subscription_row, null,
 					new String[] { Episode.TITLE },
 					new int[] { R.id.episode_title }, 0);
 		}
@@ -264,6 +263,26 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.putExtra("tag", MainActivity.subscriptionsTag);
 		NavUtils.navigateUpTo(this, intent);
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		return new CursorLoader(this,
+				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
+						Episode._ID, Episode.TITLE, Episode.DATE,
+						Episode.STATUS }, EPISODE_WHERE,
+				new String[] { String.valueOf(id) }, EPISODE_SORT);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		adapter.swapCursor(new EpisodeCursor(data));
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		adapter.swapCursor(null);
+
 	}
 
 }
