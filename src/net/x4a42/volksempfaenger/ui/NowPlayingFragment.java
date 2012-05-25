@@ -32,7 +32,6 @@ import android.widget.TextView;
 public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		OnClickListener, OnSeekBarChangeListener, EventListener {
 
-
 	private Uri episodeUri;
 	private boolean isPlaying;
 
@@ -245,13 +244,11 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 		if (isPlaying) {
 			EpisodeCursor cursor;
-			{
-				String[] projection = { Episode.TITLE, Episode.PODCAST_ID,
-						Episode.PODCAST_TITLE, Episode.DURATION_LISTENED,
-						Episode.DURATION_TOTAL };
-				cursor = new EpisodeCursor(getActivity().managedQuery(
-						episodeUri, projection, null, null, null));
-			}
+			String[] projection = { Episode.TITLE, Episode.PODCAST_ID,
+					Episode.PODCAST_TITLE, Episode.DURATION_LISTENED,
+					Episode.DURATION_TOTAL };
+			cursor = new EpisodeCursor(getActivity().getContentResolver()
+					.query(episodeUri, projection, null, null, null));
 
 			if (!cursor.moveToFirst()) {
 				throw new IllegalArgumentException("Episode not found");
@@ -274,6 +271,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 			} else {
 				hideExtendedControls();
 			}
+			cursor.close();
 
 			showFragment();
 		} else {

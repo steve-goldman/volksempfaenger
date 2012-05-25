@@ -19,10 +19,8 @@ import android.widget.Toast;
 public class DeleteSubscriptionActivity extends Activity implements
 		OnClickListener {
 
-
 	private long id;
 	private Uri uri;
-	private Cursor cursor;
 
 	private TextView textMessage;
 	private Button buttonOk;
@@ -58,25 +56,22 @@ public class DeleteSubscriptionActivity extends Activity implements
 		buttonOk.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 
-		{
-			String[] projection = {};
-			cursor = managedQuery(uri, projection, null, null, null);
+		Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+		if (!cursor.moveToFirst()) {
+			// ID does not exist
+			finish();
+			return;
 		}
+		textMessage.setText(getString(R.string.message_podcast_confirm_delete,
+				cursor.getString(cursor.getColumnIndex(Podcast.TITLE))));
+		cursor.close();
+
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		ExternalStorageHelper.assertExternalStorageReadable(this);
-
-		if (!cursor.moveToFirst()) {
-			// ID does not exist
-			finish();
-			return;
-		}
-
-		textMessage.setText(getString(R.string.message_podcast_confirm_delete,
-				cursor.getString(cursor.getColumnIndex(Podcast.TITLE))));
 	}
 
 	public void onClick(View v) {

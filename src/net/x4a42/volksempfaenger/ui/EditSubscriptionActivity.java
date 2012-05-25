@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
@@ -16,7 +17,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import net.x4a42.volksempfaenger.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -42,7 +42,6 @@ public class EditSubscriptionActivity extends Activity implements
 
 	private long id;
 	private Uri uri;
-	private Cursor cursor;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,30 +74,27 @@ public class EditSubscriptionActivity extends Activity implements
 		buttonSave.setOnClickListener(this);
 		buttonCancel.setOnClickListener(this);
 
-		{
-			String[] projection = null; // TODO
-			cursor = managedQuery(uri, projection, null, null, null);
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		ExternalStorageHelper.assertExternalStorageWritable(this);
-
+		String[] projection = null; // TODO
+		Cursor cursor = getContentResolver().query(uri, projection, null, null,
+				null);
 		if (!cursor.moveToFirst()) {
 			// ID does not exist
 			finish();
 			return;
 		}
-
 		podcastTitle.setText(cursor.getString(cursor
 				.getColumnIndex(Podcast.TITLE)));
 		podcastUrl
 				.setText(cursor.getString(cursor.getColumnIndex(Podcast.FEED)));
 		podcastDescription.setText(cursor.getString(cursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
+		cursor.close();
+	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		ExternalStorageHelper.assertExternalStorageWritable(this);
 		registerForContextMenu(podcastLogo);
 		reloadLogo();
 	}
