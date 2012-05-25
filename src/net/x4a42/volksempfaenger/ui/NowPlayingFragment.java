@@ -160,7 +160,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	public void onClickInfo(View v) {
-		Intent intent = new Intent(getActivity(), NowPlayingActivity.class);
+		Intent intent = new Intent(getActivity(), ViewEpisodeActivity.class);
 		if (remote != null) {
 			intent.setData(remote.getEpisodeUri());
 		}
