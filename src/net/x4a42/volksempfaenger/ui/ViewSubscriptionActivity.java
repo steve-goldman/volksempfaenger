@@ -47,8 +47,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private PodcastLogoView podcastLogo;
 	private TextView podcastDescription;
 	private ListView episodeList;
-	private Cursor episodeCursor;
-	private Cursor podcastCursor;
 	private Adapter adapter;
 	private boolean isUpdating;
 	private UpdateServiceStatus.UiReceiver updateReceiver;
@@ -87,8 +85,9 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		episodeList.setOnItemClickListener(this);
 
 		// Update podcast information
-		podcastCursor = managedQuery(ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.PODCAST_URI, id),
+		Cursor podcastCursor = getContentResolver().query(
+				ContentUris.withAppendedId(
+						VolksempfaengerContentProvider.PODCAST_URI, id),
 				new String[] {/* TODO */}, PODCAST_WHERE,
 				new String[] { String.valueOf(id) }, null);
 
@@ -97,12 +96,17 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			finish();
 			return;
 		}
+		podcastCursor.moveToFirst();
+		setTitle(podcastCursor.getString(podcastCursor
+				.getColumnIndex(Podcast.TITLE)));
+		updatePodcastDescription(podcastCursor.getString(podcastCursor
+				.getColumnIndex(Podcast.DESCRIPTION)));
 
 		podcastLogo.setPodcastId(id);
 
-		episodeCursor = managedQuery(
-				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
-						Episode._ID, Episode.TITLE, Episode.DATE,
+		Cursor episodeCursor = getContentResolver().query(
+				VolksempfaengerContentProvider.EPISODE_URI,
+				new String[] { Episode._ID, Episode.TITLE, Episode.DATE,
 						Episode.STATUS }, EPISODE_WHERE,
 				new String[] { String.valueOf(id) }, EPISODE_SORT);
 
@@ -116,14 +120,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		ExternalStorageHelper.assertExternalStorageReadable(this);
 
 		UpdateServiceStatus.registerReceiver(updateReceiver);
-
-		podcastCursor.moveToFirst();
-
-		setTitle(podcastCursor.getString(podcastCursor
-				.getColumnIndex(Podcast.TITLE)));
-		updatePodcastDescription(podcastCursor.getString(podcastCursor
-				.getColumnIndex(Podcast.DESCRIPTION)));
-
 	}
 
 	@Override
@@ -218,7 +214,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 			super(ViewSubscriptionActivity.this,
 					R.layout.view_subscription_row, cursor,
 					new String[] { Episode.TITLE },
-					new int[] { R.id.episode_title });
+					new int[] { R.id.episode_title }, 0);
 		}
 
 		@Override
