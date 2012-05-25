@@ -41,31 +41,36 @@
                         android:id="@+id/download"
                         style="@style/EpisodeActionButton"
                         android:onClick="onClickDownload"
-                        android:text="@string/episode_download" />
+                        android:text="@string/episode_download"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/play"
                         style="@style/EpisodeActionButton"
                         android:onClick="onClickPlay"
-                        android:text="@string/episode_play" />
+                        android:text="@string/episode_play"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/pause"
                         style="@style/EpisodeActionButton"
                         android:onClick="onClickPause"
-                        android:text="@string/episode_pause" />
+                        android:text="@string/episode_pause"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/delete"
                         style="@style/EpisodeActionButton"
                         android:onClick="onClickDelete"
-                        android:text="@string/episode_delete" />
+                        android:text="@string/episode_delete"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/marklistened"
                         style="@style/EpisodeActionButton"
                         android:onClick="onClickMarkListened"
-                        android:text="@string/episode_marklistened" />
+                        android:text="@string/episode_marklistened"
+                        android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
 
