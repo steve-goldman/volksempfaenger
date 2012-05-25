@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -54,6 +55,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
+	public static final String EXTRA_LAUNCHED_FROM_NOTIFICATION = "LAUNCHED_FROM_NOTIFICATION";
+
 	private Uri uri;
 	private long id;
 	private EpisodeCursor episodeCursor;
@@ -71,6 +74,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
 	private SpannableStringBuilder descriptionSpanned;
+
+	private long subscriptionId = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +120,10 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 					VolksempfaengerContentProvider.EPISODE_URI, id);
 		} else {
 			id = ContentUris.parseId(uri);
+		}
+
+		if (intent.getBooleanExtra(EXTRA_LAUNCHED_FROM_NOTIFICATION, false)) {
+			// TODO insert back stack - somehow
 		}
 
 		LoaderManager lm = getLoaderManager();
@@ -409,6 +418,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		setTitle(episodeCursor.getPodcastTitle());
 
+		subscriptionId = episodeCursor.getPodcastId();
+
 		if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
 			downloadButton.setVisibility(View.GONE);
 			deleteButton.setVisibility(View.VISIBLE);
@@ -470,7 +481,14 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	@Override
 	public void onUpPressed() {
-		finish();
+		Intent intent;
+		if (subscriptionId != -1) {
+			intent = new Intent(this, ViewSubscriptionActivity.class);
+			intent.putExtra("id", subscriptionId);
+		} else {
+			intent = new Intent(this, SubscriptionGridFragment.class);
+			intent.putExtra("tag", MainActivity.subscriptionsTag);
+		}
+		NavUtils.navigateUpTo(this, intent);
 	}
-
 }

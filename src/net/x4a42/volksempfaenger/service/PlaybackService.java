@@ -12,7 +12,7 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
-import net.x4a42.volksempfaenger.ui.NowPlayingActivity;
+import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -365,10 +365,10 @@ public class PlaybackService extends Service implements EventListener {
 	 */
 	private Notification makeNotification() {
 		Notification notification;
-		Intent notificationIntent = new Intent(this, NowPlayingActivity.class);
+		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
 		notificationIntent.setData(uri);
 		notificationIntent.putExtra(
-				NowPlayingActivity.EXTRA_LAUNCHED_FROM_NOTIFICATION, true);
+				ViewEpisodeActivity.EXTRA_LAUNCHED_FROM_NOTIFICATION, true);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
