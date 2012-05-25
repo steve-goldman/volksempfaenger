@@ -14,17 +14,24 @@ import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
+import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
+import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
+import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.LoaderManager;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,6 +39,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
@@ -51,7 +59,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewEpisodeActivity extends FragmentActivity implements
-		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback {
+		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback,
+		ServiceConnection, EventListener {
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -77,6 +86,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	private long subscriptionId = -1;
 
+	private PlaybackRemote remote;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,7 +109,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
 		Intent intent = new Intent(this, PlaybackService.class);
-		startService(intent);
+		bindService(intent, this, Activity.BIND_AUTO_CREATE);
 
 		onNewIntent(getIntent());
 	}
@@ -420,13 +431,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		subscriptionId = episodeCursor.getPodcastId();
 
-		if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
-			downloadButton.setVisibility(View.GONE);
-			deleteButton.setVisibility(View.VISIBLE);
-		} else {
-			downloadButton.setVisibility(View.VISIBLE);
-			deleteButton.setVisibility(View.GONE);
-		}
+		updateEpisodeActionButtons();
 
 		podcastLogo.setPodcastId(episodeCursor.getPodcastId());
 		episodeTitle.setText(episodeCursor.getTitle());
@@ -459,10 +464,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	}
 
 	public void onClickPause(View v) {
-		// Intent intent = new Intent(this, PlaybackService.class);
-		// intent.setAction(PlaybackService.ACTION_PAUSE);
-		// intent.setData(uri);
-		// startService(intent);
+		remote.pause();
 	}
 
 	public void onClickDelete(View v) {
@@ -490,5 +492,59 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			intent.putExtra("tag", MainActivity.subscriptionsTag);
 		}
 		NavUtils.navigateUpTo(this, intent);
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder binder) {
+		remote = ((PlaybackBinder) binder).getRemote();
+		remote.registerEventListener(this);
+		updateEpisodeActionButtons();
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+		remote = null;
+
+		Intent intent = new Intent(this, PlaybackService.class);
+		startService(intent);
+		bindService(intent, this, Activity.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onPlaybackEvent(Event event) {
+		updateEpisodeActionButtons();
+	}
+
+	private void updateEpisodeActionButtons() {
+		if (episodeCursor == null || remote == null) {
+			// we do not have all information we need but this method gets
+			// recalled if everything is available
+			return;
+		}
+
+		boolean downloadVisible = false;
+		boolean playVisible = false;
+		boolean pauseVisible = false;
+		boolean deleteVisible = false;
+		boolean marklistendVisible = false;
+
+		if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+			if (remote.isPlaying() && uri.equals(remote.getEpisodeUri())) {
+				pauseVisible = true;
+			} else {
+				playVisible = true;
+			}
+		} else {
+			downloadVisible = true;
+			marklistendVisible = true;
+		}
+
+		downloadButton
+				.setVisibility(downloadVisible ? View.VISIBLE : View.GONE);
+		playButton.setVisibility(playVisible ? View.VISIBLE : View.GONE);
+		pauseButton.setVisibility(pauseVisible ? View.VISIBLE : View.GONE);
+		deleteButton.setVisibility(deleteVisible ? View.VISIBLE : View.GONE);
+		markListenedButton.setVisibility(marklistendVisible ? View.VISIBLE
+				: View.GONE);
 	}
 }
