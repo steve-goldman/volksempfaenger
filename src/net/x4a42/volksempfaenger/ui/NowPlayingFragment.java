@@ -1,8 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.text.DecimalFormat;
-
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
@@ -224,8 +223,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		seekbar.setMax(cursor.getDurationTotal());
 		seekbar.setProgress(cursor.getDurationListened());
 		seekbar.setMax(remote.getDuration());
-		position.setText(formatTime(cursor.getDurationListened()));
-		duration.setText(formatTime(cursor.getDurationTotal()));
+		position.setText(Utils.formatTime(cursor.getDurationListened()));
+		duration.setText(Utils.formatTime(cursor.getDurationTotal()));
 		info.setVisibility(View.GONE);
 		seekbar.setVisibility(View.VISIBLE);
 		controls.setVisibility(View.VISIBLE);
@@ -298,17 +297,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	private void updateTime() {
-		position.setText(formatTime(remote.getPosition()));
-	}
-
-	private static String formatTime(int milliseconds) {
-		int seconds = milliseconds / 1000;
-		int hours = seconds / 3600;
-		int minutes = (seconds / 60) - (hours * 60);
-		int seconds2 = seconds - (minutes * 60) - (hours * 3600);
-		DecimalFormat format = new DecimalFormat("00");
-		return format.format(hours) + ":" + format.format(minutes) + ":"
-				+ format.format(seconds2);
+		position.setText(Utils.formatTime(remote.getPosition()));
 	}
 
 }

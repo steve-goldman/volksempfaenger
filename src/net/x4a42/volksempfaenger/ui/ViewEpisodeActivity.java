@@ -71,6 +71,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private Bitmap podcastLogoBitmap;
 
 	private TextView episodeTitle;
+	private TextView episodeMeta;
 	private TextView episodeDescription;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
@@ -89,6 +90,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
+		episodeMeta = (TextView) findViewById(R.id.episode_meta);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
@@ -413,7 +415,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
 				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_URI,
 				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
-				Episode.ENCLOSURE_ID };
+				Episode.ENCLOSURE_ID, Episode.ENCLOSURE_SIZE };
 		return new CursorLoader(this, uri, projection, null, null, null);
 	}
 
@@ -445,6 +447,26 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		invalidateOptionsMenu();
 
 		episodeTitle.setText(episodeCursor.getTitle());
+
+		StringBuilder meta = new StringBuilder();
+		int duration = episodeCursor.getDurationTotal();
+		if (duration > 0) {
+			meta.append(Utils.formatTime(duration));
+		} else {
+			meta.append("unknown duration"); // TODO use resource
+		}
+		meta.append(" / ");
+		long size = episodeCursor.getDownloadTotal();
+		if (size <= 0) {
+			size = episodeCursor.getEnclosureSize();
+		}
+		if (size > 0) {
+			meta.append(String.format("%.2f MiB", ((double) size)
+					/ (1024 * 1024)));
+		} else {
+			meta.append("unknown size"); // TODO use resource
+		}
+		episodeMeta.setText(meta);
 
 		if (lastImageLoadTask != null) {
 			lastImageLoadTask.cancel(true);
