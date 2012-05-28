@@ -37,7 +37,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Duration: 1:30:00 (59MB)"
                 android:textColor="?android:attr/textColorSecondary" />
 
             <TextView

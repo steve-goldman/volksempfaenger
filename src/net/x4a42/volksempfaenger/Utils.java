@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -199,6 +200,16 @@ public class Utils {
 			b.append((char) 0);
 		}
 		return sha1.hash(b.toString());
+	}
+
+	public static String formatTime(int milliseconds) {
+		int seconds = milliseconds / 1000;
+		int hours = seconds / 3600;
+		int minutes = (seconds / 60) - (hours * 60);
+		int seconds2 = seconds - (minutes * 60) - (hours * 3600);
+		DecimalFormat format = new DecimalFormat("00");
+		return format.format(hours) + ":" + format.format(minutes) + ":"
+				+ format.format(seconds2);
 	}
 
 }
