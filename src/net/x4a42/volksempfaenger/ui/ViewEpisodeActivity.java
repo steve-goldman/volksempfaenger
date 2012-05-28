@@ -453,7 +453,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		if (duration > 0) {
 			meta.append(Utils.formatTime(duration));
 		} else {
-			meta.append("unknown duration"); // TODO use resource
+			meta.append(getString(R.string.unknown_duration));
 		}
 		meta.append(" / ");
 		long size = episodeCursor.getDownloadTotal();
@@ -464,7 +464,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 			meta.append(String.format("%.2f MiB", ((double) size)
 					/ (1024 * 1024)));
 		} else {
-			meta.append("unknown size"); // TODO use resource
+			meta.append(getString(R.string.unknown_size));
 		}
 		episodeMeta.setText(meta);
 

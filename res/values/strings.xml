@@ -108,5 +108,7 @@
     <string name="episode_pause">Pause</string>
     <string name="episode_delete">Delete</string>
     <string name="episode_marklistened">Mark as listened</string>
+    <string name="unknown_duration">unknown duration</string>
+    <string name="unknown_size">unknown size</string>
 
 </resources>
