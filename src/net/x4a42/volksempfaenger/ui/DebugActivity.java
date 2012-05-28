@@ -107,15 +107,8 @@ public class DebugActivity extends Activity implements OnClickListener {
 							if (feed.url != null) {
 								Log.d(this, "URL: " + feed.url);
 							}
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (FeedParserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch (Exception e) {
+							Log.e(this, "catched exception", e);
 						}
 					}
 				}
@@ -191,7 +184,7 @@ public class DebugActivity extends Activity implements OnClickListener {
 				}
 			}
 		} catch (Exception e) {
-			Log.e(this, "An error occurred while parsing the feed:", e);
+			Log.e(this, "catched exception", e);
 		}
 	}
 
