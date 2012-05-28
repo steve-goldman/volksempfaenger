@@ -54,7 +54,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,13 +70,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	private EpisodeCursor episodeCursor;
 	private Bitmap podcastLogoBitmap;
 
-	private Button downloadButton;
-	private Button playButton;
-	private Button pauseButton;
-	private Button deleteButton;
-	private Button markListenedButton;
-
-	private PodcastLogoView podcastLogo;
 	private TextView episodeTitle;
 	private TextView episodeDescription;
 
@@ -96,13 +88,6 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		downloadButton = (Button) findViewById(R.id.download);
-		playButton = (Button) findViewById(R.id.play);
-		pauseButton = (Button) findViewById(R.id.pause);
-		deleteButton = (Button) findViewById(R.id.delete);
-		markListenedButton = (Button) findViewById(R.id.marklistened);
-
-		podcastLogo = (PodcastLogoView) findViewById(R.id.logo);
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
 
@@ -163,6 +148,25 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_episode, menu);
+
+		if (episodeCursor != null && remote != null) {
+
+			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+				menu.removeItem(R.id.item_download);
+			} else {
+				menu.removeItem(R.id.item_play);
+			}
+
+			if (remote.isPlaying() && uri.equals(remote.getEpisodeUri())) {
+				menu.removeItem(R.id.item_play);
+			}
+
+			if (episodeCursor.getStatus() >= Constants.EPISODE_STATE_LISTENED) {
+				menu.removeItem(R.id.item_mark_listened);
+			}
+
+		}
+
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
 	}
@@ -173,6 +177,13 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
+
+		case R.id.item_play:
+			Intent intent = new Intent(this, PlaybackService.class);
+			intent.setAction(PlaybackService.ACTION_PLAY);
+			intent.setData(uri);
+			startService(intent);
+			return true;
 
 		case R.id.item_download:
 			if (episodeCursor.getEnclosureId() != 0) {
@@ -431,9 +442,8 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 		subscriptionId = episodeCursor.getPodcastId();
 
-		updateEpisodeActionButtons();
+		invalidateOptionsMenu();
 
-		podcastLogo.setPodcastId(episodeCursor.getPodcastId());
 		episodeTitle.setText(episodeCursor.getTitle());
 
 		if (lastImageLoadTask != null) {
@@ -498,7 +508,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 	public void onServiceConnected(ComponentName name, IBinder binder) {
 		remote = ((PlaybackBinder) binder).getRemote();
 		remote.registerEventListener(this);
-		updateEpisodeActionButtons();
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -512,39 +522,7 @@ public class ViewEpisodeActivity extends FragmentActivity implements
 
 	@Override
 	public void onPlaybackEvent(Event event) {
-		updateEpisodeActionButtons();
+		invalidateOptionsMenu();
 	}
 
-	private void updateEpisodeActionButtons() {
-		if (episodeCursor == null || remote == null) {
-			// we do not have all information we need but this method gets
-			// recalled if everything is available
-			return;
-		}
-
-		boolean downloadVisible = false;
-		boolean playVisible = false;
-		boolean pauseVisible = false;
-		boolean deleteVisible = false;
-		boolean marklistendVisible = false;
-
-		if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
-			if (remote.isPlaying() && uri.equals(remote.getEpisodeUri())) {
-				pauseVisible = true;
-			} else {
-				playVisible = true;
-			}
-		} else {
-			downloadVisible = true;
-			marklistendVisible = true;
-		}
-
-		downloadButton
-				.setVisibility(downloadVisible ? View.VISIBLE : View.GONE);
-		playButton.setVisibility(playVisible ? View.VISIBLE : View.GONE);
-		pauseButton.setVisibility(pauseVisible ? View.VISIBLE : View.GONE);
-		deleteButton.setVisibility(deleteVisible ? View.VISIBLE : View.GONE);
-		markListenedButton.setVisibility(marklistendVisible ? View.VISIBLE
-				: View.GONE);
-	}
 }
