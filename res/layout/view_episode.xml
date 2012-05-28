@@ -21,61 +21,24 @@
 
             <TextView
                 android:id="@+id/episode_title"
+                style="@android:style/TextAppearance.Holo.Medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textColor="?android:attr/textColorPrimary" />
 
-            <LinearLayout
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#66333333" />
+
+            <TextView
+                android:id="@+id/episode_meta"
+                style="@android:style/TextAppearance.Holo.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <net.x4a42.volksempfaenger.ui.PodcastLogoView
-                    android:id="@+id/logo"
-                    style="@style/PodcastLogo.Large" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical" >
-
-                    <Button
-                        android:id="@+id/download"
-                        style="@style/EpisodeActionButton"
-                        android:onClick="onClickDownload"
-                        android:text="@string/episode_download"
-                        android:visibility="gone" />
-
-                    <Button
-                        android:id="@+id/play"
-                        style="@style/EpisodeActionButton"
-                        android:onClick="onClickPlay"
-                        android:text="@string/episode_play"
-                        android:visibility="gone" />
-
-                    <Button
-                        android:id="@+id/pause"
-                        style="@style/EpisodeActionButton"
-                        android:onClick="onClickPause"
-                        android:text="@string/episode_pause"
-                        android:visibility="gone" />
-
-                    <Button
-                        android:id="@+id/delete"
-                        style="@style/EpisodeActionButton"
-                        android:onClick="onClickDelete"
-                        android:text="@string/episode_delete"
-                        android:visibility="gone" />
-
-                    <Button
-                        android:id="@+id/marklistened"
-                        style="@style/EpisodeActionButton"
-                        android:onClick="onClickMarkListened"
-                        android:text="@string/episode_marklistened"
-                        android:visibility="gone" />
-                </LinearLayout>
-            </LinearLayout>
+                android:layout_marginBottom="8dp"
+                android:text="Duration: 1:30:00 (59MB)"
+                android:textColor="?android:attr/textColorSecondary" />
 
             <TextView
                 android:id="@+id/episode_description"
