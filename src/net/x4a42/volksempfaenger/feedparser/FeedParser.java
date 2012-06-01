@@ -9,13 +9,17 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;
+import net.x4a42.volksempfaenger.feedparser.Enums.Mime;
+import net.x4a42.volksempfaenger.feedparser.Enums.Namespace;
+import net.x4a42.volksempfaenger.feedparser.Enums.Tag;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -59,21 +63,6 @@ public class FeedParser {
 	}
 
 	private static class FeedHandler extends DefaultHandler {
-		private static enum Namespace {
-			NONE, ATOM, RSS, RSS_CONTENT, UNKNOWN, XHTML, ITUNES
-		}
-
-		private static enum Tag {
-			UNKNOWN, ATOM_FEED, ATOM_TITLE, ATOM_ENTRY, ATOM_LINK, ATOM_SUMMARY, ATOM_CONTENT, ATOM_PUBLISHED, ATOM_SUBTITLE, RSS_TOPLEVEL, RSS_CHANNEL, RSS_ITEM, RSS_TITLE, RSS_LINK, RSS_DESCRIPTION, RSS_ENCLOSURE, RSS_PUB_DATE, RSS_CONTENT_ENCODED, ATOM_ID, RSS_GUID, RSS_IMAGE, RSS_URL, ATOM_ICON, ITUNES_IMAGE, ITUNES_SUMMARY, ATOM_UPDATED
-		}
-
-		private static enum AtomRel {
-			ENCLOSURE, ALTERNATE, SELF, UNKNOWN, PAYMENT
-		}
-
-		private static enum Mime {
-			HTML, XHTML, UNKNOWN
-		}
 
 		public final Feed feed = new Feed();
 		public boolean isFeed = false;
@@ -598,19 +587,16 @@ public class FeedParser {
 		}
 
 		private static Namespace getNamespace(String nsString) {
-			return lookupString(namespaces, nsString, Namespace.UNKNOWN);
+			return StringLookup.lookupNamespace(nsString);
 		}
 
 		private static Tag getTag(Namespace ns, String tagString) {
-			HashMap<String, Tag> map = null;
 			switch (ns) {
 			case ATOM:
-				map = atomTags;
-				break;
+				return StringLookup.lookupAtomTag(tagString);
 			case RSS:
 			case NONE:
-				map = rssTags;
-				break;
+				return StringLookup.lookupRssTag(tagString);
 			case RSS_CONTENT:
 				if (tagString.equals("encoded")) {
 					return Tag.RSS_CONTENT_ENCODED;
@@ -618,100 +604,18 @@ public class FeedParser {
 					return Tag.UNKNOWN;
 				}
 			case ITUNES:
-				map = itunesTags;
-				break;
-			}
-			if (map == null) {
+				return StringLookup.lookupITunesTag(tagString);
+			default:
 				return Tag.UNKNOWN;
-			} else {
-				return lookupString(map, tagString, Tag.UNKNOWN);
 			}
 		}
 
 		private static AtomRel getAtomRel(String relString) {
-			return lookupString(atomRels, relString, AtomRel.UNKNOWN);
+			return StringLookup.lookupAtomRel(relString);
 		}
 
 		private static Mime getMime(String mimeString) {
-			return lookupString(mimes, mimeString, Mime.UNKNOWN);
-		}
-
-		private static <V> V lookupString(HashMap<String, V> map, String key,
-				V unknown) {
-			V value = map.get(key);
-			if (value == null) {
-				return unknown;
-			} else {
-				return value;
-			}
-		}
-
-		// load of HashMaps
-		private static final float load = 0.75f;
-
-		// The size of the HashMaps is set to (number_of_elements / load) + 1 so
-		// no re-hashing is necessary. Update the number_of_elements when new
-		// elements are added.
-		private final static HashMap<String, Namespace> namespaces = new HashMap<String, Namespace>(
-				(int) (6 / load) + 1, load);
-		static {
-			namespaces.put("http://www.w3.org/2005/Atom", Namespace.ATOM);
-			namespaces.put("http://backend.userland.com/RSS2", Namespace.RSS);
-			namespaces.put("http://purl.org/rss/1.0/modules/content/",
-					Namespace.RSS_CONTENT);
-			namespaces.put("http://www.w3.org/1999/xhtml", Namespace.XHTML);
-			namespaces.put("http://www.itunes.com/dtds/podcast-1.0.dtd",
-					Namespace.ITUNES);
-			namespaces.put("", Namespace.NONE);
-		}
-		private final static HashMap<String, Tag> atomTags = new HashMap<String, Tag>(
-				(int) (10 / load) + 1, load);
-		static {
-			atomTags.put("feed", Tag.ATOM_FEED);
-			atomTags.put("title", Tag.ATOM_TITLE);
-			atomTags.put("entry", Tag.ATOM_ENTRY);
-			atomTags.put("link", Tag.ATOM_LINK);
-			atomTags.put("content", Tag.ATOM_CONTENT);
-			atomTags.put("published", Tag.ATOM_PUBLISHED);
-			atomTags.put("updated", Tag.ATOM_UPDATED);
-			atomTags.put("subtitle", Tag.ATOM_SUBTITLE);
-			atomTags.put("id", Tag.ATOM_ID);
-			atomTags.put("icon", Tag.ATOM_ICON);
-		}
-		private final static HashMap<String, Tag> rssTags = new HashMap<String, Tag>(
-				(int) (11 / load) + 1, load);
-		static {
-			rssTags.put("rss", Tag.RSS_TOPLEVEL);
-			rssTags.put("channel", Tag.RSS_CHANNEL);
-			rssTags.put("item", Tag.RSS_ITEM);
-			rssTags.put("title", Tag.RSS_TITLE);
-			rssTags.put("link", Tag.RSS_LINK);
-			rssTags.put("description", Tag.RSS_DESCRIPTION);
-			rssTags.put("enclosure", Tag.RSS_ENCLOSURE);
-			rssTags.put("pubDate", Tag.RSS_PUB_DATE);
-			rssTags.put("guid", Tag.RSS_GUID);
-			rssTags.put("image", Tag.RSS_IMAGE);
-			rssTags.put("url", Tag.RSS_URL);
-		}
-		private final static HashMap<String, Tag> itunesTags = new HashMap<String, Tag>(
-				(int) (2 / load) + 1, load);
-		static {
-			itunesTags.put("image", Tag.ITUNES_IMAGE);
-			itunesTags.put("summary", Tag.ITUNES_SUMMARY);
-		}
-		private final static HashMap<String, AtomRel> atomRels = new HashMap<String, AtomRel>(
-				(int) (4 / load) + 1, load);
-		static {
-			atomRels.put("enclosure", AtomRel.ENCLOSURE);
-			atomRels.put("alternate", AtomRel.ALTERNATE);
-			atomRels.put("self", AtomRel.SELF);
-			atomRels.put("payment", AtomRel.PAYMENT);
-		}
-		private final static HashMap<String, Mime> mimes = new HashMap<String, Mime>(
-				(int) (2 / load) + 1, load);
-		static {
-			mimes.put("text/html", Mime.HTML);
-			mimes.put("text/xhtml", Mime.XHTML);
+			return StringLookup.lookupMime(mimeString);
 		}
 	}
 }
