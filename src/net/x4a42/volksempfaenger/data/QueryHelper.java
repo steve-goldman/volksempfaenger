@@ -91,7 +91,7 @@ public class QueryHelper extends ContentProviderHelper {
 
 	private DownloadManager dlManager;
 	private SQLiteQueryBuilder podcastQueryBuilder;
-	private SQLiteQueryBuilder episodeQueryBuilder;
+	private ThreadLocal<SQLiteQueryBuilder> episodeQueryBuilder;
 	private SQLiteQueryBuilder enclosureQueryBuilder;
 
 	protected QueryHelper(DatabaseHelper dbHelper, DownloadManager dlManager) {
@@ -103,8 +103,16 @@ public class QueryHelper extends ContentProviderHelper {
 		podcastQueryBuilder.setTables(PODCAST_TABLE);
 		podcastQueryBuilder.setProjectionMap(podcastColumnMap);
 
-		episodeQueryBuilder = new SQLiteQueryBuilder();
-		episodeQueryBuilder.setProjectionMap(episodeColumnMap);
+		episodeQueryBuilder = new ThreadLocal<SQLiteQueryBuilder>() {
+
+			@Override
+			protected SQLiteQueryBuilder initialValue() {
+				SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+				builder.setProjectionMap(episodeColumnMap);
+				return builder;
+			}
+
+		};
 
 		enclosureQueryBuilder = new SQLiteQueryBuilder();
 		enclosureQueryBuilder.setTables(ENCLOSURE_TABLE);
@@ -169,29 +177,22 @@ public class QueryHelper extends ContentProviderHelper {
 
 		Cursor cursor;
 
-		// TODO: do this without synchronization
-		synchronized (episodeQueryBuilder) {
-			if (joinPodcast && joinEnclosure) {
-				episodeQueryBuilder.setTables(DatabaseHelper.TABLE_EPISODE
-						+ " " + EPISODE_JOIN_PODCAST + " "
-						+ EPISODE_JOIN_ENCLOSURE);
-			} else if (joinPodcast) {
-				episodeQueryBuilder.setTables(DatabaseHelper.TABLE_EPISODE
-						+ " " + EPISODE_JOIN_PODCAST);
-			} else if (joinEnclosure) {
-				episodeQueryBuilder.setTables(DatabaseHelper.TABLE_EPISODE
-						+ " " + EPISODE_JOIN_ENCLOSURE);
-			} else {
-				episodeQueryBuilder.setTables(DatabaseHelper.TABLE_EPISODE);
-			}
-
-			episodeQueryBuilder.buildQuery(projection, selection, null, null,
-					sortOrder, null);
-
-			cursor = episodeQueryBuilder
-					.query(getReadableDatabase(), projection, selection,
-							selectionArgs, null, null, sortOrder);
+		SQLiteQueryBuilder builder = episodeQueryBuilder.get();
+		if (joinPodcast && joinEnclosure) {
+			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
+					+ EPISODE_JOIN_PODCAST + " " + EPISODE_JOIN_ENCLOSURE);
+		} else if (joinPodcast) {
+			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
+					+ EPISODE_JOIN_PODCAST);
+		} else if (joinEnclosure) {
+			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
+					+ EPISODE_JOIN_ENCLOSURE);
+		} else {
+			builder.setTables(DatabaseHelper.TABLE_EPISODE);
 		}
+
+		cursor = builder.query(getReadableDatabase(), projection, selection,
+				selectionArgs, null, null, sortOrder);
 
 		if (joinDownload) {
 			Cursor dbCursor = cursor;
