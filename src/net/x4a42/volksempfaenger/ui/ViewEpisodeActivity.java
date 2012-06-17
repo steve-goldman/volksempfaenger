@@ -40,7 +40,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.text.Spannable;
@@ -57,7 +56,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewEpisodeActivity extends FragmentActivity implements
+public class ViewEpisodeActivity extends Activity implements
 		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback,
 		ServiceConnection, EventListener {
 

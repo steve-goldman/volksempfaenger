@@ -1,24 +1,21 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.SortByStatusCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.app.DownloadManager;
+import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import net.x4a42.volksempfaenger.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
@@ -43,20 +40,6 @@ public class DownloadListFragment extends ListFragment implements
 		setListShown(false);
 		setEmptyText(getText(R.string.message_no_downloads));
 		getLoaderManager().initLoader(0, null, this);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = super.onCreateView(inflater, container, savedInstanceState);
-
-		// TODO find a better way to do this
-		// ID is taken from the support library source:
-		// static final int INTERNAL_EMPTY_ID = 0x00ff0001;
-		((TextView) view.findViewById(0x00ff0001)).setTextSize(
-				TypedValue.COMPLEX_UNIT_SP, 22);
-
-		return view;
 	}
 
 	private class Adapter extends SimpleCursorAdapter {

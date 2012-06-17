@@ -15,6 +15,7 @@ import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
 import android.content.Context;
@@ -25,7 +26,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -39,7 +39,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class ViewSubscriptionActivity extends FragmentActivity implements
+public class ViewSubscriptionActivity extends Activity implements
 		OnUpPressedCallback {
 
 	/* Static Variables */
