@@ -289,6 +289,8 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.action_episodes, menu);
 			return true;
 		}
 
@@ -299,8 +301,26 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			// TODO Auto-generated method stub
-			return false;
+
+			switch (item.getItemId()) {
+			case R.id.item_download:
+				// TODO
+				mode.finish();
+				return true;
+
+			case R.id.item_mark_listened:
+				// TODO
+				mode.finish();
+				return true;
+
+			case R.id.item_delete:
+				// TODO
+				mode.finish();
+				return true;
+
+			default:
+				return false;
+			}
 		}
 
 		@Override
