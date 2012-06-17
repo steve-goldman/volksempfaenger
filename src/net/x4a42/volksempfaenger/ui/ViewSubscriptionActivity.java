@@ -43,7 +43,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnUpPressedCallback {
 
 	/* Static Variables */
-	private static int[] rowColorMap;
+	private static int[] ROW_COLOR_MAP;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
@@ -64,6 +64,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
 
 	/* Activity Lifecycle */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,7 +114,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		podcastCursor.moveToFirst();
 		setTitle(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.TITLE)));
-		updatePodcastDescription(podcastCursor.getString(podcastCursor
+		mPodcastDescriptionView.setText(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
 
 		mPodcastLogoView.setPodcastId(mId);
@@ -193,7 +194,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 					.getColumnIndex(Episode.STATUS));
 			TextView episodeTitle = (TextView) row
 					.findViewById(R.id.episode_title);
-			episodeTitle.setTextColor(rowColorMap[episodeState]);
+			episodeTitle.setTextColor(ROW_COLOR_MAP[episodeState]);
 
 			Date date = new Date(cursor.getLong(cursor
 					.getColumnIndex(Episode.DATE)) * 1000);
@@ -202,10 +203,6 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 					.findViewById(R.id.episode_date);
 			episodeDate.setText(DateFormat.getDateInstance().format(date));
 		}
-	}
-
-	private void updatePodcastDescription(String description) {
-		mPodcastDescriptionView.setText(description);
 	}
 
 	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
@@ -232,6 +229,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	}
 
 	/* Menu */
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -284,6 +282,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	}
 
 	/* Action mode */
+
 	private ActionMode mActionMode;
 	private ArrayList<Long> mActionModeSelected = new ArrayList<Long>();
 	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -316,10 +315,24 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 
 	};
 
+	/**
+	 * Checks if an item is selected in action mode.
+	 * 
+	 * @param id
+	 *            the id of the item
+	 * @return true if the item is selected in action mode
+	 */
 	private boolean actionModeIsSelected(long id) {
 		return mActionModeSelected.contains(id);
 	}
 
+	/**
+	 * Toggles the selection state of an item
+	 * 
+	 * @param id
+	 *            id of the item
+	 * @return new selection state of the item
+	 */
 	private boolean actionModeToggle(long id) {
 		boolean selected = actionModeIsSelected(id);
 		if (selected) {
@@ -330,6 +343,16 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		return !selected;
 	}
 
+	/**
+	 * Toggles the selection state of an item and sets the views activation
+	 * state accordingly.
+	 * 
+	 * @param id
+	 *            id of the item
+	 * @param view
+	 *            View that represents the item
+	 * @return new selection state of the item
+	 */
 	private boolean actionModeToggle(long id, View view) {
 		boolean selected = actionModeToggle(id);
 		view.setActivated(selected);
@@ -337,7 +360,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	}
 
 	/* Item Click */
-	private OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
+
+	private final OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -353,7 +377,8 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	};
 
 	/* Item Long Click */
-	private OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
+
+	private final OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
@@ -368,21 +393,26 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	};
 
 	/* Misc */
+
+	/**
+	 * This method initializes the attribute ROW_COLOR_MAP. We can't initialize
+	 * this statically as we need access to the resources.
+	 */
 	private void initRowColorMap() {
-		if (rowColorMap != null) {
+		if (ROW_COLOR_MAP != null) {
 			return;
 		}
 		Resources res = getResources();
-		rowColorMap = new int[5];
-		rowColorMap[Constants.EPISODE_STATE_NEW] = res
+		ROW_COLOR_MAP = new int[5];
+		ROW_COLOR_MAP[Constants.EPISODE_STATE_NEW] = res
 				.getColor(R.color.episode_title_new);
-		rowColorMap[Constants.EPISODE_STATE_DOWNLOADING] = res
+		ROW_COLOR_MAP[Constants.EPISODE_STATE_DOWNLOADING] = res
 				.getColor(R.color.episode_title_downloading);
-		rowColorMap[Constants.EPISODE_STATE_READY] = res
+		ROW_COLOR_MAP[Constants.EPISODE_STATE_READY] = res
 				.getColor(R.color.episode_title_ready);
-		rowColorMap[Constants.EPISODE_STATE_LISTENING] = res
+		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENING] = res
 				.getColor(R.color.episode_title_listening);
-		rowColorMap[Constants.EPISODE_STATE_LISTENED] = res
+		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENED] = res
 				.getColor(R.color.episode_title_listened);
 	}
 
