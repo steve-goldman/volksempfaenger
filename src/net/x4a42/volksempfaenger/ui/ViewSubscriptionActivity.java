@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import net.x4a42.volksempfaenger.Log;
@@ -26,19 +27,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
 		OnItemClickListener, OnUpPressedCallback,
-		LoaderManager.LoaderCallbacks<Cursor> {
+		LoaderManager.LoaderCallbacks<Cursor>, OnItemLongClickListener {
 
 	private static int[] rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
@@ -55,6 +58,58 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 	private Adapter adapter;
 	private boolean isUpdating;
 	private UpdateServiceStatus.UiReceiver updateReceiver;
+
+	private ActionMode mActionMode;
+	private ArrayList<Long> mActionModeSelected = new ArrayList<Long>();
+	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			mActionMode = null;
+			mActionModeSelected.clear();
+			int childCount = episodeList.getChildCount();
+			for (int i = 0; i < childCount; ++i) {
+				episodeList.getChildAt(i).setActivated(false);
+			}
+		}
+
+	};
+
+	private boolean actionModeIsSelected(long id) {
+		return mActionModeSelected.contains(id);
+	}
+
+	private boolean actionModeToggle(long id) {
+		boolean selected = actionModeIsSelected(id);
+		if (selected) {
+			mActionModeSelected.remove(id);
+		} else {
+			mActionModeSelected.add(id);
+		}
+		return !selected;
+	}
+
+	private boolean actionModeToggle(long id, View view) {
+		boolean selected = actionModeToggle(id);
+		view.setActivated(selected);
+		return selected;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +143,7 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		podcastDescription = (TextView) findViewById(R.id.podcast_description);
 		episodeList = (ListView) findViewById(R.id.episode_list);
 		episodeList.setOnItemClickListener(this);
+		episodeList.setOnItemLongClickListener(this);
 
 		// Update podcast information
 		Cursor podcastCursor = getContentResolver().query(
@@ -183,10 +239,28 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		}
 	}
 
-	public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
-		Intent intent = new Intent(this, ViewEpisodeActivity.class);
-		intent.putExtra("id", id);
-		startActivity(intent);
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		if (mActionMode == null) {
+			Intent intent = new Intent(this, ViewEpisodeActivity.class);
+			intent.putExtra("id", id);
+			startActivity(intent);
+		} else {
+			actionModeToggle(id, view);
+		}
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		if (mActionMode != null) {
+			return false;
+		}
+
+		mActionMode = startActionMode(mActionModeCallback);
+		actionModeToggle(id, view);
+		return true;
 	}
 
 	private void initRowColorMap() {
@@ -219,6 +293,13 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		@Override
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
+
+			if (actionModeIsSelected(cursor.getLong(cursor
+					.getColumnIndex(Episode._ID)))) {
+				row.setActivated(true);
+			} else {
+				row.setActivated(false);
+			}
 
 			int episodeState = cursor.getInt(cursor
 					.getColumnIndex(Episode.STATUS));
