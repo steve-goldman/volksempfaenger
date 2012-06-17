@@ -15,7 +15,7 @@ import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.ActionBar;
-import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -40,97 +40,50 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class ViewSubscriptionActivity extends FragmentActivity implements
-		OnItemClickListener, OnUpPressedCallback,
-		LoaderManager.LoaderCallbacks<Cursor>, OnItemLongClickListener {
+		OnUpPressedCallback {
 
+	/* Static Variables */
 	private static int[] rowColorMap;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
 			+ Episode._ID + " DESC";
 
-	private long id;
-	private Uri uri;
+	/* Subscription Attributes */
+	private long mId;
+	private Uri mUri;
 
-	private PodcastLogoView podcastLogo;
-	private TextView podcastDescription;
-	private ListView episodeList;
-	private Adapter adapter;
-	private boolean isUpdating;
-	private UpdateServiceStatus.UiReceiver updateReceiver;
+	/* View Attributes */
+	private PodcastLogoView mPodcastLogoView;
+	private TextView mPodcastDescriptionView;
+	private ListView mEpisodeListView;
 
-	private ActionMode mActionMode;
-	private ArrayList<Long> mActionModeSelected = new ArrayList<Long>();
-	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+	/* Other Attributes */
+	private Adapter mAdapter;
+	private boolean mIsUpdating;
+	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
 
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			return true;
-		}
-
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false;
-		}
-
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			mActionMode = null;
-			mActionModeSelected.clear();
-			int childCount = episodeList.getChildCount();
-			for (int i = 0; i < childCount; ++i) {
-				episodeList.getChildAt(i).setActivated(false);
-			}
-		}
-
-	};
-
-	private boolean actionModeIsSelected(long id) {
-		return mActionModeSelected.contains(id);
-	}
-
-	private boolean actionModeToggle(long id) {
-		boolean selected = actionModeIsSelected(id);
-		if (selected) {
-			mActionModeSelected.remove(id);
-		} else {
-			mActionModeSelected.add(id);
-		}
-		return !selected;
-	}
-
-	private boolean actionModeToggle(long id, View view) {
-		boolean selected = actionModeToggle(id);
-		view.setActivated(selected);
-		return selected;
-	}
-
+	/* Activity Lifecycle */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
-		uri = intent.getData();
+		mUri = intent.getData();
 
-		if (uri == null) {
-			id = intent.getLongExtra("id", -1);
-			if (id == -1) {
+		if (mUri == null) {
+			mId = intent.getLongExtra("id", -1);
+			if (mId == -1) {
 				finish();
 				return;
 			}
-			uri = ContentUris.withAppendedId(
-					VolksempfaengerContentProvider.PODCAST_URI, id);
+			mUri = ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.PODCAST_URI, mId);
 		} else {
-			id = ContentUris.parseId(uri);
+			mId = ContentUris.parseId(mUri);
 		}
 
-		updateReceiver = new UpdateReceiver();
+		mUpdateReceiver = new UpdateReceiver();
 
 		initRowColorMap();
 
@@ -139,18 +92,18 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		podcastLogo = (PodcastLogoView) findViewById(R.id.podcast_logo);
-		podcastDescription = (TextView) findViewById(R.id.podcast_description);
-		episodeList = (ListView) findViewById(R.id.episode_list);
-		episodeList.setOnItemClickListener(this);
-		episodeList.setOnItemLongClickListener(this);
+		mPodcastLogoView = (PodcastLogoView) findViewById(R.id.podcast_logo);
+		mPodcastDescriptionView = (TextView) findViewById(R.id.podcast_description);
+		mEpisodeListView = (ListView) findViewById(R.id.episode_list);
+		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
+		mEpisodeListView.setOnItemLongClickListener(mOnItemLongClickListener);
 
 		// Update podcast information
 		Cursor podcastCursor = getContentResolver().query(
 				ContentUris.withAppendedId(
-						VolksempfaengerContentProvider.PODCAST_URI, id),
+						VolksempfaengerContentProvider.PODCAST_URI, mId),
 				new String[] {/* TODO */}, PODCAST_WHERE,
-				new String[] { String.valueOf(id) }, null);
+				new String[] { String.valueOf(mId) }, null);
 
 		if (podcastCursor.getCount() == 0) {
 			// ID does not exist
@@ -163,10 +116,10 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		updatePodcastDescription(podcastCursor.getString(podcastCursor
 				.getColumnIndex(Podcast.DESCRIPTION)));
 
-		podcastLogo.setPodcastId(id);
-		adapter = new Adapter();
-		episodeList.setAdapter(adapter);
-		getLoaderManager().initLoader(0, null, this);
+		mPodcastLogoView.setPodcastId(mId);
+		mAdapter = new Adapter();
+		mEpisodeListView.setAdapter(mAdapter);
+		getLoaderManager().initLoader(0, null, mLoaderCallbacks);
 	}
 
 	@Override
@@ -174,114 +127,49 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		super.onResume();
 		ExternalStorageHelper.assertExternalStorageReadable(this);
 
-		UpdateServiceStatus.registerReceiver(updateReceiver);
+		UpdateServiceStatus.registerReceiver(mUpdateReceiver);
+	}
+
+	@Override
+	public void onUpPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.putExtra("tag", MainActivity.subscriptionsTag);
+		NavUtils.navigateUpTo(this, intent);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 
-		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+		UpdateServiceStatus.unregisterReceiver(mUpdateReceiver);
 	}
 
-	private void updatePodcastDescription(String description) {
-		podcastDescription.setText(description);
-	}
+	/* Content */
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.view_subscription, menu);
-		ActivityHelper.addGlobalMenu(this, menu);
-		return true;
-	}
+	private LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderCallbacks<Cursor>() {
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		boolean result = super.onPrepareOptionsMenu(menu);
-
-		MenuItem update = menu.findItem(R.id.item_update);
-		if (isUpdating) {
-			update.setActionView(R.layout.actionbar_updating);
-		} else {
-			update.setActionView(null);
+		@Override
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+			return new CursorLoader(ViewSubscriptionActivity.this,
+					VolksempfaengerContentProvider.EPISODE_URI, new String[] {
+							Episode._ID, Episode.TITLE, Episode.DATE,
+							Episode.STATUS }, EPISODE_WHERE,
+					new String[] { String.valueOf(mId) }, EPISODE_SORT);
 		}
 
-		return result;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
-		switch (item.getItemId()) {
-
-		case R.id.item_update:
-			intent = new Intent(this, UpdateService.class);
-			intent.setData(uri);
-			startService(intent);
-			return true;
-
-		case R.id.item_edit:
-			intent = new Intent(this, EditSubscriptionActivity.class);
-			intent.putExtra("id", id);
-			startActivity(intent);
-			return true;
-
-		case R.id.item_delete:
-			intent = new Intent(this, DeleteSubscriptionActivity.class);
-			intent.putExtra("id", id);
-			startActivity(intent);
-			return true;
-
-		default:
-			return ActivityHelper.handleGlobalMenu(this, item);
-
-		}
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		if (mActionMode == null) {
-			Intent intent = new Intent(this, ViewEpisodeActivity.class);
-			intent.putExtra("id", id);
-			startActivity(intent);
-		} else {
-			actionModeToggle(id, view);
-		}
-	}
-
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view,
-			int position, long id) {
-		if (mActionMode != null) {
-			return false;
+		@Override
+		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+			mAdapter.swapCursor(new EpisodeCursor(data));
 		}
 
-		mActionMode = startActionMode(mActionModeCallback);
-		actionModeToggle(id, view);
-		return true;
-	}
-
-	private void initRowColorMap() {
-		if (rowColorMap != null) {
-			return;
+		@Override
+		public void onLoaderReset(Loader<Cursor> loader) {
+			mAdapter.swapCursor(null);
 		}
-		Resources res = getResources();
-		rowColorMap = new int[5];
-		rowColorMap[Constants.EPISODE_STATE_NEW] = res
-				.getColor(R.color.episode_title_new);
-		rowColorMap[Constants.EPISODE_STATE_DOWNLOADING] = res
-				.getColor(R.color.episode_title_downloading);
-		rowColorMap[Constants.EPISODE_STATE_READY] = res
-				.getColor(R.color.episode_title_ready);
-		rowColorMap[Constants.EPISODE_STATE_LISTENING] = res
-				.getColor(R.color.episode_title_listening);
-		rowColorMap[Constants.EPISODE_STATE_LISTENED] = res
-				.getColor(R.color.episode_title_listened);
-	}
 
-	public class Adapter extends SimpleCursorAdapter {
+	};
+
+	private class Adapter extends SimpleCursorAdapter {
 
 		public Adapter() {
 			super(ViewSubscriptionActivity.this,
@@ -316,6 +204,10 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		}
 	}
 
+	private void updatePodcastDescription(String description) {
+		mPodcastDescriptionView.setText(description);
+	}
+
 	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
 
 		public UpdateReceiver() {
@@ -326,44 +218,172 @@ public class ViewSubscriptionActivity extends FragmentActivity implements
 		public void receiveUi(Status status) {
 			Log.d(this, status.toString());
 			if (status.isUpdating()) {
-				if (!isUpdating && uri.equals(status.getUri())) {
-					isUpdating = true;
+				if (!mIsUpdating && mUri.equals(status.getUri())) {
+					mIsUpdating = true;
 					invalidateOptionsMenu();
 				}
 			} else {
-				if (isUpdating && uri.equals(status.getUri())) {
-					isUpdating = false;
+				if (mIsUpdating && mUri.equals(status.getUri())) {
+					mIsUpdating = false;
 					invalidateOptionsMenu();
 				}
 			}
 		}
 	}
 
+	/* Menu */
 	@Override
-	public void onUpPressed() {
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.putExtra("tag", MainActivity.subscriptionsTag);
-		NavUtils.navigateUpTo(this, intent);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.view_subscription, menu);
+		ActivityHelper.addGlobalMenu(this, menu);
+		return true;
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return new CursorLoader(this,
-				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
-						Episode._ID, Episode.TITLE, Episode.DATE,
-						Episode.STATUS }, EPISODE_WHERE,
-				new String[] { String.valueOf(id) }, EPISODE_SORT);
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean result = super.onPrepareOptionsMenu(menu);
+
+		MenuItem update = menu.findItem(R.id.item_update);
+		if (mIsUpdating) {
+			update.setActionView(R.layout.actionbar_updating);
+		} else {
+			update.setActionView(null);
+		}
+
+		return result;
 	}
 
 	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		adapter.swapCursor(new EpisodeCursor(data));
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+
+		case R.id.item_update:
+			intent = new Intent(this, UpdateService.class);
+			intent.setData(mUri);
+			startService(intent);
+			return true;
+
+		case R.id.item_edit:
+			intent = new Intent(this, EditSubscriptionActivity.class);
+			intent.putExtra("id", mId);
+			startActivity(intent);
+			return true;
+
+		case R.id.item_delete:
+			intent = new Intent(this, DeleteSubscriptionActivity.class);
+			intent.putExtra("id", mId);
+			startActivity(intent);
+			return true;
+
+		default:
+			return ActivityHelper.handleGlobalMenu(this, item);
+
+		}
 	}
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.swapCursor(null);
+	/* Action mode */
+	private ActionMode mActionMode;
+	private ArrayList<Long> mActionModeSelected = new ArrayList<Long>();
+	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			mActionMode = null;
+			mActionModeSelected.clear();
+			int childCount = mEpisodeListView.getChildCount();
+			for (int i = 0; i < childCount; ++i) {
+				mEpisodeListView.getChildAt(i).setActivated(false);
+			}
+		}
+
+	};
+
+	private boolean actionModeIsSelected(long id) {
+		return mActionModeSelected.contains(id);
+	}
+
+	private boolean actionModeToggle(long id) {
+		boolean selected = actionModeIsSelected(id);
+		if (selected) {
+			mActionModeSelected.remove(id);
+		} else {
+			mActionModeSelected.add(id);
+		}
+		return !selected;
+	}
+
+	private boolean actionModeToggle(long id, View view) {
+		boolean selected = actionModeToggle(id);
+		view.setActivated(selected);
+		return selected;
+	}
+
+	/* Item Click */
+	private OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			if (mActionMode == null) {
+				Intent intent = new Intent(ViewSubscriptionActivity.this,
+						ViewEpisodeActivity.class);
+				intent.putExtra("id", id);
+				startActivity(intent);
+			} else {
+				actionModeToggle(id, view);
+			}
+		}
+	};
+
+	/* Item Long Click */
+	private OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
+			if (mActionMode != null) {
+				return false;
+			}
+
+			mActionMode = startActionMode(mActionModeCallback);
+			actionModeToggle(id, view);
+			return true;
+		}
+	};
+
+	/* Misc */
+	private void initRowColorMap() {
+		if (rowColorMap != null) {
+			return;
+		}
+		Resources res = getResources();
+		rowColorMap = new int[5];
+		rowColorMap[Constants.EPISODE_STATE_NEW] = res
+				.getColor(R.color.episode_title_new);
+		rowColorMap[Constants.EPISODE_STATE_DOWNLOADING] = res
+				.getColor(R.color.episode_title_downloading);
+		rowColorMap[Constants.EPISODE_STATE_READY] = res
+				.getColor(R.color.episode_title_ready);
+		rowColorMap[Constants.EPISODE_STATE_LISTENING] = res
+				.getColor(R.color.episode_title_listening);
+		rowColorMap[Constants.EPISODE_STATE_LISTENED] = res
+				.getColor(R.color.episode_title_listened);
 	}
 
 }
