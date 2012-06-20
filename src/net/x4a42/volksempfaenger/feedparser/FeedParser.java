@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;
 import net.x4a42.volksempfaenger.feedparser.Enums.Mime;
 import net.x4a42.volksempfaenger.feedparser.Enums.Namespace;
@@ -308,10 +309,10 @@ public class FeedParser {
 			case ATOM_TITLE:
 				if (parents.peek() == Tag.ATOM_FEED) {
 					// feed title
-					feed.title = buffer.toString().trim();
+					feed.title = Utils.trimmedString(buffer);
 				} else if (parents.peek() == Tag.ATOM_ENTRY) {
 					// entry title
-					feedItem.title = buffer.toString().trim();
+					feedItem.title = Utils.trimmedString(buffer);
 				}
 				break;
 			case ATOM_CONTENT:
@@ -319,7 +320,7 @@ public class FeedParser {
 					xhtmlMode = false;
 				}
 				if (parents.peek() == Tag.ATOM_ENTRY) {
-					feedItem.description = buffer.toString().trim();
+					feedItem.description = Utils.trimmedString(buffer);
 					currentItemHasITunesSummaryAlternative = true;
 				}
 				break;
@@ -352,7 +353,7 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_SUBTITLE:
-				feed.description = buffer.toString().trim();
+				feed.description = Utils.trimmedString(buffer);
 				break;
 			case ATOM_ENTRY:
 				if (feedItem.itemId != null) {
@@ -362,12 +363,12 @@ public class FeedParser {
 				break;
 			case ATOM_ID:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
-					feedItem.itemId = buffer.toString().trim();
+					feedItem.itemId = Utils.trimmedString(buffer);
 				}
 				break;
 			case ATOM_ICON:
 				if (parents.peek() == Tag.ATOM_FEED && !hasITunesImage) {
-					feed.image = buffer.toString().trim();
+					feed.image = Utils.trimmedString(buffer);
 				}
 				break;
 			}
@@ -378,11 +379,11 @@ public class FeedParser {
 			case RSS_TITLE:
 				switch (parents.peek()) {
 				case RSS_CHANNEL:
-					feed.title = buffer.toString().trim();
+					feed.title = Utils.trimmedString(buffer);
 					break;
 
 				case RSS_ITEM:
-					feedItem.title = buffer.toString().trim();
+					feedItem.title = Utils.trimmedString(buffer);
 					break;
 				}
 				break;
@@ -399,10 +400,10 @@ public class FeedParser {
 			case RSS_LINK:
 				switch (parents.peek()) {
 				case RSS_ITEM:
-					feedItem.url = buffer.toString().trim();
+					feedItem.url = Utils.trimmedString(buffer);
 					break;
 				case RSS_CHANNEL:
-					feed.website = buffer.toString().trim();
+					feed.website = Utils.trimmedString(buffer);
 					break;
 				}
 				break;
@@ -410,11 +411,11 @@ public class FeedParser {
 				if (!currentRssItemHasHtml) {
 					switch (parents.peek()) {
 					case RSS_ITEM:
-						feedItem.description = buffer.toString().trim();
+						feedItem.description = Utils.trimmedString(buffer);
 						currentItemHasITunesSummaryAlternative = true;
 						break;
 					case RSS_CHANNEL:
-						feed.description = buffer.toString().trim();
+						feed.description = Utils.trimmedString(buffer);
 						break;
 					}
 				}
@@ -423,11 +424,11 @@ public class FeedParser {
 				currentRssItemHasHtml = true;
 				switch (parents.peek()) {
 				case RSS_ITEM:
-					feedItem.description = buffer.toString().trim();
+					feedItem.description = Utils.trimmedString(buffer);
 					currentItemHasITunesSummaryAlternative = true;
 					break;
 				case RSS_CHANNEL:
-					feed.description = buffer.toString().trim();
+					feed.description = Utils.trimmedString(buffer);
 					break;
 				}
 				break;
@@ -440,14 +441,14 @@ public class FeedParser {
 				break;
 			case RSS_GUID:
 				if (parents.peek() == Tag.RSS_ITEM) {
-					feedItem.itemId = buffer.toString().trim();
+					feedItem.itemId = Utils.trimmedString(buffer);
 				}
 				break;
 			case RSS_URL:
 				if (parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
 					Tag copy = parents.pop();
 					if (parents.peek() == Tag.RSS_CHANNEL) {
-						feed.image = buffer.toString().trim();
+						feed.image = Utils.trimmedString(buffer);
 					}
 					parents.push(copy);
 				}
@@ -465,7 +466,7 @@ public class FeedParser {
 			if (tag == Tag.ITUNES_SUMMARY
 					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)
 					&& !currentItemHasITunesSummaryAlternative) {
-				feedItem.description = buffer.toString().trim();
+				feedItem.description = Utils.trimmedString(buffer);
 			}
 		}
 
