@@ -212,4 +212,20 @@ public class Utils {
 				+ format.format(seconds2);
 	}
 
+	public static String trimmedString(StringBuilder stringBuilder) {
+		final int length = stringBuilder.length();
+		int start, end;
+		for (start = 0; start < length; start++) {
+			if (!Character.isWhitespace(stringBuilder.charAt(start))) {
+				break;
+			}
+		}
+		for (end = length - 1; end >= start; end--) {
+			if (!Character.isWhitespace(stringBuilder.charAt(end))) {
+				break;
+			}
+		}
+		return stringBuilder.substring(start, end);
+	}
+
 }
