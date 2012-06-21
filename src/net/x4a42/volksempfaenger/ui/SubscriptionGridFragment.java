@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Constants;
@@ -33,6 +34,7 @@ import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -308,13 +310,21 @@ public class SubscriptionGridFragment extends Fragment implements
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO import now!
+						int length = 0;
+						for (; length < items.size(); length++)
+							;
+						SubscriptionTree checkedSubscriptions[] = new SubscriptionTree[length];
+						int insertPosition = 0;
 						for (int i = 0; i < items.size(); i++) {
 							if (checked[i]) {
 								Log.v(this, itemTitles[i]);
 								Log.v(this, items.get(i).getUrl());
+								checkedSubscriptions[insertPosition] = items
+										.get(i);
+								insertPosition++;
 							}
 						}
+						new ImportTask().execute(checkedSubscriptions);
 					}
 				});
 		ab.show();
@@ -434,6 +444,37 @@ public class SubscriptionGridFragment extends Fragment implements
 					getActivity().invalidateOptionsMenu();
 				}
 			}
+		}
+	}
+
+	private class ImportTask extends AsyncTask<SubscriptionTree, Void, Void> {
+		LinkedList<String> failed = new LinkedList<String>();
+
+		@Override
+		protected Void doInBackground(SubscriptionTree... subscriptions) {
+			for (SubscriptionTree subscription : subscriptions) {
+				try {
+					AddSubscriptionActivity.addFeed(getActivity(),
+							subscription.getUrl());
+				} catch (Exception e) {
+					failed.add(subscription.getTitle());
+				}
+				/*
+				 * catch (DuplicateException e) { // TODO Auto-generated catch
+				 * block e.printStackTrace(); } catch (InsertException e) { //
+				 * TODO Auto-generated catch block e.printStackTrace(); } catch
+				 * (NetException e) { // TODO Auto-generated catch block
+				 * e.printStackTrace(); } catch (FeedParserException e) { //
+				 * TODO Auto-generated catch block e.printStackTrace(); }
+				 */
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void arg0) {
+			// TODO
+			// show failed subscriptions
 		}
 	}
 
