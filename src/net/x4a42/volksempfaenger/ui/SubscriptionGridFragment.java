@@ -13,6 +13,7 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
+import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
@@ -454,8 +455,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		protected Void doInBackground(SubscriptionTree... subscriptions) {
 			for (SubscriptionTree subscription : subscriptions) {
 				try {
-					AddSubscriptionActivity.addFeed(getActivity(),
-							subscription.getUrl());
+					PodcastHelper.addFeed(getActivity(), subscription.getUrl());
 				} catch (Exception e) {
 					failed.add(subscription.getTitle());
 				}
