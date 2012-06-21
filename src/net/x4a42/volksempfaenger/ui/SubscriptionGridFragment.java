@@ -262,14 +262,13 @@ public class SubscriptionGridFragment extends Fragment implements
 			fstream = new FileInputStream(path);
 			InputStreamReader in = new InputStreamReader(fstream);
 			tree = OpmlParser.parse(new BufferedReader(in));
-			// TODO remove debug output
 			for (SubscriptionTree node : tree) {
 				if (node.isFolder()) {
-					Log.d(this,
+					Log.v(this,
 							String.valueOf(node.getDepth()) + " "
 									+ node.getTitle());
 				} else {
-					Log.d(this,
+					Log.v(this,
 							String.valueOf(node.getDepth()) + " "
 									+ node.getTitle() + " " + node.getUrl());
 				}
@@ -286,19 +285,21 @@ public class SubscriptionGridFragment extends Fragment implements
 				items.add(node);
 			}
 		}
-		String itemTitles[] = new String[items.size()];
+		final String itemTitles[] = new String[items.size()];
 		for (int i = 0; i < items.size(); i++) {
 			itemTitles[i] = items.get(i).getTitle();
 		}
 
 		AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
 		ab.setTitle(getString(R.string.dialog_choose_import_feeds));
+
+		final boolean checked[] = new boolean[items.size()];
 		OnMultiChoiceClickListener listener = new OnMultiChoiceClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which,
 					boolean isChecked) {
-				// TODO
+				checked[which] = isChecked;
 			}
 		};
 		ab.setMultiChoiceItems(itemTitles, null, listener);
@@ -308,6 +309,12 @@ public class SubscriptionGridFragment extends Fragment implements
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO import now!
+						for (int i = 0; i < items.size(); i++) {
+							if (checked[i]) {
+								Log.v(this, itemTitles[i]);
+								Log.v(this, items.get(i).getUrl());
+							}
+						}
 					}
 				});
 		ab.show();
