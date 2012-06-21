@@ -225,7 +225,7 @@ public class Utils {
 				break;
 			}
 		}
-		return stringBuilder.substring(start, end);
+		return stringBuilder.substring(start, end + 1);
 	}
 
 }
