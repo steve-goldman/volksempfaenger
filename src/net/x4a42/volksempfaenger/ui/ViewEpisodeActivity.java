@@ -62,8 +62,6 @@ public class ViewEpisodeActivity extends Activity implements
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
-	public static final String EXTRA_LAUNCHED_FROM_NOTIFICATION = "LAUNCHED_FROM_NOTIFICATION";
-
 	private Uri uri;
 	private long id;
 	private EpisodeCursor episodeCursor;
@@ -117,10 +115,6 @@ public class ViewEpisodeActivity extends Activity implements
 					VolksempfaengerContentProvider.EPISODE_URI, id);
 		} else {
 			id = ContentUris.parseId(uri);
-		}
-
-		if (intent.getBooleanExtra(EXTRA_LAUNCHED_FROM_NOTIFICATION, false)) {
-			// TODO insert back stack - somehow
 		}
 
 		LoaderManager lm = getLoaderManager();

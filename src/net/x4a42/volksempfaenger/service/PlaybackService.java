@@ -12,7 +12,9 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
+import net.x4a42.volksempfaenger.ui.MainActivity;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
+import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -28,6 +30,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.TaskStackBuilder;
 import android.view.KeyEvent;
 
 public class PlaybackService extends Service implements EventListener {
@@ -364,14 +367,29 @@ public class PlaybackService extends Service implements EventListener {
 	 * @return The newly created Notification.
 	 */
 	private Notification makeNotification() {
-		Notification notification;
-		Intent notificationIntent = new Intent(this, ViewEpisodeActivity.class);
-		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		notificationIntent.setData(uri);
-		notificationIntent.putExtra(
-				ViewEpisodeActivity.EXTRA_LAUNCHED_FROM_NOTIFICATION, true);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		// Build back stack as proposed in
+		// "Google I/O 2012 - Navigation in Android", see
+		// http://www.youtube.com/watch?v=XwGHJJYBs0Q
+		Intent intent;
+		TaskStackBuilder taskBuilder = TaskStackBuilder.from(this);
+
+		// MainActivity
+		intent = new Intent(this, MainActivity.class);
+		taskBuilder.addNextIntent(intent);
+
+		// ViewSubscriptionActivity
+		intent = new Intent(this, ViewSubscriptionActivity.class);
+		intent.setData(cursor.getPodcastUri());
+		taskBuilder.addNextIntent(intent);
+
+		// ViewEpisodeActivity
+		intent = new Intent(this, ViewEpisodeActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.setData(uri);
+		taskBuilder.addNextIntent(intent);
+
+		// Get podcast logo or use default icon
 		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
 				cursor.getPodcastId());
 		if (podcastLogo != null) {
@@ -383,14 +401,15 @@ public class PlaybackService extends Service implements EventListener {
 							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
 							false);
 		}
-		notification = new Notification.Builder(this)
+
+		// Build the notification and return it
+		return new Notification.Builder(this)
 				.setSmallIcon(R.drawable.notification)
 				.setLargeIcon(podcastLogo).setContentTitle(cursor.getTitle())
 				.setContentText(cursor.getPodcastTitle())
-				.setContentIntent(pendingIntent).setOngoing(true).setWhen(0)
-				.getNotification();
+				.setContentIntent(taskBuilder.getPendingIntent(0, 0))
+				.setOngoing(true).setWhen(0).getNotification();
 
-		return notification;
 	}
 
 }
