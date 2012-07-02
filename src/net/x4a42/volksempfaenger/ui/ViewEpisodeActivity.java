@@ -92,21 +92,13 @@ public class ViewEpisodeActivity extends Activity implements
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
-		Intent intent = new Intent(this, PlaybackService.class);
-		bindService(intent, this, Activity.BIND_AUTO_CREATE);
+		bindService(new Intent(this, PlaybackService.class), this,
+				Activity.BIND_AUTO_CREATE);
 
-		onNewIntent(getIntent());
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		setIntent(intent);
-
-		uri = intent.getData();
+		uri = getIntent().getData();
 
 		if (uri == null) {
-			id = intent.getLongExtra("id", -1);
+			id = getIntent().getLongExtra("id", -1);
 			if (id == -1) {
 				finish();
 				return;

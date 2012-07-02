@@ -86,9 +86,7 @@
             android:label="@string/title_settings"
             android:theme="@style/Theme.Settings" />
         <activity android:name=".ui.ViewSubscriptionActivity" />
-        <activity
-            android:name=".ui.ViewEpisodeActivity"
-            android:launchMode="singleTop" />
+        <activity android:name=".ui.ViewEpisodeActivity" />
 
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
