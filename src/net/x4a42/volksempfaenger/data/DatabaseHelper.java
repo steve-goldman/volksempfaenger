@@ -49,6 +49,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (!db.isReadOnly()) {
 			db.execSQL("PRAGMA foreign_keys=ON;");
 		}
+		try {
+			executeSqlFromAsset(db, "sql/open.sql");
+		} catch (IOException e) {
+			Log.wtf(this, "Error while execute post-open SQL", e);
+		}
 	}
 
 	@Override
