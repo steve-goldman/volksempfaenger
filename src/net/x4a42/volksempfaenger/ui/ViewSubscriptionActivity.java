@@ -6,6 +6,7 @@ import java.util.Date;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -18,6 +19,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -46,6 +48,7 @@ public class ViewSubscriptionActivity extends Activity implements
 	private static int[] ROW_COLOR_MAP;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
+	private static final String EPISODE_WHERE_ID_IN = Episode._ID + " IN (%s)";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
 			+ Episode._ID + " DESC";
 
@@ -309,7 +312,13 @@ public class ViewSubscriptionActivity extends Activity implements
 				return true;
 
 			case R.id.item_mark_listened:
-				// TODO
+				ContentValues values = new ContentValues();
+				values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
+				getContentResolver().update(
+						VolksempfaengerContentProvider.EPISODE_URI,
+						values,
+						String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(
+								mActionModeSelected.toArray(), ",")), null);
 				mode.finish();
 				return true;
 
