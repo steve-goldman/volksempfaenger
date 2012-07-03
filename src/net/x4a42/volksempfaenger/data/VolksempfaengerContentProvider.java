@@ -2,6 +2,7 @@ package net.x4a42.volksempfaenger.data;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -10,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.sax.StartElementListener;
 import net.x4a42.volksempfaenger.Log;
 
 public class VolksempfaengerContentProvider extends ContentProvider {
@@ -42,6 +44,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	private InsertHelper insertHelper;
 	private UpdateHelper updateHelper;
 	private DeleteHelper deleteHelper;
+	private SyncDownloadThread syncDownloadThread;
 
 	@Override
 	public boolean onCreate() {
@@ -52,7 +55,17 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		insertHelper = new InsertHelper(dbHelper);
 		updateHelper = new UpdateHelper(dbHelper);
 		deleteHelper = new DeleteHelper(dbHelper);
+
+		syncDownloadThread = new SyncDownloadThread(this);
+		syncDownloadThread.start();
+
 		return true;
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
+		syncDownloadThread.stop();
 	}
 
 	private static long parseId(Uri uri) {
