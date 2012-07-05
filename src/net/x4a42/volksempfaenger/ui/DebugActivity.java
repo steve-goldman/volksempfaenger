@@ -1,9 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
@@ -12,7 +10,6 @@ import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
-import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.UpdateService;
@@ -179,7 +176,7 @@ public class DebugActivity extends Activity implements OnClickListener {
 						Log.d(this, enc.mime);
 					}
 					if (enc.size != 0) {
-						Log.d(this, "Size: " + (new Long(enc.size)).toString());
+						Log.d(this, "Size: " + enc.size);
 					}
 				}
 			}
