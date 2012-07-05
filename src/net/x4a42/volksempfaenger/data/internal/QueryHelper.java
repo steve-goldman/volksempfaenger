@@ -1,10 +1,11 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data.internal;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
@@ -119,7 +120,7 @@ public class QueryHelper extends ContentProviderHelper {
 	private ThreadLocal<SQLiteQueryBuilder> episodeQueryBuilder;
 	private SQLiteQueryBuilder enclosureQueryBuilder;
 
-	protected QueryHelper(DatabaseHelper dbHelper) {
+	public QueryHelper(DatabaseHelper dbHelper) {
 		super(dbHelper);
 
 		podcastQueryBuilder = new SQLiteQueryBuilder();

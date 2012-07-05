@@ -1,5 +1,8 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data.internal;
 
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.Error;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.SQLException;
@@ -8,7 +11,7 @@ import android.net.Uri;
 
 public class InsertHelper extends ContentProviderHelper {
 
-	protected InsertHelper(DatabaseHelper dbHelper) {
+	public InsertHelper(DatabaseHelper dbHelper) {
 		super(dbHelper);
 	}
 

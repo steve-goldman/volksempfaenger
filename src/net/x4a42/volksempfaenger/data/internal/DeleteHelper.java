@@ -1,8 +1,10 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data.internal;
+
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 
 public class DeleteHelper extends ContentProviderHelper {
 
-	protected DeleteHelper(DatabaseHelper dbHelper) {
+	public DeleteHelper(DatabaseHelper dbHelper) {
 		super(dbHelper);
 	}
 
