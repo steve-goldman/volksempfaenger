@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
