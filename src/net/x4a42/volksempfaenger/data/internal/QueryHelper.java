@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 
@@ -208,6 +209,7 @@ public class QueryHelper extends ContentProviderHelper {
 		// query the database
 		SQLiteQueryBuilder builder = episodeQueryBuilder.get();
 		builder.setTables(stringBuilder.toString());
+
 		return builder.query(getReadableDatabase(), projection, selection,
 				selectionArgs, null, null, sortOrder);
 	}

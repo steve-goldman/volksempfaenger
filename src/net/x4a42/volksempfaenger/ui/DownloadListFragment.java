@@ -4,7 +4,6 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
-import net.x4a42.volksempfaenger.data.SortByStatusCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.app.DownloadManager;
 import android.app.ListFragment;
@@ -105,12 +104,12 @@ public class DownloadListFragment extends ListFragment implements
 						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_STATUS,
 						Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
 						Episode.DOWNLOAD_TOTAL_SIZE_BYTES },
-				Episode.DOWNLOAD_ID + " != 0", null, null);
+				Episode.DOWNLOAD_ID + " != 0", null, "download.status ASC");
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		adapter.swapCursor(new EpisodeCursor(new SortByStatusCursor(data)));
+		adapter.swapCursor(new EpisodeCursor(data));
 		if (isResumed()) {
 			setListShown(true);
 		} else {
