@@ -145,9 +145,14 @@ public class Columns {
 		 */
 		public static final String DOWNLOAD_ID = "download_id";
 
-		/**
-		 * URI of the downloaded file (type String)
-		 */
+		public static final String DOWNLOAD_LOCAL_FILENAME = "download_local_filename";
+
+		public static final String DOWNLOAD_MEDIAPROVIDER_URI = "download_mediaprovider_uri";
+
+		public static final String DOWNLOAD_TITLE = "download_title";
+
+		public static final String DOWNLOAD_DESCRIPTION = "download_description";
+
 		public static final String DOWNLOAD_URI = "download_uri";
 
 		/**
@@ -157,16 +162,27 @@ public class Columns {
 		 */
 		public static final String DOWNLOAD_STATUS = "download_status";
 
+		public static final String DOWNLOAD_MEDIA_TYPE = "download_media_type";
+
 		/**
 		 * Total size of the download in bytes as reported by DownloadManager
 		 * (type long)
 		 */
-		public static final String DOWNLOAD_TOTAL = "download_total";
+		public static final String DOWNLOAD_TOTAL_SIZE_BYTES = "download_total_size";
+
+		public static final String DOWNLOAD_LAST_MODIFIED_TIMESTAMP = "download_last_modified_timestamp";
 
 		/**
 		 * Number of bytes already downloaded (type long)
 		 */
-		public static final String DOWNLOAD_DONE = "download_done";
+		public static final String DOWNLOAD_BYTES_DOWNLOADED_SO_FAR = "download_bytes_so_far";
+
+		/**
+		 * URI of the downloaded file (type String)
+		 */
+		public static final String DOWNLOAD_LOCAL_URI = "download_local_uri";
+
+		public static final String DOWNLOAD_REASON = "download_reason";
 
 		/**
 		 * Total duration of the episode in seconds (type int)
@@ -182,6 +198,7 @@ public class Columns {
 		 * Hash to increase the update speed (type String; SHA1 hex)
 		 */
 		public static final String HASH = "hash";
+
 	}
 
 	/**

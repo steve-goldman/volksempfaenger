@@ -40,11 +40,11 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 		COLUMN_ID = getColumnIndex(Episode._ID);
 		COLUMN_DATE = getColumnIndex(Episode.DATE);
 		COLUMN_DESCRIPTION = getColumnIndex(Episode.DESCRIPTION);
-		COLUMN_DOWNLOAD_DONE = getColumnIndex(Episode.DOWNLOAD_DONE);
+		COLUMN_DOWNLOAD_DONE = getColumnIndex(Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR);
 		COLUMN_DOWNLOAD_ID = getColumnIndex(Episode.DOWNLOAD_ID);
 		COLUMN_DOWNLOAD_STATUS = getColumnIndex(Episode.DOWNLOAD_STATUS);
-		COLUMN_DOWNLOAD_TOTAL = getColumnIndex(Episode.DOWNLOAD_TOTAL);
-		COLUMN_DOWNLOAD_URI = getColumnIndex(Episode.DOWNLOAD_URI);
+		COLUMN_DOWNLOAD_TOTAL = getColumnIndex(Episode.DOWNLOAD_TOTAL_SIZE_BYTES);
+		COLUMN_DOWNLOAD_URI = getColumnIndex(Episode.DOWNLOAD_LOCAL_URI);
 		COLUMN_DURATION_LISTENED = getColumnIndex(Episode.DURATION_LISTENED);
 		COLUMN_DURATION_TOTAL = getColumnIndex(Episode.DURATION_TOTAL);
 		COLUMN_ENCLOSURE_ID = getColumnIndex(Episode.ENCLOSURE_ID);

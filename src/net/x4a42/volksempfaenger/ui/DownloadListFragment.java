@@ -103,7 +103,7 @@ public class DownloadListFragment extends ListFragment implements
 				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
 						Episode.PODCAST_ID, Episode._ID, Episode.TITLE,
 						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_STATUS,
-						Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_TOTAL },
+						Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR, Episode.DOWNLOAD_TOTAL_SIZE_BYTES },
 				Episode.DOWNLOAD_ID + " != 0", null, null);
 	}
 
