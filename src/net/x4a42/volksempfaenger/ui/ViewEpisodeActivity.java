@@ -398,8 +398,8 @@ public class ViewEpisodeActivity extends Activity implements
 				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
 				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
-				Episode.DOWNLOAD_DONE, Episode.DOWNLOAD_URI,
-				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL,
+				Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR, Episode.DOWNLOAD_LOCAL_URI,
+				Episode.DOWNLOAD_STATUS, Episode.DOWNLOAD_TOTAL_SIZE_BYTES,
 				Episode.ENCLOSURE_ID, Episode.ENCLOSURE_SIZE };
 		return new CursorLoader(this, uri, projection, null, null, null);
 	}

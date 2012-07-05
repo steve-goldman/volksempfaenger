@@ -8,8 +8,6 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
-import android.app.DownloadManager;
-import android.app.DownloadManager.Query;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 
@@ -17,6 +15,7 @@ public class QueryHelper extends ContentProviderHelper {
 
 	private static final String EPISODE_JOIN_PODCAST = "INNER JOIN podcast ON episode.podcast_id = podcast._id";
 	private static final String EPISODE_JOIN_ENCLOSURE = "LEFT OUTER JOIN enclosure ON episode.enclosure_id = enclosure._id";
+	private static final String EPISODE_JOIN_DOWNLOAD = "LEFT OUTER JOIN DownloadManager.download download ON episode.download_id = download._id";
 	private static final Map<String, String> podcastColumnMap;
 	private static final Map<String, String> episodeColumnMap;
 	private static final Map<String, String> enclosureColumnMap;
@@ -45,6 +44,33 @@ public class QueryHelper extends ContentProviderHelper {
 				+ Episode.DESCRIPTION);
 		temp.put(Episode.DOWNLOAD_ID, "episode.download_id AS "
 				+ Episode.DOWNLOAD_ID);
+		temp.put(Episode.DOWNLOAD_LOCAL_FILENAME, "download.local_filename AS "
+				+ Episode.DOWNLOAD_LOCAL_FILENAME);
+		temp.put(Episode.DOWNLOAD_MEDIAPROVIDER_URI,
+				"download.mediaprovider_uri AS "
+						+ Episode.DOWNLOAD_MEDIAPROVIDER_URI);
+		temp.put(Episode.DOWNLOAD_TITLE, "download.title AS "
+				+ Episode.DOWNLOAD_TITLE);
+		temp.put(Episode.DOWNLOAD_DESCRIPTION, "download.description AS "
+				+ Episode.DOWNLOAD_DESCRIPTION);
+		temp.put(Episode.DOWNLOAD_URI, "download.uri AS "
+				+ Episode.DOWNLOAD_URI);
+		temp.put(Episode.DOWNLOAD_STATUS, "download.status AS "
+				+ Episode.DOWNLOAD_STATUS);
+		temp.put(Episode.DOWNLOAD_MEDIA_TYPE, "download.media_type AS "
+				+ Episode.DOWNLOAD_MEDIA_TYPE);
+		temp.put(Episode.DOWNLOAD_TOTAL_SIZE_BYTES, "download.total_size AS "
+				+ Episode.DOWNLOAD_TOTAL_SIZE_BYTES);
+		temp.put(Episode.DOWNLOAD_LAST_MODIFIED_TIMESTAMP,
+				"download.last_modified_timestamp AS "
+						+ Episode.DOWNLOAD_LAST_MODIFIED_TIMESTAMP);
+		temp.put(Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
+				"download.bytes_so_far AS "
+						+ Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR);
+		temp.put(Episode.DOWNLOAD_LOCAL_URI, "download.local_uri AS "
+				+ Episode.DOWNLOAD_LOCAL_URI);
+		temp.put(Episode.DOWNLOAD_REASON, "download.reason AS "
+				+ Episode.DOWNLOAD_REASON);
 		temp.put(Episode.DURATION_LISTENED, "episode.duration_listened AS "
 				+ Episode.DURATION_LISTENED);
 		temp.put(Episode.DURATION_TOTAL, "episode.duration_total AS "
@@ -89,15 +115,12 @@ public class QueryHelper extends ContentProviderHelper {
 		enclosureColumnMap = Collections.unmodifiableMap(temp);
 	}
 
-	private DownloadManager dlManager;
 	private SQLiteQueryBuilder podcastQueryBuilder;
 	private ThreadLocal<SQLiteQueryBuilder> episodeQueryBuilder;
 	private SQLiteQueryBuilder enclosureQueryBuilder;
 
-	protected QueryHelper(DatabaseHelper dbHelper, DownloadManager dlManager) {
+	protected QueryHelper(DatabaseHelper dbHelper) {
 		super(dbHelper);
-
-		this.dlManager = dlManager;
 
 		podcastQueryBuilder = new SQLiteQueryBuilder();
 		podcastQueryBuilder.setTables(PODCAST_TABLE);
@@ -140,7 +163,7 @@ public class QueryHelper extends ContentProviderHelper {
 		boolean joinEnclosure = false;
 		boolean joinDownload = false;
 
-		int removeCols = 0;
+		// find out which tables must be joined
 		for (String col : projection) {
 			if (!joinPodcast
 					&& (col == Episode.PODCAST_DESCRIPTION
@@ -152,78 +175,40 @@ public class QueryHelper extends ContentProviderHelper {
 							|| Episode.ENCLOSURE_SIZE.equals(col)
 							|| Episode.ENCLOSURE_TITLE.equals(col) || col == Episode.ENCLOSURE_URL)) {
 				joinEnclosure = true;
-			} else if (col == Episode.DOWNLOAD_DONE
+			} else if (col == Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR
 					|| col == Episode.DOWNLOAD_STATUS
-					|| col == Episode.DOWNLOAD_TOTAL
-					|| col == Episode.DOWNLOAD_URI) {
+					|| col == Episode.DOWNLOAD_TOTAL_SIZE_BYTES
+					|| col == Episode.DOWNLOAD_LOCAL_URI) {
 				joinDownload = true;
-				removeCols++;
 			}
 		}
-		// remove all DOWNLOAD_* colums except DOWNLOAD_ID because we cannot
-		// query them from the database
-		if (removeCols > 0) {
-			String[] temp = new String[projection.length - removeCols];
-			int i = 0;
-			for (String col : projection) {
-				if (!(col == Episode.DOWNLOAD_DONE
-						|| col == Episode.DOWNLOAD_STATUS
-						|| col == Episode.DOWNLOAD_TOTAL || col == Episode.DOWNLOAD_URI)) {
-					temp[i++] = col;
-				}
-			}
-			projection = temp;
+
+		StringBuilder stringBuilder = new StringBuilder(
+				DatabaseHelper.TABLE_EPISODE);
+
+		// join podcast table if needed
+		if (joinPodcast) {
+			stringBuilder.append(' ');
+			stringBuilder.append(EPISODE_JOIN_PODCAST);
 		}
 
-		Cursor cursor;
-
-		SQLiteQueryBuilder builder = episodeQueryBuilder.get();
-		if (joinPodcast && joinEnclosure) {
-			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
-					+ EPISODE_JOIN_PODCAST + " " + EPISODE_JOIN_ENCLOSURE);
-		} else if (joinPodcast) {
-			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
-					+ EPISODE_JOIN_PODCAST);
-		} else if (joinEnclosure) {
-			builder.setTables(DatabaseHelper.TABLE_EPISODE + " "
-					+ EPISODE_JOIN_ENCLOSURE);
-		} else {
-			builder.setTables(DatabaseHelper.TABLE_EPISODE);
+		// join enclosure table if needed
+		if (joinEnclosure) {
+			stringBuilder.append(' ');
+			stringBuilder.append(EPISODE_JOIN_ENCLOSURE);
 		}
 
-		cursor = builder.query(getReadableDatabase(), projection, selection,
-				selectionArgs, null, null, sortOrder);
-
+		// join download table if needed
 		if (joinDownload) {
-			Cursor dbCursor = cursor;
-			Cursor dlCursor;
-			cursor = null;
-			Query query = new DownloadManager.Query();
-			if (dbCursor.getCount() > 0) {
-				long[] ids = new long[dbCursor.getCount()];
-				int downloadIdColumn = dbCursor
-						.getColumnIndex(Episode.DOWNLOAD_ID);
-				while (dbCursor.moveToNext()) {
-					ids[dbCursor.getPosition()] = dbCursor
-							.getLong(downloadIdColumn);
-				}
-				dbCursor.moveToPosition(-1);
-
-				query.setFilterById(ids);
-			} else {
-				// WORKAROUND TODO
-				// Apparently the DownloadManager crashes when given an empty
-				// array.
-				// As a workaround in this case we simply filter by id -1.
-				// Let's hope this works ;-)
-				query.setFilterById(new long[] { -1 });
-			}
-
-			dlCursor = dlManager.query(query);
-			cursor = new EpisodeWithDownloadCursor(dbCursor, dlCursor);
+			stringBuilder.append(' ');
+			stringBuilder.append(EPISODE_JOIN_DOWNLOAD);
 		}
 
-		return cursor;
+		// query the database
+		SQLiteQueryBuilder builder = episodeQueryBuilder.get();
+		builder.setTables(stringBuilder.toString());
+		return builder.query(getReadableDatabase(), projection, selection,
+				selectionArgs, null, null, sortOrder);
 	}
 
 	public Cursor queryEpisodeItem(long episodeId, String[] projection) {

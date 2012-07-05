@@ -216,7 +216,7 @@ public class PlaybackService extends Service implements EventListener {
 				episode,
 				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
 						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
-						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_URI,
+						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_LOCAL_URI,
 						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE },
 				null, null, null));
 
