@@ -145,43 +145,67 @@ public class Columns {
 		 */
 		public static final String DOWNLOAD_ID = "download_id";
 
+		/**
+		 * The pathname of the file where the download is stored (type String)
+		 */
 		public static final String DOWNLOAD_LOCAL_FILENAME = "download_local_filename";
 
+		/**
+		 * The URI to the corresponding entry in MediaProvider for this
+		 * downloaded entry (type String)
+		 */
 		public static final String DOWNLOAD_MEDIAPROVIDER_URI = "download_mediaprovider_uri";
 
+		/**
+		 * Title of this download (type String)
+		 */
 		public static final String DOWNLOAD_TITLE = "download_title";
 
+		/**
+		 * Description of this download (type String)
+		 */
 		public static final String DOWNLOAD_DESCRIPTION = "download_description";
 
+		/**
+		 * URI to be downloaded (type String)
+		 */
 		public static final String DOWNLOAD_URI = "download_uri";
 
 		/**
-		 * Status of the download (type int)
-		 * 
-		 * Values: see android.app.DownloadManager.STATUS_*
+		 * Current status of the download, as one of the
+		 * android.app.DownloadManager.STATUS_* constants (type int)
 		 */
 		public static final String DOWNLOAD_STATUS = "download_status";
 
+		/**
+		 * Internet Media Type of the downloaded file (type String)
+		 */
 		public static final String DOWNLOAD_MEDIA_TYPE = "download_media_type";
 
 		/**
-		 * Total size of the download in bytes as reported by DownloadManager
-		 * (type long)
+		 * Total size of the download in bytes (type long)
 		 */
 		public static final String DOWNLOAD_TOTAL_SIZE_BYTES = "download_total_size";
 
+		/**
+		 * The URI to the corresponding entry in MediaProvider for this
+		 * downloaded entry (type long)
+		 */
 		public static final String DOWNLOAD_LAST_MODIFIED_TIMESTAMP = "download_last_modified_timestamp";
 
 		/**
-		 * Number of bytes already downloaded (type long)
+		 * Number of bytes download so far (type long)
 		 */
 		public static final String DOWNLOAD_BYTES_DOWNLOADED_SO_FAR = "download_bytes_so_far";
 
 		/**
-		 * URI of the downloaded file (type String)
+		 * Uri where downloaded file will be stored (type String)
 		 */
 		public static final String DOWNLOAD_LOCAL_URI = "download_local_uri";
 
+		/**
+		 * Provides more detail on the status of the download (type int)
+		 */
 		public static final String DOWNLOAD_REASON = "download_reason";
 
 		/**
