@@ -1,10 +1,11 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data.internal;
 
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import android.content.ContentValues;
 
 public class UpdateHelper extends ContentProviderHelper {
 
-	protected UpdateHelper(DatabaseHelper dbHelper) {
+	public UpdateHelper(DatabaseHelper dbHelper) {
 		super(dbHelper);
 	}
 

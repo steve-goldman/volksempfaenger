@@ -3,6 +3,11 @@ package net.x4a42.volksempfaenger.data;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.data.internal.DeleteHelper;
+import net.x4a42.volksempfaenger.data.internal.InsertHelper;
+import net.x4a42.volksempfaenger.data.internal.QueryHelper;
+import net.x4a42.volksempfaenger.data.internal.SyncDownloadThread;
+import net.x4a42.volksempfaenger.data.internal.UpdateHelper;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -51,7 +56,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		updateHelper = new UpdateHelper(dbHelper);
 		deleteHelper = new DeleteHelper(dbHelper);
 
-		syncDownloadThread = new SyncDownloadThread(this);
+		syncDownloadThread = new SyncDownloadThread(getContext(), dbHelper);
 		syncDownloadThread.start();
 
 		return true;

@@ -1,7 +1,10 @@
-package net.x4a42.volksempfaenger.data;
+package net.x4a42.volksempfaenger.data.internal;
 
 import net.x4a42.volksempfaenger.BuildConfig;
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.ExtendedCursorWrapper;
+import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
@@ -21,9 +24,8 @@ public class SyncDownloadThread implements Runnable {
 	private DownloadManager dlManager;
 	private ContentResolver contentResolver;
 
-	public SyncDownloadThread(VolksempfaengerContentProvider contentProvider) {
-		Context context = contentProvider.getContext();
-		dbHelper = DatabaseHelper.getInstance(context);
+	public SyncDownloadThread(Context context, DatabaseHelper helper) {
+		dbHelper = helper;
 		dlManager = (DownloadManager) context
 				.getSystemService(Context.DOWNLOAD_SERVICE);
 		contentResolver = context.getContentResolver();
@@ -131,7 +133,8 @@ public class SyncDownloadThread implements Runnable {
 
 		// just some debugging output. maybe remove this later
 		if (BuildConfig.DEBUG) {
-			ExtendedCursorWrapper qc = new ExtendedCursorWrapper(db.query(TABLE, null, null, null, null, null, null));
+			ExtendedCursorWrapper qc = new ExtendedCursorWrapper(db.query(
+					TABLE, null, null, null, null, null, null));
 			while (qc.moveToNext()) {
 				Log.d(this, qc.rowToString());
 			}
