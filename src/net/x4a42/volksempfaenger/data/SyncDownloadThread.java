@@ -4,6 +4,7 @@ import net.x4a42.volksempfaenger.BuildConfig;
 import net.x4a42.volksempfaenger.Log;
 import android.annotation.TargetApi;
 import android.app.DownloadManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -18,12 +19,14 @@ public class SyncDownloadThread implements Runnable {
 	private Thread thread = new Thread(this, "SyncDownloadThread");
 	private DatabaseHelper dbHelper;
 	private DownloadManager dlManager;
+	private ContentResolver contentResolver;
 
 	public SyncDownloadThread(VolksempfaengerContentProvider contentProvider) {
 		Context context = contentProvider.getContext();
 		dbHelper = DatabaseHelper.getInstance(context);
 		dlManager = (DownloadManager) context
 				.getSystemService(Context.DOWNLOAD_SERVICE);
+		contentResolver = context.getContentResolver();
 	}
 
 	public void start() {
@@ -122,6 +125,9 @@ public class SyncDownloadThread implements Runnable {
 
 		db.setTransactionSuccessful();
 		db.endTransaction();
+
+		contentResolver.notifyChange(
+				VolksempfaengerContentProvider.EPISODE_URI, mContentObserver);
 
 		// just some debugging output. maybe remove this later
 		if (BuildConfig.DEBUG) {
