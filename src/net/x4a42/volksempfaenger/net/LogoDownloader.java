@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger.net;
 
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.StorageException;
+import net.x4a42.volksempfaenger.misc.StorageException;
 import android.content.Context;
 
 public class LogoDownloader extends ImageDownloader {

@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.CacheMap;
+import net.x4a42.volksempfaenger.misc.CacheMap;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;

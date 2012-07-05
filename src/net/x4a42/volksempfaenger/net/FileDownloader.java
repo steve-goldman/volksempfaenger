@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 
-import net.x4a42.volksempfaenger.data.StorageException;
+import net.x4a42.volksempfaenger.misc.StorageException;
 import android.content.Context;
 import net.x4a42.volksempfaenger.Log;
 
