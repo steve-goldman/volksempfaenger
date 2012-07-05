@@ -1,7 +1,7 @@
 ATTACH DATABASE ':memory:' AS DownloadManager;
 
 CREATE TABLE DownloadManager.download (
-	_id INTEGER,                      -- COLUMN_ID
+	_id INTEGER PRIMARY KEY,          -- COLUMN_ID
 	local_filename TEXT,              -- COLUMN_LOCAL_FILENAME
 	mediaprovider_uri TEXT,           -- COLUMN_MEDIAPROVIDER_URI
 	title TEXT,                       -- COLUMN_TITLE
