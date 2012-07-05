@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import net.x4a42.volksempfaenger.data.CacheMap;
+import net.x4a42.volksempfaenger.misc.CacheMap;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
