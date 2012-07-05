@@ -131,16 +131,9 @@ public class SyncDownloadThread implements Runnable {
 
 		// just some debugging output. maybe remove this later
 		if (BuildConfig.DEBUG) {
-			Cursor qc = db.query(TABLE, null, null, null, null, null, null);
+			ExtendedCursorWrapper qc = new ExtendedCursorWrapper(db.query(TABLE, null, null, null, null, null, null));
 			while (qc.moveToNext()) {
-				String line = "";
-				for (int i = 0; i < qc.getColumnCount(); i++) {
-					line += qc.getColumnName(i);
-					line += "=";
-					line += qc.getString(i);
-					line += " ";
-				}
-				Log.d(this, line);
+				Log.d(this, qc.rowToString());
 			}
 		}
 	}
