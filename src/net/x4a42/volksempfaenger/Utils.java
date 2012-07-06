@@ -10,11 +10,14 @@ import java.util.Collections;
 import java.util.Date;
 
 import net.x4a42.volksempfaenger.misc.CacheMap;
+import android.annotation.TargetApi;
+import android.app.Notification;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 public class Utils {
@@ -226,6 +229,16 @@ public class Utils {
 			}
 		}
 		return stringBuilder.substring(start, end + 1);
+	}
+
+	@TargetApi(16)
+	@SuppressWarnings("deprecation")
+	public static Notification notificationFromBuilder(Notification.Builder nb) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+			return nb.getNotification();
+		} else {
+			return nb.build();
+		}
 	}
 
 }
