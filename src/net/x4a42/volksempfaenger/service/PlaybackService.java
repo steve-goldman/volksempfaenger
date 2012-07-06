@@ -403,12 +403,12 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		// Build the notification and return it
-		return new Notification.Builder(this)
+		return Utils.notificationFromBuilder(new Notification.Builder(this)
 				.setSmallIcon(R.drawable.notification)
 				.setLargeIcon(podcastLogo).setContentTitle(cursor.getTitle())
 				.setContentText(cursor.getPodcastTitle())
 				.setContentIntent(taskBuilder.getPendingIntent(0, 0))
-				.setOngoing(true).setWhen(0).getNotification();
+				.setOngoing(true).setWhen(0));
 
 	}
 
