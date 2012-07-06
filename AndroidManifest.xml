@@ -84,10 +84,28 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_settings"
-            android:theme="@style/Theme.Settings" />
-        <activity android:name=".ui.ViewSubscriptionActivity" />
-        <activity android:name=".ui.ViewEpisodeActivity" />
-
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.Settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.ViewSubscriptionActivity"
+            android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+>
+        <activity
+            android:name=".ui.ViewEpisodeActivity"
+            android:parentActivityName=".ui.ViewSubscriptionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewSubscriptionActivity" />
+        </activity>
+>
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UpdateService" />
