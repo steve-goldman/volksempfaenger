@@ -28,6 +28,7 @@ import android.media.AudioManager;
 import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
@@ -403,13 +404,22 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		// Build the notification and return it
-		return new Notification.Builder(this)
+		return notificationFromBuilder(new Notification.Builder(this)
 				.setSmallIcon(R.drawable.notification)
 				.setLargeIcon(podcastLogo).setContentTitle(cursor.getTitle())
 				.setContentText(cursor.getPodcastTitle())
 				.setContentIntent(taskBuilder.getPendingIntent(0, 0))
-				.setOngoing(true).setWhen(0).getNotification();
+				.setOngoing(true).setWhen(0));
 
+	}
+
+	@SuppressWarnings("deprecation")
+	private Notification notificationFromBuilder(final Notification.Builder nb) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+			return nb.getNotification();
+		} else {
+			return nb.build();
+		}
 	}
 
 }
