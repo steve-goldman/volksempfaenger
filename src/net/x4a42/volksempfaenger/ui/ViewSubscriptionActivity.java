@@ -136,9 +136,7 @@ public class ViewSubscriptionActivity extends Activity implements
 
 	@Override
 	public void onUpPressed() {
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.putExtra("tag", MainActivity.subscriptionsTag);
-		NavUtils.navigateUpTo(this, intent);
+		NavUtils.navigateUpFromSameTask(this);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.NavUtils;
 import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -23,7 +24,6 @@ import android.widget.EditText;
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener,
 		OnUpPressedCallback {
-
 
 	private ListPreference prefDownloadInterval;
 	// private CheckBoxPreference prefDownloadAuto;
@@ -146,7 +146,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	@Override
 	public void onUpPressed() {
-		finish();
+		NavUtils.navigateUpFromSameTask(this);
 	}
 
 }

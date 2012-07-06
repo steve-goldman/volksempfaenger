@@ -57,8 +57,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewEpisodeActivity extends Activity implements
-		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback,
-		ServiceConnection, EventListener {
+		LoaderManager.LoaderCallbacks<Cursor>, ServiceConnection,
+		EventListener, OnUpPressedCallback {
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -503,7 +503,7 @@ public class ViewEpisodeActivity extends Activity implements
 	public void onUpPressed() {
 		Intent intent;
 		if (subscriptionId != -1) {
-			intent = new Intent(this, ViewSubscriptionActivity.class);
+			intent = NavUtils.getParentActivityIntent(this);
 			intent.putExtra("id", subscriptionId);
 		} else {
 			intent = new Intent(this, SubscriptionGridFragment.class);
