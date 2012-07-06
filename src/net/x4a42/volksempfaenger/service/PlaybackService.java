@@ -372,7 +372,7 @@ public class PlaybackService extends Service implements EventListener {
 		// "Google I/O 2012 - Navigation in Android", see
 		// http://www.youtube.com/watch?v=XwGHJJYBs0Q
 		Intent intent;
-		TaskStackBuilder taskBuilder = TaskStackBuilder.from(this);
+		TaskStackBuilder taskBuilder = TaskStackBuilder.create(this);
 
 		// MainActivity
 		intent = new Intent(this, MainActivity.class);
