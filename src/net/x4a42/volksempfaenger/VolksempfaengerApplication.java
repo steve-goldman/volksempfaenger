@@ -1,10 +1,13 @@
 package net.x4a42.volksempfaenger;
 
+import net.x4a42.volksempfaenger.misc.BitmapCache;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,9 +18,10 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 public class VolksempfaengerApplication extends Application implements
-		OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener, ComponentCallbacks2 {
 	private SharedPreferences settings;
 	private PackageInfo packageinfo;
+	private static BitmapCache logoCache;
 
 	@Override
 	public void onCreate() {
@@ -29,6 +33,12 @@ public class VolksempfaengerApplication extends Application implements
 
 		setUpdateAlarm();
 		setCleanCacheAlarm();
+
+		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
+		// use 1/16 of available space
+		// maybe has to be adjusted
+		logoCache = new BitmapCache(memoryClassBytes / 16);
 	}
 
 	public static PackageInfo getPackageInfo(Context c) {
@@ -114,6 +124,20 @@ public class VolksempfaengerApplication extends Application implements
 	public void onSharedPreferenceChanged(SharedPreferences settings, String key) {
 		if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
 			setUpdateAlarm();
+		}
+	}
+
+	public static BitmapCache getCache() {
+		return logoCache;
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		if (level >= TRIM_MEMORY_MODERATE) {
+			logoCache.evictAll();
+		} else if (level >= TRIM_MEMORY_BACKGROUND) {
+			logoCache.trimToSize(logoCache.size() / 2);
 		}
 	}
 }

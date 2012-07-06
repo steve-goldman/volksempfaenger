@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import net.x4a42.volksempfaenger.misc.CacheMap;
+import net.x4a42.volksempfaenger.misc.BitmapCache;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ContentValues;
@@ -84,21 +84,16 @@ public class Utils {
 	}
 
 	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId) {
-		File podcastLogoFile = getPodcastLogoFile(context, podcastId);
-		if (podcastLogoFile.isFile()) {
-			return BitmapFactory.decodeFile(podcastLogoFile.getAbsolutePath());
-		} else {
-			return null;
-		}
-	}
-
-	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId,
-			CacheMap<Long, Bitmap> cache) {
+		final BitmapCache cache = VolksempfaengerApplication.getCache();
 		Bitmap bitmap = cache.get(podcastId);
 		if (bitmap == null) {
-			bitmap = getPodcastLogoBitmap(context, podcastId);
-			if (bitmap != null) {
+			File podcastLogoFile = getPodcastLogoFile(context, podcastId);
+			if (podcastLogoFile.isFile()) {
+				bitmap = BitmapFactory.decodeFile(podcastLogoFile
+						.getAbsolutePath());
 				cache.put(podcastId, bitmap);
+			} else {
+				return null;
 			}
 		}
 		return bitmap;

@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.misc.CacheMap;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -10,9 +10,6 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class PodcastLogoView extends ImageView {
-
-	private static CacheMap<Long, Bitmap> cache = new CacheMap<Long, Bitmap>();
-
 	private long podcastId;
 	private AsyncTask<Void, Void, Bitmap> lastTask;
 
@@ -54,7 +51,7 @@ public class PodcastLogoView extends ImageView {
 			reset();
 		}
 
-		Bitmap logo = cache.get(id);
+		Bitmap logo = VolksempfaengerApplication.getCache().get(id);
 		if (logo != null) {
 			// the logo is cached, we don't need to fire off an AsyncTask
 			setImageBitmap(logo);
@@ -86,7 +83,7 @@ public class PodcastLogoView extends ImageView {
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
 				setImageBitmap(result);
-				cache.put(id, result);
+				VolksempfaengerApplication.getCache().put(id, result);
 			} else {
 				reset(false);
 			}
@@ -96,7 +93,7 @@ public class PodcastLogoView extends ImageView {
 		protected void onCancelled(Bitmap result) {
 			reset(false);
 			if (result != null) {
-				cache.put(id, result);
+				VolksempfaengerApplication.getCache().put(id, result);
 			}
 		}
 
