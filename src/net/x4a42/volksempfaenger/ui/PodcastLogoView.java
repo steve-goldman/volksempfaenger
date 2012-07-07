@@ -58,6 +58,11 @@ public class PodcastLogoView extends ImageView {
 			// the logo is cached, we don't need to fire off an AsyncTask
 			setImageBitmap(logo);
 		} else {
+			Bitmap preview = VolksempfaengerApplication.getPreviewCache().get(
+					id);
+			if (preview != null) {
+				setImageBitmap(preview);
+			}
 			lastTask = new LoadTask(id).execute();
 		}
 

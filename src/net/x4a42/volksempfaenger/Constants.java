@@ -15,4 +15,7 @@ public final class Constants {
 			.parse("market://details?id=org.openintents.filemanager");
 	public static final Uri OI_FILEMANGER_URI_HTTP = Uri
 			.parse("http://openintents.org/en/filemanager");
+
+	// UI
+	public static int PREVIEW_LOGO_SIZE = 64;
 }

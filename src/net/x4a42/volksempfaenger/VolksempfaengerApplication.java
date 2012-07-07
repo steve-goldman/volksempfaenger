@@ -1,5 +1,8 @@
 package net.x4a42.volksempfaenger;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.x4a42.volksempfaenger.misc.BitmapCache;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
@@ -14,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -22,6 +26,7 @@ public class VolksempfaengerApplication extends Application implements
 	private SharedPreferences settings;
 	private PackageInfo packageinfo;
 	private static BitmapCache logoCache;
+	private static Map<Long, Bitmap> previewLogoCache = new ConcurrentHashMap<Long, Bitmap>();
 
 	@Override
 	public void onCreate() {
@@ -129,6 +134,10 @@ public class VolksempfaengerApplication extends Application implements
 
 	public static BitmapCache getCache() {
 		return logoCache;
+	}
+
+	public static Map<Long, Bitmap> getPreviewCache() {
+		return previewLogoCache;
 	}
 
 	@Override

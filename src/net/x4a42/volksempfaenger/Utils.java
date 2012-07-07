@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 import net.x4a42.volksempfaenger.misc.BitmapCache;
 import android.annotation.TargetApi;
@@ -89,10 +90,18 @@ public class Utils {
 		if (bitmap == null) {
 			File podcastLogoFile = getPodcastLogoFile(context, podcastId);
 			if (podcastLogoFile.isFile()) {
-				bitmap = scalePodcastLogo(context,
-						BitmapFactory.decodeFile(podcastLogoFile
-								.getAbsolutePath()));
+				Bitmap tempBitmap = BitmapFactory.decodeFile(podcastLogoFile
+						.getAbsolutePath());
+				bitmap = scalePodcastLogo(context, tempBitmap);
+				tempBitmap.recycle();
 				cache.put(podcastId, bitmap);
+				Map<Long, Bitmap> previewCache = VolksempfaengerApplication
+						.getPreviewCache();
+				if (previewCache.get(podcastId) == null) {
+					Bitmap preview = scalePodcastLogoToSize(bitmap,
+							Constants.PREVIEW_LOGO_SIZE);
+					previewCache.put(podcastId, preview);
+				}
 			} else {
 				return null;
 			}
@@ -240,10 +249,11 @@ public class Utils {
 	public static Bitmap scalePodcastLogo(Context context, Bitmap logo) {
 		int maxSize = 2 * context.getResources().getDimensionPixelSize(
 				R.dimen.grid_column_width);
-		Bitmap scaled = Bitmap.createScaledBitmap(logo, maxSize, maxSize, true);
-		if (scaled != logo) {
-			logo.recycle();
-		}
+		return scalePodcastLogoToSize(logo, maxSize);
+	}
+
+	private static Bitmap scalePodcastLogoToSize(Bitmap logo, int size) {
+		Bitmap scaled = Bitmap.createScaledBitmap(logo, size, size, true);
 		return scaled;
 	}
 }
