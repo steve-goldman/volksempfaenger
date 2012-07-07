@@ -89,15 +89,9 @@ public class Utils {
 		if (bitmap == null) {
 			File podcastLogoFile = getPodcastLogoFile(context, podcastId);
 			if (podcastLogoFile.isFile()) {
-				int maxSize = 2 * context.getResources().getDimensionPixelSize(
-						R.dimen.grid_column_width);
-				Bitmap tempBitmap = BitmapFactory.decodeFile(podcastLogoFile
-						.getAbsolutePath());
-				bitmap = Bitmap.createScaledBitmap(tempBitmap, maxSize,
-						maxSize, true);
-				if (tempBitmap != bitmap) {
-					tempBitmap.recycle();
-				}
+				bitmap = scalePodcastLogo(context,
+						BitmapFactory.decodeFile(podcastLogoFile
+								.getAbsolutePath()));
 				cache.put(podcastId, bitmap);
 			} else {
 				return null;
@@ -243,4 +237,13 @@ public class Utils {
 		}
 	}
 
+	public static Bitmap scalePodcastLogo(Context context, Bitmap logo) {
+		int maxSize = 2 * context.getResources().getDimensionPixelSize(
+				R.dimen.grid_column_width);
+		Bitmap scaled = Bitmap.createScaledBitmap(logo, maxSize, maxSize, true);
+		if (scaled != logo) {
+			logo.recycle();
+		}
+		return scaled;
+	}
 }
