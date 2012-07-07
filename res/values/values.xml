@@ -19,4 +19,6 @@
         <item>86400000</item>
     </string-array>
 
+    <dimen name="grid_column_width">150dp</dimen>
+
 </resources>

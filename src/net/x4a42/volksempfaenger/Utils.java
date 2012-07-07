@@ -89,8 +89,13 @@ public class Utils {
 		if (bitmap == null) {
 			File podcastLogoFile = getPodcastLogoFile(context, podcastId);
 			if (podcastLogoFile.isFile()) {
-				bitmap = BitmapFactory.decodeFile(podcastLogoFile
+				int maxSize = 2 * context.getResources().getDimensionPixelSize(
+						R.dimen.grid_column_width);
+				Bitmap tempBitmap = BitmapFactory.decodeFile(podcastLogoFile
 						.getAbsolutePath());
+				bitmap = Bitmap.createScaledBitmap(tempBitmap, maxSize,
+						maxSize, true);
+				tempBitmap.recycle();
 				cache.put(podcastId, bitmap);
 			} else {
 				return null;
