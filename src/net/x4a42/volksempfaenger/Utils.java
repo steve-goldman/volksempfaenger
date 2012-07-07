@@ -95,7 +95,9 @@ public class Utils {
 						.getAbsolutePath());
 				bitmap = Bitmap.createScaledBitmap(tempBitmap, maxSize,
 						maxSize, true);
-				tempBitmap.recycle();
+				if (tempBitmap != bitmap) {
+					tempBitmap.recycle();
+				}
 				cache.put(podcastId, bitmap);
 			} else {
 				return null;
