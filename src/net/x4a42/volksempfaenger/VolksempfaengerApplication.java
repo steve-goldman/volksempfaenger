@@ -36,9 +36,9 @@ public class VolksempfaengerApplication extends Application implements
 
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
-		// use 1/16 of available space
+		// use 1/4 of available space
 		// maybe has to be adjusted
-		logoCache = new BitmapCache(memoryClassBytes / 16);
+		logoCache = new BitmapCache(memoryClassBytes / 4);
 	}
 
 	public static PackageInfo getPackageInfo(Context c) {

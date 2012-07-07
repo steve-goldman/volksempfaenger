@@ -83,7 +83,6 @@ public class PodcastLogoView extends ImageView {
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
 				setImageBitmap(result);
-				VolksempfaengerApplication.getCache().put(id, result);
 			} else {
 				reset(false);
 			}
@@ -92,9 +91,6 @@ public class PodcastLogoView extends ImageView {
 		@Override
 		protected void onCancelled(Bitmap result) {
 			reset(false);
-			if (result != null) {
-				VolksempfaengerApplication.getCache().put(id, result);
-			}
 		}
 
 	}

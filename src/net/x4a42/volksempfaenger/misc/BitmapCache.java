@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.misc;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 public class BitmapCache extends LruCache<Long, Bitmap> {
@@ -21,5 +22,11 @@ public class BitmapCache extends LruCache<Long, Bitmap> {
 			}
 			remove(key);
 		}
+	}
+
+	@Override
+	protected void entryRemoved(boolean evicted, Long key, Bitmap oldValue,
+			Bitmap newValue) {
+		Log.v("BitmapCache", "removed " + key);
 	}
 }
