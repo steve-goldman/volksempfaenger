@@ -1,7 +1,5 @@
 package net.x4a42.volksempfaenger.misc;
 
-import java.util.Map;
-
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
@@ -17,11 +15,11 @@ public class BitmapCache extends LruCache<Long, Bitmap> {
 	}
 
 	public void trimToSize(int maxSize) {
-		Map<Long, Bitmap> snapshot = snapshot();
-		while (size() > maxSize) {
-			for (Long key : snapshot.keySet()) {
-				remove(key);
+		for (Long key : snapshot().keySet()) {
+			if (size() > maxSize) {
+				break;
 			}
+			remove(key);
 		}
 	}
 }
