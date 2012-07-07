@@ -5,6 +5,7 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 public class PodcastLogoView extends ImageView {
 	private long podcastId;
 	private AsyncTask<Void, Void, Bitmap> lastTask;
+	private static Bitmap defaultLogo;
 
 	public PodcastLogoView(Context context) {
 		super(context);
@@ -29,14 +31,16 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	public void reset() {
-		reset(true);
+		podcastId = -1;
+		resetImage();
 	}
 
-	private void reset(boolean resetId) {
-		setImageResource(R.drawable.default_logo);
-		if (resetId) {
-			podcastId = -1;
+	private void resetImage() {
+		if (defaultLogo == null) {
+			defaultLogo = Utils.scalePodcastLogo(getContext(), BitmapFactory
+					.decodeResource(getResources(), R.drawable.default_logo));
 		}
+		setImageBitmap(defaultLogo);
 	}
 
 	public void setPodcastId(long id) {
@@ -47,8 +51,6 @@ public class PodcastLogoView extends ImageView {
 
 		if (lastTask != null) {
 			lastTask.cancel(false);
-		} else {
-			reset();
 		}
 
 		Bitmap logo = VolksempfaengerApplication.getCache().get(id);
@@ -84,13 +86,13 @@ public class PodcastLogoView extends ImageView {
 			if (result != null) {
 				setImageBitmap(result);
 			} else {
-				reset(false);
+				resetImage();
 			}
 		}
 
 		@Override
 		protected void onCancelled(Bitmap result) {
-			reset(false);
+			resetImage();
 		}
 
 	}
