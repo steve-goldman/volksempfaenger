@@ -1,7 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import net.x4a42.volksempfaenger.Log;
@@ -183,13 +182,6 @@ public class ViewSubscriptionActivity extends Activity implements
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
 
-			if (actionModeIsSelected(cursor.getLong(cursor
-					.getColumnIndex(Episode._ID)))) {
-				row.setActivated(true);
-			} else {
-				row.setActivated(false);
-			}
-
 			int episodeState = cursor.getInt(cursor
 					.getColumnIndex(Episode.STATUS));
 			TextView episodeTitle = (TextView) row
@@ -284,11 +276,11 @@ public class ViewSubscriptionActivity extends Activity implements
 	/* Action mode */
 
 	private ActionMode mActionMode;
-	private ArrayList<Long> mActionModeSelected = new ArrayList<Long>();
 	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 			MenuInflater inflater = mode.getMenuInflater();
 			inflater.inflate(R.menu.action_episodes, menu);
 			return true;
@@ -302,8 +294,7 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-			Long[] ids = new Long[mActionModeSelected.size()];
-			mActionModeSelected.toArray(ids);
+			long[] ids = mEpisodeListView.getCheckedItemIds();
 
 			switch (item.getItemId()) {
 			// case R.id.item_download:
@@ -332,59 +323,20 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+
 			mActionMode = null;
-			mActionModeSelected.clear();
+			mEpisodeListView.clearChoices();
+			mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+
+			// TODO find out why we still need this
 			int childCount = mEpisodeListView.getChildCount();
 			for (int i = 0; i < childCount; ++i) {
 				mEpisodeListView.getChildAt(i).setActivated(false);
 			}
+
 		}
 
 	};
-
-	/**
-	 * Checks if an item is selected in action mode.
-	 * 
-	 * @param id
-	 *            the id of the item
-	 * @return true if the item is selected in action mode
-	 */
-	private boolean actionModeIsSelected(long id) {
-		return mActionModeSelected.contains(id);
-	}
-
-	/**
-	 * Toggles the selection state of an item
-	 * 
-	 * @param id
-	 *            id of the item
-	 * @return new selection state of the item
-	 */
-	private boolean actionModeToggle(long id) {
-		boolean selected = actionModeIsSelected(id);
-		if (selected) {
-			mActionModeSelected.remove(id);
-		} else {
-			mActionModeSelected.add(id);
-		}
-		return !selected;
-	}
-
-	/**
-	 * Toggles the selection state of an item and sets the views activation
-	 * state accordingly.
-	 * 
-	 * @param id
-	 *            id of the item
-	 * @param view
-	 *            View that represents the item
-	 * @return new selection state of the item
-	 */
-	private boolean actionModeToggle(long id, View view) {
-		boolean selected = actionModeToggle(id);
-		view.setActivated(selected);
-		return selected;
-	}
 
 	/* Item Click */
 
@@ -392,14 +344,14 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+
 			if (mActionMode == null) {
 				Intent intent = new Intent(ViewSubscriptionActivity.this,
 						ViewEpisodeActivity.class);
 				intent.putExtra("id", id);
 				startActivity(intent);
-			} else {
-				actionModeToggle(id, view);
 			}
+
 		}
 	};
 
@@ -409,13 +361,15 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
+
 			if (mActionMode != null) {
 				return false;
 			}
 
 			mActionMode = startActionMode(mActionModeCallback);
-			actionModeToggle(id, view);
+			mEpisodeListView.setItemChecked(position, true);
 			return true;
+
 		}
 	};
 
