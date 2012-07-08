@@ -17,6 +17,7 @@ import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
 import android.content.Context;
@@ -316,7 +317,11 @@ public class ViewSubscriptionActivity extends Activity implements
 				return true;
 
 			case R.id.item_delete:
-				// TODO
+				EpisodeHelper
+						.deleteDownload(
+								getContentResolver(),
+								(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+								ids);
 				mode.finish();
 				return true;
 
