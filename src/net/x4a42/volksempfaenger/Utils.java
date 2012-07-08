@@ -93,7 +93,9 @@ public class Utils {
 				Bitmap tempBitmap = BitmapFactory.decodeFile(podcastLogoFile
 						.getAbsolutePath());
 				bitmap = scalePodcastLogo(context, tempBitmap);
-				tempBitmap.recycle();
+				if (tempBitmap != bitmap) {
+					tempBitmap.recycle();
+				}
 				cache.put(podcastId, bitmap);
 				Map<Long, Bitmap> previewCache = VolksempfaengerApplication
 						.getPreviewCache();
