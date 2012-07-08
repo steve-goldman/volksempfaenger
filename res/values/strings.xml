@@ -110,5 +110,9 @@
     <string name="episode_marklistened">Mark as listened</string>
     <string name="unknown_duration">unknown duration</string>
     <string name="unknown_size">unknown size</string>
+    <string name="message_error_file_not_found">The file \'%s\' could not be found</string>
+    <string name="title_file_not_found">File not found</string>
+    <string name="title_import_error">Import Error</string>
+    <string name="message_error_import">The import of the following podcasts failed</string>
 
 </resources>
