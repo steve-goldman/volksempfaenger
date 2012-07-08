@@ -12,6 +12,7 @@ import java.util.Map;
 
 import net.x4a42.volksempfaenger.misc.BitmapCache;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 
 public class Utils {
 	public static String joinArray(Object[] objects, CharSequence sep) {
@@ -257,5 +259,19 @@ public class Utils {
 	private static Bitmap scalePodcastLogoToSize(Bitmap logo, int size) {
 		Bitmap scaled = Bitmap.createScaledBitmap(logo, size, size, true);
 		return scaled;
+	}
+
+	public static int dpToPx(Activity activity, int dp) {
+		return (int) (dp * getDensity(activity) + 0.5);
+	}
+
+	public static int pxToDp(Activity activity, int px) {
+		return (int) (px / getDensity(activity) + 0.5);
+	}
+
+	private static float getDensity(Activity activity) {
+		final DisplayMetrics metrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		return metrics.density;
 	}
 }
