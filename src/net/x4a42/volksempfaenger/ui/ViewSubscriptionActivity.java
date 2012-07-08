@@ -306,10 +306,10 @@ public class ViewSubscriptionActivity extends Activity implements
 			mActionModeSelected.toArray(ids);
 
 			switch (item.getItemId()) {
-			case R.id.item_download:
-				// TODO
-				mode.finish();
-				return true;
+			// case R.id.item_download:
+			// // TODO implement this when #52 is fixed
+			// mode.finish();
+			// return true;
 
 			case R.id.item_mark_listened:
 				EpisodeHelper.markAsListened(getContentResolver(), ids);
