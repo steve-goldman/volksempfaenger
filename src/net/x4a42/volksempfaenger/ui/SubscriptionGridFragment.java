@@ -11,6 +11,7 @@ import java.util.List;
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
@@ -277,8 +278,20 @@ public class SubscriptionGridFragment extends Fragment implements
 				}
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			final AlertDialog.Builder builder = new AlertDialog.Builder(
+					getActivity());
+			final String message = String.format(
+					getString(R.string.message_error_file_not_found), path);
+			builder.setTitle(R.string.title_file_not_found).setMessage(message)
+					.setCancelable(false)
+					.setPositiveButton(R.string.ok, new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+			final AlertDialog alert = builder.create();
+			alert.show();
 			return;
 		}
 
@@ -449,32 +462,54 @@ public class SubscriptionGridFragment extends Fragment implements
 	}
 
 	private class ImportTask extends AsyncTask<SubscriptionTree, Void, Void> {
-		LinkedList<String> failed = new LinkedList<String>();
+		final LinkedList<String> failed = new LinkedList<String>();
 
 		@Override
 		protected Void doInBackground(SubscriptionTree... subscriptions) {
 			for (SubscriptionTree subscription : subscriptions) {
+				// TODO finer grained exception handling
 				try {
 					PodcastHelper.addFeed(getActivity(), subscription.getUrl());
 				} catch (Exception e) {
-					failed.add(subscription.getTitle());
+					if (subscription == null) {
+						continue;
+					}
+					String name;
+					if (subscription.getTitle() == null) {
+						name = subscription.getUrl();
+					} else {
+						name = subscription.getTitle();
+					}
+					failed.add(name);
+
 				}
-				/*
-				 * catch (DuplicateException e) { // TODO Auto-generated catch
-				 * block e.printStackTrace(); } catch (InsertException e) { //
-				 * TODO Auto-generated catch block e.printStackTrace(); } catch
-				 * (NetException e) { // TODO Auto-generated catch block
-				 * e.printStackTrace(); } catch (FeedParserException e) { //
-				 * TODO Auto-generated catch block e.printStackTrace(); }
-				 */
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void arg0) {
-			// TODO
-			// show failed subscriptions
+			final AlertDialog.Builder builder = new AlertDialog.Builder(
+					getActivity());
+			builder.setTitle(R.string.title_import_error).setCancelable(false)
+					.setPositiveButton(R.string.ok, new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).setMessage(getString(R.string.message_error_import));
+			final TextView textView = new TextView(getActivity());
+			int padding = Utils.dpToPx(getActivity(), 10);
+			textView.setPadding(padding, 0, padding, padding);
+			StringBuilder strBuilder = new StringBuilder();
+			for (String podcast : failed) {
+				strBuilder.append(podcast);
+				strBuilder.append("\n");
+			}
+			textView.setText(strBuilder.substring(0, strBuilder.length() - 1));
+			builder.setView(textView);
+			final AlertDialog alert = builder.create();
+			alert.show();
 		}
 	}
 
