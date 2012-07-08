@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="net.x4a42.volksempfaenger"
     android:versionCode="1"
     android:versionName="0.1" >
@@ -28,7 +29,8 @@
         <activity
             android:name=".ui.AddSubscriptionActivity"
             android:theme="@style/Theme.Dialog"
-            android:windowSoftInputMode="stateVisible" >
+            android:windowSoftInputMode="stateVisible"
+            tools:ignore="ExportedActivity" >
 
             <!-- Intent filters taken from http://stackoverflow.com/a/5502710/731539 -->
             <intent-filter>
@@ -111,17 +113,23 @@
         <service android:name=".service.UpdateService" />
         <service android:name=".service.PlaybackService" />
 
-        <receiver android:name=".receiver.BootCompletedReceiver" >
+        <receiver
+            android:name=".receiver.BootCompletedReceiver"
+            tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DownloadCompleteReceiver" >
+        <receiver
+            android:name=".receiver.DownloadCompleteReceiver"
+            tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DownloadNotificationClickedReceiver" >
+        <receiver
+            android:name=".receiver.DownloadNotificationClickedReceiver"
+            tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>

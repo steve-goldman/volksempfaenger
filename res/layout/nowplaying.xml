@@ -58,6 +58,7 @@
         <ImageButton
             android:id="@+id/info_pause"
             style="@style/NowPlaying.Button"
+            android:contentDescription="@string/pause"
             android:src="@drawable/ic_media_pause" />
     </LinearLayout>
 
@@ -91,6 +92,7 @@
             android:id="@+id/back"
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
+            android:contentDescription="@string/rewind"
             android:src="@drawable/ic_media_rew" >
         </ImageButton>
 
@@ -98,6 +100,7 @@
             android:id="@+id/pause"
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
+            android:contentDescription="@string/pause"
             android:src="@drawable/ic_media_pause" >
         </ImageButton>
 
@@ -105,6 +108,7 @@
             android:id="@+id/forward"
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
+            android:contentDescription="@string/fast_forward"
             android:src="@drawable/ic_media_ff" >
         </ImageButton>
 
