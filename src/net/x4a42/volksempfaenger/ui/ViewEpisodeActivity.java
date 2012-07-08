@@ -28,6 +28,7 @@ import android.app.LoaderManager;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -164,7 +165,6 @@ public class ViewEpisodeActivity extends Activity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		ContentValues values = new ContentValues();
 		switch (item.getItemId()) {
 
 		case R.id.item_play:
@@ -213,20 +213,11 @@ public class ViewEpisodeActivity extends Activity implements
 
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
-			Uri uri = episodeCursor.getDownloadUri();
-			if (uri != null) {
-				File file = new File(uri.getPath());
-				if (file != null && file.isFile()) {
-					file.delete();
-				}
-			}
-			values.put(Episode.DOWNLOAD_ID, 0);
-			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
-			getContentResolver().update(
-					ContentUris.withAppendedId(
-							VolksempfaengerContentProvider.EPISODE_URI,
-							episodeCursor.getId()), values, null, null);
-			// TODO remove from DownloadManager
+			EpisodeHelper
+					.deleteDownload(
+							getContentResolver(),
+							(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+							mEpisodeUri);
 			return true;
 
 		default:
