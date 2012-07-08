@@ -11,6 +11,7 @@ import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
@@ -62,8 +63,8 @@ public class ViewEpisodeActivity extends Activity implements
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
-	private Uri uri;
-	private long id;
+	private Uri mEpisodeUri;
+	private long mEpisodeId;
 	private EpisodeCursor episodeCursor;
 	private Bitmap podcastLogoBitmap;
 
@@ -95,18 +96,18 @@ public class ViewEpisodeActivity extends Activity implements
 		bindService(new Intent(this, PlaybackService.class), this,
 				Activity.BIND_AUTO_CREATE);
 
-		uri = getIntent().getData();
+		mEpisodeUri = getIntent().getData();
 
-		if (uri == null) {
-			id = getIntent().getLongExtra("id", -1);
-			if (id == -1) {
+		if (mEpisodeUri == null) {
+			mEpisodeId = getIntent().getLongExtra("id", -1);
+			if (mEpisodeId == -1) {
 				finish();
 				return;
 			}
-			uri = ContentUris.withAppendedId(
-					VolksempfaengerContentProvider.EPISODE_URI, id);
+			mEpisodeUri = ContentUris.withAppendedId(
+					VolksempfaengerContentProvider.EPISODE_URI, mEpisodeId);
 		} else {
-			id = ContentUris.parseId(uri);
+			mEpisodeId = ContentUris.parseId(mEpisodeUri);
 		}
 
 		LoaderManager lm = getLoaderManager();
@@ -144,7 +145,8 @@ public class ViewEpisodeActivity extends Activity implements
 				menu.removeItem(R.id.item_play);
 			}
 
-			if (remote.isPlaying() && uri.equals(remote.getEpisodeUri())) {
+			if (remote.isPlaying()
+					&& mEpisodeUri.equals(remote.getEpisodeUri())) {
 				menu.removeItem(R.id.item_play);
 			}
 
@@ -168,7 +170,7 @@ public class ViewEpisodeActivity extends Activity implements
 		case R.id.item_play:
 			Intent intent = new Intent(this, PlaybackService.class);
 			intent.setAction(PlaybackService.ACTION_PLAY);
-			intent.setData(uri);
+			intent.setData(mEpisodeUri);
 			startService(intent);
 			return true;
 
@@ -206,11 +208,7 @@ public class ViewEpisodeActivity extends Activity implements
 			return true;
 
 		case R.id.item_mark_listened:
-			values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
-			getContentResolver().update(
-					ContentUris.withAppendedId(
-							VolksempfaengerContentProvider.EPISODE_URI, id),
-					values, null, null);
+			EpisodeHelper.markAsListened(getContentResolver(), mEpisodeUri);
 			return true;
 
 		case R.id.item_delete:
@@ -263,10 +261,10 @@ public class ViewEpisodeActivity extends Activity implements
 		Cursor cursor;
 		{
 			String[] projection = { Enclosure._ID, Enclosure.URL };
-			cursor = getContentResolver()
-					.query(VolksempfaengerContentProvider.ENCLOSURE_URI,
-							projection, WHERE_EPISODE_ID,
-							new String[] { String.valueOf(id) }, null);
+			cursor = getContentResolver().query(
+					VolksempfaengerContentProvider.ENCLOSURE_URI, projection,
+					WHERE_EPISODE_ID,
+					new String[] { String.valueOf(mEpisodeId) }, null);
 		}
 		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
 		while (cursor.moveToNext()) {
@@ -402,7 +400,7 @@ public class ViewEpisodeActivity extends Activity implements
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,
 				Episode.DOWNLOAD_TOTAL_SIZE_BYTES, Episode.ENCLOSURE_ID,
 				Episode.ENCLOSURE_SIZE };
-		return new CursorLoader(this, uri, projection, null, null, null);
+		return new CursorLoader(this, mEpisodeUri, projection, null, null, null);
 	}
 
 	@Override
@@ -477,7 +475,7 @@ public class ViewEpisodeActivity extends Activity implements
 	public void onClickPlay(View v) {
 		Intent intent = new Intent(this, PlaybackService.class);
 		intent.setAction(PlaybackService.ACTION_PLAY);
-		intent.setData(uri);
+		intent.setData(mEpisodeUri);
 		startService(intent);
 	}
 
@@ -492,7 +490,7 @@ public class ViewEpisodeActivity extends Activity implements
 	}
 
 	public Uri getUri() {
-		return uri;
+		return mEpisodeUri;
 	}
 
 	public Uri getPodcastUri() {

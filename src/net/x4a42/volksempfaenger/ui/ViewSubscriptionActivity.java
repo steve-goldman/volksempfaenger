@@ -6,11 +6,11 @@ import java.util.Date;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
@@ -19,7 +19,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -48,7 +47,6 @@ public class ViewSubscriptionActivity extends Activity implements
 	private static int[] ROW_COLOR_MAP;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
-	private static final String EPISODE_WHERE_ID_IN = Episode._ID + " IN (%s)";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
 			+ Episode._ID + " DESC";
 
@@ -303,6 +301,9 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
+			Long[] ids = new Long[mActionModeSelected.size()];
+			mActionModeSelected.toArray(ids);
+
 			switch (item.getItemId()) {
 			case R.id.item_download:
 				// TODO
@@ -310,13 +311,7 @@ public class ViewSubscriptionActivity extends Activity implements
 				return true;
 
 			case R.id.item_mark_listened:
-				ContentValues values = new ContentValues();
-				values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
-				getContentResolver().update(
-						VolksempfaengerContentProvider.EPISODE_URI,
-						values,
-						String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(
-								mActionModeSelected.toArray(), ",")), null);
+				EpisodeHelper.markAsListened(getContentResolver(), ids);
 				mode.finish();
 				return true;
 
