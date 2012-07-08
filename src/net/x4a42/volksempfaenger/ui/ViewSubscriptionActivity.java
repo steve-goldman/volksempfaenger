@@ -33,9 +33,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -97,8 +97,9 @@ public class ViewSubscriptionActivity extends Activity implements
 		mPodcastLogoView = (PodcastLogoView) findViewById(R.id.podcast_logo);
 		mPodcastDescriptionView = (TextView) findViewById(R.id.podcast_description);
 		mEpisodeListView = (ListView) findViewById(R.id.episode_list);
+		mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		mEpisodeListView.setMultiChoiceModeListener(mMultiChoiceModeListener);
 		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
-		mEpisodeListView.setOnItemLongClickListener(mOnItemLongClickListener);
 
 		// Update podcast information
 		Cursor podcastCursor = getContentResolver().query(
@@ -275,12 +276,10 @@ public class ViewSubscriptionActivity extends Activity implements
 
 	/* Action mode */
 
-	private ActionMode mActionMode;
-	private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+	private MultiChoiceModeListener mMultiChoiceModeListener = new MultiChoiceModeListener() {
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 			MenuInflater inflater = mode.getMenuInflater();
 			inflater.inflate(R.menu.action_episodes, menu);
 			return true;
@@ -292,9 +291,13 @@ public class ViewSubscriptionActivity extends Activity implements
 		}
 
 		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+		public void onItemCheckedStateChanged(ActionMode mode, int position,
+				long id, boolean checked) {
+			return;
+		}
 
-			long[] ids = mEpisodeListView.getCheckedItemIds();
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
 			switch (item.getItemId()) {
 			// case R.id.item_download:
@@ -303,7 +306,8 @@ public class ViewSubscriptionActivity extends Activity implements
 			// return true;
 
 			case R.id.item_mark_listened:
-				EpisodeHelper.markAsListened(getContentResolver(), ids);
+				EpisodeHelper.markAsListened(getContentResolver(),
+						mEpisodeListView.getCheckedItemIds());
 				mode.finish();
 				return true;
 
@@ -312,28 +316,19 @@ public class ViewSubscriptionActivity extends Activity implements
 						.deleteDownload(
 								getContentResolver(),
 								(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
-								ids);
+								mEpisodeListView.getCheckedItemIds());
 				mode.finish();
 				return true;
 
 			default:
 				return false;
 			}
+
 		}
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
-
-			mActionMode = null;
-			mEpisodeListView.clearChoices();
-			mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
-
-			// TODO find out why we still need this
-			int childCount = mEpisodeListView.getChildCount();
-			for (int i = 0; i < childCount; ++i) {
-				mEpisodeListView.getChildAt(i).setActivated(false);
-			}
-
+			return;
 		}
 
 	};
@@ -344,32 +339,10 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-
-			if (mActionMode == null) {
-				Intent intent = new Intent(ViewSubscriptionActivity.this,
-						ViewEpisodeActivity.class);
-				intent.putExtra("id", id);
-				startActivity(intent);
-			}
-
-		}
-	};
-
-	/* Item Long Click */
-
-	private final OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
-		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view,
-				int position, long id) {
-
-			if (mActionMode != null) {
-				return false;
-			}
-
-			mActionMode = startActionMode(mActionModeCallback);
-			mEpisodeListView.setItemChecked(position, true);
-			return true;
-
+			Intent intent = new Intent(ViewSubscriptionActivity.this,
+					ViewEpisodeActivity.class);
+			intent.putExtra("id", id);
+			startActivity(intent);
 		}
 	};
 
