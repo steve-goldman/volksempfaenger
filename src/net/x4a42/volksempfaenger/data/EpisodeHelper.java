@@ -38,7 +38,7 @@ public class EpisodeHelper {
 				VolksempfaengerContentProvider.EPISODE_URI, id));
 	}
 
-	public static void markAsListened(ContentResolver resolver, Long... ids) {
+	public static void markAsListened(ContentResolver resolver, long... ids) {
 		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
 				MARK_AS_LISTENED_VALUES,
 				String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(ids, ",")),
@@ -72,7 +72,7 @@ public class EpisodeHelper {
 	}
 
 	public static void deleteDownload(ContentResolver resolver,
-			DownloadManager dlManager, Long... ids) {
+			DownloadManager dlManager, long... ids) {
 
 		// query all affected download ids
 		Cursor cursor = resolver
