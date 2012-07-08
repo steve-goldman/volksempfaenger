@@ -42,7 +42,7 @@
     <string name="message_error">Something went wrong</string>
     <string name="message_podcast_already_added">You have already added this podcast to your subscriptions</string>
     <string name="message_podcast_successfully_added">You have successfully subscribed to this podcast</string>
-    <string name="message_podcast_confirm_delete">Do you want to delete \"%s\"?</string>
+    <string name="message_podcast_confirm_delete">Do you want to delete “%s”?</string>
     <string name="message_podcast_successfully_deleted">Podcast was successfully deleted</string>
     <string name="message_podcast_feed_download_failed">Unable to download podcast</string>
     <string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
@@ -110,9 +110,13 @@
     <string name="episode_marklistened">Mark as listened</string>
     <string name="unknown_duration">unknown duration</string>
     <string name="unknown_size">unknown size</string>
-    <string name="message_error_file_not_found">The file \'%s\' could not be found</string>
+    <string name="message_error_file_not_found">The file “%s” could not be found</string>
     <string name="title_file_not_found">File not found</string>
     <string name="title_import_error">Import Error</string>
     <string name="message_error_import">The import of the following podcasts failed</string>
+    <string name="pause">Pause</string>
+    <string name="error_download">download error</string>
+    <string name="rewind">Rewind</string>
+    <string name="fast_forward">Fast-Forward</string>
 
 </resources>

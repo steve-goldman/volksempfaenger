@@ -40,7 +40,7 @@
   <string name="message_error">Irgendetwas ist schiefgelaufen</string>
   <string name="message_podcast_already_added">Du hast diesen Podcast bereits abonniert</string>
   <string name="message_podcast_successfully_added">Der Podcast wurde zu deinen Abonnements hinzugefügt</string>
-  <string name="message_podcast_confirm_delete">Willst du \"%s\" wirklich löschen?</string>
+  <string name="message_podcast_confirm_delete">Willst du “%s” wirklich löschen?</string>
   <string name="message_podcast_successfully_deleted">Podcast wurde entfernt</string>
   <string name="message_podcast_feed_download_failed">Podcast konnte nicht heruntergeladen werden</string>
   <string name="message_podcast_feed_parsing_failed">Podcast-XML konnte nicht geparst werden</string>

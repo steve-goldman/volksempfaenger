@@ -489,27 +489,32 @@ public class SubscriptionGridFragment extends Fragment implements
 
 		@Override
 		protected void onPostExecute(Void arg0) {
-			final AlertDialog.Builder builder = new AlertDialog.Builder(
-					getActivity());
-			builder.setTitle(R.string.title_import_error).setCancelable(false)
-					.setPositiveButton(R.string.ok, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					}).setMessage(getString(R.string.message_error_import));
-			final TextView textView = new TextView(getActivity());
-			int padding = Utils.dpToPx(getActivity(), 10);
-			textView.setPadding(padding, 0, padding, padding);
-			StringBuilder strBuilder = new StringBuilder();
-			for (String podcast : failed) {
-				strBuilder.append(podcast);
-				strBuilder.append("\n");
+			if (failed.size() > 0) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				builder.setTitle(R.string.title_import_error)
+						.setCancelable(false)
+						.setPositiveButton(R.string.ok, new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						}).setMessage(getString(R.string.message_error_import));
+				final TextView textView = new TextView(getActivity());
+				int padding = Utils.dpToPx(getActivity(), 10);
+				textView.setPadding(padding, 0, padding, padding);
+				StringBuilder strBuilder = new StringBuilder();
+				for (String podcast : failed) {
+					strBuilder.append(podcast);
+					strBuilder.append("\n");
+				}
+				textView.setText(strBuilder.substring(0,
+						strBuilder.length() - 1));
+				builder.setView(textView);
+				final AlertDialog alert = builder.create();
+				alert.show();
 			}
-			textView.setText(strBuilder.substring(0, strBuilder.length() - 1));
-			builder.setView(textView);
-			final AlertDialog alert = builder.create();
-			alert.show();
 		}
 	}
 
