@@ -11,25 +11,28 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 
 public class UpdateServiceHelper {
 
-	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
-	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE + " AND "
-			+ Episode.FEED_ITEM_ID + "=?";
+	private static final String EPISODE_WHERE_ID = Episode._ID + "=?";
+	private static final String EPISODE_WHERE_PODCAST_ID = Episode.PODCAST_ID
+			+ "=?";
+	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE_PODCAST_ID
+			+ " AND " + Episode.FEED_ITEM_ID + "=?";
 	private static final String ENCLOSURE_WHERE = Enclosure.EPISODE_ID
 			+ "=? AND " + Enclosure.URL + "=?";
-	private static final String[] HASH_QUERY_COLUMNS = { Episode.FEED_ITEM_ID,
+	private static final String ENCLOSURE_WHERE_ID = Enclosure._ID + "=?";
+	private static final String[] COLUMNS_HASH_QUERY = { Episode.FEED_ITEM_ID,
 			Episode.HASH };
+	private static final String[] COLUMNS_EPISODE_ID = { Episode._ID };
+	private static final String[] COLUMNS_ENCLOSURE_ID = { Enclosure._ID };
 
 	private DatabaseHelper dbHelper;
-	@Deprecated
 	private ContentResolver resolver;
 
 	public UpdateServiceHelper(Context context) {
@@ -51,17 +54,20 @@ public class UpdateServiceHelper {
 		Map<String, String> episodeHashMap;
 		{
 			EpisodeCursor c = new EpisodeCursor(db.query(
-					DatabaseHelper.TABLE_EPISODE, HASH_QUERY_COLUMNS,
-					EPISODE_WHERE, new String[] { String.valueOf(podcastId) },
-					null, null, null));
+					DatabaseHelper.TABLE_EPISODE, COLUMNS_HASH_QUERY,
+					EPISODE_WHERE_PODCAST_ID,
+					new String[] { String.valueOf(podcastId) }, null, null,
+					null));
 			episodeHashMap = new HashMap<String, String>(c.getCount());
 			while (c.moveToNext()) {
 				episodeHashMap.put(c.getFeeddItemId(), c.getHash());
 			}
 		}
 
+		db.beginTransaction();
+
 		ContentValues values = new ContentValues();
-		Uri latestEpisodeUri = null;
+		long latestEpisodeId = -1;
 		Date latestEpisodeDate = null;
 
 		for (FeedItem item : feed.items) {
@@ -85,42 +91,56 @@ public class UpdateServiceHelper {
 				values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
 			}
 
-			Uri episodeUri;
 			long episodeId;
+
 			try {
-				episodeUri = resolver.insert(
-						VolksempfaengerContentProvider.EPISODE_URI, values);
-				episodeId = ContentUris.parseId(episodeUri);
-			} catch (Error.DuplicateException e) {
-				Cursor c = resolver
-						.query(VolksempfaengerContentProvider.EPISODE_URI,
-								new String[] { Episode._ID },
-								EPISODE_WHERE_ITEM_ID,
+
+				episodeId = db.insertOrThrow(DatabaseHelper.TABLE_EPISODE,
+						null, values);
+
+			} catch (SQLiteConstraintException e) {
+
+				Cursor c = db
+						.query(DatabaseHelper.TABLE_EPISODE,
+								COLUMNS_EPISODE_ID, EPISODE_WHERE_ITEM_ID,
 								new String[] { String.valueOf(podcastId),
-										item.itemId }, null);
+										item.itemId }, null, null, null);
+
 				if (!c.moveToFirst()) {
 					// this should never happen actually
+					Log.d(this,
+							"Got SQLiteConstraintException but could not find conflicting row",
+							e);
 					continue;
 				}
+
+				// get id of conflicting episode
 				episodeId = c.getLong(c.getColumnIndex(Episode._ID));
 				c.close();
-				episodeUri = ContentUris.withAppendedId(
-						VolksempfaengerContentProvider.EPISODE_URI, episodeId);
-				resolver.update(episodeUri, values, null, null);
+				// update conflicting episode
+				db.update(DatabaseHelper.TABLE_EPISODE, values,
+						EPISODE_WHERE_ID,
+						new String[] { String.valueOf(episodeId) });
+
 			} catch (Error.InsertException e) {
+
 				Log.wtf(this, e);
 				return;
+
+			} finally {
+
+				db.yieldIfContendedSafely();
+
 			}
 
-			if (firstSync) {
-				if (latestEpisodeDate == null
-						|| latestEpisodeDate.before(item.date)) {
-					latestEpisodeDate = item.date;
-					latestEpisodeUri = episodeUri;
-				}
+			if (firstSync
+					&& (latestEpisodeDate == null || latestEpisodeDate
+							.before(item.date))) {
+				latestEpisodeDate = item.date;
+				latestEpisodeId = episodeId;
 			}
 
-			long mainEnclosureId = 0;
+			long mainEnclosureId = -1;
 
 			for (net.x4a42.volksempfaenger.feedparser.Enclosure enclosure : item.enclosures) {
 				values.clear();
@@ -130,48 +150,60 @@ public class UpdateServiceHelper {
 				values.put(Enclosure.MIME, enclosure.mime);
 				values.put(Enclosure.SIZE, enclosure.size);
 
-				Uri enclosureUri;
 				long enclosureId;
+
 				try {
-					enclosureUri = resolver.insert(
-							VolksempfaengerContentProvider.ENCLOSURE_URI,
-							values);
-					enclosureId = ContentUris.parseId(enclosureUri);
+
+					enclosureId = db.insert(DatabaseHelper.TABLE_ENCLOSURE,
+							null, values);
+
 				} catch (Error.DuplicateException e) {
-					Cursor c = resolver.query(
-							VolksempfaengerContentProvider.ENCLOSURE_URI,
-							new String[] { Enclosure._ID }, ENCLOSURE_WHERE,
+
+					Cursor c = db.query(DatabaseHelper.TABLE_ENCLOSURE,
+							COLUMNS_ENCLOSURE_ID, ENCLOSURE_WHERE,
 							new String[] { String.valueOf(episodeId),
-									enclosure.url }, null);
+									enclosure.url }, null, null, null);
+
 					if (!c.moveToFirst()) {
 						// this should never happen actually
+						Log.d(this,
+								"Got SQLiteConstraintException but could not find conflicting row",
+								e);
 						continue;
 					}
+
+					// get id of conflicting enclosure
 					enclosureId = c.getLong(c.getColumnIndex(Enclosure._ID));
 					c.close();
-					enclosureUri = ContentUris.withAppendedId(
-							VolksempfaengerContentProvider.ENCLOSURE_URI,
-							enclosureId);
-					resolver.update(enclosureUri, values, null, null);
+					// update conflicting enclosure
+					db.update(DatabaseHelper.TABLE_ENCLOSURE, values,
+							ENCLOSURE_WHERE_ID,
+							new String[] { String.valueOf(enclosureId) });
+
 				} catch (Error.InsertException e) {
+
 					Log.wtf(this, e);
 					return;
+
+				} finally {
+
+					db.yieldIfContendedSafely();
+
 				}
 
-				// Try to find the main enclosure that will get downloaded
 				if (item.enclosures.size() == 1) {
-					// This is the only enclosure so it's the main one
 					mainEnclosureId = enclosureId;
-				} else {
-					// TODO: try to automatically choose the best match
 				}
+
 			}
 
 			// save mainEnclosureId in database
 			if (mainEnclosureId > 0) {
 				values.clear();
 				values.put(Episode.ENCLOSURE_ID, mainEnclosureId);
-				resolver.update(episodeUri, values, null, null);
+				db.update(DatabaseHelper.TABLE_EPISODE, values,
+						EPISODE_WHERE_ID,
+						new String[] { String.valueOf(episodeId) });
 			}
 
 		}
@@ -179,8 +211,14 @@ public class UpdateServiceHelper {
 		if (firstSync) {
 			values.clear();
 			values.put(Episode.STATUS, Constants.EPISODE_STATE_NEW);
-			resolver.update(latestEpisodeUri, values, null, null);
+			db.update(DatabaseHelper.TABLE_EPISODE, values, EPISODE_WHERE_ID,
+					new String[] { String.valueOf(latestEpisodeId) });
 		}
+
+		db.setTransactionSuccessful();
+		db.endTransaction();
+
+		resolver.notifyChange(VolksempfaengerContentProvider.CONTENT_URI, null);
 
 	}
 
