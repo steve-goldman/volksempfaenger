@@ -3,16 +3,14 @@
 
     <item
         android:id="@+id/item_update"
-        android:icon="@drawable/ic_menu_refresh"
+        android:icon="@drawable/ic_action_refresh"
         android:showAsAction="ifRoom"
         android:title="@string/menu_update"/>
     <item
         android:id="@+id/item_edit"
-        android:icon="@drawable/ic_menu_edit"
         android:title="@string/menu_edit"/>
     <item
         android:id="@+id/item_delete"
-        android:icon="@drawable/ic_menu_delete"
         android:title="@string/menu_delete"/>
 
 </menu>

@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:indeterminateDrawable="@drawable/ic_menu_refresh_rotating"
+        android:indeterminateDrawable="@drawable/ic_action_refresh_rotationg"
         android:indeterminateDuration="1250" />
 
 </FrameLayout>
