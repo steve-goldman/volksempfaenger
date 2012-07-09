@@ -10,7 +10,7 @@ public final class Constants {
 	public static final String EXTRA_OI_TITLE = "org.openintents.extra.TITLE";
 
 	public static final String URL_WEBSITE = "http://volksempfaenger.0x4a42.net/";
-	public static final String[] FEEDBACK_TO = { "volksempfaenger-support@0x4a42.net" };
+	public static final String[] FEEDBACK_TO = { "volksempfaenger@0x4a42.net" };
 	public static final Uri OI_FILEMANGER_URI_PLAY = Uri
 			.parse("market://details?id=org.openintents.filemanager");
 	public static final Uri OI_FILEMANGER_URI_HTTP = Uri
