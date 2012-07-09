@@ -1,8 +1,6 @@
 package net.x4a42.volksempfaenger.service;
 
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.data.Columns.Enclosure;
-import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
@@ -20,11 +18,6 @@ import android.net.Uri;
 
 public class UpdateService extends IntentService {
 
-	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
-	private static final String EPISODE_WHERE_ITEM_ID = EPISODE_WHERE + " AND "
-			+ Episode.FEED_ITEM_ID + "=?";
-	private static final String ENCLOSURE_WHERE = Enclosure.EPISODE_ID
-			+ "=? AND " + Enclosure.URL + "=?";
 	private static long lastRun = 0;
 
 	public UpdateService() {
@@ -105,7 +98,7 @@ public class UpdateService extends IntentService {
 				continue;
 			}
 
-			updateHelper.updatePodcastFromFeed(podcastId, feed);
+			updateHelper.updatePodcastFromFeed(podcastId, feed, extraFirstSync);
 
 			timeFeedEnd = System.currentTimeMillis();
 			Log.d(this, "Updated " + feed.title + " (took "
