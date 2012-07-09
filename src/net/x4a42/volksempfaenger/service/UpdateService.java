@@ -1,30 +1,19 @@
 package net.x4a42.volksempfaenger.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
-import net.x4a42.volksempfaenger.data.Constants;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
-import net.x4a42.volksempfaenger.data.Error;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
+import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
-import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.IntentService;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -79,6 +68,7 @@ public class UpdateService extends IntentService {
 		}
 
 		FeedDownloader feedDownloader = new FeedDownloader(this);
+		UpdateServiceHelper updateHelper = new UpdateServiceHelper(this);
 
 		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
 		timeStart = System.currentTimeMillis();
@@ -115,147 +105,7 @@ public class UpdateService extends IntentService {
 				continue;
 			}
 
-			ContentValues values = new ContentValues();
-
-			// TODO: update podcast table
-
-			Map<String, String> episodeHashMap;
-			{
-				EpisodeCursor c = new EpisodeCursor(getContentResolver().query(
-						VolksempfaengerContentProvider.EPISODE_URI,
-						new String[] { Episode._ID, Episode.FEED_ITEM_ID,
-								Episode.HASH }, EPISODE_WHERE,
-						new String[] { String.valueOf(podcastId) }, null));
-				episodeHashMap = new HashMap<String, String>(c.getCount());
-				while (c.moveToNext()) {
-					episodeHashMap.put(c.getFeeddItemId(), c.getHash());
-				}
-			}
-
-			Uri latestEpisodeUri = null;
-			Date latestEpisodeDate = null;
-
-			for (FeedItem item : feed.items) {
-				values.clear();
-				values.put(Episode.PODCAST_ID, podcastId);
-				values.put(Episode.FEED_ITEM_ID, item.itemId);
-				values.put(Episode.TITLE, item.title);
-				values.put(Episode.DATE, Utils.toUnixTimestamp(item.date));
-				values.put(Episode.URL, item.url);
-				values.put(Episode.DESCRIPTION, item.description);
-
-				String newHash = Utils.hashContentValues(values);
-				String oldHash = episodeHashMap.get(item.itemId);
-				if (newHash.equals(oldHash)) {
-					Log.d(this, "Skipping already existing item: " + item.title);
-					continue;
-				}
-
-				values.put(Episode.HASH, newHash);
-				if (extraFirstSync) {
-					values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENED);
-				}
-
-				Uri episodeUri;
-				long episodeId;
-				try {
-					episodeUri = getContentResolver().insert(
-							VolksempfaengerContentProvider.EPISODE_URI, values);
-					episodeId = ContentUris.parseId(episodeUri);
-				} catch (Error.DuplicateException e) {
-					Cursor c = getContentResolver().query(
-							VolksempfaengerContentProvider.EPISODE_URI,
-							new String[] { Episode._ID },
-							EPISODE_WHERE_ITEM_ID,
-							new String[] { String.valueOf(podcastId),
-									item.itemId }, null);
-					if (!c.moveToFirst()) {
-						// this should never happen actually
-						continue;
-					}
-					episodeId = c.getLong(c.getColumnIndex(Episode._ID));
-					c.close();
-					episodeUri = ContentUris.withAppendedId(
-							VolksempfaengerContentProvider.EPISODE_URI,
-							episodeId);
-					getContentResolver().update(episodeUri, values, null, null);
-				} catch (Error.InsertException e) {
-					Log.wtf(this, e);
-					return;
-				}
-
-				if (extraFirstSync) {
-					if (latestEpisodeDate == null
-							|| latestEpisodeDate.before(item.date)) {
-						latestEpisodeDate = item.date;
-						latestEpisodeUri = episodeUri;
-					}
-				}
-
-				long mainEnclosureId = 0;
-
-				for (net.x4a42.volksempfaenger.feedparser.Enclosure enclosure : item.enclosures) {
-					values.clear();
-					values.put(Enclosure.EPISODE_ID, episodeId);
-					values.put(Enclosure.TITLE, enclosure.title);
-					values.put(Enclosure.URL, enclosure.url);
-					values.put(Enclosure.MIME, enclosure.mime);
-					values.put(Enclosure.SIZE, enclosure.size);
-
-					Uri enclosureUri;
-					long enclosureId;
-					try {
-						enclosureUri = getContentResolver().insert(
-								VolksempfaengerContentProvider.ENCLOSURE_URI,
-								values);
-						enclosureId = ContentUris.parseId(enclosureUri);
-					} catch (Error.DuplicateException e) {
-						Cursor c = getContentResolver().query(
-								VolksempfaengerContentProvider.ENCLOSURE_URI,
-								new String[] { Enclosure._ID },
-								ENCLOSURE_WHERE,
-								new String[] { String.valueOf(episodeId),
-										enclosure.url }, null);
-						if (!c.moveToFirst()) {
-							// this should never happen actually
-							continue;
-						}
-						enclosureId = c
-								.getLong(c.getColumnIndex(Enclosure._ID));
-						c.close();
-						enclosureUri = ContentUris.withAppendedId(
-								VolksempfaengerContentProvider.ENCLOSURE_URI,
-								enclosureId);
-						getContentResolver().update(enclosureUri, values, null,
-								null);
-					} catch (Error.InsertException e) {
-						Log.wtf(this, e);
-						return;
-					}
-
-					// Try to find the main enclosure that will get downloaded
-					if (item.enclosures.size() == 1) {
-						// This is the only enclosure so it's the main one
-						mainEnclosureId = enclosureId;
-					} else {
-						// TODO: try to automatically choose the best match
-					}
-				}
-
-				// save mainEnclosureId in database
-				if (mainEnclosureId > 0) {
-					values.clear();
-					values.put(Episode.ENCLOSURE_ID, mainEnclosureId);
-					getContentResolver().update(episodeUri, values, null, null);
-				}
-			}
-
-			if (extraFirstSync) {
-				values.clear();
-				values.put(Episode.STATUS, Constants.EPISODE_STATE_NEW);
-				getContentResolver().update(latestEpisodeUri, values, null,
-						null);
-			}
+			updateHelper.updatePodcastFromFeed(podcastId, feed);
 
 			timeFeedEnd = System.currentTimeMillis();
 			Log.d(this, "Updated " + feed.title + " (took "
