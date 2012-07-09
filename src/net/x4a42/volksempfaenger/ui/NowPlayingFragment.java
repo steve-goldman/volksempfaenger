@@ -205,11 +205,17 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	private void hideFragment() {
-		getView().setVisibility(View.GONE);
+		View v = getView();
+		if (v != null) {
+			v.setVisibility(View.GONE);
+		}
 	}
 
 	private void showFragment() {
-		getView().setVisibility(View.VISIBLE);
+		View v = getView();
+		if (v != null) {
+			v.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void hideExtendedControls() {
