@@ -106,7 +106,7 @@
   <string name="episode_marklistened">Als gehört markieren</string>
   <string name="unknown_duration">unbekannte Länge</string>
   <string name="unknown_size">unbekannte Größe</string>
-  <string name="message_error_file_not_found">Die Datei \'%s\' konnte nicht gefunden werden</string>
+  <string name="message_error_file_not_found">Die Datei “%s” konnte nicht gefunden werden</string>
   <string name="title_file_not_found">Datei nicht gefunden</string>
   <string name="title_import_error">Fehler beim Importieren</string>
   <string name="message_error_import">Das Importieren der folgenden Podcasts schlug fehl</string>
