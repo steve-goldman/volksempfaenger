@@ -110,4 +110,8 @@
   <string name="title_file_not_found">Datei nicht gefunden</string>
   <string name="title_import_error">Fehler beim Importieren</string>
   <string name="message_error_import">Das Importieren der folgenden Podcasts schlug fehl</string>
+  <string name="pause">Pausieren</string>
+  <string name="error_download">Fehler beim Download</string>
+  <string name="rewind">Zurückspulen</string>
+  <string name="fast_forward">Vorspulen</string>
 </resources>
