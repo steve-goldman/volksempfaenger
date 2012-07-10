@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/listview_item_background" >
+
+    <net.x4a42.volksempfaenger.ui.PodcastLogoView
+        android:id="@+id/podcast_logo"
+        style="@style/PodcastLogo.Small"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/episode_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_toLeftOf="@+id/percentage"
+        android:layout_toRightOf="@+id/podcast_logo"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/podcast_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/episode_title"
+        android:layout_below="@+id/episode_title"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/progress_text"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/episode_title"
+        android:layout_alignBottom="@+id/episode_title"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/download_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/episode_title"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/episode_title"
+        android:layout_marginRight="8dp"
+        android:contentDescription="@string/error_download"
+        android:src="@drawable/download_error" />
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/podcast_title"
+        android:layout_alignBottom="@+id/podcast_title"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp" />
+
+    <TextView
+        android:id="@+id/additional_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/podcast_title"
+        android:layout_below="@+id/podcast_title"
+        android:layout_toLeftOf="@+id/episode_duration"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/episode_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/additional_info"
+        android:layout_alignBottom="@+id/additional_info"
+        android:layout_alignRight="@+id/progress_text" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/podcast_title"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/podcast_title"
+        android:layout_marginRight="8dp" />
+
+</RelativeLayout>
