@@ -206,7 +206,7 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public void receiveUi(Status status) {
-			Log.d(this, status.toString());
+			Log.v(this, status.toString());
 			if (status.isUpdating()) {
 				if (!mIsUpdating && mUri.equals(status.getUri())) {
 					mIsUpdating = true;

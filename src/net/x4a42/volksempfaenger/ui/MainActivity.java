@@ -115,9 +115,9 @@ public class MainActivity extends Activity implements
 				if (debugDir != null && debugDir.isDirectory()) {
 					MenuItem item = menu.add("Debug");
 					item.setIntent(new Intent(this, DebugActivity.class));
-					Log.d(this, "Found " + debugDir + ". Enabling debug mode.");
+					Log.v(this, "Found " + debugDir + ". Enabling debug mode.");
 				} else {
-					Log.d(this, "Did not find " + debugDir
+					Log.v(this, "Did not find " + debugDir
 							+ ". Disabling debug mode.");
 				}
 			}
