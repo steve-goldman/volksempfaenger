@@ -73,7 +73,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	}
 
 	private void notifyUri(Uri uri, Mime type) {
-		Log.d(this, "notifying " + uri);
+		Log.v(this, "notifying " + uri);
 		contentResolver.notifyChange(uri, null);
 	}
 

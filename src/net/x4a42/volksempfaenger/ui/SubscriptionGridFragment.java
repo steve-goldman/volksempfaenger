@@ -159,7 +159,7 @@ public class SubscriptionGridFragment extends Fragment implements
 			if (list.size() > 0) {
 				startActivityForResult(intent, PICK_FILE_REQUEST);
 			} else {
-				Log.d(this, "Could not start " + Constants.ACTION_OI_PICK_FILE
+				Log.v(this, "Could not start " + Constants.ACTION_OI_PICK_FILE
 						+ " Intent");
 				new AlertDialog.Builder(getActivity())
 						.setMessage(R.string.dialog_filemanager_missing_message)
@@ -362,7 +362,7 @@ public class SubscriptionGridFragment extends Fragment implements
 					}
 				}
 			} catch (ClassCastException e) {
-				Log.d(this, e.toString());
+				Log.v(this, e.toString());
 			}
 			return super.getView(position, convertView, parent);
 		}
