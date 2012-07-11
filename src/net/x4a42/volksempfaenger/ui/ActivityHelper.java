@@ -3,6 +3,10 @@ package net.x4a42.volksempfaenger.ui;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +53,20 @@ public class ActivityHelper {
 			return false;
 
 		}
+	}
+
+	public static AlertDialog buildErrorDialog(Context context, String title,
+			String message) {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(title).setMessage(message).setCancelable(false)
+				.setPositiveButton(R.string.ok, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+		final AlertDialog alert = builder.create();
+		return alert;
 	}
 
 }
