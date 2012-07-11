@@ -309,6 +309,8 @@ public class PlaybackService extends Service implements EventListener {
 		case RESET:
 			onPlayerReset();
 			break;
+		default:
+			break;
 		}
 	}
 

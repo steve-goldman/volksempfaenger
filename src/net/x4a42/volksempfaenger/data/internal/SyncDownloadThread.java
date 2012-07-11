@@ -138,6 +138,7 @@ public class SyncDownloadThread implements Runnable {
 			while (qc.moveToNext()) {
 				Log.d(this, qc.rowToString());
 			}
+			qc.close();
 		}
 	}
 

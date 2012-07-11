@@ -199,6 +199,8 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		case ENCLOSURE_DIR:
 			newUri = insertHelper.insertEnclosure(uri, values);
 			break;
+		default:
+			break;
 		}
 
 		if (newUri != null) {
@@ -278,6 +280,8 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		case ENCLOSURE_ITEM:
 			rowsAffected = deleteHelper.deleteEnclosureItem(parseId(uri),
 					selection, selectionArgs);
+			break;
+		default:
 			break;
 		}
 
