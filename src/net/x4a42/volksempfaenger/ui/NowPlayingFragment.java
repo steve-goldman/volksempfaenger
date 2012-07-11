@@ -256,6 +256,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 					.query(episodeUri, projection, null, null, null));
 
 			if (!cursor.moveToFirst()) {
+				cursor.close();
 				throw new IllegalArgumentException("Episode not found");
 			}
 

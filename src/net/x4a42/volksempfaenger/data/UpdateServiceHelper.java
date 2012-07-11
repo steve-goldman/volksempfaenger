@@ -62,6 +62,7 @@ public class UpdateServiceHelper {
 			while (c.moveToNext()) {
 				episodeHashMap.put(c.getFeeddItemId(), c.getHash());
 			}
+			c.close();
 		}
 
 		db.beginTransaction();

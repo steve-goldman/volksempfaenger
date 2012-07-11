@@ -251,7 +251,11 @@ public class FeedParser {
 						}
 					}
 					break;
+				default:
+					break;
 				}
+				break;
+			default:
 				break;
 			}
 
@@ -278,6 +282,8 @@ public class FeedParser {
 					}
 					feedItem.enclosures.add(enclosure);
 				}
+				break;
+			default:
 				break;
 			}
 		}
@@ -371,6 +377,8 @@ public class FeedParser {
 					feed.image = Utils.trimmedString(buffer);
 				}
 				break;
+			default:
+				break;
 			}
 		}
 
@@ -384,6 +392,8 @@ public class FeedParser {
 
 				case RSS_ITEM:
 					feedItem.title = Utils.trimmedString(buffer);
+					break;
+				default:
 					break;
 				}
 				break;
@@ -405,6 +415,8 @@ public class FeedParser {
 				case RSS_CHANNEL:
 					feed.website = Utils.trimmedString(buffer);
 					break;
+				default:
+					break;
 				}
 				break;
 			case RSS_DESCRIPTION:
@@ -416,6 +428,8 @@ public class FeedParser {
 						break;
 					case RSS_CHANNEL:
 						feed.description = Utils.trimmedString(buffer);
+						break;
+					default:
 						break;
 					}
 				}
@@ -429,6 +443,8 @@ public class FeedParser {
 					break;
 				case RSS_CHANNEL:
 					feed.description = Utils.trimmedString(buffer);
+					break;
+				default:
 					break;
 				}
 				break;
@@ -452,6 +468,8 @@ public class FeedParser {
 					}
 					parents.push(copy);
 				}
+			default:
+				break;
 			}
 
 		}
