@@ -245,7 +245,16 @@ public class SubscriptionGridFragment extends Fragment implements
 		case PICK_FILE_REQUEST:
 			if (resultCode == Activity.RESULT_OK) {
 				if (data != null) {
-					importFile(data.getData().getPath());
+					try {
+						importFile(data.getData().getPath());
+					} catch (Exception e) {
+						ActivityHelper
+								.buildErrorDialog(
+										getActivity(),
+										getString(R.string.title_import_error),
+										getString(R.string.message_error_import_unexpected))
+								.show();
+					}
 				}
 			}
 			break;
@@ -278,20 +287,10 @@ public class SubscriptionGridFragment extends Fragment implements
 				}
 			}
 		} catch (FileNotFoundException e) {
-			final AlertDialog.Builder builder = new AlertDialog.Builder(
-					getActivity());
 			final String message = String.format(
 					getString(R.string.message_error_file_not_found), path);
-			builder.setTitle(R.string.title_file_not_found).setMessage(message)
-					.setCancelable(false)
-					.setPositiveButton(R.string.ok, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					});
-			final AlertDialog alert = builder.create();
-			alert.show();
+			ActivityHelper.buildErrorDialog(getActivity(),
+					getString(R.string.title_file_not_found), message).show();
 			return;
 		}
 
