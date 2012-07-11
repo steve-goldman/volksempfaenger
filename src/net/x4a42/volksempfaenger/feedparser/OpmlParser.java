@@ -55,6 +55,7 @@ public class OpmlParser {
 		private final static String OPML_OUTLINE = "outline";
 		private final static String OPML_XML_URL = "xmlUrl";
 		private final static String OPML_TITLE = "title";
+		private static final String OPML_TEXT = "text";
 
 		public SubscriptionTree getTree() {
 			return tree;
@@ -70,10 +71,16 @@ public class OpmlParser {
 			}
 
 			if (localName.equals(OPML_OUTLINE)) {
-				String url = atts.getValue(OPML_XML_URL);
+				final String url = atts.getValue(OPML_XML_URL);
 				String title = atts.getValue(OPML_TITLE);
+				final String text = atts.getValue(OPML_TEXT);
 				SubscriptionTree newChild;
 				if (url != null) {
+					if (title == null && text != null) {
+						title = text;
+					} else {
+						title = url;
+					}
 					newChild = new SubscriptionTree(title, url);
 					path.peek().addChild(newChild);
 				} else if (title != null) {
