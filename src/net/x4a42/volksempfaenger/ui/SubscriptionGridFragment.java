@@ -252,8 +252,8 @@ public class SubscriptionGridFragment extends Fragment implements
 								.buildErrorDialog(
 										getActivity(),
 										getString(R.string.title_import_error),
-										getString(R.string.message_error_import_unexpected))
-								.show();
+										getString(R.string.message_error_import_unexpected),
+										e).show();
 					}
 				}
 			}
@@ -290,7 +290,8 @@ public class SubscriptionGridFragment extends Fragment implements
 			final String message = String.format(
 					getString(R.string.message_error_file_not_found), path);
 			ActivityHelper.buildErrorDialog(getActivity(),
-					getString(R.string.title_file_not_found), message).show();
+					getString(R.string.title_file_not_found), message, null)
+					.show();
 			return;
 		}
 

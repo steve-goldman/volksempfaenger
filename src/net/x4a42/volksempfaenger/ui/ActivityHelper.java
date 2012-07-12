@@ -63,16 +63,31 @@ public class ActivityHelper {
 		}
 	}
 
-	public static AlertDialog buildErrorDialog(Context context, String title,
-			String message) {
+	public static AlertDialog buildErrorDialog(final Context context,
+			final String title, final String message, final Exception e) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setTitle(title).setMessage(message).setCancelable(false)
-				.setPositiveButton(R.string.ok, new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+		builder.setTitle(title).setMessage(message).setCancelable(false);
+		final OnClickListener dismissListener = new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
+		if (e == null) {
+			builder.setPositiveButton(R.string.report_error,
+					new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							sendCrashReport(context, e);
+						}
+					});
+			builder.setNegativeButton(R.string.cancel, dismissListener);
+
+		} else {
+			builder.setPositiveButton(R.string.ok, dismissListener);
+		}
+
 		final AlertDialog alert = builder.create();
 		return alert;
 	}
