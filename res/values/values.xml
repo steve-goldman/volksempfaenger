@@ -21,4 +21,6 @@
 
     <dimen name="grid_column_width">150dp</dimen>
 
+    <string name="template_error_report_message" formatted="false">Hello, something went wrong!\n%s</string>
+
 </resources>
