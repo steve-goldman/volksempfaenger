@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import net.x4a42.volksempfaenger.Constants;
+import net.x4a42.volksempfaenger.Log;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -21,7 +22,6 @@ public class CleanCacheService extends Service {
 			final long minTime = System.currentTimeMillis() - 3 * 24 * 60 * 60
 					* 1000;
 			final File[] imageFiles = images.listFiles();
-			CleanCacheService.removeOldFiles(imageFiles, minTime);
 			final File[] errorReportFiles = cacheDir
 					.listFiles(new FilenameFilter() {
 
@@ -35,7 +35,21 @@ public class CleanCacheService extends Service {
 							}
 						}
 					});
-			CleanCacheService.removeOldFiles(errorReportFiles, minTime);
+			try {
+				if (imageFiles != null) {
+					CleanCacheService.removeOldFiles(imageFiles, minTime);
+				}
+				if (errorReportFiles != null) {
+					CleanCacheService.removeOldFiles(errorReportFiles, minTime);
+				}
+			} catch (Exception e) {
+				/*
+				 * do not crash everything because removing temporary files
+				 * fails. probably just a temporary problem
+				 */
+				Log.w(this, e);
+				e.printStackTrace();
+			}
 			return null;
 		}
 
