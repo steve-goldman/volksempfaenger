@@ -73,7 +73,7 @@ public class ActivityHelper {
 				dialog.dismiss();
 			}
 		};
-		if (e == null) {
+		if (e != null) {
 			builder.setPositiveButton(R.string.report_error,
 					new OnClickListener() {
 
