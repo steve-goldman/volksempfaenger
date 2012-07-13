@@ -247,7 +247,6 @@ public class SubscriptionGridFragment extends Fragment implements
 				if (data != null) {
 					try {
 						importFile(data.getData().getPath());
-						throw new Exception("fuuuu");
 					} catch (Exception e) {
 						ActivityHelper
 								.buildErrorDialog(
