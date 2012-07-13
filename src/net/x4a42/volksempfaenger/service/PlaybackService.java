@@ -25,7 +25,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
+import android.media.RemoteControlClient.MetadataEditor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -240,6 +242,20 @@ public class PlaybackService extends Service implements EventListener {
 		ContentValues values = new ContentValues();
 		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);
+		final MetadataEditor metadataEditor = remoteControlClient
+				.editMetadata(true);
+		/*
+		 * TODO bitmap is scaled down. maybe it should be loaded in full
+		 * resolution, not through the cache.
+		 */
+		metadataEditor
+				.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK,
+						Utils.getPodcastLogoBitmap(this, cursor.getPodcastId()))
+				.putString(MediaMetadataRetriever.METADATA_KEY_TITLE,
+						cursor.getTitle())
+				.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM,
+						cursor.getPodcastTitle());
+		metadataEditor.apply();
 	}
 
 	/**
@@ -317,6 +333,8 @@ public class PlaybackService extends Service implements EventListener {
 
 		case RESET:
 			onPlayerReset();
+			break;
+		default:
 			break;
 		}
 	}

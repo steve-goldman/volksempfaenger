@@ -311,7 +311,7 @@ public class ViewEpisodeActivity extends Activity implements
 						imageDownloader.fetchImage(img.getSource());
 					} catch (Exception e) {
 						// Who cares?
-						Log.d(this, "Exception handled", e);
+						Log.v(this, "Exception handled", e);
 					}
 				}
 

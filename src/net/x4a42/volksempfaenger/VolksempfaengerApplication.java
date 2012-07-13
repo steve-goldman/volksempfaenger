@@ -98,11 +98,11 @@ public class VolksempfaengerApplication extends Application implements
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 		if (interval == 0) {
-			Log.d(this, "setUpdateAlarm(): disabled");
+			Log.v(this, "setUpdateAlarm(): disabled");
 
 			am.cancel(pending);
 		} else {
-			Log.d(this, "setUpdateAlarm(): " + interval + "ms");
+			Log.v(this, "setUpdateAlarm(): " + interval + "ms");
 
 			long next;
 			long last = UpdateService.getLastRun();

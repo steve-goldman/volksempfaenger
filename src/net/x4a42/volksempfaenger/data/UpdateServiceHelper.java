@@ -46,7 +46,7 @@ public class UpdateServiceHelper {
 
 	public void updatePodcastFromFeed(long podcastId, Feed feed,
 			boolean firstSync) {
-		Log.d(this, "Updating podcast " + podcastId + " from " + feed);
+		Log.v(this, "Updating podcast " + podcastId + " from " + feed);
 
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -62,6 +62,7 @@ public class UpdateServiceHelper {
 			while (c.moveToNext()) {
 				episodeHashMap.put(c.getFeeddItemId(), c.getHash());
 			}
+			c.close();
 		}
 
 		db.beginTransaction();
@@ -82,7 +83,7 @@ public class UpdateServiceHelper {
 			String newHash = Utils.hashContentValues(values);
 			String oldHash = episodeHashMap.get(item.itemId);
 			if (newHash.equals(oldHash)) {
-				Log.d(this, "Skipping already existing item: " + item.title);
+				Log.v(this, "Skipping already existing item: " + item.title);
 				continue;
 			}
 
@@ -108,7 +109,7 @@ public class UpdateServiceHelper {
 
 				if (!c.moveToFirst()) {
 					// this should never happen actually
-					Log.d(this,
+					Log.v(this,
 							"Got SQLiteConstraintException but could not find conflicting row",
 							e);
 					continue;
@@ -166,7 +167,7 @@ public class UpdateServiceHelper {
 
 					if (!c.moveToFirst()) {
 						// this should never happen actually
-						Log.d(this,
+						Log.wtf(this,
 								"Got SQLiteConstraintException but could not find conflicting row",
 								e);
 						continue;
