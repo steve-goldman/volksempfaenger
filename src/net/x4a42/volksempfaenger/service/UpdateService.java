@@ -72,7 +72,7 @@ public class UpdateService extends IntentService {
 		while (cursor.moveToNext()) {
 			UpdateServiceStatus.startUpdate(cursor.getUri());
 
-			Log.d(this,
+			Log.v(this,
 					"Updating "
 							+ cursor.getString(cursor
 									.getColumnIndex(Podcast.TITLE)));
@@ -101,7 +101,7 @@ public class UpdateService extends IntentService {
 			updateHelper.updatePodcastFromFeed(podcastId, feed, extraFirstSync);
 
 			timeFeedEnd = System.currentTimeMillis();
-			Log.d(this, "Updated " + feed.title + " (took "
+			Log.v(this, "Updated " + feed.title + " (took "
 					+ (timeFeedEnd - timeFeedStart) + "ms)");
 
 			UpdateServiceStatus.stopUpdate(cursor.getUri());
@@ -112,7 +112,7 @@ public class UpdateService extends IntentService {
 		UpdateServiceStatus.unlock();
 
 		timeEnd = System.currentTimeMillis();
-		Log.d(this, "Update took " + (timeEnd - timeStart) + "ms");
+		Log.v(this, "Update took " + (timeEnd - timeStart) + "ms");
 
 		// start DownloadService to start automatic downloads if enabled
 		startService(new Intent(this, DownloadService.class));

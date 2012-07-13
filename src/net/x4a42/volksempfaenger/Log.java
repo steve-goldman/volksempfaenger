@@ -91,11 +91,11 @@ public class Log {
 	}
 
 	public static int v(String tag, String msg) {
-		return android.util.Log.v(tag, msg);
+		return BuildConfig.DEBUG ? android.util.Log.v(tag, msg) : 0;
 	}
 
 	public static int v(String tag, String msg, Throwable tr) {
-		return android.util.Log.v(tag, msg, tr);
+		return BuildConfig.DEBUG ? android.util.Log.v(tag, msg, tr) : 0;
 	}
 
 	public static int w(String tag, Throwable tr) {

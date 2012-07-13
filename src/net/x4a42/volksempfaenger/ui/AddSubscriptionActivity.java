@@ -138,6 +138,8 @@ public class AddSubscriptionActivity extends Activity implements
 			case DUPLICATE:
 				message = getString(R.string.message_podcast_already_added);
 				break;
+			default:
+				break;
 			}
 
 			if (message != null) {

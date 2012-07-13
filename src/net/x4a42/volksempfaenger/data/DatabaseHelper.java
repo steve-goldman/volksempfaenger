@@ -58,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Log.d(this, "creating new database");
+		Log.v(this, "creating new database");
 		db.beginTransaction();
 		try {
 			executeSqlFromAsset(db, "sql/init.sql");
@@ -75,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.beginTransaction();
 		try {
 			for (int i = oldVersion; i < newVersion; i++) {
-				Log.d(this, "upgrading database from version " + i
+				Log.v(this, "upgrading database from version " + i
 						+ " to version " + (i + 1));
 				executeSqlFromAsset(db, "sql/upgrade-" + i + ".sql");
 			}
@@ -96,8 +96,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		while ((c = in.read()) != -1) {
 			if (c == ';') {
 				String sql = wr.toString();
-				Log.d(this, "Executing the following SQL:");
-				Log.d(this, sql);
+				Log.v(this, "Executing the following SQL:");
+				Log.v(this, sql);
 				db.execSQL(sql);
 				wr = new StringWriter();
 			} else {

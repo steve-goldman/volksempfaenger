@@ -97,12 +97,12 @@ public class DebugActivity extends Activity implements OnClickListener {
 					if (file.isFile()) {
 						try {
 							Feed feed = FeedParser.parse(new FileReader(file));
-							Log.d(this, file.getAbsolutePath());
+							Log.v(this, file.getAbsolutePath());
 							if (feed.website != null) {
-								Log.d(this, "Website: " + feed.website);
+								Log.v(this, "Website: " + feed.website);
 							}
 							if (feed.url != null) {
-								Log.d(this, "URL: " + feed.url);
+								Log.v(this, "URL: " + feed.url);
 							}
 						} catch (Exception e) {
 							Log.e(this, "catched exception", e);
@@ -110,12 +110,12 @@ public class DebugActivity extends Activity implements OnClickListener {
 					}
 				}
 				Toast.makeText(this, "Parsed", Toast.LENGTH_SHORT).show();
-				Log.d(this,
+				Log.v(this,
 						"Time "
 								+ String.valueOf(System.currentTimeMillis()
 										- start));
 			} else {
-				Log.d(this,
+				Log.v(this,
 						"Did not find /sdcard/Android/data/net.x4a42.volksempfaenger/debug/feeds/");
 			}
 		}
@@ -141,42 +141,42 @@ public class DebugActivity extends Activity implements OnClickListener {
 		Toast.makeText(this, "Read the logcat", Toast.LENGTH_SHORT).show();
 		try {
 			Feed feed = FeedParser.parse(new FileReader(file));
-			Log.d(this, "Title: " + feed.title);
+			Log.v(this, "Title: " + feed.title);
 			if (feed.url != null) {
-				Log.d(this, "URL: " + feed.url);
+				Log.v(this, "URL: " + feed.url);
 			}
 			if (feed.website != null) {
-				Log.d(this, "Website: " + feed.website);
+				Log.v(this, "Website: " + feed.website);
 			}
 			if (feed.description != null) {
-				Log.d(this, "Description: " + feed.description);
+				Log.v(this, "Description: " + feed.description);
 			}
 
 			for (FeedItem item : feed.items) {
-				Log.d(this, "Item title: " + item.title);
-				Log.d(this, "Item ID: " + item.itemId);
+				Log.v(this, "Item title: " + item.title);
+				Log.v(this, "Item ID: " + item.itemId);
 				if (item.date != null) {
-					Log.d(this, item.date.toString());
+					Log.v(this, item.date.toString());
 				}
 				if (item.url != null) {
-					Log.d(this, item.url);
+					Log.v(this, item.url);
 				}
 				if (item.description != null) {
-					Log.d(this, item.description);
+					Log.v(this, item.description);
 				}
 				for (Enclosure enc : item.enclosures) {
-					Log.d(this, "Enclosure");
+					Log.v(this, "Enclosure");
 					if (enc.title != null) {
-						Log.d(this, enc.title);
+						Log.v(this, enc.title);
 					}
 					if (enc.url != null) {
-						Log.d(this, enc.url);
+						Log.v(this, enc.url);
 					}
 					if (enc.mime != null) {
-						Log.d(this, enc.mime);
+						Log.v(this, enc.mime);
 					}
 					if (enc.size != 0) {
-						Log.d(this, "Size: " + enc.size);
+						Log.v(this, "Size: " + enc.size);
 					}
 				}
 			}

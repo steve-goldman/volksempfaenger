@@ -159,7 +159,7 @@ public class SubscriptionGridFragment extends Fragment implements
 			if (list.size() > 0) {
 				startActivityForResult(intent, PICK_FILE_REQUEST);
 			} else {
-				Log.d(this, "Could not start " + Constants.ACTION_OI_PICK_FILE
+				Log.v(this, "Could not start " + Constants.ACTION_OI_PICK_FILE
 						+ " Intent");
 				new AlertDialog.Builder(getActivity())
 						.setMessage(R.string.dialog_filemanager_missing_message)
@@ -245,7 +245,16 @@ public class SubscriptionGridFragment extends Fragment implements
 		case PICK_FILE_REQUEST:
 			if (resultCode == Activity.RESULT_OK) {
 				if (data != null) {
-					importFile(data.getData().getPath());
+					try {
+						importFile(data.getData().getPath());
+					} catch (Exception e) {
+						ActivityHelper
+								.buildErrorDialog(
+										getActivity(),
+										getString(R.string.title_import_error),
+										getString(R.string.message_error_import_unexpected),
+										e).show();
+					}
 				}
 			}
 			break;
@@ -278,20 +287,11 @@ public class SubscriptionGridFragment extends Fragment implements
 				}
 			}
 		} catch (FileNotFoundException e) {
-			final AlertDialog.Builder builder = new AlertDialog.Builder(
-					getActivity());
 			final String message = String.format(
 					getString(R.string.message_error_file_not_found), path);
-			builder.setTitle(R.string.title_file_not_found).setMessage(message)
-					.setCancelable(false)
-					.setPositiveButton(R.string.ok, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					});
-			final AlertDialog alert = builder.create();
-			alert.show();
+			ActivityHelper.buildErrorDialog(getActivity(),
+					getString(R.string.title_file_not_found), message, null)
+					.show();
 			return;
 		}
 
@@ -363,7 +363,7 @@ public class SubscriptionGridFragment extends Fragment implements
 					}
 				}
 			} catch (ClassCastException e) {
-				Log.d(this, e.toString());
+				Log.v(this, e.toString());
 			}
 			return super.getView(position, convertView, parent);
 		}

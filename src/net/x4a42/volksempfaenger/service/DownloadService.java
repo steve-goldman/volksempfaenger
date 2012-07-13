@@ -48,7 +48,7 @@ public class DownloadService extends Service {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			Log.d(this, "doInBackground()");
+			Log.v(this, "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
 
@@ -77,7 +77,7 @@ public class DownloadService extends Service {
 								PreferenceKeys.DOWNLOAD_AUTO,
 								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
 					// automatic downloading is disabled
-					Log.d(this,
+					Log.v(this,
 							"automatic downloading is disabled");
 					return null;
 				}
@@ -91,7 +91,7 @@ public class DownloadService extends Service {
 								Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
 					// downloading is only allowed while charging but phone is
 					// not plugged in
-					Log.d(this, "phone is not plugged in");
+					Log.v(this, "phone is not plugged in");
 					return null;
 				}
 
@@ -115,7 +115,7 @@ public class DownloadService extends Service {
 
 				if ((networkType & networkAllowed) == 0) {
 					// no allowed network connection
-					Log.d(this,
+					Log.v(this,
 							"network type is not allowed");
 					return null;
 				}
@@ -155,7 +155,7 @@ public class DownloadService extends Service {
 			int freeSlots = extraIds == null ? ed.getFreeDownloadSlots()
 					: cursor.getCount();
 
-			Log.d(this, String.format(
+			Log.v(this, String.format(
 					"starting downloads inQueue:%d freeSlots:%d",
 					cursor.getCount(), freeSlots));
 
@@ -266,7 +266,7 @@ public class DownloadService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(this, "onStartCommand()");
+		Log.v(this, "onStartCommand()");
 
 		long[] extraId = intent.getLongArrayExtra("id");
 		new DownloadTask(extraId).execute();

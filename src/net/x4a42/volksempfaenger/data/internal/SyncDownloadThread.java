@@ -136,8 +136,9 @@ public class SyncDownloadThread implements Runnable {
 			ExtendedCursorWrapper qc = new ExtendedCursorWrapper(db.query(
 					TABLE, null, null, null, null, null, null));
 			while (qc.moveToNext()) {
-				Log.d(this, qc.rowToString());
+				Log.v(this, qc.rowToString());
 			}
+			qc.close();
 		}
 	}
 
