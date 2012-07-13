@@ -28,6 +28,7 @@ import android.media.AudioManager;
 import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
@@ -71,6 +72,14 @@ public class PlaybackService extends Service implements EventListener {
 						.setComponent(mediaButtonEventReceiver), 0);
 		// create and register the remote control client
 		remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+
+			// Required for Jelly Bean to show lockscreen controls
+			// displays a 'previous' button on ICS because of a bug
+			// https://code.google.com/p/android/issues/detail?id=29920&q=remotecontrolclient&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
+			remoteControlClient
+					.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
+		}
 		am.registerRemoteControlClient(remoteControlClient);
 
 	}
