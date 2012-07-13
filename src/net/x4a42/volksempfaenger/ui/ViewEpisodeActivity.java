@@ -220,6 +220,19 @@ public class ViewEpisodeActivity extends Activity implements
 							mEpisodeUri);
 			return true;
 
+		case R.id.item_website:
+			intent = new Intent(Intent.ACTION_VIEW, episodeCursor.getUrlUri());
+			startActivity(intent);
+			return true;
+
+		case R.id.item_share:
+			intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, episodeCursor.getUrl());
+			startActivity(Intent.createChooser(intent,
+					getString(R.string.title_share)));
+			return true;
+
 		default:
 			return ActivityHelper.handleGlobalMenu(this, item);
 
@@ -385,7 +398,7 @@ public class ViewEpisodeActivity extends Activity implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		String[] projection = { Episode._ID, Episode.TITLE,
 				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
-				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
+				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED, Episode.URL,
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
 				Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,
