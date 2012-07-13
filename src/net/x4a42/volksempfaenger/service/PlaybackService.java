@@ -340,6 +340,8 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPlay() {
+		notification = makeNotification();
+		startForeground();
 		saveHandler.post(savePositionTask);
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
@@ -381,8 +383,6 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPrepared() {
-		notification = makeNotification();
-		startForeground();
 		helper.seekTo(getDurationListened());
 		helper.play();
 	}
