@@ -121,5 +121,8 @@
     <string name="message_error_import_unexpected">An unexpected error happened during import</string>
     <string name="title_send_error_report">Send error report</string>
     <string name="report_error">Report</string>
+    <string name="title_share">Share</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_website">Website</string>
 
 </resources>
