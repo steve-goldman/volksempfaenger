@@ -10,6 +10,7 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
+import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
@@ -63,6 +64,7 @@ public class ViewSubscriptionActivity extends Activity implements
 	private Adapter mAdapter;
 	private boolean mIsUpdating;
 	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
+	private PodcastCursor podcastCursor;
 
 	/* Activity Lifecycle */
 
@@ -102,11 +104,11 @@ public class ViewSubscriptionActivity extends Activity implements
 		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
 
 		// Update podcast information
-		Cursor podcastCursor = getContentResolver().query(
+		podcastCursor = new PodcastCursor(getContentResolver().query(
 				ContentUris.withAppendedId(
 						VolksempfaengerContentProvider.PODCAST_URI, mId),
 				new String[] {/* TODO */}, PODCAST_WHERE,
-				new String[] { String.valueOf(mId) }, null);
+				new String[] { String.valueOf(mId) }, null));
 
 		if (podcastCursor.getCount() == 0) {
 			// ID does not exist
@@ -266,6 +268,20 @@ public class ViewSubscriptionActivity extends Activity implements
 			intent = new Intent(this, DeleteSubscriptionActivity.class);
 			intent.putExtra("id", mId);
 			startActivity(intent);
+			return true;
+
+		case R.id.item_website:
+			intent = new Intent(Intent.ACTION_VIEW,
+					podcastCursor.getWebsiteUri());
+			startActivity(intent);
+			return true;
+
+		case R.id.item_share:
+			intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, podcastCursor.getWebsite());
+			startActivity(Intent.createChooser(intent,
+					getString(R.string.title_share)));
 			return true;
 
 		default:

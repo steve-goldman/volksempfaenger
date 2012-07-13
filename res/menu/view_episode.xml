@@ -17,5 +17,11 @@
     <item
         android:id="@+id/item_delete"
         android:title="@string/menu_delete"/>
+    <item
+        android:id="@+id/item_website"
+        android:title="@string/menu_website"/>
+    <item
+        android:id="@+id/item_share"
+        android:title="@string/menu_share"/>
 
 </menu>

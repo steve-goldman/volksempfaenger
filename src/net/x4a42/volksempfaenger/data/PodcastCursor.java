@@ -93,4 +93,11 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 		return getString(COLUMN_WEBSITE);
 	}
 
+	/**
+	 * @return Podcast website as an Uri object.
+	 */
+	public Uri getWebsiteUri() {
+		return Uri.parse(getWebsite());
+	}
+
 }
