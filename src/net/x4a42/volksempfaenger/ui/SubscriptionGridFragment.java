@@ -1,23 +1,13 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
-import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import net.x4a42.volksempfaenger.feedparser.OpmlParser;
-import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
@@ -29,14 +19,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -269,79 +256,10 @@ public class SubscriptionGridFragment extends Fragment implements
 	}
 
 	private void importFile(String path) {
-		SubscriptionTree tree;
-		FileInputStream fstream;
-		try {
-			fstream = new FileInputStream(path);
-			InputStreamReader in = new InputStreamReader(fstream);
-			tree = OpmlParser.parse(new BufferedReader(in));
-			for (SubscriptionTree node : tree) {
-				if (node.isFolder()) {
-					Log.v(this,
-							String.valueOf(node.getDepth()) + " "
-									+ node.getTitle());
-				} else {
-					Log.v(this,
-							String.valueOf(node.getDepth()) + " "
-									+ node.getTitle() + " " + node.getUrl());
-				}
-			}
-		} catch (FileNotFoundException e) {
-			final String message = String.format(
-					getString(R.string.message_error_file_not_found), path);
-			ActivityHelper.buildErrorDialog(getActivity(),
-					getString(R.string.title_file_not_found), message, null)
-					.show();
-			return;
-		}
-
-		final ArrayList<SubscriptionTree> items = new ArrayList<SubscriptionTree>();
-		for (SubscriptionTree node : tree) {
-			if (!node.isFolder()) {
-				items.add(node);
-			}
-		}
-		final String itemTitles[] = new String[items.size()];
-		for (int i = 0; i < items.size(); i++) {
-			itemTitles[i] = items.get(i).getTitle();
-		}
-
-		AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
-		ab.setTitle(getString(R.string.dialog_choose_import_feeds));
-
-		final boolean checked[] = new boolean[items.size()];
-		OnMultiChoiceClickListener listener = new OnMultiChoiceClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which,
-					boolean isChecked) {
-				checked[which] = isChecked;
-			}
-		};
-		ab.setMultiChoiceItems(itemTitles, null, listener);
-		ab.setPositiveButton(getString(R.string.button_import),
-				new OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						int length = 0;
-						for (; length < items.size(); length++)
-							;
-						SubscriptionTree checkedSubscriptions[] = new SubscriptionTree[length];
-						int insertPosition = 0;
-						for (int i = 0; i < items.size(); i++) {
-							if (checked[i]) {
-								Log.v(this, itemTitles[i]);
-								Log.v(this, items.get(i).getUrl());
-								checkedSubscriptions[insertPosition] = items
-										.get(i);
-								insertPosition++;
-							}
-						}
-						new ImportTask().execute(checkedSubscriptions);
-					}
-				});
-		ab.show();
+		final Intent intent = new Intent(getActivity(),
+				ImportFileActivity.class);
+		intent.putExtra(ImportFileActivity.EXTRA_IMPORT_FILE_PATH, path);
+		startActivity(intent);
 	}
 
 	private class Adapter extends SimpleCursorAdapter {
@@ -457,63 +375,6 @@ public class SubscriptionGridFragment extends Fragment implements
 					isUpdating = false;
 					getActivity().invalidateOptionsMenu();
 				}
-			}
-		}
-	}
-
-	private class ImportTask extends AsyncTask<SubscriptionTree, Void, Void> {
-		final LinkedList<String> failed = new LinkedList<String>();
-
-		@Override
-		protected Void doInBackground(SubscriptionTree... subscriptions) {
-			for (SubscriptionTree subscription : subscriptions) {
-				// TODO finer grained exception handling
-				try {
-					PodcastHelper.addFeed(getActivity(), subscription.getUrl());
-				} catch (Exception e) {
-					if (subscription == null) {
-						continue;
-					}
-					String name;
-					if (subscription.getTitle() == null) {
-						name = subscription.getUrl();
-					} else {
-						name = subscription.getTitle();
-					}
-					failed.add(name);
-
-				}
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void arg0) {
-			if (failed.size() > 0) {
-				final AlertDialog.Builder builder = new AlertDialog.Builder(
-						getActivity());
-				builder.setTitle(R.string.title_import_error)
-						.setCancelable(false)
-						.setPositiveButton(R.string.ok, new OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								dialog.dismiss();
-							}
-						}).setMessage(getString(R.string.message_error_import));
-				final TextView textView = new TextView(getActivity());
-				int padding = Utils.dpToPx(getActivity(), 10);
-				textView.setPadding(padding, 0, padding, padding);
-				StringBuilder strBuilder = new StringBuilder();
-				for (String podcast : failed) {
-					strBuilder.append(podcast);
-					strBuilder.append("\n");
-				}
-				textView.setText(strBuilder.substring(0,
-						strBuilder.length() - 1));
-				builder.setView(textView);
-				final AlertDialog alert = builder.create();
-				alert.show();
 			}
 		}
 	}
