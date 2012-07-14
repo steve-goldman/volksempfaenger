@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,6 +36,7 @@ import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -45,7 +45,6 @@ public class ViewSubscriptionActivity extends Activity implements
 		OnUpPressedCallback {
 
 	/* Static Variables */
-	private static int[] ROW_COLOR_MAP;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
@@ -88,8 +87,6 @@ public class ViewSubscriptionActivity extends Activity implements
 		}
 
 		mUpdateReceiver = new UpdateReceiver();
-
-		initRowColorMap();
 
 		setContentView(R.layout.view_subscription);
 
@@ -156,8 +153,9 @@ public class ViewSubscriptionActivity extends Activity implements
 			return new CursorLoader(ViewSubscriptionActivity.this,
 					VolksempfaengerContentProvider.EPISODE_URI, new String[] {
 							Episode._ID, Episode.TITLE, Episode.DATE,
-							Episode.STATUS }, EPISODE_WHERE,
-					new String[] { String.valueOf(mId) }, EPISODE_SORT);
+							Episode.STATUS, Episode.DOWNLOAD_STATUS },
+					EPISODE_WHERE, new String[] { String.valueOf(mId) },
+					EPISODE_SORT);
 		}
 
 		@Override
@@ -185,18 +183,43 @@ public class ViewSubscriptionActivity extends Activity implements
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
 
-			int episodeState = cursor.getInt(cursor
+			int episodeStatus = cursor.getInt(cursor
 					.getColumnIndex(Episode.STATUS));
 			TextView episodeTitle = (TextView) row
 					.findViewById(R.id.episode_title);
-			episodeTitle.setTextColor(ROW_COLOR_MAP[episodeState]);
+			TextView episodeDate = (TextView) row
+					.findViewById(R.id.episode_date);
+			ImageView badge = (ImageView) row.findViewById(R.id.badge);
 
 			Date date = new Date(cursor.getLong(cursor
 					.getColumnIndex(Episode.DATE)) * 1000);
-
-			TextView episodeDate = (TextView) row
-					.findViewById(R.id.episode_date);
 			episodeDate.setText(DateFormat.getDateInstance().format(date));
+
+			if (cursor.getLong(cursor.getColumnIndex(Episode.DOWNLOAD_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+				episodeTitle.setTextColor(getResources().getColor(
+						android.R.color.primary_text_light));
+			} else {
+				episodeTitle.setTextColor(getResources().getColor(
+						android.R.color.secondary_text_light));
+			}
+
+			switch (episodeStatus) {
+			case Constants.EPISODE_STATE_NEW:
+			case Constants.EPISODE_STATE_DOWNLOADING:
+			case Constants.EPISODE_STATE_READY:
+				badge.setVisibility(View.VISIBLE);
+				badge.setImageResource(R.drawable.badge_episode_new);
+				break;
+
+			case Constants.EPISODE_STATE_LISTENING:
+				badge.setVisibility(View.VISIBLE);
+				badge.setImageResource(R.drawable.badge_episode_listening);
+				break;
+
+			default:
+				badge.setVisibility(View.GONE);
+			}
+
 		}
 	}
 
@@ -361,29 +384,5 @@ public class ViewSubscriptionActivity extends Activity implements
 			startActivity(intent);
 		}
 	};
-
-	/* Misc */
-
-	/**
-	 * This method initializes the attribute ROW_COLOR_MAP. We can't initialize
-	 * this statically as we need access to the resources.
-	 */
-	private void initRowColorMap() {
-		if (ROW_COLOR_MAP != null) {
-			return;
-		}
-		Resources res = getResources();
-		ROW_COLOR_MAP = new int[5];
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_NEW] = res
-				.getColor(R.color.episode_title_new);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_DOWNLOADING] = res
-				.getColor(R.color.episode_title_downloading);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_READY] = res
-				.getColor(R.color.episode_title_ready);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENING] = res
-				.getColor(R.color.episode_title_listening);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENED] = res
-				.getColor(R.color.episode_title_listened);
-	}
 
 }
