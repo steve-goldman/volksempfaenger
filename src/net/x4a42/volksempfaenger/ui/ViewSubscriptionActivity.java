@@ -195,13 +195,15 @@ public class ViewSubscriptionActivity extends Activity implements
 					.getColumnIndex(Episode.DATE)) * 1000);
 			episodeDate.setText(DateFormat.getDateInstance().format(date));
 
+			int colorId;
 			if (cursor.getLong(cursor.getColumnIndex(Episode.DOWNLOAD_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
-				episodeTitle.setTextColor(getResources().getColor(
-						android.R.color.primary_text_light));
+				colorId = android.R.color.primary_text_light;
 			} else {
-				episodeTitle.setTextColor(getResources().getColor(
-						android.R.color.secondary_text_light));
+				colorId = android.R.color.darker_gray;
 			}
+			int color = getResources().getColor(colorId);
+			episodeTitle.setTextColor(color);
+			episodeDate.setTextColor(color);
 
 			switch (episodeStatus) {
 			case Constants.EPISODE_STATE_NEW:
