@@ -8,11 +8,4 @@
     <color name="borderless_button_focused">#ff0099cc</color>
     <color name="listview_item_background_activated">#aa33b5e5</color>
 
-    <!-- TODO: Choose better colors -->
-    <color name="episode_title_new">#000</color>
-    <color name="episode_title_downloading">#000</color>
-    <color name="episode_title_ready">#000</color>
-    <color name="episode_title_listening">#000</color>
-    <color name="episode_title_listened">#888</color>
-
 </resources>
