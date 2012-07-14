@@ -7,9 +7,10 @@ import java.util.Queue;
 
 public class SubscriptionTree implements Iterable<SubscriptionTree> {
 	private ArrayList<SubscriptionTree> children;
-	private String url;
-	private String title;
+	public String url;
+	public String title;
 	public int depth;
+	public int id;
 
 	// Constructor for root element
 	public SubscriptionTree() {
@@ -45,18 +46,6 @@ public class SubscriptionTree implements Iterable<SubscriptionTree> {
 		children.add(child);
 		child.depth = depth + 1;
 		return child;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public int getDepth() {
-		return depth;
 	}
 
 	@Override

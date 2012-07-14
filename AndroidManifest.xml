@@ -81,6 +81,9 @@
             android:name=".ui.ExternalStorageMissingActivity"
             android:theme="@style/Theme.CriticalError" />
         <activity
+            android:name=".ui.ImportFileActivity"
+            android:theme="@style/Theme.Dialog" />
+        <activity
             android:name=".ui.LicenseActivity"
             android:theme="@style/Theme.Settings" />
         <activity
