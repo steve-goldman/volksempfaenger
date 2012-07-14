@@ -33,7 +33,7 @@
             android:layout_height="32dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/new_episodes_edge"
+            android:background="@drawable/badge_subscription_new"
             android:gravity="top|right"
             android:paddingRight="4dp"
             android:textColor="#FFFFFF"
