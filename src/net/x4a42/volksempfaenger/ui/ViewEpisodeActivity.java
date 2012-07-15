@@ -9,7 +9,6 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
-import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
@@ -151,8 +150,12 @@ public class ViewEpisodeActivity extends Activity implements
 				menu.removeItem(R.id.item_play);
 			}
 
-			if (episodeCursor.getStatus() >= Constants.EPISODE_STATE_LISTENED) {
+			int status = episodeCursor.getStatus();
+			if (!EpisodeHelper.canMarkAsListened(status)) {
 				menu.removeItem(R.id.item_mark_listened);
+			}
+			if (!EpisodeHelper.canMarkAsNew(status)) {
+				menu.removeItem(R.id.item_mark_new);
 			}
 
 		}
@@ -209,6 +212,10 @@ public class ViewEpisodeActivity extends Activity implements
 
 		case R.id.item_mark_listened:
 			EpisodeHelper.markAsListened(getContentResolver(), mEpisodeUri);
+			return true;
+
+		case R.id.item_mark_new:
+			EpisodeHelper.markAsNew(getContentResolver(), mEpisodeUri);
 			return true;
 
 		case R.id.item_delete:

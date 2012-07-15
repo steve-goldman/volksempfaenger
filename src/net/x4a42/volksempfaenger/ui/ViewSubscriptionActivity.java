@@ -334,6 +334,27 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position,
 				long id, boolean checked) {
+			Menu menu = mode.getMenu();
+			menu.clear();
+			onCreateActionMode(mode, menu);
+			boolean removeMarkAsListened = false, removeMarkAsNew = false;
+			for (long checkedId : mEpisodeListView.getCheckedItemIds()) {
+				EpisodeCursor cursor = (EpisodeCursor) mAdapter
+						.getItem((int) checkedId - 1);
+				int status = cursor.getStatus();
+				if (!EpisodeHelper.canMarkAsListened(status)) {
+					removeMarkAsListened = true;
+				}
+				if (!EpisodeHelper.canMarkAsNew(status)) {
+					removeMarkAsNew = true;
+				}
+			}
+			if (removeMarkAsListened) {
+				menu.removeItem(R.id.item_mark_listened);
+			}
+			if (removeMarkAsNew) {
+				menu.removeItem(R.id.item_mark_new);
+			}
 			return;
 		}
 
@@ -348,6 +369,12 @@ public class ViewSubscriptionActivity extends Activity implements
 
 			case R.id.item_mark_listened:
 				EpisodeHelper.markAsListened(getContentResolver(),
+						mEpisodeListView.getCheckedItemIds());
+				mode.finish();
+				return true;
+
+			case R.id.item_mark_new:
+				EpisodeHelper.markAsNew(getContentResolver(),
 						mEpisodeListView.getCheckedItemIds());
 				mode.finish();
 				return true;
