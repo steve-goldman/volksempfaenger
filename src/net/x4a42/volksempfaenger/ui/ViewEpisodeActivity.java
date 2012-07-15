@@ -9,7 +9,6 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
-import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
@@ -151,8 +150,12 @@ public class ViewEpisodeActivity extends Activity implements
 				menu.removeItem(R.id.item_play);
 			}
 
-			if (episodeCursor.getStatus() >= Constants.EPISODE_STATE_LISTENED) {
+			int status = episodeCursor.getStatus();
+			if (!EpisodeHelper.canMarkAsListened(status)) {
 				menu.removeItem(R.id.item_mark_listened);
+			}
+			if (!EpisodeHelper.canMarkAsNew(status)) {
+				menu.removeItem(R.id.item_mark_new);
 			}
 
 		}
@@ -211,6 +214,10 @@ public class ViewEpisodeActivity extends Activity implements
 			EpisodeHelper.markAsListened(getContentResolver(), mEpisodeUri);
 			return true;
 
+		case R.id.item_mark_new:
+			EpisodeHelper.markAsNew(getContentResolver(), mEpisodeUri);
+			return true;
+
 		case R.id.item_delete:
 			// TODO: confirmation dialog, AsyncTask
 			EpisodeHelper
@@ -218,6 +225,19 @@ public class ViewEpisodeActivity extends Activity implements
 							getContentResolver(),
 							(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
 							mEpisodeUri);
+			return true;
+
+		case R.id.item_website:
+			intent = new Intent(Intent.ACTION_VIEW, episodeCursor.getUrlUri());
+			startActivity(intent);
+			return true;
+
+		case R.id.item_share:
+			intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, episodeCursor.getUrl());
+			startActivity(Intent.createChooser(intent,
+					getString(R.string.title_share)));
 			return true;
 
 		default:
@@ -311,7 +331,7 @@ public class ViewEpisodeActivity extends Activity implements
 						imageDownloader.fetchImage(img.getSource());
 					} catch (Exception e) {
 						// Who cares?
-						Log.d(this, "Exception handled", e);
+						Log.v(this, "Exception handled", e);
 					}
 				}
 
@@ -385,7 +405,7 @@ public class ViewEpisodeActivity extends Activity implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		String[] projection = { Episode._ID, Episode.TITLE,
 				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
-				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED,
+				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED, Episode.URL,
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
 				Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,

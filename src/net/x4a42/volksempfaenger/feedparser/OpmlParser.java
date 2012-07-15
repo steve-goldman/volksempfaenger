@@ -76,10 +76,12 @@ public class OpmlParser {
 				final String text = atts.getValue(OPML_TEXT);
 				SubscriptionTree newChild;
 				if (url != null) {
-					if (title == null && text != null) {
-						title = text;
-					} else {
-						title = url;
+					if (title == null) {
+						if (text != null) {
+							title = text;
+						} else {
+							title = url;
+						}
 					}
 					newChild = new SubscriptionTree(title, url);
 					path.peek().addChild(newChild);
