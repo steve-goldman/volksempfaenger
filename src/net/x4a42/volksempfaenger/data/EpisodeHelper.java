@@ -99,8 +99,15 @@ public class EpisodeHelper {
 								+ EPISODE_DOWNLOAD_NOT_NULL,
 								Utils.joinArray(ids, ",")), null, null);
 
+		int count = cursor.getCount();
+
+		if (count == 0) {
+			// there are no downloadas to delete
+			return;
+		}
+
 		// move them from the cursor to a long[] array
-		long[] downloadIds = new long[cursor.getCount()];
+		long[] downloadIds = new long[count];
 		for (int i = 0; cursor.moveToNext(); i++) {
 			downloadIds[i] = cursor.getLong(0);
 		}

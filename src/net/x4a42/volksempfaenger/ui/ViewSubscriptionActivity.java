@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -319,14 +320,8 @@ public class ViewSubscriptionActivity extends Activity implements
 
 	private MultiChoiceModeListener mMultiChoiceModeListener = new MultiChoiceModeListener() {
 
-		private int canMarkAsNewCount;
-		private int canMarkAsListenedCount;
-
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			canMarkAsNewCount = 0;
-			canMarkAsListenedCount = 0;
-
 			return true;
 		}
 
@@ -336,11 +331,33 @@ public class ViewSubscriptionActivity extends Activity implements
 			MenuInflater inflater = mode.getMenuInflater();
 			inflater.inflate(R.menu.action_episodes, menu);
 
-			if (canMarkAsNewCount == 0) {
+			SparseBooleanArray checked = mEpisodeListView
+					.getCheckedItemPositions();
+			boolean canMarkAnyAsNew = false;
+			boolean canMarkAnyAsListened = false;
+
+			for (int i = 0; i < checked.size(); i++) {
+
+				if (checked.valueAt(i)) {
+					EpisodeCursor cursor = (EpisodeCursor) mAdapter
+							.getItem(checked.keyAt(i));
+					int status = cursor.getStatus();
+
+					if (EpisodeHelper.canMarkAsNew(status)) {
+						canMarkAnyAsNew = true;
+					}
+
+					if (EpisodeHelper.canMarkAsListened(status)) {
+						canMarkAnyAsListened = true;
+					}
+				}
+			}
+
+			if (!canMarkAnyAsNew) {
 				menu.removeItem(R.id.item_mark_new);
 			}
 
-			if (canMarkAsListenedCount == 0) {
+			if (!canMarkAnyAsListened) {
 				menu.removeItem(R.id.item_mark_listened);
 			}
 
@@ -350,17 +367,6 @@ public class ViewSubscriptionActivity extends Activity implements
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position,
 				long id, boolean checked) {
-			EpisodeCursor cursor = (EpisodeCursor) mAdapter.getItem(position);
-			int status = cursor.getStatus();
-
-			if (EpisodeHelper.canMarkAsNew(status)) {
-				canMarkAsNewCount += checked ? 1 : -1;
-			}
-
-			if (EpisodeHelper.canMarkAsListened(status)) {
-				canMarkAsListenedCount += checked ? 1 : -1;
-			}
-
 			mode.invalidate();
 			return;
 		}
