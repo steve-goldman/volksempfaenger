@@ -319,42 +319,49 @@ public class ViewSubscriptionActivity extends Activity implements
 
 	private MultiChoiceModeListener mMultiChoiceModeListener = new MultiChoiceModeListener() {
 
+		private int canMarkAsNewCount;
+		private int canMarkAsListenedCount;
+
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			MenuInflater inflater = mode.getMenuInflater();
-			inflater.inflate(R.menu.action_episodes, menu);
+			canMarkAsNewCount = 0;
+			canMarkAsListenedCount = 0;
+
 			return true;
 		}
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false;
+			menu.clear();
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.action_episodes, menu);
+
+			if (canMarkAsNewCount == 0) {
+				menu.removeItem(R.id.item_mark_new);
+			}
+
+			if (canMarkAsListenedCount == 0) {
+				menu.removeItem(R.id.item_mark_listened);
+			}
+
+			return true;
 		}
 
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position,
 				long id, boolean checked) {
-			Menu menu = mode.getMenu();
-			menu.clear();
-			onCreateActionMode(mode, menu);
-			boolean removeMarkAsListened = false, removeMarkAsNew = false;
-			for (long checkedId : mEpisodeListView.getCheckedItemIds()) {
-				EpisodeCursor cursor = (EpisodeCursor) mAdapter
-						.getItem((int) checkedId - 1);
-				int status = cursor.getStatus();
-				if (!EpisodeHelper.canMarkAsListened(status)) {
-					removeMarkAsListened = true;
-				}
-				if (!EpisodeHelper.canMarkAsNew(status)) {
-					removeMarkAsNew = true;
-				}
+			EpisodeCursor cursor = (EpisodeCursor) mAdapter.getItem(position);
+			int status = cursor.getStatus();
+
+			if (EpisodeHelper.canMarkAsNew(status)) {
+				canMarkAsNewCount += checked ? 1 : -1;
 			}
-			if (removeMarkAsListened) {
-				menu.removeItem(R.id.item_mark_listened);
+
+			if (EpisodeHelper.canMarkAsListened(status)) {
+				canMarkAsListenedCount += checked ? 1 : -1;
 			}
-			if (removeMarkAsNew) {
-				menu.removeItem(R.id.item_mark_new);
-			}
+
+			mode.invalidate();
 			return;
 		}
 
