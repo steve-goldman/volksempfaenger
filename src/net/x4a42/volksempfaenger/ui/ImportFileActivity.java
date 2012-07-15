@@ -30,10 +30,8 @@ import android.widget.Toast;
 
 public class ImportFileActivity extends Activity implements
 		OnItemClickListener, OnClickListener {
-	public static final String EXTRA_IMPORT_FILE_PATH = ImportFileActivity.class
-			.getName() + "IMPORT_FILE_PATH";
-	public static final String EXTRA_IMPORT_FAILED_ITEMS = ImportFileActivity.class
-			.getName() + ".IMPORT_FAILED_ITEMS";
+	public static final String EXTRA_IMPORT_FILE_PATH = "IMPORT_FILE_PATH";
+	public static final String EXTRA_IMPORT_FAILED_ITEMS = "IMPORT_FAILED_ITEMS";
 	private ListView mListView;
 	private RelativeLayout mLoadingIndicator;
 	private ArrayList<SubscriptionTree> items;
@@ -193,16 +191,11 @@ public class ImportFileActivity extends Activity implements
 		@Override
 		protected void onPostExecute(Void arg0) {
 			if (failed.size() > 0) {
-				Toast.makeText(getApplicationContext(), "import failed",
-						Toast.LENGTH_LONG).show();
-				Intent intent = new Intent(
-						BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR);
-				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_ID,
-						BackgroundErrorReceiver.ERROR_IMPORT);
-				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_TITLE,
-						getString(R.string.title_import_error));
-				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_TEXT,
-						getString(R.string.message_error_import));
+				Intent intent = BackgroundErrorReceiver
+						.getBackgroundErrorIntent(
+								getString(R.string.title_import_error),
+								getString(R.string.message_error_import),
+								BackgroundErrorReceiver.ERROR_IMPORT);
 				StringBuilder strBuilder = new StringBuilder();
 				for (String podcast : failed) {
 					strBuilder.append(podcast);

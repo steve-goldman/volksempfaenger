@@ -12,14 +12,11 @@ import android.content.Intent;
 
 public class BackgroundErrorReceiver extends BroadcastReceiver {
 	private final static int NOTIFICATION_ID = 0x5dc2060d;
-	private static final String MAIN_PACKAGE = "net.x4a42.volksempfaenger";
 
-	public static final String ACTION_BACKGROUND_ERROR = MAIN_PACKAGE
-			+ ".BACKGROUND_ERROR";
-	public static final String EXTRA_ERROR_TITLE = MAIN_PACKAGE
-			+ ".ERROR_TITLE";
-	public static final String EXTRA_ERROR_TEXT = MAIN_PACKAGE + ".ERROR_TEXT";
-	public static final String EXTRA_ERROR_ID = MAIN_PACKAGE + ".ERROR_ID";
+	public static final String ACTION_BACKGROUND_ERROR = "net.x4a42.volksempfaenger.BACKGROUND_ERROR";
+	public static final String EXTRA_ERROR_TITLE = "ERROR_TITLE";
+	public static final String EXTRA_ERROR_TEXT = "ERROR_TEXT";
+	public static final String EXTRA_ERROR_ID = "ERROR_ID";
 
 	public static final int ERROR_IMPORT = 1;
 
@@ -44,6 +41,19 @@ public class BackgroundErrorReceiver extends BroadcastReceiver {
 		NotificationManager nm = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		nm.notify(NOTIFICATION_ID, notification);
+	}
+
+	public static Intent getBackgroundErrorIntent(String title, String message,
+			int id) {
+		Intent intent = new Intent(ACTION_BACKGROUND_ERROR);
+		intent.putExtra(EXTRA_ERROR_TITLE, title);
+		if (message != null) {
+			intent.putExtra(EXTRA_ERROR_TEXT, message);
+		}
+		if (id != 0) {
+			intent.putExtra(EXTRA_ERROR_ID, ERROR_IMPORT);
+		}
+		return intent;
 	}
 
 }
