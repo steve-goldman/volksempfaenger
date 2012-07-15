@@ -17,5 +17,8 @@ public final class Constants {
 			.parse("http://openintents.org/en/filemanager");
 
 	// UI
-	public static int PREVIEW_LOGO_SIZE = 64;
+	public static final int PREVIEW_LOGO_SIZE = 64;
+
+	// other
+	public static final String ERROR_REPORT_PREFIX = "error-report";
 }

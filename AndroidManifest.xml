@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.x4a42.volksempfaenger"
-    android:versionCode="2"
-    android:versionName="0.2.1" >
+    android:versionCode="1"
+    android:versionName="dev" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -80,6 +80,9 @@
         <activity
             android:name=".ui.ExternalStorageMissingActivity"
             android:theme="@style/Theme.CriticalError" />
+        <activity
+            android:name=".ui.ImportFileActivity"
+            android:theme="@style/Theme.Dialog" />
         <activity
             android:name=".ui.LicenseActivity"
             android:theme="@style/Theme.Settings" />

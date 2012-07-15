@@ -15,15 +15,16 @@ public class EpisodeHelper {
 	private static final String EPISODE_DOWNLOAD_NOT_NULL = Episode.DOWNLOAD_ID
 			+ " IS NOT NULL";
 	private static final String[] DOWNLOAD_ID_PROJECTION = { Episode.DOWNLOAD_ID };
-	private static final ContentValues MARK_AS_LISTENED_VALUES;
-	private static final ContentValues REMOVE_DOWNLOAD_VALUES;
+	private static final ContentValues MARK_AS_LISTENED_VALUES = new ContentValues();
+	private static final ContentValues MARK_AS_NEW_VALUES = new ContentValues();
+	private static final ContentValues REMOVE_DOWNLOAD_VALUES = new ContentValues();
 
 	static {
-		MARK_AS_LISTENED_VALUES = new ContentValues();
 		MARK_AS_LISTENED_VALUES.put(Episode.STATUS,
 				Constants.EPISODE_STATE_LISTENED);
 
-		REMOVE_DOWNLOAD_VALUES = new ContentValues();
+		MARK_AS_NEW_VALUES.put(Episode.STATUS, Constants.EPISODE_STATE_READY);
+
 		REMOVE_DOWNLOAD_VALUES.putNull(Episode.DOWNLOAD_ID);
 		REMOVE_DOWNLOAD_VALUES.put(Episode.STATUS,
 				Constants.EPISODE_STATE_LISTENED);
@@ -41,6 +42,22 @@ public class EpisodeHelper {
 	public static void markAsListened(ContentResolver resolver, long... ids) {
 		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
 				MARK_AS_LISTENED_VALUES,
+				String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(ids, ",")),
+				null);
+	}
+
+	public static void markAsNew(ContentResolver resolver, Uri uri) {
+		resolver.update(uri, MARK_AS_NEW_VALUES, null, null);
+	}
+
+	public static void markAsNew(ContentResolver resolver, long id) {
+		markAsNew(resolver, ContentUris.withAppendedId(
+				VolksempfaengerContentProvider.EPISODE_URI, id));
+	}
+
+	public static void markAsNew(ContentResolver resolver, long... ids) {
+		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
+				MARK_AS_NEW_VALUES,
 				String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(ids, ",")),
 				null);
 	}
@@ -105,5 +122,21 @@ public class EpisodeHelper {
 				String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(ids, ",")),
 				null);
 
+	}
+
+	public static boolean canMarkAsListened(int status) {
+		if (status < Constants.EPISODE_STATE_LISTENED) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean canMarkAsNew(int status) {
+		if (status > Constants.EPISODE_STATE_READY) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

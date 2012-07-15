@@ -10,6 +10,7 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
+import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
@@ -23,11 +24,11 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,7 @@ import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -44,7 +46,6 @@ public class ViewSubscriptionActivity extends Activity implements
 		OnUpPressedCallback {
 
 	/* Static Variables */
-	private static int[] ROW_COLOR_MAP;
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
 	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
@@ -63,6 +64,7 @@ public class ViewSubscriptionActivity extends Activity implements
 	private Adapter mAdapter;
 	private boolean mIsUpdating;
 	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
+	private PodcastCursor podcastCursor;
 
 	/* Activity Lifecycle */
 
@@ -87,8 +89,6 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		mUpdateReceiver = new UpdateReceiver();
 
-		initRowColorMap();
-
 		setContentView(R.layout.view_subscription);
 
 		ActionBar actionBar = getActionBar();
@@ -102,11 +102,11 @@ public class ViewSubscriptionActivity extends Activity implements
 		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
 
 		// Update podcast information
-		Cursor podcastCursor = getContentResolver().query(
+		podcastCursor = new PodcastCursor(getContentResolver().query(
 				ContentUris.withAppendedId(
 						VolksempfaengerContentProvider.PODCAST_URI, mId),
 				new String[] {/* TODO */}, PODCAST_WHERE,
-				new String[] { String.valueOf(mId) }, null);
+				new String[] { String.valueOf(mId) }, null));
 
 		if (podcastCursor.getCount() == 0) {
 			// ID does not exist
@@ -154,8 +154,9 @@ public class ViewSubscriptionActivity extends Activity implements
 			return new CursorLoader(ViewSubscriptionActivity.this,
 					VolksempfaengerContentProvider.EPISODE_URI, new String[] {
 							Episode._ID, Episode.TITLE, Episode.DATE,
-							Episode.STATUS }, EPISODE_WHERE,
-					new String[] { String.valueOf(mId) }, EPISODE_SORT);
+							Episode.STATUS, Episode.DOWNLOAD_STATUS },
+					EPISODE_WHERE, new String[] { String.valueOf(mId) },
+					EPISODE_SORT);
 		}
 
 		@Override
@@ -183,18 +184,45 @@ public class ViewSubscriptionActivity extends Activity implements
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
 
-			int episodeState = cursor.getInt(cursor
+			int episodeStatus = cursor.getInt(cursor
 					.getColumnIndex(Episode.STATUS));
 			TextView episodeTitle = (TextView) row
 					.findViewById(R.id.episode_title);
-			episodeTitle.setTextColor(ROW_COLOR_MAP[episodeState]);
+			TextView episodeDate = (TextView) row
+					.findViewById(R.id.episode_date);
+			ImageView badge = (ImageView) row.findViewById(R.id.badge);
 
 			Date date = new Date(cursor.getLong(cursor
 					.getColumnIndex(Episode.DATE)) * 1000);
-
-			TextView episodeDate = (TextView) row
-					.findViewById(R.id.episode_date);
 			episodeDate.setText(DateFormat.getDateInstance().format(date));
+
+			int colorId;
+			if (cursor.getLong(cursor.getColumnIndex(Episode.DOWNLOAD_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+				colorId = android.R.color.primary_text_light;
+			} else {
+				colorId = android.R.color.darker_gray;
+			}
+			int color = getResources().getColor(colorId);
+			episodeTitle.setTextColor(color);
+			episodeDate.setTextColor(color);
+
+			switch (episodeStatus) {
+			case Constants.EPISODE_STATE_NEW:
+			case Constants.EPISODE_STATE_DOWNLOADING:
+			case Constants.EPISODE_STATE_READY:
+				badge.setVisibility(View.VISIBLE);
+				badge.setImageResource(R.drawable.badge_episode_new);
+				break;
+
+			case Constants.EPISODE_STATE_LISTENING:
+				badge.setVisibility(View.VISIBLE);
+				badge.setImageResource(R.drawable.badge_episode_listening);
+				break;
+
+			default:
+				badge.setVisibility(View.GONE);
+			}
+
 		}
 	}
 
@@ -206,7 +234,7 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public void receiveUi(Status status) {
-			Log.d(this, status.toString());
+			Log.v(this, status.toString());
 			if (status.isUpdating()) {
 				if (!mIsUpdating && mUri.equals(status.getUri())) {
 					mIsUpdating = true;
@@ -268,6 +296,20 @@ public class ViewSubscriptionActivity extends Activity implements
 			startActivity(intent);
 			return true;
 
+		case R.id.item_website:
+			intent = new Intent(Intent.ACTION_VIEW,
+					podcastCursor.getWebsiteUri());
+			startActivity(intent);
+			return true;
+
+		case R.id.item_share:
+			intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, podcastCursor.getWebsite());
+			startActivity(Intent.createChooser(intent,
+					getString(R.string.title_share)));
+			return true;
+
 		default:
 			return ActivityHelper.handleGlobalMenu(this, item);
 
@@ -280,19 +322,52 @@ public class ViewSubscriptionActivity extends Activity implements
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			MenuInflater inflater = mode.getMenuInflater();
-			inflater.inflate(R.menu.action_episodes, menu);
 			return true;
 		}
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false;
+			menu.clear();
+			MenuInflater inflater = mode.getMenuInflater();
+			inflater.inflate(R.menu.action_episodes, menu);
+
+			SparseBooleanArray checked = mEpisodeListView
+					.getCheckedItemPositions();
+			boolean canMarkAnyAsNew = false;
+			boolean canMarkAnyAsListened = false;
+
+			for (int i = 0; i < checked.size(); i++) {
+
+				if (checked.valueAt(i)) {
+					EpisodeCursor cursor = (EpisodeCursor) mAdapter
+							.getItem(checked.keyAt(i));
+					int status = cursor.getStatus();
+
+					if (EpisodeHelper.canMarkAsNew(status)) {
+						canMarkAnyAsNew = true;
+					}
+
+					if (EpisodeHelper.canMarkAsListened(status)) {
+						canMarkAnyAsListened = true;
+					}
+				}
+			}
+
+			if (!canMarkAnyAsNew) {
+				menu.removeItem(R.id.item_mark_new);
+			}
+
+			if (!canMarkAnyAsListened) {
+				menu.removeItem(R.id.item_mark_listened);
+			}
+
+			return true;
 		}
 
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position,
 				long id, boolean checked) {
+			mode.invalidate();
 			return;
 		}
 
@@ -307,6 +382,12 @@ public class ViewSubscriptionActivity extends Activity implements
 
 			case R.id.item_mark_listened:
 				EpisodeHelper.markAsListened(getContentResolver(),
+						mEpisodeListView.getCheckedItemIds());
+				mode.finish();
+				return true;
+
+			case R.id.item_mark_new:
+				EpisodeHelper.markAsNew(getContentResolver(),
 						mEpisodeListView.getCheckedItemIds());
 				mode.finish();
 				return true;
@@ -345,29 +426,5 @@ public class ViewSubscriptionActivity extends Activity implements
 			startActivity(intent);
 		}
 	};
-
-	/* Misc */
-
-	/**
-	 * This method initializes the attribute ROW_COLOR_MAP. We can't initialize
-	 * this statically as we need access to the resources.
-	 */
-	private void initRowColorMap() {
-		if (ROW_COLOR_MAP != null) {
-			return;
-		}
-		Resources res = getResources();
-		ROW_COLOR_MAP = new int[5];
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_NEW] = res
-				.getColor(R.color.episode_title_new);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_DOWNLOADING] = res
-				.getColor(R.color.episode_title_downloading);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_READY] = res
-				.getColor(R.color.episode_title_ready);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENING] = res
-				.getColor(R.color.episode_title_listening);
-		ROW_COLOR_MAP[Constants.EPISODE_STATE_LISTENED] = res
-				.getColor(R.color.episode_title_listened);
-	}
 
 }
