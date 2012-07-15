@@ -138,6 +138,13 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".receiver.MediaButtonEventReceiver" />
+        <receiver
+            android:name=".receiver.BackgroundErrorReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="net.x4a42.volksempfaenger.BACKGROUND_ERROR" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name=".data.VolksempfaengerContentProvider"

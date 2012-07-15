@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger;
 import android.net.Uri;
 
 public final class Constants {
+
 	// Intents
 	public static final String ACTION_OI_PICK_FILE = "org.openintents.action.PICK_FILE";
 

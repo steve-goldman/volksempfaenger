@@ -12,7 +12,9 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
+import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
@@ -29,7 +31,9 @@ import android.widget.Toast;
 public class ImportFileActivity extends Activity implements
 		OnItemClickListener, OnClickListener {
 	public static final String EXTRA_IMPORT_FILE_PATH = ImportFileActivity.class
-			.getPackage().getName() + "IMPORT_FILE_PATH";
+			.getName() + "IMPORT_FILE_PATH";
+	public static final String EXTRA_IMPORT_FAILED_ITEMS = ImportFileActivity.class
+			.getName() + ".IMPORT_FAILED_ITEMS";
 	private ListView mListView;
 	private RelativeLayout mLoadingIndicator;
 	private ArrayList<SubscriptionTree> items;
@@ -191,36 +195,22 @@ public class ImportFileActivity extends Activity implements
 			if (failed.size() > 0) {
 				Toast.makeText(getApplicationContext(), "import failed",
 						Toast.LENGTH_LONG).show();
-				// TODO
-				// show notification with error and a list of failed imports
-				// final AlertDialog.Builder builder = new AlertDialog.Builder(
-				// ImportFileActivity.this);
-				// builder.setTitle(R.string.title_import_error)
-				// .setCancelable(false)
-				// .setPositiveButton(R.string.ok,
-				// new DialogInterface.OnClickListener() {
-				//
-				// @Override
-				// public void onClick(DialogInterface dialog,
-				// int which) {
-				// dialog.dismiss();
-				// }
-				// })
-				// .setMessage(getString(R.string.message_error_import));
-				// final TextView textView = new
-				// TextView(ImportFileActivity.this);
-				// int padding = Utils.dpToPx(ImportFileActivity.this, 10);
-				// textView.setPadding(padding, 0, padding, padding);
-				// StringBuilder strBuilder = new StringBuilder();
-				// for (String podcast : failed) {
-				// strBuilder.append(podcast);
-				// strBuilder.append("\n");
-				// }
-				// textView.setText(strBuilder.substring(0,
-				// strBuilder.length() - 1));
-				// builder.setView(textView);
-				// final AlertDialog alert = builder.create();
-				// alert.show();
+				Intent intent = new Intent(
+						BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR);
+				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_ID,
+						BackgroundErrorReceiver.ERROR_IMPORT);
+				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_TITLE,
+						getString(R.string.title_import_error));
+				intent.putExtra(BackgroundErrorReceiver.EXTRA_ERROR_TEXT,
+						getString(R.string.message_error_import));
+				StringBuilder strBuilder = new StringBuilder();
+				for (String podcast : failed) {
+					strBuilder.append(podcast);
+					strBuilder.append("\n");
+				}
+				String text = strBuilder.substring(0, strBuilder.length() - 1);
+				intent.putExtra(EXTRA_IMPORT_FAILED_ITEMS, text);
+				sendOrderedBroadcast(intent, null);
 			}
 		}
 	}

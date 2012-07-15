@@ -5,9 +5,11 @@ import java.util.List;
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
@@ -16,10 +18,12 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -59,11 +63,20 @@ public class SubscriptionGridFragment extends Fragment implements
 	private boolean isUpdating = false;
 	private UpdateServiceStatus.UiReceiver updateReceiver = new UpdateReceiver();
 
+	private BroadcastReceiver mErrorReceiver = new ErrorReceiver();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		adapter = new Adapter();
+		Intent intent = getActivity().getIntent();
+		String action = intent.getAction();
+		if (action != null
+				&& action
+						.equals(BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR)) {
+			showErrorIntent(intent);
+		}
 	}
 
 	@Override
@@ -97,6 +110,11 @@ public class SubscriptionGridFragment extends Fragment implements
 		super.onResume();
 
 		UpdateServiceStatus.registerReceiver(updateReceiver);
+
+		IntentFilter filter = new IntentFilter(
+				BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR);
+		filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+		getActivity().registerReceiver(mErrorReceiver, filter);
 	}
 
 	@Override
@@ -104,6 +122,8 @@ public class SubscriptionGridFragment extends Fragment implements
 		super.onPause();
 
 		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+
+		getActivity().unregisterReceiver(mErrorReceiver);
 	}
 
 	@Override
@@ -379,4 +399,48 @@ public class SubscriptionGridFragment extends Fragment implements
 		}
 	}
 
+	private class ErrorReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			showErrorIntent(intent);
+			abortBroadcast();
+		}
+
+	}
+
+	private void showErrorIntent(Intent intent) {
+		String title = intent
+				.getStringExtra(BackgroundErrorReceiver.EXTRA_ERROR_TITLE);
+		String text = intent
+				.getStringExtra(BackgroundErrorReceiver.EXTRA_ERROR_TEXT);
+		if (title == null) {
+			return;
+		}
+		final AlertDialog.Builder builder = new AlertDialog.Builder(
+				getActivity());
+		builder.setTitle(title)
+				.setCancelable(false)
+				.setPositiveButton(R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+		if (text != null) {
+			builder.setMessage(text);
+		}
+		if (intent.getIntExtra(BackgroundErrorReceiver.EXTRA_ERROR_ID, 0) == BackgroundErrorReceiver.ERROR_IMPORT) {
+			final TextView textView = new TextView(getActivity());
+			int padding = Utils.dpToPx(getActivity(), 10);
+			textView.setPadding(padding, 0, padding, padding);
+			textView.setText(intent
+					.getStringExtra(ImportFileActivity.EXTRA_IMPORT_FAILED_ITEMS));
+			builder.setView(textView);
+		}
+		builder.create().show();
+	}
 }
