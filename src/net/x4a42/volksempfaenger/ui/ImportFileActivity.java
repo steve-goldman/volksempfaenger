@@ -83,8 +83,8 @@ public class ImportFileActivity extends Activity implements
 			final SparseBooleanArray checked = mListView
 					.getCheckedItemPositions();
 			new ImportTask().execute(checked);
-			Toast.makeText(getApplicationContext(), "Importing...",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(),
+					R.string.message_import_started, Toast.LENGTH_SHORT).show();
 			finish();
 			break;
 		}
