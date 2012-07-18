@@ -102,12 +102,13 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateReceiver.setActivity(getActivity());
-		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		getLoaderManager().restartLoader(0, null, this);
 
 		UpdateServiceStatus.registerReceiver(updateReceiver);
 
