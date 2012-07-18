@@ -125,5 +125,6 @@
     <string name="title_share">Share</string>
     <string name="menu_share">Share</string>
     <string name="menu_website">Website</string>
+    <string name="message_import_started">Import started…</string>
 
 </resources>
