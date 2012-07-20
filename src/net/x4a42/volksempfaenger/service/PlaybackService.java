@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
@@ -357,7 +358,7 @@ public class PlaybackService extends Service implements EventListener {
 		savePosition(0);
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-
+		EpisodeHelper.markAsListened(getContentResolver(), uri);
 		cursor = null;
 		uri = null;
 		uriTime = null;
