@@ -315,11 +315,22 @@ public class SubscriptionGridFragment extends Fragment implements
 			TextView newEpisodesText = (TextView) view
 					.findViewById(R.id.new_episodes);
 			int newEpisodes = cursor.getNewEpisodes();
-			if (newEpisodes > 9) {
-				newEpisodesText.setText("+");
-				newEpisodesText.setVisibility(View.VISIBLE);
-			} else if (newEpisodes > 0) {
-				newEpisodesText.setText(String.valueOf(newEpisodes));
+			int listeningEpisodes = cursor.getListeningEpisodes();
+			int listeningOrNewEpisodes = newEpisodes + listeningEpisodes;
+			if (listeningOrNewEpisodes > 0) {
+				if (listeningOrNewEpisodes > 9) {
+					newEpisodesText.setText("+");
+				} else {
+					newEpisodesText.setText(String
+							.valueOf(listeningOrNewEpisodes));
+				}
+				if (newEpisodes == 0) {
+					newEpisodesText
+							.setBackgroundResource(R.drawable.badge_subscription_listening);
+				} else {
+					newEpisodesText
+							.setBackgroundResource(R.drawable.badge_subscription_new);
+				}
 				newEpisodesText.setVisibility(View.VISIBLE);
 			} else {
 				newEpisodesText.setVisibility(View.INVISIBLE);
@@ -335,8 +346,8 @@ public class SubscriptionGridFragment extends Fragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(getActivity(),
 				VolksempfaengerContentProvider.PODCAST_URI, new String[] {
-						Podcast._ID, Podcast.TITLE, Podcast.NEW_EPISODES },
-				null, null, PODCAST_ORDER);
+						Podcast._ID, Podcast.TITLE, Podcast.NEW_EPISODES,
+						Podcast.LISTENING_EPISODES }, null, null, PODCAST_ORDER);
 	}
 
 	@Override

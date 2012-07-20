@@ -16,6 +16,7 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 	private int COLUMN_FEED;
 	private int COLUMN_LAST_UPDATE;
 	private int COLUMN_NEW_EPISODES;
+	private int COLUMN_LISTENING_EPISODES;
 	private int COLUMN_TITLE;
 	private int COLUMN_WEBSITE;
 
@@ -32,6 +33,7 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 		COLUMN_FEED = getColumnIndex(Podcast.FEED);
 		COLUMN_LAST_UPDATE = getColumnIndex(Podcast.LAST_UPDATE);
 		COLUMN_NEW_EPISODES = getColumnIndex(Podcast.NEW_EPISODES);
+		COLUMN_LISTENING_EPISODES = getColumnIndex(Podcast.LISTENING_EPISODES);
 		COLUMN_TITLE = getColumnIndex(Podcast.TITLE);
 		COLUMN_WEBSITE = getColumnIndex(Podcast.WEBSITE);
 	}
@@ -77,6 +79,13 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 	 */
 	public int getNewEpisodes() {
 		return getInt(COLUMN_NEW_EPISODES);
+	}
+
+	/**
+	 * @return Number of episodes in the 'listening' state.
+	 */
+	public int getListeningEpisodes() {
+		return getInt(COLUMN_LISTENING_EPISODES);
 	}
 
 	/**

@@ -41,6 +41,11 @@ public class Columns {
 		public static final String NEW_EPISODES = "new_episodes";
 
 		/**
+		 * Number of episodes which are in the 'listening' state (type int)
+		 */
+		public static final String LISTENING_EPISODES = "listening_episodes";
+
+		/**
 		 * Time of last update (type long)
 		 */
 		public static final String LAST_UPDATE = "last_update";
