@@ -52,7 +52,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final int PICK_FILE_REQUEST = 0;
 
-	private static final String PODCAST_ORDER = "title ASC";
+	private static final String PODCAST_ORDER = "title COLLATE NOCASE ASC";
 
 	private GridView grid;
 	private View loading;
