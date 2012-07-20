@@ -301,7 +301,7 @@ public class PlaybackService extends Service implements EventListener {
 	private Runnable savePositionTask = new Runnable() {
 		public void run() {
 			savePosition();
-			saveHandler.postDelayed(this, 500);
+			saveHandler.postDelayed(this, 10000);
 		}
 	};
 
@@ -366,7 +366,6 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerStop() {
 		onPlayerPause();
-		savePosition();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
 
@@ -377,6 +376,7 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerPause() {
 		saveHandler.removeCallbacks(savePositionTask);
+		savePosition();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 
