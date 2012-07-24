@@ -1,9 +1,5 @@
 package net.x4a42.volksempfaenger;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.x4a42.volksempfaenger.misc.BitmapCache;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.ActivityManager;
@@ -17,16 +13,18 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class VolksempfaengerApplication extends Application implements
 		OnSharedPreferenceChangeListener, ComponentCallbacks2 {
 	private SharedPreferences settings;
 	private PackageInfo packageinfo;
-	private static BitmapCache logoCache;
-	private static Map<Long, Bitmap> previewLogoCache = new ConcurrentHashMap<Long, Bitmap>();
+
+	public ImageLoader imageLoader;
 
 	@Override
 	public void onCreate() {
@@ -39,11 +37,7 @@ public class VolksempfaengerApplication extends Application implements
 		setUpdateAlarm();
 		setCleanCacheAlarm();
 
-		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
-		// use 1/4 of available space
-		// maybe has to be adjusted
-		logoCache = new BitmapCache(memoryClassBytes / 4);
+		initImageLoader();
 	}
 
 	public static PackageInfo getPackageInfo(Context c) {
@@ -132,21 +126,25 @@ public class VolksempfaengerApplication extends Application implements
 		}
 	}
 
-	public static BitmapCache getCache() {
-		return logoCache;
-	}
-
-	public static Map<Long, Bitmap> getPreviewCache() {
-		return previewLogoCache;
-	}
-
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
 		if (level >= TRIM_MEMORY_MODERATE) {
-			logoCache.evictAll();
+			imageLoader.clearMemoryCache();
 		} else if (level >= TRIM_MEMORY_BACKGROUND) {
-			logoCache.trimToSize(logoCache.size() / 2);
 		}
+	}
+
+	private void initImageLoader() {
+		imageLoader = ImageLoader.getInstance();
+		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
+		int maxSize = 2 * getResources().getDimensionPixelSize(
+				R.dimen.grid_column_width);
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				getApplicationContext()).memoryCacheSize(memoryClassBytes / 4)
+				.discCacheSize(Constants.LOGO_DISC_CACHE_SIZE)
+				.memoryCacheExtraOptions(maxSize, maxSize).build();
+		imageLoader.init(config);
 	}
 }

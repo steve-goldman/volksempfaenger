@@ -17,9 +17,7 @@ public final class Constants {
 	public static final Uri OI_FILEMANGER_URI_HTTP = Uri
 			.parse("http://openintents.org/en/filemanager");
 
-	// UI
-	public static final int PREVIEW_LOGO_SIZE = 64;
-
 	// other
 	public static final String ERROR_REPORT_PREFIX = "error-report";
+	public static final int LOGO_DISC_CACHE_SIZE = 1024 * 1024 * 20;
 }

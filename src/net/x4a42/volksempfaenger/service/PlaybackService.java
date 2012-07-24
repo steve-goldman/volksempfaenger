@@ -245,10 +245,6 @@ public class PlaybackService extends Service implements EventListener {
 		updateEpisode(values);
 		final MetadataEditor metadataEditor = remoteControlClient
 				.editMetadata(true);
-		/*
-		 * TODO bitmap is scaled down. maybe it should be loaded in full
-		 * resolution, not through the cache.
-		 */
 		metadataEditor
 				.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK,
 						Utils.getPodcastLogoBitmap(this, cursor.getPodcastId()))
@@ -417,7 +413,6 @@ public class PlaybackService extends Service implements EventListener {
 		intent.setData(uri);
 		taskBuilder.addNextIntent(intent);
 
-		// Get podcast logo or use default icon
 		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
 				cursor.getPodcastId());
 		if (podcastLogo != null) {

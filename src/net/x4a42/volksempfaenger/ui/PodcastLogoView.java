@@ -5,101 +5,71 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class PodcastLogoView extends ImageView {
 	private long podcastId;
-	private AsyncTask<Void, Void, Bitmap> lastTask;
-	private static Bitmap defaultLogo;
+	private VolksempfaengerApplication application;
+	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
+			.showStubImage(R.drawable.default_logo)
+			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
+			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
 
 	public PodcastLogoView(Context context) {
 		super(context);
-		reset();
+		init(context);
 	}
 
 	public PodcastLogoView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		reset();
+		init(context);
 	}
 
 	public PodcastLogoView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		reset();
+		init(context);
+	}
+
+	private void init(Context context) {
+		application = (VolksempfaengerApplication) context
+				.getApplicationContext();
+		podcastId = -1;
 	}
 
 	public void reset() {
-		podcastId = -1;
-		resetImage();
-	}
-
-	private void resetImage() {
-		if (defaultLogo == null) {
-			defaultLogo = Utils.scalePodcastLogo(getContext(), BitmapFactory
-					.decodeResource(getResources(), R.drawable.default_logo));
-		}
-		setImageBitmap(defaultLogo);
+		setPodcastId(-1);
 	}
 
 	public void setPodcastId(long id) {
-		if (id == podcastId) {
-			// don't reload the logo
-			return;
+		if (id != podcastId) {
+			podcastId = id;
+			loadImage();
 		}
-
-		if (lastTask != null) {
-			lastTask.cancel(false);
-		}
-
-		Bitmap logo = VolksempfaengerApplication.getCache().get(id);
-		if (logo != null) {
-			// the logo is cached, we don't need to fire off an AsyncTask
-			setImageBitmap(logo);
-		} else {
-			Bitmap preview = VolksempfaengerApplication.getPreviewCache().get(
-					id);
-			if (preview != null) {
-				setImageBitmap(preview);
-			}
-			lastTask = new LoadTask(id).execute();
-		}
-
-		podcastId = id;
 	}
 
-	public long getPodcastId() {
-		return podcastId;
-	}
-
-	private class LoadTask extends AsyncTask<Void, Void, Bitmap> {
-
-		private long id;
-
-		private LoadTask(long id) {
-			this.id = id;
+	private void loadImage() {
+		String url = "";
+		if (podcastId != -1) {
+			url = Utils.getPodcastLogoFile(getContext(), podcastId).toURI()
+					.toString();
 		}
-
-		@Override
-		protected Bitmap doInBackground(Void... params) {
-			return Utils.getPodcastLogoBitmap(getContext(), id);
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			if (result != null) {
-				setImageBitmap(result);
-			} else {
-				resetImage();
-			}
-		}
-
-		@Override
-		protected void onCancelled(Bitmap result) {
-			resetImage();
-		}
+		application.imageLoader.displayImage(url, this, options,
+				new SimpleImageLoadingListener() {
+					@Override
+					public void onLoadingComplete(Bitmap loadedImage) {
+						Animation animation = AnimationUtils.loadAnimation(
+								getContext(), android.R.anim.fade_in);
+						setAnimation(animation);
+						animation.start();
+					}
+				});
 
 	}
-
 }
