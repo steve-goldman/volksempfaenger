@@ -6,6 +6,7 @@
     android:layout_gravity="center_vertical"
     android:background="@color/listview_item_background"
     android:orientation="vertical"
+    android:paddingBottom="@dimen/padding_small"
     tools:ignore="Overdraw" >
 
     <TextView
@@ -14,9 +15,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_large"
+        android:layout_marginTop="@dimen/padding_small"
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
@@ -28,9 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/episode_title"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_medium"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

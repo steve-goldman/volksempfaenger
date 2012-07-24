@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="1" xmlns:tools="http://schemas.android.com/tools" tools:ignore="NestedWeights">
+    android:weightSum="1"
+    tools:ignore="NestedWeights" >
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="4dp" >
+        android:padding="@dimen/padding_small" >
 
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -26,12 +28,12 @@
                     android:id="@+id/podcast_logo"
                     style="@style/PodcastLogo.Large"
                     android:layout_gravity="center_vertical|center_horizontal"
-                    android:layout_margin="4dp" />
+                    android:layout_margin="@dimen/padding_small" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
+                    android:layout_margin="@dimen/padding_small"
                     android:layout_weight="1"
                     android:orientation="vertical" >
 
