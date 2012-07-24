@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -33,6 +34,19 @@
             style="@style/LicenseText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_about_libraries" />
+
+        <TextView
+            style="@style/LicenseText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
 </ScrollView>
