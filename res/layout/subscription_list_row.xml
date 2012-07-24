@@ -22,7 +22,7 @@
             android:background="#88000000"
             android:ellipsize="marquee"
             android:orientation="vertical"
-            android:padding="4dp"
+            android:padding="@dimen/padding_small"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="#FFFFFF" />
@@ -35,7 +35,7 @@
             android:layout_alignParentTop="true"
             android:background="@drawable/badge_subscription_new"
             android:gravity="top|right"
-            android:paddingRight="4dp"
+            android:paddingRight="@dimen/padding_small"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
     </RelativeLayout>

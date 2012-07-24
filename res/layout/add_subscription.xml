@@ -7,14 +7,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/padding_small"
         android:text="@string/description_add_subscription" />
 
     <EditText
         android:id="@+id/edittext_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/padding_small"
         android:inputType="textUri"
         android:text="@string/hint_http" >
 

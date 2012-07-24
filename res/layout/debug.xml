@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" xmlns:tools="http://schemas.android.com/tools" tools:ignore="HardcodedText">
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
 
     <Button
         android:id="@+id/button_testfeed"
