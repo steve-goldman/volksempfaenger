@@ -34,6 +34,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	private Preference prefAboutVersion;
 	private Preference prefAboutWebsite;
 	private Preference prefAboutLicense;
+	private Preference prefAboutFlattr;
 
 	private VolksempfaengerApplication app;
 
@@ -66,6 +67,8 @@ public class SettingsActivity extends PreferenceActivity implements
 				.findPreference(PreferenceKeys.ABOUT_WEBSITE);
 		prefAboutLicense = prefscreen
 				.findPreference(PreferenceKeys.ABOUT_LICENSE);
+		prefAboutFlattr = prefscreen
+				.findPreference(PreferenceKeys.ABOUT_FLATTR);
 
 		EditText prefDownloadConcurrentEditText = (EditText) prefDownloadConcurrent
 				.getEditText();
@@ -76,6 +79,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		prefAboutWebsite.setSummary(Constants.URL_WEBSITE);
 		prefAboutWebsite.setOnPreferenceClickListener(this);
 		prefAboutLicense.setOnPreferenceClickListener(this);
+		prefAboutFlattr.setOnPreferenceClickListener(this);
 	}
 
 	@Override
@@ -134,6 +138,11 @@ public class SettingsActivity extends PreferenceActivity implements
 			return true;
 		} else if (pref == prefAboutLicense) {
 			Intent intent = new Intent(this, LicenseActivity.class);
+			startActivity(intent);
+		} else if (pref == prefAboutFlattr) {
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri
+					.parse("http://flattr.com/thing/735145/Volksempfanger"));
 			startActivity(intent);
 		}
 		return false;

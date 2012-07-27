@@ -12,4 +12,5 @@ public final class PreferenceKeys {
 	public static final String ABOUT_WIKI = "about_wiki";
 	public static final String ABOUT_BUGTRACKER = "about_bugtracker";
 	public static final String ABOUT_LICENSE = "about_license";
+	public static final String ABOUT_FLATTR = "about_flattr";
 }
