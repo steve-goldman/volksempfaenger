@@ -284,12 +284,6 @@ public class ViewSubscriptionActivity extends Activity implements
 			startService(intent);
 			return true;
 
-		case R.id.item_edit:
-			intent = new Intent(this, EditSubscriptionActivity.class);
-			intent.putExtra("id", mId);
-			startActivity(intent);
-			return true;
-
 		case R.id.item_delete:
 			intent = new Intent(this, DeleteSubscriptionActivity.class);
 			intent.putExtra("id", mId);
