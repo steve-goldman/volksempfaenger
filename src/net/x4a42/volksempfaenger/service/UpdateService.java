@@ -85,6 +85,10 @@ public class UpdateService extends IntentService {
 
 			Feed feed = null;
 			CacheInformation cacheInfo = cursor.getCacheInformation();
+			if (podcast != null) {
+				// if a single podcast is updated, expiration should be ignored
+				cacheInfo.expires = 0;
+			}
 
 			try {
 				feed = feedDownloader.fetchFeed(podcastFeed, cacheInfo);
