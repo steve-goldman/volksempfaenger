@@ -5,16 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
-import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
@@ -34,7 +30,7 @@ public class ImportFileActivity extends Activity implements
 	public static final String EXTRA_IMPORT_FAILED_ITEMS = "IMPORT_FAILED_ITEMS";
 	private ListView mListView;
 	private RelativeLayout mLoadingIndicator;
-	private ArrayList<SubscriptionTree> items;
+	ArrayList<SubscriptionTree> items;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,7 +78,12 @@ public class ImportFileActivity extends Activity implements
 		case R.id.button_import:
 			final SparseBooleanArray checked = mListView
 					.getCheckedItemPositions();
-			new ImportTask().execute(checked);
+			SubscriptionTree[] checkedItems = new SubscriptionTree[checked
+					.size()];
+			for (int i = 0; i < checked.size(); i++) {
+				checkedItems[i] = items.get(checked.keyAt(i));
+			}
+			new ImportTask(getApplicationContext()).execute(checkedItems);
 			Toast.makeText(getApplicationContext(),
 					R.string.message_import_started, Toast.LENGTH_SHORT).show();
 			finish();
@@ -157,54 +158,5 @@ public class ImportFileActivity extends Activity implements
 			mLoadingIndicator.setVisibility(View.GONE);
 		}
 
-	}
-
-	private class ImportTask extends AsyncTask<SparseBooleanArray, Void, Void> {
-		final LinkedList<String> failed = new LinkedList<String>();
-
-		@Override
-		protected Void doInBackground(SparseBooleanArray... params) {
-			final SparseBooleanArray checked = params[0];
-			for (int i = 0; i < checked.size(); i++) {
-				SubscriptionTree subscription = items.get(checked.keyAt(i));
-				// TODO finer grained exception handling
-				try {
-					PodcastHelper.addFeed(ImportFileActivity.this,
-							subscription.url);
-				} catch (Exception e) {
-					if (subscription == null) {
-						continue;
-					}
-					String name;
-					if (subscription.title == null) {
-						name = subscription.url;
-					} else {
-						name = subscription.title;
-					}
-					failed.add(name);
-
-				}
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void arg0) {
-			if (failed.size() > 0) {
-				Intent intent = BackgroundErrorReceiver
-						.getBackgroundErrorIntent(
-								getString(R.string.title_import_error),
-								getString(R.string.message_error_import),
-								BackgroundErrorReceiver.ERROR_IMPORT);
-				StringBuilder strBuilder = new StringBuilder();
-				for (String podcast : failed) {
-					strBuilder.append(podcast);
-					strBuilder.append("\n");
-				}
-				String text = strBuilder.substring(0, strBuilder.length() - 1);
-				intent.putExtra(EXTRA_IMPORT_FAILED_ITEMS, text);
-				sendOrderedBroadcast(intent, null);
-			}
-		}
 	}
 }
