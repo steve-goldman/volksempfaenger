@@ -7,10 +7,9 @@ import net.x4a42.volksempfaenger.data.Error.InsertException;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.NetException;
+import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -77,6 +76,7 @@ public class AddSubscriptionActivity extends Activity implements
 		String feedUrl = editTextUrl.getText().toString();
 
 		new AddFeedTask().execute(feedUrl);
+		finish();
 	}
 
 	private static enum AddFeedTaskResult {
@@ -84,15 +84,6 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
-
-		private ProgressDialog dialog;
-
-		@Override
-		protected void onPreExecute() {
-			dialog = ProgressDialog.show(AddSubscriptionActivity.this,
-					getString(R.string.dialog_add_progress_title),
-					getString(R.string.dialog_add_progress_message), true);
-		}
 
 		@Override
 		protected AddFeedTaskResult doInBackground(String... params) {
@@ -115,8 +106,6 @@ public class AddSubscriptionActivity extends Activity implements
 
 		@Override
 		protected void onPostExecute(AddFeedTaskResult result) {
-			dialog.dismiss();
-
 			String message = null;
 
 			switch (result) {
@@ -124,7 +113,6 @@ public class AddSubscriptionActivity extends Activity implements
 				Toast.makeText(AddSubscriptionActivity.this,
 						R.string.message_podcast_successfully_added,
 						Toast.LENGTH_SHORT).show();
-				finish();
 				return;
 			case DOWNLOAD_FAILED:
 				message = getString(R.string.message_podcast_feed_download_failed);
@@ -143,33 +131,12 @@ public class AddSubscriptionActivity extends Activity implements
 			}
 
 			if (message != null) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						AddSubscriptionActivity.this);
-				builder.setTitle(R.string.dialog_error_title)
-						.setMessage(message)
-						.setCancelable(false)
-						.setPositiveButton(R.string.ok,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								})
-						.setNegativeButton(R.string.cancel,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										AddSubscriptionActivity.this.finish();
-									}
-								});
-				AlertDialog alert = builder.create();
-				alert.show();
+				Intent intent = BackgroundErrorReceiver
+						.getBackgroundErrorIntent(
+								getString(R.string.dialog_error_title),
+								message, BackgroundErrorReceiver.ERROR_ADD);
+				sendOrderedBroadcast(intent, null);
 			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			dialog.dismiss();
 		}
 
 	}
