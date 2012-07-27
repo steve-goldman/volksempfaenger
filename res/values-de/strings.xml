@@ -99,5 +99,9 @@
     <string name="title_share">Teilen</string>
     <string name="menu_share">Teilen</string>
     <string name="menu_website">Website</string>
+    <string name="message_import_started">Import gestartet…</string>
+    <string name="settings_about_libraries">Libraries</string>
+    <string name="settings_summary_about_flattr">Unterstütze die Entwicklung von Volksempfänger</string>
+    <string name="settings_about_flattr">Flattr</string>
 
 </resources>
