@@ -17,6 +17,9 @@ public class CleanCacheService extends Service {
 		@Override
 		protected Void doInBackground(Void... params) {
 			final File cacheDir = getExternalCacheDir();
+			if (cacheDir == null) {
+				return null;
+			}
 			final File images = new File(cacheDir, "images");
 			// 3 days
 			final long minTime = System.currentTimeMillis() - 3 * 24 * 60 * 60
