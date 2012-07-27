@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import net.x4a42.volksempfaenger.ui.AddFeedTask.AddFeedTaskResult;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,11 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 
 	static enum AddFeedTaskResult {
 		SUCCEEDED, DOWNLOAD_FAILED, XML_EXCEPTION, IO_EXCEPTION, DUPLICATE, INSERT_ERROR
+	}
+
+	@Override
+	protected void onPreExecute() {
+		UpdateServiceStatus.startUpdate();
 	}
 
 	@Override
@@ -47,6 +53,7 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 
 	@Override
 	protected void onPostExecute(AddFeedTaskResult result) {
+		UpdateServiceStatus.stopUpdate();
 		String message = null;
 
 		switch (result) {

@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,6 +19,11 @@ class ImportTask extends AsyncTask<SubscriptionTree[], Void, Void> {
 	}
 
 	final LinkedList<String> failed = new LinkedList<String>();
+
+	@Override
+	protected void onPreExecute() {
+		UpdateServiceStatus.startUpdate();
+	}
 
 	@Override
 	protected Void doInBackground(SubscriptionTree[]... params) {
@@ -45,6 +51,7 @@ class ImportTask extends AsyncTask<SubscriptionTree[], Void, Void> {
 
 	@Override
 	protected void onPostExecute(Void arg0) {
+		UpdateServiceStatus.stopUpdate();
 		if (failed.size() > 0) {
 			Intent intent = BackgroundErrorReceiver.getBackgroundErrorIntent(
 					context.getString(R.string.title_import_error),
