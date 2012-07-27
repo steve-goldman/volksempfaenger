@@ -47,7 +47,7 @@ import android.widget.Toast;
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-	private static final int CONTEXT_EDIT = 0;
+	// private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
 
 	private static final int PICK_FILE_REQUEST = 0;
@@ -221,7 +221,6 @@ public class SubscriptionGridFragment extends Fragment implements
 		String title = podcastTitle.getText().toString();
 		menu.setHeaderTitle(title);
 
-		menu.add(0, CONTEXT_EDIT, 0, R.string.context_edit);
 		menu.add(0, CONTEXT_DELETE, 0, R.string.context_delete);
 
 	}
@@ -232,11 +231,6 @@ public class SubscriptionGridFragment extends Fragment implements
 				.getMenuInfo();
 		Intent intent;
 		switch (item.getItemId()) {
-		case CONTEXT_EDIT:
-			intent = new Intent(getActivity(), EditSubscriptionActivity.class);
-			intent.putExtra("id", currentMenuInfo.id);
-			startActivity(intent);
-			return true;
 		case CONTEXT_DELETE:
 			intent = new Intent(getActivity(), DeleteSubscriptionActivity.class);
 			intent.putExtra("id", currentMenuInfo.id);

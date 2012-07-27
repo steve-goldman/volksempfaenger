@@ -76,9 +76,6 @@
             android:label="@string/title_delete_subscription"
             android:theme="@style/Theme.Dialog" />
         <activity
-            android:name=".ui.EditSubscriptionActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ui.ExternalStorageMissingActivity"
             android:theme="@style/Theme.CriticalError" />
         <activity
