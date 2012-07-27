@@ -62,12 +62,21 @@ public class PodcastLogoView extends ImageView {
 		}
 		application.imageLoader.displayImage(url, this, options,
 				new SimpleImageLoadingListener() {
+					private long startTime;
+
+					@Override
+					public void onLoadingStarted() {
+						startTime = System.currentTimeMillis();
+					}
+
 					@Override
 					public void onLoadingComplete(Bitmap loadedImage) {
-						Animation animation = AnimationUtils.loadAnimation(
-								getContext(), android.R.anim.fade_in);
-						setAnimation(animation);
-						animation.start();
+						if (System.currentTimeMillis() - startTime > 16) {
+							Animation animation = AnimationUtils.loadAnimation(
+									getContext(), android.R.anim.fade_in);
+							setAnimation(animation);
+							animation.start();
+						}
 					}
 				});
 
