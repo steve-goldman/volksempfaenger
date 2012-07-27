@@ -66,7 +66,6 @@ public class UpdateService extends IntentService {
 		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
 		timeStart = System.currentTimeMillis();
 
-		UpdateServiceStatus.lock();
 		UpdateServiceStatus.startUpdate();
 
 		while (cursor.moveToNext()) {
@@ -91,10 +90,12 @@ public class UpdateService extends IntentService {
 			} catch (NetException e) {
 				// TODO Auto-generated catch block
 				Log.w(this, e);
+				UpdateServiceStatus.stopUpdate(cursor.getUri());
 				continue;
 			} catch (FeedParserException e) {
 				// TODO Auto-generated catch block
 				Log.w(this, e);
+				UpdateServiceStatus.stopUpdate(cursor.getUri());
 				continue;
 			}
 
@@ -109,7 +110,6 @@ public class UpdateService extends IntentService {
 		cursor.close();
 
 		UpdateServiceStatus.stopUpdate();
-		UpdateServiceStatus.unlock();
 
 		timeEnd = System.currentTimeMillis();
 		Log.v(this, "Update took " + (timeEnd - timeStart) + "ms");

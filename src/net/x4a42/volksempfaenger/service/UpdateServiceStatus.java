@@ -4,14 +4,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.x4a42.volksempfaenger.Log;
 import android.app.Activity;
 import android.net.Uri;
 
 public class UpdateServiceStatus {
 
-	private static boolean isLocked = false;
-	private static boolean isUpdating = false;
+	private static int updating = 0;
 	private static Uri uri = null;
 	private static final Set<Receiver> receivers = Collections
 			.synchronizedSet(new HashSet<Receiver>());
@@ -20,47 +18,33 @@ public class UpdateServiceStatus {
 		throw new UnsupportedOperationException();
 	}
 
-	public static synchronized void lock() {
-		while (isLocked) {
-			try {
-				UpdateServiceStatus.class.wait();
-			} catch (InterruptedException e) {
-				Log.w(Log.getTag(UpdateService.class), e);
-			}
-		}
-		isLocked = true;
-	}
-
-	public static synchronized void unlock() {
-		isLocked = false;
-		UpdateServiceStatus.class.notify();
-	}
-
-	public static void startUpdate() {
-		isUpdating = true;
+	public static synchronized void startUpdate() {
+		updating++;
 		sendStatus(new Status(true, null));
 	}
 
-	public static void startUpdate(Uri uri) {
+	public static synchronized void startUpdate(Uri uri) {
 		UpdateServiceStatus.uri = uri;
 		sendStatus(new Status(true, uri));
 	}
 
-	public static void stopUpdate(Uri uri) {
+	public static synchronized void stopUpdate(Uri uri) {
 		if (UpdateServiceStatus.uri.equals(uri)) {
 			UpdateServiceStatus.uri = null;
+			sendStatus(new Status(false, uri));
 		}
-		sendStatus(new Status(false, uri));
 	}
 
-	public static void stopUpdate() {
-		isUpdating = false;
+	public static synchronized void stopUpdate() {
+		updating--;
 		uri = null;
-		sendStatus(new Status(false, null));
+		if (updating == 0) {
+			sendStatus(new Status(false, null));
+		}
 	}
 
-	public static void registerReceiver(Receiver receiver) {
-		if (isUpdating) {
+	public static synchronized void registerReceiver(Receiver receiver) {
+		if (updating > 0) {
 			receiver.receive(new Status(true, uri));
 		} else {
 			receiver.receive(new Status(false, null));
@@ -68,11 +52,11 @@ public class UpdateServiceStatus {
 		receivers.add(receiver);
 	}
 
-	public static void unregisterReceiver(Receiver receiver) {
+	public static synchronized void unregisterReceiver(Receiver receiver) {
 		receivers.remove(receiver);
 	}
 
-	private static void sendStatus(Status status) {
+	private static synchronized void sendStatus(Status status) {
 		for (Receiver receiver : receivers) {
 			receiver.receive(status);
 		}
