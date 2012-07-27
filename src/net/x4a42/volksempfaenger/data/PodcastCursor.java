@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.data;
 
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.net.CacheInformation;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +20,9 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 	private int COLUMN_LISTENING_EPISODES;
 	private int COLUMN_TITLE;
 	private int COLUMN_WEBSITE;
+	private int COLUMN_HTTP_EXPIRES;
+	private int COLUMN_HTTP_LAST_MODIFIED;
+	private int COLUMN_HTTP_ETAG;
 
 	/**
 	 * Creates a PodcastCursor.
@@ -36,6 +40,9 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 		COLUMN_LISTENING_EPISODES = getColumnIndex(Podcast.LISTENING_EPISODES);
 		COLUMN_TITLE = getColumnIndex(Podcast.TITLE);
 		COLUMN_WEBSITE = getColumnIndex(Podcast.WEBSITE);
+		COLUMN_HTTP_EXPIRES = getColumnIndex(Podcast.HTTP_EXPIRES);
+		COLUMN_HTTP_LAST_MODIFIED = getColumnIndex(Podcast.HTTP_LAST_MODIFIED);
+		COLUMN_HTTP_ETAG = getColumnIndex(Podcast.HTTP_ETAG);
 	}
 
 	/**
@@ -107,6 +114,26 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 	 */
 	public Uri getWebsiteUri() {
 		return Uri.parse(getWebsite());
+	}
+
+	public long getHttpExpires() {
+		return getLong(COLUMN_HTTP_EXPIRES);
+	}
+
+	public long getHttpLastModified() {
+		return getLong(COLUMN_HTTP_LAST_MODIFIED);
+	}
+
+	public String getHttpEtag() {
+		return getString(COLUMN_HTTP_ETAG);
+	}
+
+	public CacheInformation getCacheInformation() {
+		CacheInformation cacheInfo = new CacheInformation();
+		cacheInfo.expires = getHttpExpires();
+		cacheInfo.lastModified = getHttpLastModified();
+		cacheInfo.eTag = getHttpEtag();
+		return cacheInfo;
 	}
 
 }

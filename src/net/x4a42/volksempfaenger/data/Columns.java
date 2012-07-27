@@ -50,6 +50,22 @@ public class Columns {
 		 */
 		public static final String LAST_UPDATE = "last_update";
 
+		/**
+		 * Value of the 'Expires' HTTP header of the feed if present (type long)
+		 */
+		public static final String HTTP_EXPIRES = "http_expires";
+
+		/**
+		 * Value of the 'Last-Modified' HTTP header of the feed if present (type
+		 * long)
+		 */
+		public static final String HTTP_LAST_MODIFIED = "http_last_modified";
+
+		/**
+		 * HTTP entity tag of the feed if present (type String)
+		 */
+		public static final String HTTP_ETAG = "http_etag";
+
 	}
 
 	/**

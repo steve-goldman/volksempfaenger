@@ -4,7 +4,10 @@ CREATE TABLE "podcast" (
 	"title" TEXT,
 	"description" TEXT,
 	"website" TEXT,
-	"last_update" INTEGER
+	"last_update" INTEGER,
+	"http_expires" INTEGER,
+	"http_last_modified" INTEGER,
+	"http_etag" TEXT
 );
 
 CREATE TABLE "episode" (

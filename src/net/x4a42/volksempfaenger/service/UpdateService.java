@@ -3,10 +3,12 @@ package net.x4a42.volksempfaenger.service;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
+import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
+import net.x4a42.volksempfaenger.net.CacheInformation;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.IntentService;
@@ -40,7 +42,9 @@ public class UpdateService extends IntentService {
 
 		PodcastCursor cursor;
 		{
-			String[] projection = { Podcast._ID, Podcast.TITLE, Podcast.FEED };
+			String[] projection = { Podcast._ID, Podcast.TITLE, Podcast.FEED,
+					Podcast.HTTP_LAST_MODIFIED, Podcast.HTTP_EXPIRES,
+					Podcast.HTTP_ETAG };
 
 			if (podcast != null) {
 				// Sync a single podcast
@@ -71,22 +75,19 @@ public class UpdateService extends IntentService {
 		while (cursor.moveToNext()) {
 			UpdateServiceStatus.startUpdate(cursor.getUri());
 
-			Log.v(this,
-					"Updating "
-							+ cursor.getString(cursor
-									.getColumnIndex(Podcast.TITLE)));
+			Log.v(this, "Updating " + cursor.getTitle());
 
 			timeFeedStart = System.currentTimeMillis();
 
-			long podcastId = cursor.getLong(cursor.getColumnIndex(Podcast._ID));
+			long podcastId = cursor.getId();
 
-			String podcastFeed = cursor.getString(cursor
-					.getColumnIndex(Podcast.FEED));
+			String podcastFeed = cursor.getFeed();
 
 			Feed feed = null;
+			CacheInformation cacheInfo = cursor.getCacheInformation();
 
 			try {
-				feed = feedDownloader.fetchFeed(podcastFeed);
+				feed = feedDownloader.fetchFeed(podcastFeed, cacheInfo);
 			} catch (NetException e) {
 				// TODO Auto-generated catch block
 				Log.w(this, e);
@@ -98,12 +99,15 @@ public class UpdateService extends IntentService {
 				UpdateServiceStatus.stopUpdate(cursor.getUri());
 				continue;
 			}
-
-			updateHelper.updatePodcastFromFeed(podcastId, feed, extraFirstSync);
-
-			timeFeedEnd = System.currentTimeMillis();
-			Log.v(this, "Updated " + feed.title + " (took "
-					+ (timeFeedEnd - timeFeedStart) + "ms)");
+			PodcastHelper.updateCacheInformation(this, cursor.getUri(),
+					cacheInfo);
+			if (feed != null) {
+				updateHelper.updatePodcastFromFeed(podcastId, feed,
+						extraFirstSync);
+				timeFeedEnd = System.currentTimeMillis();
+				Log.v(this, "Updated " + feed.title + " (took "
+						+ (timeFeedEnd - timeFeedStart) + "ms)");
+			}
 
 			UpdateServiceStatus.stopUpdate(cursor.getUri());
 		}
