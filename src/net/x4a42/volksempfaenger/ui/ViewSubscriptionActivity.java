@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -94,9 +96,25 @@ public class ViewSubscriptionActivity extends Activity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		mPodcastLogoView = (PodcastLogoView) findViewById(R.id.podcast_logo);
-		mPodcastDescriptionView = (TextView) findViewById(R.id.podcast_description);
 		mEpisodeListView = (ListView) findViewById(R.id.episode_list);
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			ViewGroup header = (ViewGroup) getLayoutInflater().inflate(
+					R.layout.view_subscription_header, mEpisodeListView, false);
+			View separator = getLayoutInflater().inflate(
+					R.layout.horizontal_serparator, mEpisodeListView, false);
+			mPodcastLogoView = (PodcastLogoView) header
+					.findViewById(R.id.podcast_logo);
+			mPodcastDescriptionView = (TextView) header
+					.findViewById(R.id.podcast_description);
+
+			mEpisodeListView.addHeaderView(header);
+			mEpisodeListView.addHeaderView(separator);
+		} else {
+			mPodcastLogoView = (PodcastLogoView) findViewById(R.id.podcast_logo);
+			mPodcastDescriptionView = (TextView) findViewById(R.id.podcast_description);
+		}
+
 		mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mEpisodeListView.setMultiChoiceModeListener(mMultiChoiceModeListener);
 		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
