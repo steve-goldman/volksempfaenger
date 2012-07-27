@@ -19,6 +19,7 @@ public class BackgroundErrorReceiver extends BroadcastReceiver {
 	public static final String EXTRA_ERROR_ID = "ERROR_ID";
 
 	public static final int ERROR_IMPORT = 1;
+	public static final int ERROR_ADD = 2;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
