@@ -189,7 +189,7 @@ public class EditSubscriptionActivity extends Activity implements
 			FeedDownloader fd = new FeedDownloader(
 					EditSubscriptionActivity.this);
 			try {
-				Feed feed = fd.fetchFeed(feedUrl);
+				Feed feed = fd.fetchFeed(feedUrl, null);
 				String feedImage = feed.image;
 				if (feedImage != null) {
 					// Try to download podcast logo

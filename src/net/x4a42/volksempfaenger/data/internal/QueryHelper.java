@@ -38,6 +38,11 @@ public class QueryHelper extends ContentProviderHelper {
 		temp.put(Podcast.LISTENING_EPISODES,
 				"(SELECT COUNT(*) FROM episode WHERE episode.podcast_id = podcast._id "
 						+ "AND status = 3) AS " + Podcast.LISTENING_EPISODES);
+		temp.put(Podcast.HTTP_LAST_MODIFIED, "http_last_modified AS "
+				+ Podcast.HTTP_LAST_MODIFIED);
+		temp.put(Podcast.HTTP_EXPIRES, "http_expires AS "
+				+ Podcast.HTTP_EXPIRES);
+		temp.put(Podcast.HTTP_ETAG, "http_etag AS " + Podcast.HTTP_ETAG);
 		podcastColumnMap = Collections.unmodifiableMap(temp);
 
 		// episodeColumnMap
