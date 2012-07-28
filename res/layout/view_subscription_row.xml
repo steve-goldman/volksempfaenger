@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:background="@color/listview_item_background"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/padding_small"
+    tools:ignore="Overdraw" >
+
+    <TextView
+        android:id="@+id/episode_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_large"
+        android:layout_marginTop="@dimen/padding_small"
+        android:ellipsize="marquee"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/episode_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/episode_title"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_medium"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+
+</RelativeLayout>
