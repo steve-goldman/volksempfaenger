@@ -5,7 +5,6 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import android.app.DownloadManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ public class PlaylistActivity extends EpisodeListActivity {
 	public static final String EXTRA_TYPE = "playlist_type";
 	public static final int NEW = 0;
 	public static final int LISTENING = 1;
-	public static final int DOWNLOADED = 3;
 
 	private int type;
 
@@ -34,9 +32,6 @@ public class PlaylistActivity extends EpisodeListActivity {
 			break;
 		case LISTENING:
 			titleResource = R.string.title_playlist_listening;
-			break;
-		case DOWNLOADED:
-			titleResource = R.string.title_playlist_downloaded;
 			break;
 		}
 		if (titleResource != 0) {
@@ -58,10 +53,6 @@ public class PlaylistActivity extends EpisodeListActivity {
 		case LISTENING:
 			where = String.format("%s.%s = %s", DatabaseHelper.TABLE_EPISODE,
 					Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
-			break;
-		case DOWNLOADED:
-			where = String.format("%s = %s", Episode.DOWNLOAD_STATUS,
-					DownloadManager.STATUS_SUCCESSFUL);
 			break;
 		default:
 		}
