@@ -27,8 +27,6 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	/* Static Variables */
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
-	private static final String EPISODE_SORT = Episode.DATE + " DESC, "
-			+ Episode._ID + " DESC";
 
 	/* Subscription Attributes */
 	private long mId;
@@ -124,9 +122,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	@Override
 	protected CursorLoader getCursorLoader() {
 		return new CursorLoader(ViewSubscriptionActivity.this,
-				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
-						Episode._ID, Episode.TITLE, Episode.DATE,
-						Episode.STATUS, Episode.DOWNLOAD_STATUS },
+				VolksempfaengerContentProvider.EPISODE_URI, EPISODE_PROJECTION,
 				EPISODE_WHERE, new String[] { String.valueOf(mId) },
 				EPISODE_SORT);
 	}
@@ -180,6 +176,10 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		boolean result = super.onOptionsItemSelected(item);
+		if (result) {
+			return result;
+		}
 		Intent intent;
 		switch (item.getItemId()) {
 
@@ -208,10 +208,8 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 			startActivity(Intent.createChooser(intent,
 					getString(R.string.title_share)));
 			return true;
-
 		default:
-			return ActivityHelper.handleGlobalMenu(this, item);
-
+			return false;
 		}
 	}
 }
