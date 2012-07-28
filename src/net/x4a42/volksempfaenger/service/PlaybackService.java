@@ -36,10 +36,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
 import android.view.KeyEvent;
+import android.widget.RemoteViews;
 
 public class PlaybackService extends Service implements EventListener {
 
 	public static final String ACTION_PLAY = "net.x4a42.volksempfaenger.intent.action.PLAY";
+	public static final String ACTION_PAUSE = "net.x4a42.volksempfaenger.intent.action.PAUSE";
 
 	private static final int NOTIFICATION_ID = 0x59d54313;
 
@@ -109,6 +111,10 @@ public class PlaybackService extends Service implements EventListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+		} else if (action == ACTION_PAUSE) {
+
+			remote.pause();
 
 		} else if (action == Intent.ACTION_MEDIA_BUTTON) {
 
@@ -413,6 +419,7 @@ public class PlaybackService extends Service implements EventListener {
 		intent.setData(uri);
 		taskBuilder.addNextIntent(intent);
 
+		// Get the podcast logo and scale it
 		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
 				cursor.getPodcastId());
 		if (podcastLogo != null) {
@@ -425,10 +432,25 @@ public class PlaybackService extends Service implements EventListener {
 							false);
 		}
 
+		// Build the layout for the notification
+		RemoteViews content = new RemoteViews(getPackageName(),
+				R.layout.notification_playing);
+		content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
+		content.setTextViewText(R.id.episode_title, cursor.getTitle());
+		content.setTextViewText(R.id.podcast_title, cursor.getPodcastTitle());
+		PendingIntent pauseIntent;
+		{
+			Intent i = new Intent(this, PlaybackService.class);
+			i.setAction(ACTION_PAUSE);
+			pauseIntent = PendingIntent.getService(this, 0, i, 0);
+		}
+		content.setOnClickPendingIntent(R.id.pause, pauseIntent);
+		content.setOnClickPendingIntent(R.id.collapse, pauseIntent);
+
 		// Build the notification and return it
 		return Utils.notificationFromBuilder(new Notification.Builder(this)
-				.setSmallIcon(R.drawable.notification)
-				.setLargeIcon(podcastLogo).setContentTitle(cursor.getTitle())
+				.setContent(content).setSmallIcon(R.drawable.notification)
+				.setContentTitle(cursor.getTitle())
 				.setContentText(cursor.getPodcastTitle())
 				.setContentIntent(taskBuilder.getPendingIntent(0, 0))
 				.setOngoing(true).setWhen(0));

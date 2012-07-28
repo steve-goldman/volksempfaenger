@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Theme.Volksempfaenger" parent="@android:Theme.Holo.Light.DarkActionBar"></style>
 
@@ -83,6 +83,20 @@
     <style name="EpisodeActionButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="NotificationButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center|right</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="NotificationButton.Collapse">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
     </style>
 
 </resources>
