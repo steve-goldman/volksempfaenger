@@ -104,5 +104,6 @@
     <string name="settings_about_libraries">Libraries</string>
     <string name="settings_summary_about_flattr">Support the development of Volksempfänger</string>
     <string name="settings_about_flattr">Flattr</string>
+    <string name="title_tab_playlists">Playlists</string>
 
 </resources>
