@@ -4,6 +4,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.service.PlaybackHelper;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -22,6 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -218,6 +221,20 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		}
 	}
 
+	private void slideIn() {
+		Animation animation = AnimationUtils.loadAnimation(getActivity(),
+				R.animator.slide_in_up);
+		getView().setAnimation(animation);
+		animation.start();
+	}
+
+	private void slideOut() {
+		Animation animation = AnimationUtils.loadAnimation(getActivity(),
+				R.animator.slide_out_down);
+		getView().setAnimation(animation);
+		animation.start();
+	}
+
 	private void hideExtendedControls() {
 		seekbar.setVisibility(View.GONE);
 		controls.setVisibility(View.GONE);
@@ -279,9 +296,17 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 			}
 			cursor.close();
 
+			if (event != null && event.equals(PlaybackHelper.Event.PLAY)
+					&& getView() != null) {
+				slideIn();
+			}
 			showFragment();
 		} else {
 			episodeUri = null;
+			if (event != null && event.equals(PlaybackHelper.Event.PAUSE)
+					&& getView() != null) {
+				slideOut();
+			}
 			hideFragment();
 		}
 	}
