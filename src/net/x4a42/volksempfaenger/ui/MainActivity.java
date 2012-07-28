@@ -19,12 +19,12 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity implements
-		OnUpPressedCallback {
+public class MainActivity extends Activity implements OnUpPressedCallback {
 
 	private static List<FragmentTab> fragmentTabs;
 	public final static String subscriptionsTag = "subscriptions";
 	public final static String downloadsTag = "downloads";
+	public final static String playlistsTag = "playlists";
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
@@ -33,6 +33,8 @@ public class MainActivity extends Activity implements
 				SubscriptionGridFragment.class));
 		fragmentTabs.add(new FragmentTab(downloadsTag,
 				R.string.title_tab_downloads, DownloadListFragment.class));
+		fragmentTabs.add(new FragmentTab(playlistsTag,
+				R.string.title_tab_playlists, PlaylistsFragment.class));
 	}
 
 	private ViewPager viewpager;
