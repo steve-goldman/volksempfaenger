@@ -51,14 +51,9 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="#BBB" />
+            android:background="@android:color/holo_blue_light" />
 
-        <ListView
-            android:id="@+id/episode_list"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
-        </ListView>
+        <include layout="@layout/episode_listview" />
     </LinearLayout>
 
     <include layout="@layout/nowplaying_fragment" />
