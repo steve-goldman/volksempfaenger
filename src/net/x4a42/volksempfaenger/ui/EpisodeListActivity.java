@@ -62,6 +62,11 @@ public abstract class EpisodeListActivity extends Activity implements
 		mEpisodeListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mEpisodeListView.setMultiChoiceModeListener(mMultiChoiceModeListener);
 		mEpisodeListView.setOnItemClickListener(mOnItemClickListener);
+
+		View emptyView = findViewById(android.R.id.empty);
+		if (emptyView != null) {
+			mEpisodeListView.setEmptyView(emptyView);
+		}
 	}
 
 	@Override
