@@ -41,6 +41,11 @@ public abstract class EpisodeListActivity extends Activity implements
 
 	/* Other Attributes */
 	private Adapter mAdapter;
+	protected static final String[] EPISODE_PROJECTION = new String[] {
+			Episode._ID, Episode.TITLE, Episode.DATE, Episode.STATUS,
+			Episode.DOWNLOAD_STATUS };
+	protected static final String EPISODE_SORT = Episode.DATE + " DESC, "
+			+ Episode._ID + " DESC";
 
 	/* Activity Lifecycle */
 
@@ -63,6 +68,12 @@ public abstract class EpisodeListActivity extends Activity implements
 	protected void onResume() {
 		super.onResume();
 		ExternalStorageHelper.assertExternalStorageReadable(this);
+	}
+
+	/* Menu */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return ActivityHelper.handleGlobalMenu(this, item);
 	}
 
 	@Override
