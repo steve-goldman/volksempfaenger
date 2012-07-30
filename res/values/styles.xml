@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Theme.Volksempfaenger" parent="@android:Theme.Holo.Light.DarkActionBar"></style>
+
+    <style name="Theme.Settings" parent="@android:style/Theme.Holo"></style>
+
+    <style name="Theme.CriticalError" parent="@android:style/Theme.Holo.NoActionBar"></style>
+
+    <style name="Theme.Dialog" parent="@android:style/Theme.Holo.Light.Dialog"></style>
+
+    <style name="Theme.DialogButton" parent="@android:style/Widget.Holo.Light.Button.Borderless.Small">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="Theme.ButtonBar" parent="@android:style/Holo.Light.ButtonBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="TextAppearance.Widget.Title" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#DDD</item>
+    </style>
+
+    <style name="EmptyListView">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+    </style>
+
+    <style name="PodcastLogo">
+        <item name="android:src">@drawable/default_logo</item>
+        <item name="android:background">#fff</item>
+    </style>
+
+    <style name="PodcastLogo.Small" parent="PodcastLogo">
+        <item name="android:layout_width">64dp</item>
+        <item name="android:layout_height">64dp</item>
+    </style>
+
+    <style name="PodcastLogo.Large" parent="PodcastLogo">
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">96dp</item>
+    </style>
+
+    <style name="LicenseText">
+        <item name="android:padding">@dimen/padding_medium</item>
+    </style>
+
+    <style name="NowPlaying"></style>
+
+    <style name="NowPlaying.Fragment">
+        <item name="android:background">#333</item>
+    </style>
+
+    <style name="NowPlaying.Text">
+        <item name="android:textColor">#eee</item>
+    </style>
+
+    <style name="NowPlaying.Button">
+        <item name="android:background">@drawable/borderless_button</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="NowPlaying.Separator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#09c</item>
+    </style>
+
+    <style name="NowPlaying.Logo">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">#fff</item>
+    </style>
+
+    <style name="NowPlaying.Seekbar"></style>
+
+    <style name="EpisodeActionButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="NotificationButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center|right</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="NotificationButton.Collapse">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+    </style>
+
+</resources>
