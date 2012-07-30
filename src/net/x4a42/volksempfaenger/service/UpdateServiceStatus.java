@@ -29,6 +29,8 @@ public class UpdateServiceStatus {
 	}
 
 	public static synchronized void stopUpdate(Uri uri) {
+		if (uri == null || UpdateServiceStatus.uri == null)
+			return;
 		if (UpdateServiceStatus.uri.equals(uri)) {
 			UpdateServiceStatus.uri = null;
 			sendStatus(new Status(false, uri));
