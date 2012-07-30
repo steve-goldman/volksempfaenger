@@ -12,7 +12,7 @@ import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
-import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.LegacyUpdateService;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -69,7 +69,7 @@ public class DebugActivity extends Activity implements OnClickListener {
 			// testFeedParser();
 			return;
 		case R.id.button_startupdate:
-			intent = new Intent(this, UpdateService.class);
+			intent = new Intent(this, LegacyUpdateService.class);
 			startService(intent);
 			return;
 		case R.id.button_startclean:

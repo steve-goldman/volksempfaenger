@@ -7,14 +7,15 @@ import java.util.Set;
 import android.app.Activity;
 import android.net.Uri;
 
-public class UpdateServiceStatus {
+@Deprecated
+public class LegacyUpdateServiceStatus {
 
 	private static int updating = 0;
 	private static Uri uri = null;
 	private static final Set<Receiver> receivers = Collections
 			.synchronizedSet(new HashSet<Receiver>());
 
-	private UpdateServiceStatus() {
+	private LegacyUpdateServiceStatus() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -24,15 +25,15 @@ public class UpdateServiceStatus {
 	}
 
 	public static synchronized void startUpdate(Uri uri) {
-		UpdateServiceStatus.uri = uri;
+		LegacyUpdateServiceStatus.uri = uri;
 		sendStatus(new Status(true, uri));
 	}
 
 	public static synchronized void stopUpdate(Uri uri) {
-		if (uri == null || UpdateServiceStatus.uri == null)
+		if (uri == null || LegacyUpdateServiceStatus.uri == null)
 			return;
-		if (UpdateServiceStatus.uri.equals(uri)) {
-			UpdateServiceStatus.uri = null;
+		if (LegacyUpdateServiceStatus.uri.equals(uri)) {
+			LegacyUpdateServiceStatus.uri = null;
 			sendStatus(new Status(false, uri));
 		}
 	}

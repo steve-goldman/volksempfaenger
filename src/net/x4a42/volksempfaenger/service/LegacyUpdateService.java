@@ -18,12 +18,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 
-public class UpdateService extends IntentService {
+@Deprecated
+public class LegacyUpdateService extends IntentService {
 
 	private static long lastRun = 0;
 
-	public UpdateService() {
-		super(UpdateService.class.getSimpleName());
+	public LegacyUpdateService() {
+		super(LegacyUpdateService.class.getSimpleName());
 	}
 
 	@Override
@@ -70,10 +71,10 @@ public class UpdateService extends IntentService {
 		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
 		timeStart = System.currentTimeMillis();
 
-		UpdateServiceStatus.startUpdate();
+		LegacyUpdateServiceStatus.startUpdate();
 
 		while (cursor.moveToNext()) {
-			UpdateServiceStatus.startUpdate(cursor.getUri());
+			LegacyUpdateServiceStatus.startUpdate(cursor.getUri());
 
 			Log.v(this, "Updating " + cursor.getTitle());
 
@@ -95,12 +96,12 @@ public class UpdateService extends IntentService {
 			} catch (NetException e) {
 				// TODO Auto-generated catch block
 				Log.w(this, e);
-				UpdateServiceStatus.stopUpdate(cursor.getUri());
+				LegacyUpdateServiceStatus.stopUpdate(cursor.getUri());
 				continue;
 			} catch (FeedParserException e) {
 				// TODO Auto-generated catch block
 				Log.w(this, e);
-				UpdateServiceStatus.stopUpdate(cursor.getUri());
+				LegacyUpdateServiceStatus.stopUpdate(cursor.getUri());
 				continue;
 			}
 			PodcastHelper.updateCacheInformation(this, cursor.getUri(),
@@ -113,11 +114,11 @@ public class UpdateService extends IntentService {
 						+ (timeFeedEnd - timeFeedStart) + "ms)");
 			}
 
-			UpdateServiceStatus.stopUpdate(cursor.getUri());
+			LegacyUpdateServiceStatus.stopUpdate(cursor.getUri());
 		}
 		cursor.close();
 
-		UpdateServiceStatus.stopUpdate();
+		LegacyUpdateServiceStatus.stopUpdate();
 
 		timeEnd = System.currentTimeMillis();
 		Log.v(this, "Update took " + (timeEnd - timeStart) + "ms");
