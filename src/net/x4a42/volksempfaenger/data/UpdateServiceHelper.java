@@ -79,6 +79,14 @@ public class UpdateServiceHelper {
 			values.put(Episode.DATE, Utils.toUnixTimestamp(item.date));
 			values.put(Episode.URL, item.url);
 			values.put(Episode.DESCRIPTION, item.description);
+			values.put(Episode.FLATTR_URL, item.flattrUrl);
+			int flattrStatus;
+			if (item.flattrUrl == null) {
+				flattrStatus = Constants.FLATTR_STATE_NONE;
+			} else {
+				flattrStatus = Constants.FLATTR_STATE_NEW;
+			}
+			values.put(Episode.FLATTR_STATUS, flattrStatus);
 
 			String newHash = Utils.hashContentValues(values);
 			String oldHash = episodeHashMap.get(item.itemId);
@@ -100,7 +108,7 @@ public class UpdateServiceHelper {
 						null, values);
 
 			} catch (SQLiteConstraintException e) {
-
+				values.remove(Episode.FLATTR_STATUS);
 				Cursor c = db
 						.query(DatabaseHelper.TABLE_EPISODE,
 								COLUMNS_EPISODE_ID, EPISODE_WHERE_ITEM_ID,
