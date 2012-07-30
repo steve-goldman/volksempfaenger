@@ -24,6 +24,8 @@ CREATE TABLE "episode" (
 	"enclosure_id" INTEGER REFERENCES "enclosure" ("_id"),
 	"download_id" INTEGER,
 	"hash" TEXT,
+	"flattr_url" TEXT,
+	"flattr_status" INTEGER,
 	UNIQUE ("podcast_id", "feed_item_id")
 );
 
