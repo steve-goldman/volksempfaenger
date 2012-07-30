@@ -1,60 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:orientation="horizontal" >
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/padding_large"
-        android:layout_marginRight="@dimen/padding_large"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:layout_weight="1" >
 
-        <TextView
-            style="?android:attr/listSeparatorTextViewStyle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_about_license" />
+            android:layout_marginLeft="@dimen/padding_large"
+            android:layout_marginRight="@dimen/padding_large"
+            android:orientation="vertical" >
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_about_license" />
 
             <TextView
                 android:id="@+id/license"
                 style="@style/LicenseText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/padding_large"
-        android:layout_marginRight="@dimen/padding_large"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:layout_weight="1" >
 
-        <TextView
-            style="?android:attr/listSeparatorTextViewStyle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_about_authors" />
+            android:layout_marginLeft="@dimen/padding_large"
+            android:layout_marginRight="@dimen/padding_large"
+            android:orientation="vertical" >
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_about_authors" />
 
             <TextView
                 android:id="@+id/authors"
                 style="@style/LicenseText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </ScrollView>
-    </LinearLayout>
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_about_libraries" />
+
+            <TextView
+                style="@style/LicenseText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
