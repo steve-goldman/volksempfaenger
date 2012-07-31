@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,6 +48,10 @@ public class PlaylistActivity extends EpisodeListActivity {
 
 	@Override
 	protected CursorLoader getCursorLoader() {
+		return PlaylistActivity.getCursorLoader(this, type);
+	}
+
+	public static CursorLoader getCursorLoader(Context context, int type) {
 		String where = null;
 		switch (type) {
 		case NEW:
@@ -65,7 +70,7 @@ public class PlaylistActivity extends EpisodeListActivity {
 			break;
 		}
 		if (where != null) {
-			return new CursorLoader(PlaylistActivity.this,
+			return new CursorLoader(context,
 					VolksempfaengerContentProvider.EPISODE_URI,
 					EPISODE_PROJECTION, where, null, EPISODE_SORT);
 		} else {
