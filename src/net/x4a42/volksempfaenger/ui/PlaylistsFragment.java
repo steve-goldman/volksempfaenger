@@ -23,13 +23,14 @@ public class PlaylistsFragment extends ListFragment implements
 		super.onCreate(savedInstanceState);
 
 		adapter = new SimpleAdapter(getActivity(), data,
-				R.layout.playlists_list_row, new String[] { "title" },
-				new int[] { R.id.textView1 });
+				R.layout.playlists_list_row, new String[] { "title", "icon" },
+				new int[] { R.id.playlistName, R.id.playlistIcon });
 		addPlaylist(R.string.title_playlist_listening,
-				PlaylistActivity.LISTENING);
-		addPlaylist(R.string.title_playlist_new, PlaylistActivity.NEW);
+				PlaylistActivity.LISTENING, R.drawable.listening_holo_light);
+		addPlaylist(R.string.title_playlist_new, PlaylistActivity.NEW,
+				R.drawable.new_holo_light);
 		addPlaylist(R.string.title_playlist_downloaded,
-				PlaylistActivity.DOWNLOADED);
+				PlaylistActivity.DOWNLOADED, R.drawable.downloaded_holo_light);
 	}
 
 	@Override
@@ -48,10 +49,11 @@ public class PlaylistsFragment extends ListFragment implements
 		startActivity(intent);
 	}
 
-	private void addPlaylist(int titleResource, int type) {
+	private void addPlaylist(int titleResource, int type, int icon) {
 		HashMap<String, String> row = new HashMap<String, String>();
 		row.put("title", getString(titleResource));
 		row.put("type", String.valueOf(type));
+		row.put("icon", String.valueOf(icon));
 		data.add(row);
 	}
 }
