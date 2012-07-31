@@ -20,4 +20,6 @@ public final class Constants {
 	// other
 	public static final String ERROR_REPORT_PREFIX = "error-report";
 	public static final int LOGO_DISC_CACHE_SIZE = 1024 * 1024 * 20;
+	public static String FLATTR_OAUTH_TOKEN = "xDtH4BthpOi7ZlyWsA6jcNIhsi3pDj61";
+	public static String FLATTR_OAUTH_SECRET = "MpyGRSO7wX4l8t7qU3zWH840gXgJ6cBJr0g9IU75H1gGleX58mSFlMwrzC1wEs6W";
 }
