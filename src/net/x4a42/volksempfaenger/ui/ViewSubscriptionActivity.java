@@ -1,9 +1,13 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
@@ -125,6 +129,12 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 				VolksempfaengerContentProvider.EPISODE_URI, EPISODE_PROJECTION,
 				EPISODE_WHERE, new String[] { String.valueOf(mId) },
 				EPISODE_SORT);
+	}
+
+	@Override
+	protected String getSubtitle(EpisodeCursor cursor) {
+		Date date = new Date(cursor.getDate() * 1000);
+		return DateFormat.getDateInstance().format(date);
 	}
 
 	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {

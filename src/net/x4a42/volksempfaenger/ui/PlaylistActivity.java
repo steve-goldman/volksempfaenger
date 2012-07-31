@@ -4,6 +4,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
+import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -77,6 +78,11 @@ public class PlaylistActivity extends EpisodeListActivity {
 			return null;
 		}
 
+	}
+
+	@Override
+	protected String getSubtitle(EpisodeCursor cursor) {
+		return cursor.getPodcastTitle();
 	}
 
 	@Override
