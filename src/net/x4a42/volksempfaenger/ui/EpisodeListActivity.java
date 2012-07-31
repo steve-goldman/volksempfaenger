@@ -1,8 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -43,7 +40,7 @@ public abstract class EpisodeListActivity extends Activity implements
 	private Adapter mAdapter;
 	protected static final String[] EPISODE_PROJECTION = new String[] {
 			Episode._ID, Episode.TITLE, Episode.DATE, Episode.STATUS,
-			Episode.DOWNLOAD_STATUS };
+			Episode.DOWNLOAD_STATUS, Episode.PODCAST_ID, Episode.PODCAST_TITLE };
 	protected static final String EPISODE_SORT = Episode.DATE + " DESC, "
 			+ Episode._ID + " DESC";
 
@@ -99,6 +96,8 @@ public abstract class EpisodeListActivity extends Activity implements
 
 	abstract protected CursorLoader getCursorLoader();
 
+	abstract protected String getSubtitle(EpisodeCursor cursor);
+
 	/* Content */
 
 	protected void attachAdapter() {
@@ -145,8 +144,7 @@ public abstract class EpisodeListActivity extends Activity implements
 					.findViewById(R.id.episode_date);
 			ImageView badge = (ImageView) row.findViewById(R.id.badge);
 
-			Date date = new Date(episodeCursor.getDate() * 1000);
-			episodeDate.setText(DateFormat.getDateInstance().format(date));
+			episodeDate.setText(getSubtitle(episodeCursor));
 
 			int colorId;
 			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
