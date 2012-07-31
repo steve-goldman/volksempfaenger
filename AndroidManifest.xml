@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.x4a42.volksempfaenger"
-    android:versionCode="5"
+    android:versionCode="6"
     android:versionName="dev" >
 
     <uses-sdk
