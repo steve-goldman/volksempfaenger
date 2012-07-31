@@ -28,6 +28,8 @@ public class PlaylistsFragment extends ListFragment implements
 		addPlaylist(R.string.title_playlist_listening,
 				PlaylistActivity.LISTENING);
 		addPlaylist(R.string.title_playlist_new, PlaylistActivity.NEW);
+		addPlaylist(R.string.title_playlist_downloaded,
+				PlaylistActivity.DOWNLOADED);
 	}
 
 	@Override
