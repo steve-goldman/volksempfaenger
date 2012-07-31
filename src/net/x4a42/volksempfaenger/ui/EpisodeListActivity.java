@@ -98,6 +98,8 @@ public abstract class EpisodeListActivity extends Activity implements
 
 	abstract protected String getSubtitle(EpisodeCursor cursor);
 
+	abstract protected boolean logoEnabled();
+
 	/* Content */
 
 	protected void attachAdapter() {
@@ -143,6 +145,14 @@ public abstract class EpisodeListActivity extends Activity implements
 			TextView episodeDate = (TextView) row
 					.findViewById(R.id.episode_date);
 			ImageView badge = (ImageView) row.findViewById(R.id.badge);
+			PodcastLogoView podcastLogo = (PodcastLogoView) row
+					.findViewById(R.id.podcast_logo);
+
+			if (logoEnabled()) {
+				podcastLogo.setPodcastId(episodeCursor.getPodcastId());
+			} else {
+				podcastLogo.setVisibility(View.GONE);
+			}
 
 			episodeDate.setText(getSubtitle(episodeCursor));
 
