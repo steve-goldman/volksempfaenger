@@ -6,18 +6,23 @@
     android:layout_gravity="center_vertical"
     android:background="@color/listview_item_background"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/padding_small"
     tools:ignore="Overdraw" >
+
+    <net.x4a42.volksempfaenger.ui.PodcastLogoView
+        android:id="@+id/podcast_logo"
+        style="@style/PodcastLogo.Small"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/episode_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/padding_medium"
         android:layout_marginRight="@dimen/padding_large"
         android:layout_marginTop="@dimen/padding_small"
+        android:layout_toRightOf="@id/podcast_logo"
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:singleLine="true"
@@ -27,10 +32,11 @@
         android:id="@+id/episode_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/episode_title"
         android:layout_marginLeft="@dimen/padding_medium"
         android:layout_marginRight="@dimen/padding_medium"
+        android:layout_toRightOf="@id/podcast_logo"
+        android:paddingBottom="@dimen/padding_small"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

@@ -86,6 +86,11 @@ public class PlaylistActivity extends EpisodeListActivity {
 	}
 
 	@Override
+	protected boolean logoEnabled() {
+		return true;
+	}
+
+	@Override
 	public void onUpPressed() {
 		Intent intent = NavUtils.getParentActivityIntent(PlaylistActivity.this);
 		intent.putExtra("tag", MainActivity.playlistsTag);

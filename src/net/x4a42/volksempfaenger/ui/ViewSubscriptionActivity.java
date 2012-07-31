@@ -137,6 +137,11 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		return DateFormat.getDateInstance().format(date);
 	}
 
+	@Override
+	protected boolean logoEnabled() {
+		return false;
+	}
+
 	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
 
 		public UpdateReceiver() {
