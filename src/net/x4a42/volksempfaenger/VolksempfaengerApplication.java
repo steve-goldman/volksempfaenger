@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger;
 
 import net.x4a42.volksempfaenger.service.CleanCacheService;
-import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.LegacyUpdateService;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -85,7 +85,7 @@ public class VolksempfaengerApplication extends Application implements
 			interval = intervalDefault;
 		}
 
-		Intent intent = new Intent(this, UpdateService.class);
+		Intent intent = new Intent(this, LegacyUpdateService.class);
 		PendingIntent pending = PendingIntent.getService(this, 0, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -99,7 +99,7 @@ public class VolksempfaengerApplication extends Application implements
 			Log.v(this, "setUpdateAlarm(): " + interval + "ms");
 
 			long next;
-			long last = UpdateService.getLastRun();
+			long last = LegacyUpdateService.getLastRun();
 
 			if (last == 0) {
 				next = System.currentTimeMillis() + (interval / 2);

@@ -10,9 +10,9 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
-import net.x4a42.volksempfaenger.service.UpdateService;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
+import net.x4a42.volksempfaenger.service.LegacyUpdateService;
+import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus;
+import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus.Status;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -61,7 +61,7 @@ public class SubscriptionGridFragment extends Fragment implements
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
 	private boolean isUpdating = false;
-	private UpdateServiceStatus.UiReceiver updateReceiver = new UpdateReceiver();
+	private LegacyUpdateServiceStatus.UiReceiver updateReceiver = new UpdateReceiver();
 
 	private BroadcastReceiver mErrorReceiver = new ErrorReceiver();
 
@@ -110,7 +110,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 		getLoaderManager().restartLoader(0, null, this);
 
-		UpdateServiceStatus.registerReceiver(updateReceiver);
+		LegacyUpdateServiceStatus.registerReceiver(updateReceiver);
 
 		IntentFilter filter = new IntentFilter(
 				BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR);
@@ -122,7 +122,7 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onPause() {
 		super.onPause();
 
-		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+		LegacyUpdateServiceStatus.unregisterReceiver(updateReceiver);
 
 		getActivity().unregisterReceiver(mErrorReceiver);
 	}
@@ -153,7 +153,7 @@ public class SubscriptionGridFragment extends Fragment implements
 			return true;
 		case R.id.item_update:
 			getActivity().startService(
-					new Intent(getActivity(), UpdateService.class));
+					new Intent(getActivity(), LegacyUpdateService.class));
 			return true;
 		case R.id.import_items:
 			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);
@@ -387,7 +387,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		}
 	}
 
-	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+	private class UpdateReceiver extends LegacyUpdateServiceStatus.UiReceiver {
 
 		@Override
 		public void receiveUi(Status status) {

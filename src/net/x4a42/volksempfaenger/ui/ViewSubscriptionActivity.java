@@ -10,9 +10,9 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import net.x4a42.volksempfaenger.service.UpdateService;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
+import net.x4a42.volksempfaenger.service.LegacyUpdateService;
+import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus;
+import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus.Status;
 import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -42,7 +42,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 
 	/* Other Attributes */
 	private boolean mIsUpdating;
-	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
+	private LegacyUpdateServiceStatus.UiReceiver mUpdateReceiver;
 	private PodcastCursor podcastCursor;
 
 	/* Activity Lifecycle */
@@ -108,13 +108,13 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		UpdateServiceStatus.registerReceiver(mUpdateReceiver);
+		LegacyUpdateServiceStatus.registerReceiver(mUpdateReceiver);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		UpdateServiceStatus.unregisterReceiver(mUpdateReceiver);
+		LegacyUpdateServiceStatus.unregisterReceiver(mUpdateReceiver);
 	}
 
 	/* Content */
@@ -142,7 +142,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		return false;
 	}
 
-	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+	private class UpdateReceiver extends LegacyUpdateServiceStatus.UiReceiver {
 
 		public UpdateReceiver() {
 			setActivity(ViewSubscriptionActivity.this);
@@ -199,7 +199,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		switch (item.getItemId()) {
 
 		case R.id.item_update:
-			intent = new Intent(this, UpdateService.class);
+			intent = new Intent(this, LegacyUpdateService.class);
 			intent.setData(mUri);
 			startService(intent);
 			return true;
