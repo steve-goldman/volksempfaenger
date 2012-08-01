@@ -170,7 +170,11 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	public void onClickPause(View v) {
 		if (remote != null) {
-			remote.pause();
+			if (remote.isPlaying()) {
+				remote.stop();
+			} else {
+				remote.play();
+			}
 		}
 	}
 
@@ -298,15 +302,20 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 			if (event != null && event.equals(PlaybackHelper.Event.PLAY)
 					&& getView() != null) {
+				pause.setImageResource(R.drawable.ic_media_stop);
+				infoPause.setImageResource(R.drawable.ic_media_stop);
 				slideIn();
 			}
 			showFragment();
-		} else {
+		} else if (event != null && event.equals(PlaybackHelper.Event.PAUSE)) {
+			pause.setImageResource(R.drawable.ic_media_play);
+			infoPause.setImageResource(R.drawable.ic_media_play);
+		} else if (event != null && event.equals(PlaybackHelper.Event.STOP)
+				&& getView() != null) {
 			episodeUri = null;
-			if (event != null && event.equals(PlaybackHelper.Event.PAUSE)
-					&& getView() != null) {
-				slideOut();
-			}
+			slideOut();
+			hideFragment();
+		} else if (event == null) {
 			hideFragment();
 		}
 	}

@@ -35,7 +35,7 @@ public class LegacyUpdateService extends IntentService {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		if (podcast == null
-				&& netInfo.getState() == NetworkInfo.State.DISCONNECTED) {
+				&& (netInfo == null || netInfo.getState() == NetworkInfo.State.DISCONNECTED)) {
 			// If podcast == null, we sync all podcasts in the background. Thus
 			// we just return if background data is disabled.
 			return;
