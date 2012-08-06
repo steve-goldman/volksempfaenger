@@ -1,7 +1,8 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
@@ -14,11 +15,13 @@ import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.service.internal.DatabaseWriter;
 import net.x4a42.volksempfaenger.service.internal.FeedFetcher;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.IBinder;
 
-public class UpdateService extends IntentService {
+// TODO
+public class UpdateService extends Service {
 
 	private static final int AWAIT_TERMINATION_TIMEOUT = 16;
 	private static final String[] PODCAST_PROJECTION = { Podcast._ID,
@@ -27,29 +30,36 @@ public class UpdateService extends IntentService {
 
 	public static final String EXTRA_FIRST_SYNC = "first_sync";
 
-	private ExecutorService feedFetcherPool;
-	private ExecutorService databaseWriterPool;
+	private ThreadPoolExecutor databaseReaderPool;
+	private ThreadPoolExecutor feedFetcherPool;
+	private ThreadPoolExecutor databaseWriterPool;
 	private FeedDownloader feedDownloader;
 	private UpdateServiceHelper updateHelper;
-
-	public UpdateService() {
-		super("UpdateService");
-	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		int availableProcessors = Runtime.getRuntime().availableProcessors();
-
-		feedFetcherPool = Executors.newFixedThreadPool(availableProcessors);
-		databaseWriterPool = Executors.newSingleThreadExecutor();
+		databaseReaderPool = createDatabaseExecutorPool();
+		feedFetcherPool = createFeedFetcherPool();
+		databaseWriterPool = createDatabaseExecutorPool();
 		feedDownloader = new FeedDownloader(this);
 		updateHelper = new UpdateServiceHelper(this);
 
 	}
 
 	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// TODO Auto-generated method stub
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	// @Override
 	protected void onHandleIntent(Intent intent) {
 
 		Uri podcastUri = intent.getData();
@@ -97,8 +107,20 @@ public class UpdateService extends IntentService {
 	public void onDestroy() {
 		super.onDestroy();
 
+		shutdownPool(databaseReaderPool);
 		shutdownPool(feedFetcherPool);
 		shutdownPool(databaseWriterPool);
+	}
+
+	private ThreadPoolExecutor createDatabaseExecutorPool() {
+		return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>());
+	}
+
+	private ThreadPoolExecutor createFeedFetcherPool() {
+		int availableProcessors = Runtime.getRuntime().availableProcessors();
+		return new ThreadPoolExecutor(availableProcessors, availableProcessors,
+				0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
 	private void shutdownPool(ExecutorService pool) {
