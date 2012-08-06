@@ -209,8 +209,8 @@ public abstract class EpisodeListActivity extends Activity implements
 			for (int i = 0; i < checked.size(); i++) {
 
 				if (checked.valueAt(i)) {
-					EpisodeCursor cursor = (EpisodeCursor) mAdapter
-							.getItem(checked.keyAt(i));
+					EpisodeCursor cursor = (EpisodeCursor) mEpisodeListView
+							.getItemAtPosition(checked.keyAt(i));
 					int status = cursor.getStatus();
 
 					if (EpisodeHelper.canMarkAsNew(status)) {

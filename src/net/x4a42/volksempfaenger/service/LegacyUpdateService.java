@@ -87,8 +87,12 @@ public class LegacyUpdateService extends IntentService {
 			Feed feed = null;
 			CacheInformation cacheInfo = cursor.getCacheInformation();
 			if (podcast != null) {
-				// if a single podcast is updated, expiration should be ignored
+				// if a single podcast is updated, any cache information should
+				// be ignored, because currently there is no way to force an
+				// update
 				cacheInfo.expires = 0;
+				cacheInfo.lastModified = 0;
+				cacheInfo.eTag = null;
 			}
 
 			try {
