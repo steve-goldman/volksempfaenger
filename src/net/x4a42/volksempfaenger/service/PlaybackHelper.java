@@ -24,6 +24,7 @@ public class PlaybackHelper implements OnPreparedListener,
 	private AudioNoisyReceiver audioNoisyReceiver = new AudioNoisyReceiver();
 	private List<EventListener> eventListeners = new Vector<EventListener>();
 	private boolean requestedAutoPlay;
+	private boolean audioFocus;
 
 	public static enum Event {
 		RESET, PREPARED, PLAY, PAUSE, STOP, END, DESTROY
@@ -68,22 +69,34 @@ public class PlaybackHelper implements OnPreparedListener,
 	}
 
 	public void play() {
-		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
-				AudioManager.AUDIOFOCUS_GAIN);
-		// TODO maybe we should do something special when we can't get audio
-		// focus
+		if (!audioFocus) {
+			audioFocus = true;
+			audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
+					AudioManager.AUDIOFOCUS_GAIN);
+			// TODO maybe we should do something special when we can't get audio
+			// focus
+		}
 		player.start();
 		emitEvent(Event.PLAY);
 	}
 
 	public void pause() {
 		player.pause();
+		abandonAudioFocus();
 		emitEvent(Event.PAUSE);
 	}
 
 	public void stop() {
 		player.stop();
+		abandonAudioFocus();
 		emitEvent(Event.STOP);
+	}
+
+	private void abandonAudioFocus() {
+		if (audioFocus) {
+			audioFocus = false;
+			audioManager.abandonAudioFocus(this);
+		}
 	}
 
 	public void seekTo(int position) {
@@ -160,8 +173,7 @@ public class PlaybackHelper implements OnPreparedListener,
 			if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent
 					.getAction())) {
 				if (player.isPlaying()) {
-					player.pause();
-					emitEvent(Event.PAUSE);
+					pause();
 				}
 			}
 		}
