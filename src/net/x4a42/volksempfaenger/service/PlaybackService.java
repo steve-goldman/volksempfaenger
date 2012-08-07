@@ -56,6 +56,7 @@ public class PlaybackService extends Service implements EventListener {
 	private PlaybackRemote remote;
 	private PlaybackHelper helper;
 	private RemoteControlClient remoteControlClient;
+	private ComponentName mediaButtonEventReceiver;
 
 	private PendingIntent playIntent;
 	private PendingIntent pauseIntent;
@@ -70,8 +71,8 @@ public class PlaybackService extends Service implements EventListener {
 		helper = new PlaybackHelper(this);
 		helper.registerEventListener(this);
 
-		ComponentName mediaButtonEventReceiver = new ComponentName(
-				getPackageName(), MediaButtonEventReceiver.class.getName());
+		mediaButtonEventReceiver = new ComponentName(getPackageName(),
+				MediaButtonEventReceiver.class.getName());
 
 		AudioManager am = helper.getAudioManager();
 		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
@@ -168,6 +169,9 @@ public class PlaybackService extends Service implements EventListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		AudioManager am = helper.getAudioManager();
+		am.unregisterRemoteControlClient(remoteControlClient);
+		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 		helper.destroy();
 	}
 
@@ -390,13 +394,13 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerEnd() {
-		onPlayerStop();
-		savePosition(0);
 		EpisodeHelper.markAsListened(getContentResolver(), uri);
+		savePosition(0);
+		onPlayerStop();
 	}
 
 	private void onPlayerStop() {
-		onPlayerPause();
+		saveHandler.removeCallbacks(savePositionTask);
 		onPlayerReset();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
