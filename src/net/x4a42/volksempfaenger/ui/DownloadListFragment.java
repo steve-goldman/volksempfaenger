@@ -54,9 +54,9 @@ public class DownloadListFragment extends ListFragment implements
 
 	private class Adapter extends SimpleCursorAdapter {
 		public Adapter() {
-			super(getActivity(), R.layout.download_list_row, null, new String[] {
-					Episode.TITLE, Episode.PODCAST_TITLE }, new int[] {
-					R.id.episode_title, R.id.podcast_title }, 0);
+			super(getActivity(), R.layout.download_list_row, null,
+					new String[] { Episode.TITLE, Episode.PODCAST_TITLE },
+					new int[] { R.id.episode_title, R.id.podcast_title }, 0);
 		}
 
 		@Override
@@ -189,8 +189,10 @@ public class DownloadListFragment extends ListFragment implements
 						Episode.DOWNLOAD_ID, Episode.DURATION_TOTAL,
 						Episode.DOWNLOAD_STATUS,
 						Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
-						Episode.DOWNLOAD_TOTAL_SIZE_BYTES },
-				Episode.DOWNLOAD_ID + " != 0", null,
+						Episode.DOWNLOAD_TOTAL_SIZE_BYTES }, String.format(
+						"%s != 0 AND %s < %s", Episode.DOWNLOAD_ID,
+						Episode.DOWNLOAD_STATUS,
+						DownloadManager.STATUS_SUCCESSFUL), null,
 				"download.status ASC, download._id DESC");
 	}
 
