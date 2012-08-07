@@ -244,6 +244,16 @@ public class Columns {
 		 */
 		public static final String HASH = "hash";
 
+		/**
+		 * Autosubmit flattr url (type String)
+		 */
+		public static final String FLATTR_URL = "flattr_url";
+
+		/**
+		 * Status of the flattr thing in connection with the user (type int)
+		 */
+		public static final String FLATTR_STATUS = "flattr_status";
+
 	}
 
 	/**

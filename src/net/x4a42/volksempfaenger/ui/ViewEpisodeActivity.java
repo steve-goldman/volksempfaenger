@@ -130,6 +130,7 @@ public class ViewEpisodeActivity extends Activity implements
 		if (podcastLogoBitmap != null) {
 			podcastLogoBitmap.recycle();
 		}
+		unbindService(this);
 	}
 
 	@Override

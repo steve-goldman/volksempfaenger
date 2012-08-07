@@ -105,4 +105,5 @@
   <string name="title_playlist_new">Neu</string>
   <string name="title_playlist_listening">Begonnen</string>
   <string name="message_no_episodes">Keine Episoden</string>
+  <string name="title_playlist_downloaded">Heruntergeladen</string>
 </resources>

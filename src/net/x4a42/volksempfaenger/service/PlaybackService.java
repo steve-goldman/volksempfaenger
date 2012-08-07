@@ -17,6 +17,7 @@ import net.x4a42.volksempfaenger.ui.MainActivity;
 import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
 import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -42,6 +43,7 @@ public class PlaybackService extends Service implements EventListener {
 
 	public static final String ACTION_PLAY = "net.x4a42.volksempfaenger.intent.action.PLAY";
 	public static final String ACTION_PAUSE = "net.x4a42.volksempfaenger.intent.action.PAUSE";
+	public static final String ACTION_STOP = "net.x4a42.volksempfaenger.intent.action.STOP";
 
 	private static final int NOTIFICATION_ID = 0x59d54313;
 
@@ -54,6 +56,10 @@ public class PlaybackService extends Service implements EventListener {
 	private PlaybackRemote remote;
 	private PlaybackHelper helper;
 	private RemoteControlClient remoteControlClient;
+	private ComponentName mediaButtonEventReceiver;
+
+	private PendingIntent playIntent;
+	private PendingIntent pauseIntent;
 
 	@Override
 	public void onCreate() {
@@ -65,8 +71,8 @@ public class PlaybackService extends Service implements EventListener {
 		helper = new PlaybackHelper(this);
 		helper.registerEventListener(this);
 
-		ComponentName mediaButtonEventReceiver = new ComponentName(
-				getPackageName(), MediaButtonEventReceiver.class.getName());
+		mediaButtonEventReceiver = new ComponentName(getPackageName(),
+				MediaButtonEventReceiver.class.getName());
 
 		AudioManager am = helper.getAudioManager();
 		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
@@ -87,6 +93,17 @@ public class PlaybackService extends Service implements EventListener {
 		}
 		am.registerRemoteControlClient(remoteControlClient);
 
+		{
+			Intent i = new Intent(this, PlaybackService.class);
+			i.setAction(ACTION_PAUSE);
+			pauseIntent = PendingIntent.getService(this, 0, i, 0);
+		}
+		{
+			Intent i = new Intent(this, PlaybackService.class);
+			i.setAction(ACTION_PLAY);
+			playIntent = PendingIntent.getService(this, 0, i, 0);
+		}
+
 	}
 
 	@Override
@@ -101,21 +118,25 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		if (action == ACTION_PLAY) {
-
-			try {
-				playEpisode(intent.getData());
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (notification == null) {
+				try {
+					playEpisode(intent.getData());
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				remote.play();
 			}
 
 		} else if (action == ACTION_PAUSE) {
 
 			remote.pause();
-
+		} else if (action == ACTION_STOP) {
+			remote.stop();
 		} else if (action == Intent.ACTION_MEDIA_BUTTON) {
 
 			KeyEvent event = (KeyEvent) intent
@@ -148,6 +169,9 @@ public class PlaybackService extends Service implements EventListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		AudioManager am = helper.getAudioManager();
+		am.unregisterRemoteControlClient(remoteControlClient);
+		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 		helper.destroy();
 	}
 
@@ -186,6 +210,10 @@ public class PlaybackService extends Service implements EventListener {
 
 		public void pause() {
 			helper.pause();
+		}
+
+		public void stop() {
+			helper.stop();
 		}
 
 		public void seekTo(int position) {
@@ -343,31 +371,37 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPlay() {
-		notification = makeNotification();
-		startForeground();
+		if (notification == null) {
+			notification = makeNotification();
+			startForeground();
+		}
 		saveHandler.post(savePositionTask);
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+
+		notification.contentView.setImageViewResource(R.id.pause,
+				R.drawable.ic_notification_pause);
+		notification.contentView.setOnClickPendingIntent(R.id.pause,
+				pauseIntent);
+		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+		nm.notify(NOTIFICATION_ID, notification);
 
 	}
 
 	private void onPlayerReset() {
 		stopForeground();
+		notification = null;
 	}
 
 	private void onPlayerEnd() {
-		onPlayerPause();
-		savePosition(0);
-		remoteControlClient
-				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
 		EpisodeHelper.markAsListened(getContentResolver(), uri);
-		cursor = null;
-		uri = null;
-		uriTime = null;
+		savePosition(0);
+		onPlayerStop();
 	}
 
 	private void onPlayerStop() {
-		onPlayerPause();
+		saveHandler.removeCallbacks(savePositionTask);
+		onPlayerReset();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
 
@@ -382,7 +416,12 @@ public class PlaybackService extends Service implements EventListener {
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 
-		stopForeground();
+		notification.contentView.setImageViewResource(R.id.pause,
+				R.drawable.ic_notification_play);
+		notification.contentView
+				.setOnClickPendingIntent(R.id.pause, playIntent);
+		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+		nm.notify(NOTIFICATION_ID, notification);
 	}
 
 	private void onPlayerPrepared() {
@@ -438,14 +477,14 @@ public class PlaybackService extends Service implements EventListener {
 		content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
 		content.setTextViewText(R.id.episode_title, cursor.getTitle());
 		content.setTextViewText(R.id.podcast_title, cursor.getPodcastTitle());
-		PendingIntent pauseIntent;
-		{
-			Intent i = new Intent(this, PlaybackService.class);
-			i.setAction(ACTION_PAUSE);
-			pauseIntent = PendingIntent.getService(this, 0, i, 0);
-		}
 		content.setOnClickPendingIntent(R.id.pause, pauseIntent);
-		content.setOnClickPendingIntent(R.id.collapse, pauseIntent);
+		{
+			PendingIntent stopIntent;
+			Intent i = new Intent(this, PlaybackService.class);
+			i.setAction(ACTION_STOP);
+			stopIntent = PendingIntent.getService(this, 0, i, 0);
+			content.setOnClickPendingIntent(R.id.collapse, stopIntent);
+		}
 
 		// Build the notification and return it
 		return Utils.notificationFromBuilder(new Notification.Builder(this)

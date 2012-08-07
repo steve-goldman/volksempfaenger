@@ -41,11 +41,18 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_about_libraries" />
 
-        <TextView
-            style="@style/LicenseText"
+        <Button
+            android:id="@+id/universalImageLoaderText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/signpostText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Signpost"
             tools:ignore="HardcodedText" />
     </LinearLayout>
 

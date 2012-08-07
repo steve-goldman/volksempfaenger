@@ -59,7 +59,7 @@
             android:id="@+id/info_pause"
             style="@style/NowPlaying.Button"
             android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_pause" />
+            android:src="@drawable/ic_media_stop" />
     </LinearLayout>
 
     <SeekBar
@@ -101,7 +101,7 @@
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_pause" >
+            android:src="@drawable/ic_media_stop" >
         </ImageButton>
 
         <ImageButton
