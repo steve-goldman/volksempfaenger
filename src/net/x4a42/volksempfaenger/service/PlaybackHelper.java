@@ -82,7 +82,6 @@ public class PlaybackHelper implements OnPreparedListener,
 
 	public void pause() {
 		player.pause();
-		abandonAudioFocus();
 		emitEvent(Event.PAUSE);
 	}
 
