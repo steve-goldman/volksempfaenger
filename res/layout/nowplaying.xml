@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/NowPlaying.Fragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="NestedWeights" >
+
+    <View style="@style/NowPlaying.Separator" />
+
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <net.x4a42.volksempfaenger.ui.PodcastLogoView
+            android:id="@+id/logo"
+            style="@style/NowPlaying.Logo" />
+
+        <LinearLayout
+            android:id="@+id/episode_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/borderless_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/padding_medium"
+            android:paddingRight="@dimen/padding_medium" >
+
+            <TextView
+                android:id="@+id/episode"
+                style="@style/NowPlaying.Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:gravity="bottom"
+                android:singleLine="true"
+                android:text="@string/episode_name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/podcast"
+                style="@style/NowPlaying.Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:gravity="top"
+                android:singleLine="true"
+                android:text="@string/podcast" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/info_pause"
+            style="@style/NowPlaying.Button"
+            android:contentDescription="@string/pause"
+            android:src="@drawable/ic_media_stop" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        style="@style/NowPlaying.Seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" >
+    </SeekBar>
+
+    <LinearLayout
+        android:id="@+id/controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/position"
+            style="@style/NowPlaying.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="00:00:00"
+            tools:ignore="HardcodedText" >
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/NowPlaying.Button"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/rewind"
+            android:src="@drawable/ic_media_rew" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/pause"
+            style="@style/NowPlaying.Button"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/pause"
+            android:src="@drawable/ic_media_stop" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/forward"
+            style="@style/NowPlaying.Button"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/fast_forward"
+            android:src="@drawable/ic_media_ff" >
+        </ImageButton>
+
+        <TextView
+            android:id="@+id/duration"
+            style="@style/NowPlaying.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="00:00:00"
+            tools:ignore="HardcodedText" >
+        </TextView>
+    </LinearLayout>
+
+</LinearLayout>
