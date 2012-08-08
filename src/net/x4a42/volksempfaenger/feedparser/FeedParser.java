@@ -362,9 +362,13 @@ public class FeedParser {
 				feed.description = Utils.trimmedString(buffer);
 				break;
 			case ATOM_ENTRY:
-				if (feedItem.itemId != null) {
-					feed.items.add(feedItem);
+				if (feedItem.itemId == null) {
+					if (feedItem.url == null) {
+						break;
+					}
+					feedItem.itemId = feedItem.url;
 				}
+				feed.items.add(feedItem);
 				feedItem = null;
 				break;
 			case ATOM_ID:
@@ -449,9 +453,13 @@ public class FeedParser {
 				}
 				break;
 			case RSS_ITEM:
-				if (feedItem.itemId != null) {
-					feed.items.add(feedItem);
+				if (feedItem.itemId == null) {
+					if (feedItem.url == null) {
+						break;
+					}
+					feedItem.itemId = feedItem.url;
 				}
+				feed.items.add(feedItem);
 				feedItem = null;
 				currentRssItemHasHtml = false;
 				break;

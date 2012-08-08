@@ -35,6 +35,7 @@ import android.content.Loader;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -378,7 +379,7 @@ public class ViewEpisodeActivity extends Activity implements
 				descriptionSpanned.setSpan(newImg, start, end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				// explicitly update description
-				episodeDescription.setText(descriptionSpanned);
+				setDescription(descriptionSpanned);
 			}
 		}
 
@@ -474,9 +475,9 @@ public class ViewEpisodeActivity extends Activity implements
 		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
 				CharacterStyle.class).length == 0) {
 			// use the normal text as there is no html
-			episodeDescription.setText(episodeCursor.getDescription());
+			setDescription(episodeCursor.getDescription());
 		} else {
-			episodeDescription.setText(descriptionSpanned);
+			setDescription(descriptionSpanned);
 			lastImageLoadTask = new ImageLoadTask().execute();
 		}
 	}
@@ -541,6 +542,18 @@ public class ViewEpisodeActivity extends Activity implements
 	@Override
 	public void onPlaybackEvent(Event event) {
 		invalidateOptionsMenu();
+	}
+
+	private void setDescription(CharSequence description) {
+		try {
+			episodeDescription.setText(description);
+		} catch (IndexOutOfBoundsException e) {
+			// workaround for JB
+			// https://code.google.com/p/android/issues/detail?id=36088
+			episodeDescription.setText(null);
+			episodeDescription.setText(getString(R.string.error_shownotes));
+			episodeDescription.setTypeface(null, Typeface.ITALIC);
+		}
 	}
 
 }
