@@ -7,8 +7,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Stack;
@@ -17,7 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;
 import net.x4a42.volksempfaenger.feedparser.Enums.Mime;
@@ -31,64 +28,17 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class FeedParser {
 
-	public static Feed parse(Reader reader) throws FeedParserException,
-			IOException {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser;
-		FeedParserListener listener = new FeedParserListener() {
-
-			private ArrayList<FeedItem> items = new ArrayList<FeedItem>();
-			private ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
-
-			@Override
-			public void onFeedItem(FeedItem feedItem) {
-				Log.e(this, "onFeedItem");
-				FeedItem item = (FeedItem) feedItem.clone();
-				item.enclosures = new ArrayList<Enclosure>();
-				for (Enclosure enclosure : enclosures) {
-					item.enclosures.add(enclosure);
-				}
-				enclosures.clear();
-				items.add(item);
-			}
-
-			@Override
-			public void onFeed(Feed feed) {
-				Log.e(this, "onFeed");
-				Log.e(this, items.size() + "");
-				// TODO modifies the handler's feed directly for compatibility
-				feed.items = new ArrayList<FeedItem>();
-				for (FeedItem item : items) {
-					feed.items.add(item);
-				}
-				items.clear();
-			}
-
-			@Override
-			public void onEnclosure(Enclosure enclosure) {
-				enclosures.add((Enclosure) enclosure.clone());
-			}
-		};
-		FeedHandler handler = new FeedHandler(listener);
+	public static void parseEvented(Reader reader, FeedParserListener listener)
+			throws FeedParserException, IOException {
 		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser;
+			FeedHandler handler = new FeedHandler(listener);
 			parser = factory.newSAXParser();
 			parser.parse(new InputSource(reader), handler);
 			if (!handler.isFeed) {
 				throw new NotAFeedException();
 			}
-			Feed feed = handler.feed;
-			for (FeedItem item : feed.items) {
-				if (item.date == null) {
-					throw new NotAFeedException();
-				}
-			}
-			Collections.sort(feed.items, new Comparator<FeedItem>() {
-				@Override
-				public int compare(FeedItem lhs, FeedItem rhs) {
-					return rhs.date.compareTo(lhs.date);
-				}
-			});
-			return feed;
 		} catch (ParserConfigurationException e) {
 			throw new FeedParserException(e);
 		} catch (SAXException e) {
@@ -99,11 +49,50 @@ public class FeedParser {
 		}
 	}
 
+	public static Feed parse(Reader reader) throws FeedParserException,
+			IOException {
+		LegacyFeedParserListener listener = new LegacyFeedParserListener();
+		FeedParser.parseEvented(reader, listener);
+		return listener.feed;
+	}
+
+	private static class LegacyFeedParserListener implements FeedParserListener {
+		public Feed feed;
+		private ArrayList<FeedItem> items = new ArrayList<FeedItem>();
+		private ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
+
+		@Override
+		public void onFeedItem(FeedItem feedItem) {
+			FeedItem item = (FeedItem) feedItem.clone();
+			item.enclosures = new ArrayList<Enclosure>();
+			for (Enclosure enclosure : enclosures) {
+				item.enclosures.add(enclosure);
+			}
+			enclosures.clear();
+			items.add(item);
+		}
+
+		@Override
+		public void onFeed(Feed feed) {
+			this.feed = (Feed) feed.clone();
+			this.feed.items = new ArrayList<FeedItem>();
+			for (FeedItem item : items) {
+				this.feed.items.add(item);
+			}
+			items.clear();
+		}
+
+		@Override
+		public void onEnclosure(Enclosure enclosure) {
+			enclosures.add((Enclosure) enclosure.clone());
+		}
+
+	}
+
 	private static class FeedHandler extends DefaultHandler {
-		// TODO for compatibility. make private and final
-		public Feed feed = new Feed();
 		public boolean isFeed = false;
 
+		private final Feed feed = new Feed();
 		private final FeedItem feedItem = new FeedItem();
 		private final Enclosure enclosure = new Enclosure();
 
@@ -246,7 +235,7 @@ public class FeedParser {
 						if (length != null && length.length() > 0) {
 							enclosure.size = Long.parseLong(length.trim());
 						}
-						listener.onEnclosure(enclosure);
+						onEnclosure();
 					}
 					break;
 				case ALTERNATE:
@@ -319,7 +308,7 @@ public class FeedParser {
 					if (length != null && length.length() > 0) {
 						enclosure.size = Long.parseLong(length.trim());
 					}
-					listener.onEnclosure(enclosure);
+					onEnclosure();
 				}
 				break;
 			default:
@@ -401,13 +390,7 @@ public class FeedParser {
 				feed.description = Utils.trimmedString(buffer);
 				break;
 			case ATOM_ENTRY:
-				if (feedItem.itemId == null) {
-					if (feedItem.url == null) {
-						break;
-					}
-					feedItem.itemId = feedItem.url;
-				}
-				listener.onFeedItem(feedItem);
+				onFeedItem();
 				break;
 			case ATOM_ID:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
@@ -420,7 +403,7 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_FEED:
-				listener.onFeed(feed);
+				onFeed();
 				break;
 			default:
 				break;
@@ -494,13 +477,7 @@ public class FeedParser {
 				}
 				break;
 			case RSS_ITEM:
-				if (feedItem.itemId == null) {
-					if (feedItem.url == null) {
-						break;
-					}
-					feedItem.itemId = feedItem.url;
-				}
-				listener.onFeedItem(feedItem);
+				onFeedItem();
 				currentRssItemHasHtml = false;
 				break;
 			case RSS_GUID:
@@ -517,7 +494,7 @@ public class FeedParser {
 					parents.push(copy);
 				}
 			case RSS_CHANNEL:
-				listener.onFeed(feed);
+				onFeed();
 				break;
 			default:
 				break;
@@ -686,6 +663,27 @@ public class FeedParser {
 
 		private static Mime getMime(String mimeString) {
 			return StringLookup.lookupMime(mimeString);
+		}
+
+		private void onEnclosure() {
+			listener.onEnclosure(enclosure);
+		}
+
+		private void onFeedItem() {
+			if (feedItem.itemId == null) {
+				if (feedItem.url == null) {
+					return;
+				}
+				feedItem.itemId = feedItem.url;
+			}
+			if (feedItem.date == null) {
+				return;
+			}
+			listener.onFeedItem(feedItem);
+		}
+
+		private void onFeed() {
+			listener.onFeed(feed);
 		}
 	}
 }
