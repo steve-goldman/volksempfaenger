@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;
 import net.x4a42.volksempfaenger.feedparser.Enums.Mime;
@@ -33,7 +35,41 @@ public class FeedParser {
 			IOException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser;
-		FeedHandler handler = new FeedHandler();
+		FeedParserListener listener = new FeedParserListener() {
+
+			private ArrayList<FeedItem> items = new ArrayList<FeedItem>();
+			private ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
+
+			@Override
+			public void onFeedItem(FeedItem feedItem) {
+				Log.e(this, "onFeedItem");
+				FeedItem item = (FeedItem) feedItem.clone();
+				item.enclosures = new ArrayList<Enclosure>();
+				for (Enclosure enclosure : enclosures) {
+					item.enclosures.add(enclosure);
+				}
+				enclosures.clear();
+				items.add(item);
+			}
+
+			@Override
+			public void onFeed(Feed feed) {
+				Log.e(this, "onFeed");
+				Log.e(this, items.size() + "");
+				// TODO modifies the handler's feed directly for compatibility
+				feed.items = new ArrayList<FeedItem>();
+				for (FeedItem item : items) {
+					feed.items.add(item);
+				}
+				items.clear();
+			}
+
+			@Override
+			public void onEnclosure(Enclosure enclosure) {
+				enclosures.add((Enclosure) enclosure.clone());
+			}
+		};
+		FeedHandler handler = new FeedHandler(listener);
 		try {
 			parser = factory.newSAXParser();
 			parser.parse(new InputSource(reader), handler);
@@ -64,11 +100,13 @@ public class FeedParser {
 	}
 
 	private static class FeedHandler extends DefaultHandler {
-
-		public final Feed feed = new Feed();
+		// TODO for compatibility. make private and final
+		public Feed feed = new Feed();
 		public boolean isFeed = false;
 
-		private FeedItem feedItem = null;
+		private final FeedItem feedItem = new FeedItem();
+		private final Enclosure enclosure = new Enclosure();
+
 		private final Stack<Tag> parents = new Stack<Tag>();
 		private boolean skipMode = false;
 		private boolean xhtmlMode = false;
@@ -88,6 +126,13 @@ public class FeedParser {
 		private static final String RSS_ATTR_URL = "url";
 		private static final String RSS_ATTR_TYPE = "type";
 		private static final String RSS_ATTR_LENGTH = "length";
+
+		private final FeedParserListener listener;
+
+		public FeedHandler(FeedParserListener listener) {
+			super();
+			this.listener = listener;
+		}
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
@@ -175,8 +220,7 @@ public class FeedParser {
 		private void onStartTagAtom(Tag tag, Attributes atts) {
 			switch (tag) {
 			case ATOM_ENTRY:
-				feedItem = new FeedItem();
-				feedItem.feed = feed;
+				feedItem.reset();
 				currentItemHasITunesSummaryAlternative = false;
 				currentAtomItemHasPublished = false;
 				break;
@@ -194,8 +238,6 @@ public class FeedParser {
 				switch (rel) {
 				case ENCLOSURE:
 					if (parents.peek() == Tag.ATOM_ENTRY) {
-						Enclosure enclosure = new Enclosure();
-						enclosure.feedItem = feedItem;
 						enclosure.url = atts.getValue(ATOM_ATTR_HREF);
 						enclosure.mime = atts.getValue(ATOM_ATTR_TYPE);
 						enclosure.title = atts.getValue(ATOM_ATTR_TITLE);
@@ -204,7 +246,7 @@ public class FeedParser {
 						if (length != null && length.length() > 0) {
 							enclosure.size = Long.parseLong(length.trim());
 						}
-						feedItem.enclosures.add(enclosure);
+						listener.onEnclosure(enclosure);
 					}
 					break;
 				case ALTERNATE:
@@ -264,15 +306,12 @@ public class FeedParser {
 		private void onStartTagRss(Tag tag, Attributes atts) {
 			switch (tag) {
 			case RSS_ITEM:
-				feedItem = new FeedItem();
-				feedItem.feed = feed;
+				feedItem.reset();
 				currentRssItemHasHtml = false;
 				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
-					Enclosure enclosure = new Enclosure();
-					enclosure.feedItem = feedItem;
 					enclosure.url = atts.getValue(RSS_ATTR_URL);
 					enclosure.mime = atts.getValue(RSS_ATTR_TYPE);
 
@@ -280,7 +319,7 @@ public class FeedParser {
 					if (length != null && length.length() > 0) {
 						enclosure.size = Long.parseLong(length.trim());
 					}
-					feedItem.enclosures.add(enclosure);
+					listener.onEnclosure(enclosure);
 				}
 				break;
 			default:
@@ -368,8 +407,7 @@ public class FeedParser {
 					}
 					feedItem.itemId = feedItem.url;
 				}
-				feed.items.add(feedItem);
-				feedItem = null;
+				listener.onFeedItem(feedItem);
 				break;
 			case ATOM_ID:
 				if (parents.peek() == Tag.ATOM_ENTRY) {
@@ -380,6 +418,9 @@ public class FeedParser {
 				if (parents.peek() == Tag.ATOM_FEED && !hasITunesImage) {
 					feed.image = Utils.trimmedString(buffer);
 				}
+				break;
+			case ATOM_FEED:
+				listener.onFeed(feed);
 				break;
 			default:
 				break;
@@ -459,8 +500,7 @@ public class FeedParser {
 					}
 					feedItem.itemId = feedItem.url;
 				}
-				feed.items.add(feedItem);
-				feedItem = null;
+				listener.onFeedItem(feedItem);
 				currentRssItemHasHtml = false;
 				break;
 			case RSS_GUID:
@@ -476,6 +516,9 @@ public class FeedParser {
 					}
 					parents.push(copy);
 				}
+			case RSS_CHANNEL:
+				listener.onFeed(feed);
+				break;
 			default:
 				break;
 			}
