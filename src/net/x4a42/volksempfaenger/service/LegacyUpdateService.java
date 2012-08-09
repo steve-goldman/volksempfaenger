@@ -4,7 +4,7 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
-import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
+import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
@@ -66,7 +66,7 @@ public class LegacyUpdateService extends IntentService {
 		}
 
 		LegacyFeedDownloader feedDownloader = new LegacyFeedDownloader(this);
-		UpdateServiceHelper updateHelper = new UpdateServiceHelper(this);
+		LegacyUpdateServiceHelper updateHelper = new LegacyUpdateServiceHelper(this);
 
 		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
 		timeStart = System.currentTimeMillis();
