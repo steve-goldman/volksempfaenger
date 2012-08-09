@@ -5,12 +5,14 @@ import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.NetException;
-import net.x4a42.volksempfaenger.service.UpdateService;
 
-public class FeedFetcher extends UpdateRunnable {
+public class FeedDownloaderRunnable extends UpdateRunnable {
 
-	public FeedFetcher(UpdateService updateService, PodcastData podcast) {
-		super(updateService, podcast);
+	private PodcastData podcast;
+
+	public FeedDownloaderRunnable(UpdateState update, PodcastData podcast) {
+		super(update);
+		this.podcast = podcast;
 	}
 
 	@Override
@@ -23,9 +25,10 @@ public class FeedFetcher extends UpdateRunnable {
 
 		try {
 
-			Feed feed = updateService.getFeedDownloader().fetchFeed(
-					podcast.feed, podcast.cacheInfo);
-			PodcastHelper.updateCacheInformation(updateService, podcast.uri,
+			Feed feed = getUpdate().getUpdateService().getFeedDownloader()
+					.fetchFeed(podcast.feed, podcast.cacheInfo);
+			PodcastHelper.updateCacheInformation(
+					getUpdate().getUpdateService(), podcast.uri,
 					podcast.cacheInfo);
 			onSuccess(feed);
 
@@ -47,7 +50,7 @@ public class FeedFetcher extends UpdateRunnable {
 	}
 
 	private void onSuccess(Feed feed) {
-		updateService.onFeedParsed(podcast, feed);
+		// TODO
 	}
 
 	private void onError() {
