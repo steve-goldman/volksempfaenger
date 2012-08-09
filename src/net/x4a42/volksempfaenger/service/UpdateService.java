@@ -1,137 +1,121 @@
 package net.x4a42.volksempfaenger.service;
 
+import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.data.Columns.Podcast;
-import net.x4a42.volksempfaenger.data.PodcastCursor;
-import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
-import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import net.x4a42.volksempfaenger.feedparser.Feed;
-import net.x4a42.volksempfaenger.feedparser.FeedParserException;
-import net.x4a42.volksempfaenger.net.CacheInformation;
+import net.x4a42.volksempfaenger.misc.SimpleThreadFactory;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
-import net.x4a42.volksempfaenger.net.NetException;
-import android.app.IntentService;
-import android.content.Context;
+import net.x4a42.volksempfaenger.service.internal.DatabaseReaderRunnable;
+import net.x4a42.volksempfaenger.service.internal.DatabaseWriterRunnable;
+import net.x4a42.volksempfaenger.service.internal.FeedDownloaderRunnable;
+import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
+import net.x4a42.volksempfaenger.service.internal.PodcastData;
+import net.x4a42.volksempfaenger.service.internal.UpdateState;
+import android.app.Service;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
+import android.os.IBinder;
 
-public class UpdateService extends IntentService {
+// TODO
+public class UpdateService extends Service {
 
-	private static long lastRun = 0;
+	private static final long AWAIT_TERMINATION_TIMEOUT = 16000;
+	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
-	public UpdateService() {
-		super(UpdateService.class.getSimpleName());
+	public static final String EXTRA_FIRST_SYNC = "first_sync";
+
+	private ThreadPoolExecutor databaseReaderPool;
+	private ThreadPoolExecutor feedDownloaderPool;
+	private ThreadPoolExecutor feedParserPool;
+	private ThreadPoolExecutor databaseWriterPool;
+	private FeedDownloader feedDownloader;
+	private UpdateServiceHelper updateHelper;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+
+		databaseReaderPool = createThreadPool("UpdateService.DatabaseReader", 1);
+		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
+		feedParserPool = createThreadPool("UpdateService.FeedParser", Runtime
+				.getRuntime().availableProcessors());
+		databaseWriterPool = createThreadPool("UpdateService.DatabaseWriter", 1);
+		feedDownloader = new FeedDownloader(this);
+		updateHelper = new UpdateServiceHelper(this);
+
 	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
-		Uri podcast = intent.getData();
-		boolean extraFirstSync = intent.getBooleanExtra("first_sync", false);
-
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (podcast == null
-				&& (netInfo == null || netInfo.getState() == NetworkInfo.State.DISCONNECTED)) {
-			// If podcast == null, we sync all podcasts in the background. Thus
-			// we just return if background data is disabled.
-			return;
-		}
-
-		PodcastCursor cursor;
-		{
-			String[] projection = { Podcast._ID, Podcast.TITLE, Podcast.FEED,
-					Podcast.HTTP_LAST_MODIFIED, Podcast.HTTP_EXPIRES,
-					Podcast.HTTP_ETAG };
-
-			if (podcast != null) {
-				// Sync a single podcast
-				cursor = new PodcastCursor(getContentResolver().query(podcast,
-						projection, null, null, null));
-			} else {
-				lastRun = System.currentTimeMillis();
-				cursor = new PodcastCursor(getContentResolver().query(
-						VolksempfaengerContentProvider.PODCAST_URI, projection,
-						null, null, null));
-			}
-		}
-
-		if (cursor.getCount() == 0) {
-			// There are just no podcasts to update.
-			cursor.close();
-			return;
-		}
-
-		FeedDownloader feedDownloader = new FeedDownloader(this);
-		UpdateServiceHelper updateHelper = new UpdateServiceHelper(this);
-
-		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;
-		timeStart = System.currentTimeMillis();
-
-		UpdateServiceStatus.startUpdate();
-
-		while (cursor.moveToNext()) {
-			UpdateServiceStatus.startUpdate(cursor.getUri());
-
-			Log.v(this, "Updating " + cursor.getTitle());
-
-			timeFeedStart = System.currentTimeMillis();
-
-			long podcastId = cursor.getId();
-
-			String podcastFeed = cursor.getFeed();
-
-			Feed feed = null;
-			CacheInformation cacheInfo = cursor.getCacheInformation();
-			if (podcast != null) {
-				// if a single podcast is updated, any cache information should
-				// be ignored, because currently there is no way to force an
-				// update
-				cacheInfo.expires = 0;
-				cacheInfo.lastModified = 0;
-				cacheInfo.eTag = null;
-			}
-
-			try {
-				feed = feedDownloader.fetchFeed(podcastFeed, cacheInfo);
-			} catch (NetException e) {
-				// TODO Auto-generated catch block
-				Log.w(this, e);
-				UpdateServiceStatus.stopUpdate(cursor.getUri());
-				continue;
-			} catch (FeedParserException e) {
-				// TODO Auto-generated catch block
-				Log.w(this, e);
-				UpdateServiceStatus.stopUpdate(cursor.getUri());
-				continue;
-			}
-			PodcastHelper.updateCacheInformation(this, cursor.getUri(),
-					cacheInfo);
-			if (feed != null) {
-				updateHelper.updatePodcastFromFeed(podcastId, feed,
-						extraFirstSync);
-				timeFeedEnd = System.currentTimeMillis();
-				Log.v(this, "Updated " + feed.title + " (took "
-						+ (timeFeedEnd - timeFeedStart) + "ms)");
-			}
-
-			UpdateServiceStatus.stopUpdate(cursor.getUri());
-		}
-		cursor.close();
-
-		UpdateServiceStatus.stopUpdate();
-
-		timeEnd = System.currentTimeMillis();
-		Log.v(this, "Update took " + (timeEnd - timeStart) + "ms");
-
-		// start DownloadService to start automatic downloads if enabled
-		startService(new Intent(this, DownloadService.class));
+	public IBinder onBind(Intent intent) {
+		return null;
 	}
 
-	public static long getLastRun() {
-		return lastRun;
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.v(this, "Starting update for Intent " + intent.toString());
+		UpdateState update = new UpdateState(this, intent, startId);
+		enqueueUpdate(update);
+		return START_REDELIVER_INTENT;
+	}
+
+	public void enqueueUpdate(UpdateState update) {
+		enqueueDatabaseReader(update);
+		enqueueDatabaseWriter(update);
+	}
+
+	public void enqueueDatabaseReader(UpdateState update) {
+		databaseReaderPool.execute(new DatabaseReaderRunnable(update));
+	}
+
+	public void enqueueFeedDownloader(UpdateState update, PodcastData podcast) {
+		feedDownloaderPool.execute(new FeedDownloaderRunnable(update, podcast));
+	}
+
+	public void enqueueFeedParser(UpdateState update, PodcastData podcast,
+			File feed) {
+		feedParserPool.execute(new FeedParserRunnable(update, podcast, feed));
+	}
+
+	public void enqueueDatabaseWriter(UpdateState update) {
+		databaseWriterPool.execute(new DatabaseWriterRunnable(update));
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		shutdownPool(databaseReaderPool);
+		shutdownPool(feedDownloaderPool);
+		shutdownPool(feedParserPool);
+		shutdownPool(databaseWriterPool);
+	}
+
+	private ThreadPoolExecutor createThreadPool(String name, int threads) {
+		return new ThreadPoolExecutor(threads, threads, THREAD_KEEP_ALIVE_TIME,
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				new SimpleThreadFactory(name));
+	}
+
+	private void shutdownPool(ExecutorService pool) {
+		try {
+			pool.shutdown();
+			pool.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
+					TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			Log.i(this, "Exception", e);
+		}
+	}
+
+	public FeedDownloader getFeedDownloader() {
+		return feedDownloader;
+	}
+
+	public UpdateServiceHelper getUpdateHelper() {
+		return updateHelper;
 	}
 
 }

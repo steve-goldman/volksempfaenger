@@ -4,10 +4,10 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.CacheInformation;
-import net.x4a42.volksempfaenger.net.FeedDownloader;
+import net.x4a42.volksempfaenger.net.LegacyFeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
-import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.LegacyUpdateService;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,7 +19,7 @@ public class PodcastHelper {
 	public static void addFeed(Context context, String url)
 			throws NetException, FeedParserException, Error.DuplicateException,
 			Error.InsertException {
-		final FeedDownloader fd = new FeedDownloader(context);
+		final LegacyFeedDownloader fd = new LegacyFeedDownloader(context);
 		CacheInformation cacheInfo = new CacheInformation();
 		final Feed feed = fd.fetchFeed(url, cacheInfo);
 		final ContentValues values = new ContentValues();
@@ -32,7 +32,7 @@ public class PodcastHelper {
 				VolksempfaengerContentProvider.PODCAST_URI, values);
 
 		PodcastHelper.updateCacheInformation(context, newPodcastUri, cacheInfo);
-		final Intent updatePodcast = new Intent(context, UpdateService.class);
+		final Intent updatePodcast = new Intent(context, LegacyUpdateService.class);
 		updatePodcast.setData(newPodcastUri);
 		updatePodcast.putExtra("first_sync", true);
 		context.startService(updatePodcast);

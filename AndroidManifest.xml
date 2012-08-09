@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.x4a42.volksempfaenger"
-    android:versionCode="7"
+    android:versionCode="0"
     android:versionName="dev" >
 
     <uses-sdk
@@ -120,6 +120,7 @@
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UpdateService" />
+        <service android:name=".service.LegacyUpdateService" />
         <service android:name=".service.PlaybackService" />
 
         <receiver
