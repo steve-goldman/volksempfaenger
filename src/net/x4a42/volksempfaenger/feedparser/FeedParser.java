@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Stack;
@@ -58,17 +59,26 @@ public class FeedParser {
 	private static class LegacyFeedParserListener implements FeedParserListener {
 		public Feed feed;
 
+		private final ArrayList<FeedItem> feedItems = new ArrayList<FeedItem>();
+		private final ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
+
 		@Override
 		public void onFeedItem(FeedItem feedItem) {
+			feedItems.add(feedItem);
+			feedItem.enclosures.addAll(enclosures);
+			enclosures.clear();
 		}
 
 		@Override
 		public void onFeed(Feed feed) {
 			this.feed = feed;
+			feed.items.addAll(feedItems);
+			feedItems.clear();
 		}
 
 		@Override
 		public void onEnclosure(Enclosure enclosure) {
+			enclosures.add(enclosure);
 		}
 
 	}
@@ -656,7 +666,6 @@ public class FeedParser {
 		}
 
 		private void onEnclosure() {
-			feedItem.enclosures.add(enclosure);
 			listener.onEnclosure(enclosure);
 		}
 
@@ -670,7 +679,6 @@ public class FeedParser {
 			if (feedItem.date == null) {
 				return;
 			}
-			feed.items.add(feedItem);
 			listener.onFeedItem(feedItem);
 		}
 

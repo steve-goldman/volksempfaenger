@@ -5,7 +5,7 @@ public interface FeedParserListener {
 	 * Gets called at the end of the feed, when all metadata is available.
 	 * 
 	 * @param feed
-	 *            Data of the feed.
+	 *            Data of the feed. {@see Feed.items} may be null or empty.
 	 */
 	public void onFeed(Feed feed);
 
@@ -14,7 +14,8 @@ public interface FeedParserListener {
 	 * 
 	 * @param feedItem
 	 *            Data of the feedItem. {@see FeedItem.feed} may not contain all
-	 *            data at this point.
+	 *            data at this point. {@see FeedItem.enclosures} may be null or
+	 *            empty.
 	 */
 	public void onFeedItem(FeedItem feedItem);
 
