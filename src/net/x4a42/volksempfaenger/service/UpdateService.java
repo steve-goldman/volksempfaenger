@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.service;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -7,10 +8,12 @@ import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
+import net.x4a42.volksempfaenger.misc.SimpleThreadFactory;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.service.internal.DatabaseReaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.DatabaseWriterRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedDownloaderRunnable;
+import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
 import net.x4a42.volksempfaenger.service.internal.UpdateState;
 import android.app.Service;
@@ -36,11 +39,11 @@ public class UpdateService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		databaseReaderPool = createThreadPool(1);
-		feedDownloaderPool = createThreadPool(4);
-		feedParserPool = createThreadPool(Runtime.getRuntime()
-				.availableProcessors());
-		databaseWriterPool = createThreadPool(1);
+		databaseReaderPool = createThreadPool("UpdateService.DatabaseReader", 1);
+		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
+		feedParserPool = createThreadPool("UpdateService.FeedParser", Runtime
+				.getRuntime().availableProcessors());
+		databaseWriterPool = createThreadPool("UpdateService.DatabaseWriter", 1);
 		feedDownloader = new FeedDownloader(this);
 		updateHelper = new UpdateServiceHelper(this);
 
@@ -53,6 +56,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.v(this, "Starting update for Intent " + intent.toString());
 		UpdateState update = new UpdateState(this, intent, startId);
 		enqueueUpdate(update);
 		return START_REDELIVER_INTENT;
@@ -72,8 +76,8 @@ public class UpdateService extends Service {
 	}
 
 	public void enqueueFeedParser(UpdateState update, PodcastData podcast,
-			Object feed) {
-
+			File feed) {
+		feedParserPool.execute(new FeedParserRunnable(update, podcast, feed));
 	}
 
 	public void enqueueDatabaseWriter(UpdateState update) {
@@ -90,9 +94,10 @@ public class UpdateService extends Service {
 		shutdownPool(databaseWriterPool);
 	}
 
-	private ThreadPoolExecutor createThreadPool(int threads) {
+	private ThreadPoolExecutor createThreadPool(String name, int threads) {
 		return new ThreadPoolExecutor(threads, threads, THREAD_KEEP_ALIVE_TIME,
-				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				new SimpleThreadFactory(name));
 	}
 
 	private void shutdownPool(ExecutorService pool) {

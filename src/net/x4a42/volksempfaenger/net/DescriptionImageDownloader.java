@@ -15,7 +15,7 @@ public class DescriptionImageDownloader extends ImageDownloader {
 	public String fetchImage(String url) throws NetException, StorageException {
 		File target = Utils.getDescriptionImageFile(getContext(), url);
 		if (!target.isFile()) {
-			fetchFile(url, target);
+			fetchFile(url, null, target);
 		}
 		return target.getAbsolutePath();
 	}

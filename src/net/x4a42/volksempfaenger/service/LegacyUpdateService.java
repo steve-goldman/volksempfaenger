@@ -9,7 +9,7 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.CacheInformation;
-import net.x4a42.volksempfaenger.net.FeedDownloader;
+import net.x4a42.volksempfaenger.net.LegacyFeedDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.IntentService;
 import android.content.Context;
@@ -65,7 +65,7 @@ public class LegacyUpdateService extends IntentService {
 			return;
 		}
 
-		FeedDownloader feedDownloader = new FeedDownloader(this);
+		LegacyFeedDownloader feedDownloader = new LegacyFeedDownloader(this);
 		UpdateServiceHelper updateHelper = new UpdateServiceHelper(this);
 
 		long timeStart, timeEnd, timeFeedStart, timeFeedEnd;

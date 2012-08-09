@@ -119,6 +119,7 @@
 >
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
+        <service android:name=".service.UpdateService" />
         <service android:name=".service.LegacyUpdateService" />
         <service android:name=".service.PlaybackService" />
 
