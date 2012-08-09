@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.data.UpdateServiceHelper;
+import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
 import net.x4a42.volksempfaenger.misc.SimpleThreadFactory;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.service.internal.DatabaseReaderRunnable;
@@ -34,7 +34,7 @@ public class UpdateService extends Service {
 	private ThreadPoolExecutor feedParserPool;
 	private ThreadPoolExecutor databaseWriterPool;
 	private FeedDownloader feedDownloader;
-	private UpdateServiceHelper updateHelper;
+	private LegacyUpdateServiceHelper updateHelper;
 
 	@Override
 	public void onCreate() {
@@ -48,7 +48,7 @@ public class UpdateService extends Service {
 				.getRuntime().availableProcessors());
 		databaseWriterPool = createThreadPool("UpdateService.DatabaseWriter", 1);
 		feedDownloader = new FeedDownloader(this);
-		updateHelper = new UpdateServiceHelper(this);
+		updateHelper = new LegacyUpdateServiceHelper(this);
 
 	}
 
@@ -119,7 +119,7 @@ public class UpdateService extends Service {
 		return feedDownloader;
 	}
 
-	public UpdateServiceHelper getUpdateHelper() {
+	public LegacyUpdateServiceHelper getUpdateHelper() {
 		return updateHelper;
 	}
 

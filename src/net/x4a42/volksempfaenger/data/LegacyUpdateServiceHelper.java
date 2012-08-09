@@ -17,7 +17,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-public class UpdateServiceHelper {
+@Deprecated
+public class LegacyUpdateServiceHelper {
 
 	private static final String EPISODE_WHERE_ID = Episode._ID + "=?";
 	private static final String EPISODE_WHERE_PODCAST_ID = Episode.PODCAST_ID
@@ -35,7 +36,7 @@ public class UpdateServiceHelper {
 	private DatabaseHelper dbHelper;
 	private ContentResolver resolver;
 
-	public UpdateServiceHelper(Context context) {
+	public LegacyUpdateServiceHelper(Context context) {
 		dbHelper = DatabaseHelper.getInstance(context);
 		resolver = context.getContentResolver();
 	}
