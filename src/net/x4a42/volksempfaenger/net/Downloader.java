@@ -5,15 +5,16 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.net.http.HttpResponseCache;
-import net.x4a42.volksempfaenger.Log;
 
 public abstract class Downloader {
 
+	private static final int CONNECTION_TIMEOUT = 30000;
 
 	private Context context;
 	private static HttpResponseCache cache;
@@ -59,6 +60,7 @@ public abstract class Downloader {
 		connection.setRequestProperty("User-Agent", getUserAgent());
 		connection.setInstanceFollowRedirects(true);
 		connection.setUseCaches(true);
+		connection.setConnectTimeout(CONNECTION_TIMEOUT);
 		return connection;
 	}
 

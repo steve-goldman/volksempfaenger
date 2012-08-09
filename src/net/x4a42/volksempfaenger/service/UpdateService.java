@@ -23,6 +23,7 @@ import android.os.IBinder;
 // TODO
 public class UpdateService extends Service {
 
+	private static final String TAG = "UpdateService";
 	private static final long AWAIT_TERMINATION_TIMEOUT = 16000;
 	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
@@ -38,6 +39,8 @@ public class UpdateService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		Log.d(TAG, "Creating UpdateService");
 
 		databaseReaderPool = createThreadPool("UpdateService.DatabaseReader", 1);
 		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
@@ -56,7 +59,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.v(this, "Starting update for Intent " + intent.toString());
+		Log.d(TAG, "Starting update for " + intent.toString());
 		UpdateState update = new UpdateState(this, intent, startId);
 		enqueueUpdate(update);
 		return START_REDELIVER_INTENT;
@@ -88,6 +91,8 @@ public class UpdateService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 
+		Log.d(TAG, "Destroying UpdateService");
+
 		shutdownPool(databaseReaderPool);
 		shutdownPool(feedDownloaderPool);
 		shutdownPool(feedParserPool);
@@ -106,7 +111,7 @@ public class UpdateService extends Service {
 			pool.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
 					TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			Log.i(this, "Exception", e);
+			Log.w(TAG, "Catched InterruptedException:", e);
 		}
 	}
 

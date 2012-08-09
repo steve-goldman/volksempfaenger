@@ -11,9 +11,11 @@ import net.x4a42.volksempfaenger.service.UpdateService;
 
 public class FeedDownloaderRunnable extends UpdateRunnable {
 
+	private static final String TAG = "UpdateService";
 	private static final String TEMP_FILE_PREFIX = "feed_";
 
 	private PodcastData podcast;
+	private long startTime;
 
 	public FeedDownloaderRunnable(UpdateState update, PodcastData podcast) {
 		super(update);
@@ -23,8 +25,9 @@ public class FeedDownloaderRunnable extends UpdateRunnable {
 	@Override
 	public void run() {
 
-		Log.v(this, "Started downloading " + podcast.toString() + " @ "
-				+ System.currentTimeMillis());
+		startTime = System.currentTimeMillis();
+		Log.i(TAG, "Started downloading \"" + podcast.title + "\" [id="
+				+ podcast.id + "]");
 
 		UpdateService service = getUpdate().getUpdateService();
 
@@ -51,13 +54,24 @@ public class FeedDownloaderRunnable extends UpdateRunnable {
 	}
 
 	private void onSuccess(File feed) {
+
+		long endTime = System.currentTimeMillis();
+		Log.i(TAG, "Finished downloading \"" + podcast.title + "\" [id="
+				+ podcast.id + "] (took " + (endTime - startTime) + "ms)");
+
 		getUpdate().getUpdateService().enqueueFeedParser(getUpdate(), podcast,
 				feed);
+
 	}
 
 	private void onError(Exception e) {
-		// TODO
-		Log.e(this, "Exception", e);
+
+		long endTime = System.currentTimeMillis();
+		Log.e(TAG, "Failed downloading \"" + podcast.title + "\" [id="
+				+ podcast.id + "] (took " + (endTime - startTime) + "ms)", e);
+
+		getUpdate().decrementRemainingFeedCounter();
+
 	}
 
 }
