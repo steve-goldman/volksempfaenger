@@ -310,8 +310,9 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		} else if (event != null && event.equals(PlaybackHelper.Event.PAUSE)) {
 			pause.setImageResource(R.drawable.ic_media_play);
 			infoPause.setImageResource(R.drawable.ic_media_play);
-		} else if (event != null && event.equals(PlaybackHelper.Event.STOP)
-				&& getView() != null) {
+		} else if (event != null
+				&& (event.equals(PlaybackHelper.Event.STOP) || event
+						.equals(PlaybackHelper.Event.END)) && getView() != null) {
 			episodeUri = null;
 			slideOut();
 			hideFragment();
