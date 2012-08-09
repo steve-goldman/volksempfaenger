@@ -4,7 +4,7 @@ import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.CacheInformation;
-import net.x4a42.volksempfaenger.net.FeedDownloader;
+import net.x4a42.volksempfaenger.net.LegacyFeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.service.LegacyUpdateService;
@@ -19,7 +19,7 @@ public class PodcastHelper {
 	public static void addFeed(Context context, String url)
 			throws NetException, FeedParserException, Error.DuplicateException,
 			Error.InsertException {
-		final FeedDownloader fd = new FeedDownloader(context);
+		final LegacyFeedDownloader fd = new LegacyFeedDownloader(context);
 		CacheInformation cacheInfo = new CacheInformation();
 		final Feed feed = fd.fetchFeed(url, cacheInfo);
 		final ContentValues values = new ContentValues();
