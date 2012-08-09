@@ -58,33 +58,27 @@ public class FeedParser {
 
 	private static class LegacyFeedParserListener implements FeedParserListener {
 		public Feed feed;
-		private ArrayList<FeedItem> items = new ArrayList<FeedItem>();
-		private ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
+
+		private final ArrayList<FeedItem> feedItems = new ArrayList<FeedItem>();
+		private final ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
 
 		@Override
 		public void onFeedItem(FeedItem feedItem) {
-			FeedItem item = (FeedItem) feedItem.clone();
-			item.enclosures = new ArrayList<Enclosure>();
-			for (Enclosure enclosure : enclosures) {
-				item.enclosures.add(enclosure);
-			}
+			feedItems.add(feedItem);
+			feedItem.enclosures.addAll(enclosures);
 			enclosures.clear();
-			items.add(item);
 		}
 
 		@Override
 		public void onFeed(Feed feed) {
-			this.feed = (Feed) feed.clone();
-			this.feed.items = new ArrayList<FeedItem>();
-			for (FeedItem item : items) {
-				this.feed.items.add(item);
-			}
-			items.clear();
+			this.feed = feed;
+			feed.items.addAll(feedItems);
+			feedItems.clear();
 		}
 
 		@Override
 		public void onEnclosure(Enclosure enclosure) {
-			enclosures.add((Enclosure) enclosure.clone());
+			enclosures.add(enclosure);
 		}
 
 	}
@@ -93,8 +87,8 @@ public class FeedParser {
 		public boolean isFeed = false;
 
 		private final Feed feed = new Feed();
-		private final FeedItem feedItem = new FeedItem();
-		private final Enclosure enclosure = new Enclosure();
+		private FeedItem feedItem = new FeedItem();
+		private Enclosure enclosure = new Enclosure();
 
 		private final Stack<Tag> parents = new Stack<Tag>();
 		private boolean skipMode = false;
@@ -209,7 +203,8 @@ public class FeedParser {
 		private void onStartTagAtom(Tag tag, Attributes atts) {
 			switch (tag) {
 			case ATOM_ENTRY:
-				feedItem.reset();
+				feedItem = new FeedItem();
+				feedItem.feed = feed;
 				currentItemHasITunesSummaryAlternative = false;
 				currentAtomItemHasPublished = false;
 				break;
@@ -227,6 +222,8 @@ public class FeedParser {
 				switch (rel) {
 				case ENCLOSURE:
 					if (parents.peek() == Tag.ATOM_ENTRY) {
+						enclosure = new Enclosure();
+						enclosure.feedItem = feedItem;
 						enclosure.url = atts.getValue(ATOM_ATTR_HREF);
 						enclosure.mime = atts.getValue(ATOM_ATTR_TYPE);
 						enclosure.title = atts.getValue(ATOM_ATTR_TITLE);
@@ -295,12 +292,15 @@ public class FeedParser {
 		private void onStartTagRss(Tag tag, Attributes atts) {
 			switch (tag) {
 			case RSS_ITEM:
-				feedItem.reset();
+				feedItem = new FeedItem();
+				feedItem.feed = feed;
 				currentRssItemHasHtml = false;
 				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
 				if (parents.peek() == Tag.RSS_ITEM) {
+					enclosure = new Enclosure();
+					enclosure.feedItem = feedItem;
 					enclosure.url = atts.getValue(RSS_ATTR_URL);
 					enclosure.mime = atts.getValue(RSS_ATTR_TYPE);
 
