@@ -2,7 +2,10 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import android.app.Activity;
 import android.content.ClipData;
@@ -54,10 +57,21 @@ public class AddSubscriptionActivity extends Activity implements
 			if (clip != null) {
 				ClipData.Item item = clip.getItemAt(0);
 				if (item != null && item.getText() != null) {
+					String text = item.getText().toString();
 					try {
-						URL url = new URL(item.getText().toString());
+						URL url = new URL(text);
 						editTextUrl.setText(url.toString());
 					} catch (MalformedURLException e) {
+						Log.e(this, "no url");
+						Matcher matcher = Pattern
+								.compile(
+										"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+")
+								.matcher(text);
+						if (matcher.find()) {
+							Log.e(this, "url found");
+							editTextUrl.setText(matcher.group());
+						}
+						Log.e(this, "finish");
 					}
 				}
 			}
