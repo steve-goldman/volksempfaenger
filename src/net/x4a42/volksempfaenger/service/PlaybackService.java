@@ -474,7 +474,9 @@ public class PlaybackService extends Service implements EventListener {
 		// Build the layout for the notification
 		RemoteViews content = new RemoteViews(getPackageName(),
 				R.layout.notification_playing);
-		content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
+		if (podcastLogo != null) {
+			content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
+		}
 		content.setTextViewText(R.id.episode_title, cursor.getTitle());
 		content.setTextViewText(R.id.podcast_title, cursor.getPodcastTitle());
 		content.setOnClickPendingIntent(R.id.pause, pauseIntent);
