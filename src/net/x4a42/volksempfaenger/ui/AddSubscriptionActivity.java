@@ -1,7 +1,12 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import net.x4a42.volksempfaenger.R;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -42,6 +47,20 @@ public class AddSubscriptionActivity extends Activity implements
 		Uri data = getIntent().getData();
 		if (data != null) {
 			editTextUrl.setText(data.toString());
+		} else {
+			// see if there is a link in the clipboard
+			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
+			ClipData clip = cm.getPrimaryClip();
+			if (clip != null) {
+				ClipData.Item item = clip.getItemAt(0);
+				if (item != null && item.getText() != null) {
+					try {
+						URL url = new URL(item.getText().toString());
+						editTextUrl.setText(url.toString());
+					} catch (MalformedURLException e) {
+					}
+				}
+			}
 		}
 	}
 
