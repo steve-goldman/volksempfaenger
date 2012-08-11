@@ -4,25 +4,31 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
+import net.x4a42.volksempfaenger.feedparser.Feed;
+import net.x4a42.volksempfaenger.service.UpdateService;
 
 public class DatabaseWriterRunnable extends UpdateRunnable {
 
 	private static final String TAG = "UpdateService";
+	private LegacyUpdateServiceHelper databaseHelper;
 
 	public DatabaseWriterRunnable(UpdateState update) {
 		super(update);
+		databaseHelper = new LegacyUpdateServiceHelper(getUpdate()
+				.getUpdateService());
 	}
 
 	@Override
 	public void run() {
 
-		BlockingQueue<Object> queue = getUpdate().getDatabaseWriterQueue();
+		BlockingQueue<Feed> queue = getUpdate().getDatabaseWriterQueue();
 		long startTime = -1;
 
 		try {
 			while (true) {
-				Object o = queue.poll(4, TimeUnit.SECONDS);
-				if (o == null) {
+				Feed feed = queue.poll(4, TimeUnit.SECONDS);
+				if (feed == null) {
 					if (getUpdate().getRemainingFeedCounter() == 0) {
 						break;
 					} else {
@@ -33,15 +39,15 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 						startTime = System.currentTimeMillis();
 						Log.i(TAG, "Started writing to database");
 					}
-					ensureTransaction();
-					handleObject(o);
+					// ensureTransaction();
+					handleFeed(feed);
 				}
 			}
 		} catch (InterruptedException e) {
 			Log.i(this, "Exception", e);
 		}
 
-		finishTransaction();
+		// finishTransaction();
 
 		if (startTime != -1) {
 			long endTime = System.currentTimeMillis();
@@ -53,21 +59,21 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 
 	}
 
-	private void ensureTransaction() {
-		// TODO Auto-generated method stub
+	// private void ensureTransaction() {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// private void finishTransaction() {
+	// // TODO Auto-generated method stub
+	//
+	// }
 
-	}
-
-	private void finishTransaction() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void handleObject(Object o) {
-		// TODO Auto-generated method stub
-		// Log.d(this, o.toString());
-		// updateService.getUpdateHelper().updatePodcastFromFeed(podcast.id,
-		// feed,
-		// podcast.firstSync);
+	private void handleFeed(Feed feed) {
+		databaseHelper.updatePodcastFromFeed(
+				feed.local_id,
+				feed,
+				getUpdate().getIntent().getBooleanExtra(
+						UpdateService.EXTRA_FIRST_SYNC, false));
 	}
 }
