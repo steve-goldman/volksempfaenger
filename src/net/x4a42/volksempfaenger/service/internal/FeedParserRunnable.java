@@ -6,15 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.concurrent.BlockingQueue;
 
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.Feed;
-import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.feedparser.FeedParserException;
-import net.x4a42.volksempfaenger.feedparser.FeedParserListener;
 
 public class FeedParserRunnable extends UpdateRunnable {
 
@@ -40,8 +36,9 @@ public class FeedParserRunnable extends UpdateRunnable {
 
 		try {
 			Reader reader = new BufferedReader(new FileReader(feedFile));
-			FeedParser.parseEvented(reader, feedParserListener);
-			onSuccess();
+			Feed feed = FeedParser.parse(reader);
+			feed.local_id = podcast.id;
+			onSuccess(feed);
 		} catch (FileNotFoundException e) {
 			onError(e);
 		} catch (FeedParserException e) {
@@ -54,37 +51,13 @@ public class FeedParserRunnable extends UpdateRunnable {
 
 	}
 
-	private final FeedParserListener feedParserListener = new FeedParserListener() {
+	private void onSuccess(Feed feed) {
 
-		private BlockingQueue<Object> databaseWriterQueue = getUpdate()
-				.getDatabaseWriterQueue();
-
-		private void enqueue(Object o) {
-			try {
-				databaseWriterQueue.put(o);
-			} catch (InterruptedException e) {
-				Log.w(this, e);
-			}
+		try {
+			getUpdate().getDatabaseWriterQueue().put(feed);
+		} catch (InterruptedException e) {
+			Log.w(TAG, e);
 		}
-
-		@Override
-		public void onFeed(Feed feed) {
-			enqueue(feed);
-		}
-
-		@Override
-		public void onFeedItem(FeedItem feedItem) {
-			enqueue(feedItem);
-		}
-
-		@Override
-		public void onEnclosure(Enclosure enclosure) {
-			enqueue(enclosure);
-		}
-
-	};
-
-	private void onSuccess() {
 
 		long endTime = System.currentTimeMillis();
 		Log.i(TAG, "Finished parsind \"" + podcast.title + "\" [id="

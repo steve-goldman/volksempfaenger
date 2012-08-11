@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.util.Log;
@@ -16,7 +17,7 @@ public class UpdateState {
 	private UpdateService updateService;
 	private Intent intent;
 	private int startId;
-	private BlockingQueue<Object> databaseWriterQueue = new LinkedBlockingQueue<Object>();
+	private BlockingQueue<Feed> databaseWriterQueue = new LinkedBlockingQueue<Feed>();
 	private AtomicInteger remainingFeedCounter = new AtomicInteger();
 	private AtomicBoolean remainingFeedCounterSet = new AtomicBoolean();
 	private long startTime;
@@ -41,7 +42,7 @@ public class UpdateState {
 		return startId;
 	}
 
-	public BlockingQueue<Object> getDatabaseWriterQueue() {
+	public BlockingQueue<Feed> getDatabaseWriterQueue() {
 		return databaseWriterQueue;
 	}
 
