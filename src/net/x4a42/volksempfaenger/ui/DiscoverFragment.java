@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListFragment;
+import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -67,6 +69,10 @@ public class DiscoverFragment extends ListFragment {
 			URL url;
 			JSONArray feeds;
 			try {
+				File httpCacheDir = new File(getActivity().getCacheDir(),
+						"http");
+				long httpCacheSize = 1024 * 1024;
+				HttpResponseCache.install(httpCacheDir, httpCacheSize);
 				url = new URL("http://vschuessler.org/popular.json");
 				HttpURLConnection urlConnection = (HttpURLConnection) url
 						.openConnection();
@@ -122,6 +128,10 @@ public class DiscoverFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
+			try {
+				HttpResponseCache.getInstalled().close();
+			} catch (IOException e) {
+			}
 			SimpleAdapter adapter = new SimpleAdapter(getActivity(), list,
 					R.layout.discover_list_row, new String[] { KEY_NAME,
 							KEY_THUMBNAIL_URL }, new int[] { R.id.podcast_name,
