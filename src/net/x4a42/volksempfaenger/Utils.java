@@ -1,7 +1,10 @@
 package net.x4a42.volksempfaenger;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -254,6 +257,16 @@ public class Utils {
 	public static Bitmap getPodcastLogoBitmap(Context context, long podcastId) {
 		return BitmapFactory.decodeFile(getPodcastLogoFile(context, podcastId)
 				.getAbsolutePath());
+	}
+
+	public static int copy(Reader in, Writer out) throws IOException {
+		char[] buffer = new char[4096];
+		int written = 0, n = 0;
+		while ((n = in.read(buffer)) != -1) {
+			out.write(buffer, 0, n);
+			written += n;
+		}
+		return written;
 	}
 
 }

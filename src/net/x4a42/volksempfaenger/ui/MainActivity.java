@@ -25,6 +25,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	public final static String subscriptionsTag = "subscriptions";
 	public final static String downloadsTag = "downloads";
 	public final static String playlistsTag = "playlists";
+	public final static String discoverTag = "discover";
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
@@ -35,6 +36,8 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 				R.string.title_tab_playlists, PlaylistsFragment.class));
 		fragmentTabs.add(new FragmentTab(downloadsTag,
 				R.string.title_tab_downloads, DownloadListFragment.class));
+		fragmentTabs.add(new FragmentTab(discoverTag,
+				R.string.title_tab_discover, DiscoverFragment.class));
 	}
 
 	private ViewPager viewpager;
