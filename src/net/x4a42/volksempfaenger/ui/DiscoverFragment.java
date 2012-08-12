@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -12,13 +11,13 @@ import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListFragment;
-import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -28,35 +27,27 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class DiscoverFragment extends ListFragment {
 
-	private final static String KEY_NAME = "name";
+	private final static String KEY_NAME = "title";
 	private final static String KEY_URL = "url";
 	private final static String KEY_DESCRIPTION = "description";
-	private final static String KEY_WEBSITE_URL = "website_url";
-	private final static String KEY_THUMBNAIL_URL = "thumbnail_url";
+	private final static String KEY_WEBSITE_URL = "website";
+	private final static String KEY_THUMBNAIL_URL = "scaled_logo_url";
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.imageScaleType(ImageScaleType.POWER_OF_2).build();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		imageLoader = ImageLoader.getInstance();
-		int maxSize = Utils.dpToPx(getActivity(), 64);
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				getActivity()).memoryCacheSize(1024 * 1024)
-				.discCacheSize(1024 * 1024 * 5)
-				.memoryCacheExtraOptions(maxSize, maxSize)
-				.discCacheExtraOptions(maxSize, maxSize, null, 100).build();
-		imageLoader.init(config);
-
+		imageLoader = ((VolksempfaengerApplication) getActivity()
+				.getApplication()).imageLoader;
 		new LoadPopularListTask().execute();
 	}
 
@@ -69,11 +60,8 @@ public class DiscoverFragment extends ListFragment {
 			URL url;
 			JSONArray feeds;
 			try {
-				File httpCacheDir = new File(getActivity().getCacheDir(),
-						"http");
-				long httpCacheSize = 1024 * 1024;
-				HttpResponseCache.install(httpCacheDir, httpCacheSize);
-				url = new URL("http://vschuessler.org/popular.json");
+				url = new URL("http://gpodder.net/toplist/100.json?scale_logo="
+						+ Utils.dpToPx(getActivity(), 64));
 				HttpURLConnection urlConnection = (HttpURLConnection) url
 						.openConnection();
 				if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -128,10 +116,6 @@ public class DiscoverFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			try {
-				HttpResponseCache.getInstalled().close();
-			} catch (IOException e) {
-			}
 			SimpleAdapter adapter = new SimpleAdapter(getActivity(), list,
 					R.layout.discover_list_row, new String[] { KEY_NAME,
 							KEY_THUMBNAIL_URL }, new int[] { R.id.podcast_name,
