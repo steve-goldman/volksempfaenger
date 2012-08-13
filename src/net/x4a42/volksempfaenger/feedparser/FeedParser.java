@@ -557,8 +557,8 @@ public class FeedParser {
 				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") };
 
 		static {
-			formats[9].setLenient(true);
-			formats[11].setLenient(true);
+			formats[5].setLenient(true);
+			formats[7].setLenient(true);
 		}
 
 		private Date parseRssDate(String datestring) throws ParseException {
