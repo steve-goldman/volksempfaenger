@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 
@@ -57,6 +58,7 @@ public class DiscoverFragment extends ListFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.discover, menu);
+		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
 	}
 
 	private class LoadPopularListTask extends AsyncTask<Void, Void, Void> {
