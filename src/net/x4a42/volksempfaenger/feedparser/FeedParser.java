@@ -6,8 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Stack;
@@ -41,17 +39,6 @@ public class FeedParser {
 				throw new NotAFeedException();
 			}
 			Feed feed = handler.feed;
-			for (FeedItem item : feed.items) {
-				if (item.date == null) {
-					throw new NotAFeedException();
-				}
-			}
-			Collections.sort(feed.items, new Comparator<FeedItem>() {
-				@Override
-				public int compare(FeedItem lhs, FeedItem rhs) {
-					return rhs.date.compareTo(lhs.date);
-				}
-			});
 			return feed;
 		} catch (ParserConfigurationException e) {
 			throw new FeedParserException(e);
@@ -531,11 +518,11 @@ public class FeedParser {
 			if (datestring.charAt(datestring.length() - 1) == 'Z') {
 				try {
 					// spec for RFC3339
-					return formats[8].parse(datestring);
+					return formats[4].parse(datestring);
 				} catch (java.text.ParseException pe) {
 					// try again with optional decimals
 					// spec for RFC3339 (with fractional seconds)
-					return formats[9].parse(datestring);
+					return formats[5].parse(datestring);
 				}
 			}
 
@@ -550,23 +537,20 @@ public class FeedParser {
 					+ secondpart.substring(secondpart.indexOf(':') + 1);
 			datestring = firstpart + secondpart;
 			try {
-				return formats[10].parse(datestring);// spec for RFC3339
+				return formats[6].parse(datestring);// spec for RFC3339
 			} catch (java.text.ParseException pe) {
 				// try again with optional decimals
 				// spec for RFC3339 (with fractional seconds)
-				return formats[11].parse(datestring);
+				return formats[7].parse(datestring);
 			}
 		}
 
 		private static final SimpleDateFormat formats[] = new SimpleDateFormat[] {
-				new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z", Locale.US),
-				new SimpleDateFormat("EEE, d MMM yy HH:mm z", Locale.US),
-				new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.US),
-				new SimpleDateFormat("EEE, d MMM yyyy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yy HH:mm:ss z", Locale.US),
 				new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US),
+
 				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
 				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"),
 				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"),
@@ -581,35 +565,27 @@ public class FeedParser {
 			// dirty version - write a new one TODO
 			datestring = datestring.trim();
 			SimpleDateFormat format;
-			if (datestring.charAt(4) == ' ') {
-				if (datestring.charAt(13) == ' ') {
-					if (datestring.charAt(19) != ' ') {
-						format = formats[0];
-					} else {
-						format = formats[1];
-					}
+
+			int commaPos = datestring.indexOf(',');
+			if (commaPos > -1) {
+				// remove weekday if present
+				datestring = datestring.substring(commaPos + 2);
+			}
+
+			if (datestring.charAt(8) == ' ') {
+				if (datestring.charAt(14) == ' ') {
+					format = formats[0];
 				} else {
-					if (datestring.charAt(21) != ' ') {
-						format = formats[2];
-					} else {
-						format = formats[3];
-					}
+					format = formats[1];
 				}
 			} else {
-				if (datestring.charAt(8) == ' ') {
-					if (datestring.charAt(14) == ' ') {
-						format = formats[4];
-					} else {
-						format = formats[5];
-					}
+				if (datestring.charAt(16) == ' ') {
+					format = formats[2];
 				} else {
-					if (datestring.charAt(16) == ' ') {
-						format = formats[6];
-					} else {
-						format = formats[7];
-					}
+					format = formats[3];
 				}
 			}
+
 			return format.parse(datestring);
 		}
 
