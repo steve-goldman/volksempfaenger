@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	}
 
 	private ViewPager viewpager;
+	private MenuItem searchMenuItem;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -131,6 +133,12 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		searchMenuItem = menu.findItem(R.id.menu_search);
+		return true;
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityHelper.handleGlobalMenu(this, item);
 	}
@@ -196,6 +204,20 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	@Override
 	public void onUpPressed() {
 		viewpager.setCurrentItem(0);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SEARCH
+				&& fragmentTabs
+						.get(getActionBar().getSelectedNavigationIndex()).tag
+						.equals(discoverTag)) {
+			if (searchMenuItem != null) {
+				searchMenuItem.expandActionView();
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
