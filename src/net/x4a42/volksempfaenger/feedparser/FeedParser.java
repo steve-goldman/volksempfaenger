@@ -563,14 +563,14 @@ public class FeedParser {
 
 		private Date parseRssDate(String datestring) throws ParseException {
 			// dirty version - write a new one TODO
-			datestring = datestring.trim();
 			SimpleDateFormat format;
 
 			int commaPos = datestring.indexOf(',');
 			if (commaPos > -1) {
 				// remove weekday if present
-				datestring = datestring.substring(commaPos + 2);
+				datestring = datestring.substring(commaPos + 1);
 			}
+			datestring = datestring.trim();
 
 			if (datestring.charAt(8) == ' ') {
 				if (datestring.charAt(14) == ' ') {
