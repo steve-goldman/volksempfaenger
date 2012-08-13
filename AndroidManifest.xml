@@ -100,7 +100,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
->
         <activity
             android:name=".ui.ViewEpisodeActivity"
             android:parentActivityName=".ui.ViewSubscriptionActivity" >
@@ -108,7 +107,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewSubscriptionActivity" />
         </activity>
->
         <activity
             android:name=".ui.PlaylistActivity"
             android:parentActivityName=".ui.MainActivity" >
@@ -116,7 +114,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
->
+
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UpdateService" />
