@@ -112,5 +112,6 @@
     <string name="title_playlist_downloaded">Downloaded</string>
     <string name="error_shownotes">Unable to display shownotes</string>
     <string name="title_tab_discover">Discover</string>
+    <string name="menu_search">Search</string>
 
 </resources>

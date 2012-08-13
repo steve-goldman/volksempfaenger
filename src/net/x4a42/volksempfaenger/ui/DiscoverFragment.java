@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import android.app.ListFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
@@ -45,10 +47,16 @@ public class DiscoverFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 
 		imageLoader = ((VolksempfaengerApplication) getActivity()
 				.getApplication()).imageLoader;
 		new LoadPopularListTask().execute();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.discover, menu);
 	}
 
 	private class LoadPopularListTask extends AsyncTask<Void, Void, Void> {
