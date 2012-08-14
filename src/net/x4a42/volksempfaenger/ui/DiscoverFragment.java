@@ -2,20 +2,17 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.misc.StorageException;
+import net.x4a42.volksempfaenger.net.FileDownloader;
+import net.x4a42.volksempfaenger.net.NetException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,38 +160,36 @@ public class DiscoverFragment extends ListFragment implements
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			URL url;
 			try {
 				synchronized (toplistFile) {
 					// 1 day
 					final long minTime = System.currentTimeMillis() - 24 * 60
 							* 60 * 1000;
-					if (toplistFile.lastModified() < minTime) {
+					if (toplistFile.exists()
+							&& toplistFile.lastModified() < minTime) {
 						return false;
 					}
 				}
-				url = new URL("http://gpodder.net/toplist/100.json?scale_logo="
-						+ Utils.dpToPx(getActivity(), 64));
-				HttpURLConnection urlConnection = (HttpURLConnection) url
-						.openConnection();
-				if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-					// TODO handle error
-				}
-				InputStreamReader in = new InputStreamReader(
-						urlConnection.getInputStream());
 				File tempFile = File.createTempFile("popular", ".json",
 						getActivity().getCacheDir());
-				FileWriter fileWriter = new FileWriter(tempFile);
-				Utils.copy(in, fileWriter);
-				in.close();
-				fileWriter.close();
+				FileDownloader downloader = new FileDownloader(getActivity());
+				downloader.fetchFile(
+						"http://gpodder.net/toplist/100.json?scale_logo="
+								+ Utils.dpToPx(getActivity(), 64), tempFile);
 				synchronized (toplistFile) {
 					tempFile.renameTo(toplistFile);
 				}
-			} catch (MalformedURLException e) {
+			} catch (NetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 				return false;
 			} catch (IOException e) {
-				// TODO handle error
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			} catch (StorageException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 				return false;
 			}
 			return true;
