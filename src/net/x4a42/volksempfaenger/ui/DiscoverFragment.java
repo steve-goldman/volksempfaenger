@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
@@ -21,12 +22,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
@@ -35,13 +40,14 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class DiscoverFragment extends ListFragment {
+public class DiscoverFragment extends ListFragment implements
+		OnItemClickListener {
 
-	private final static String KEY_NAME = "title";
-	private final static String KEY_URL = "url";
-	private final static String KEY_DESCRIPTION = "description";
-	private final static String KEY_WEBSITE_URL = "website";
-	private final static String KEY_THUMBNAIL_URL = "scaled_logo_url";
+	public final static String KEY_NAME = "title";
+	public final static String KEY_URL = "url";
+	public final static String KEY_DESCRIPTION = "description";
+	public final static String KEY_WEBSITE_URL = "website";
+	public final static String KEY_THUMBNAIL_URL = "scaled_logo_url";
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
@@ -65,6 +71,7 @@ public class DiscoverFragment extends ListFragment {
 		}
 		new RefreshPopularListTask()
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 	}
 
 	@Override
@@ -207,5 +214,27 @@ public class DiscoverFragment extends ListFragment {
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> list, View view, int position,
+			long id) {
+		@SuppressWarnings("unchecked")
+		HashMap<String, String> row = (HashMap<String, String>) list
+				.getItemAtPosition(position);
+		Intent intent = new Intent(getActivity(), DiscoverDetailActivity.class);
+		intent.putExtra(KEY_NAME, row.get(KEY_NAME));
+		intent.putExtra(KEY_DESCRIPTION, row.get(KEY_DESCRIPTION));
+		intent.putExtra(KEY_THUMBNAIL_URL, row.get(KEY_THUMBNAIL_URL));
+		intent.putExtra(KEY_URL, row.get(KEY_URL));
+		intent.putExtra(KEY_WEBSITE_URL, row.get(KEY_WEBSITE_URL));
+		startActivity(intent);
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		ListView list = (ListView) view.findViewById(android.R.id.list);
+		list.setOnItemClickListener(this);
 	}
 }
