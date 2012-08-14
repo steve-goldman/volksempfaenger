@@ -13,6 +13,8 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 	private static final String TAG = "UpdateService";
 	private LegacyUpdateServiceHelper databaseHelper;
 
+	private long timeInTransaction = 0;
+
 	public DatabaseWriterRunnable(UpdateState update) {
 		super(update);
 		databaseHelper = new LegacyUpdateServiceHelper(getUpdate()
@@ -52,7 +54,8 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 		if (startTime != -1) {
 			long endTime = System.currentTimeMillis();
 			Log.i(TAG, "Finished writing to database (took "
-					+ (endTime - startTime) + "ms)");
+					+ (endTime - startTime) + "ms, " + timeInTransaction
+					+ "ms in transaction)");
 		}
 
 		getUpdate().stopUpdate();
@@ -70,10 +73,13 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 	// }
 
 	private void handleFeed(Feed feed) {
+		long startTime = System.currentTimeMillis();
 		databaseHelper.updatePodcastFromFeed(
 				feed.local_id,
 				feed,
 				getUpdate().getIntent().getBooleanExtra(
 						UpdateService.EXTRA_FIRST_SYNC, false));
+		long endTime = System.currentTimeMillis();
+		timeInTransaction += endTime - startTime;
 	}
 }

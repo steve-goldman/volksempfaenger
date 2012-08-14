@@ -6,7 +6,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
-import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,7 +22,7 @@ class ImportTask extends AsyncTask<SubscriptionTree[], Void, Void> {
 
 	@Override
 	protected void onPreExecute() {
-		LegacyUpdateServiceStatus.startUpdate();
+		UpdateService.Status.startGlobalUpdate();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ class ImportTask extends AsyncTask<SubscriptionTree[], Void, Void> {
 
 	@Override
 	protected void onPostExecute(Void arg0) {
-		LegacyUpdateServiceStatus.stopUpdate();
+		UpdateService.Status.stopGlobalUpdate();
 		if (failed.size() > 0) {
 			Intent intent = BackgroundErrorReceiver.getBackgroundErrorIntent(
 					context.getString(R.string.title_import_error),

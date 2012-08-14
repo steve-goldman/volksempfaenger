@@ -20,7 +20,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-// TODO
 public class UpdateService extends Service {
 
 	private static final String TAG = "UpdateService";
@@ -28,6 +27,10 @@ public class UpdateService extends Service {
 	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
 	public static final String EXTRA_FIRST_SYNC = "first_sync";
+
+	public static final UpdateServiceStatus Status = new UpdateServiceStatus();
+
+	private static long lastRun = 0;
 
 	private ThreadPoolExecutor databaseReaderPool;
 	private ThreadPoolExecutor feedDownloaderPool;
@@ -61,7 +64,7 @@ public class UpdateService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "Starting update for " + intent.toString());
 		UpdateState update = new UpdateState(this, intent, startId);
-		enqueueUpdate(update);
+		update.startUpdate();
 		return START_REDELIVER_INTENT;
 	}
 
@@ -121,6 +124,14 @@ public class UpdateService extends Service {
 
 	public LegacyUpdateServiceHelper getUpdateHelper() {
 		return updateHelper;
+	}
+
+	public static long getLastRun() {
+		return lastRun;
+	}
+
+	public static void setLastRun(long lastRun) {
+		UpdateService.lastRun = lastRun;
 	}
 
 }
