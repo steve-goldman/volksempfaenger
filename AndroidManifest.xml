@@ -114,6 +114,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity
+            android:name=".ui.DiscoverDetailActivity"
+            android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
 
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
