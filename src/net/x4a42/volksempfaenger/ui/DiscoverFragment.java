@@ -1,5 +1,8 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -44,21 +47,31 @@ public class DiscoverFragment extends ListFragment {
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
 			.imageScaleType(ImageScaleType.POWER_OF_2).build();
+	private File toplistFile;
+	private AsyncTask<Void, Void, Void> loadTask;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
+		toplistFile = new File(getActivity().getFilesDir(), "popular.json");
+
 		imageLoader = ((VolksempfaengerApplication) getActivity()
 				.getApplication()).imageLoader;
-		new LoadPopularListTask().execute();
+		if (toplistFile.exists()) {
+			loadTask = new LoadPopularListTask()
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
+		new RefreshPopularListTask()
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.discover, menu);
-		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search)
+				.getActionView();
 	}
 
 	private class LoadPopularListTask extends AsyncTask<Void, Void, Void> {
@@ -67,26 +80,16 @@ public class DiscoverFragment extends ListFragment {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			URL url;
 			JSONArray feeds;
 			try {
-				url = new URL("http://gpodder.net/toplist/100.json?scale_logo="
-						+ Utils.dpToPx(getActivity(), 64));
-				HttpURLConnection urlConnection = (HttpURLConnection) url
-						.openConnection();
-				if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-					// TODO handle error
+				StringWriter stringWriter;
+				synchronized (toplistFile) {
+					FileReader fileReader = new FileReader(toplistFile);
+					stringWriter = new StringWriter();
+					Utils.copy(fileReader, stringWriter);
+					fileReader.close();
 				}
-				InputStreamReader in = new InputStreamReader(
-						urlConnection.getInputStream());
-				int initalSize = urlConnection.getContentLength();
-				initalSize = (initalSize < 0) ? 16 : initalSize;
-				StringWriter stringWriter = new StringWriter(initalSize);
-				Utils.copy(in, stringWriter);
-				in.close();
 				feeds = new JSONArray(stringWriter.toString());
-			} catch (MalformedURLException e) {
-				return null;
 			} catch (IOException e) {
 				// TODO handle error
 				return null;
@@ -147,5 +150,62 @@ public class DiscoverFragment extends ListFragment {
 			});
 			setListAdapter(adapter);
 		}
+	}
+
+	private class RefreshPopularListTask extends AsyncTask<Void, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			URL url;
+			try {
+				synchronized (toplistFile) {
+					// 1 day
+					final long minTime = System.currentTimeMillis() - 24 * 60
+							* 60 * 1000;
+					if (toplistFile.lastModified() < minTime) {
+						return false;
+					}
+				}
+				url = new URL("http://gpodder.net/toplist/100.json?scale_logo="
+						+ Utils.dpToPx(getActivity(), 64));
+				HttpURLConnection urlConnection = (HttpURLConnection) url
+						.openConnection();
+				if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					// TODO handle error
+				}
+				InputStreamReader in = new InputStreamReader(
+						urlConnection.getInputStream());
+				File tempFile = File.createTempFile("popular", ".json",
+						getActivity().getCacheDir());
+				FileWriter fileWriter = new FileWriter(tempFile);
+				Utils.copy(in, fileWriter);
+				in.close();
+				fileWriter.close();
+				synchronized (toplistFile) {
+					tempFile.renameTo(toplistFile);
+				}
+			} catch (MalformedURLException e) {
+				return false;
+			} catch (IOException e) {
+				// TODO handle error
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (!result) {
+				return;
+			}
+			if (loadTask != null
+					&& loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+				loadTask.cancel(true);
+			}
+
+			loadTask = new LoadPopularListTask()
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
+
 	}
 }
