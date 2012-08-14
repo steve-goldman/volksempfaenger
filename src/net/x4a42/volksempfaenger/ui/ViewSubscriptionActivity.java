@@ -3,16 +3,16 @@ package net.x4a42.volksempfaenger.ui;
 import java.text.DateFormat;
 import java.util.Date;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import net.x4a42.volksempfaenger.service.LegacyUpdateService;
-import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus;
-import net.x4a42.volksempfaenger.service.LegacyUpdateServiceStatus.Status;
+import net.x4a42.volksempfaenger.service.UpdateService;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.SingleUpdateListener;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UiThreadUpdateServiceStatusListenerWrapper;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UpdateServiceStatusListener;
 import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -42,7 +42,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 
 	/* Other Attributes */
 	private boolean mIsUpdating;
-	private LegacyUpdateServiceStatus.UiReceiver mUpdateReceiver;
+	private UpdateServiceStatusListener mUpdateListener;
 	private PodcastCursor podcastCursor;
 
 	/* Activity Lifecycle */
@@ -66,7 +66,8 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 			mId = ContentUris.parseId(mUri);
 		}
 
-		mUpdateReceiver = new UpdateReceiver();
+		mUpdateListener = new UiThreadUpdateServiceStatusListenerWrapper(this,
+				new UpdateListener());
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			ViewGroup header = (ViewGroup) getLayoutInflater().inflate(
@@ -108,13 +109,15 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		LegacyUpdateServiceStatus.registerReceiver(mUpdateReceiver);
+		UpdateService.Status
+				.registerUpdateServiceStatusListener(mUpdateListener);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		LegacyUpdateServiceStatus.unregisterReceiver(mUpdateReceiver);
+		UpdateService.Status
+				.unregisterUpdateServiceStatusListener(mUpdateListener);
 	}
 
 	/* Content */
@@ -142,27 +145,24 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		return false;
 	}
 
-	private class UpdateReceiver extends LegacyUpdateServiceStatus.UiReceiver {
+	private class UpdateListener extends SingleUpdateListener {
 
-		public UpdateReceiver() {
-			setActivity(ViewSubscriptionActivity.this);
+		@Override
+		public void onSingleUpdateStarted(Uri podcast) {
+			if (mUri.equals(podcast)) {
+				mIsUpdating = true;
+				invalidateOptionsMenu();
+			}
 		}
 
 		@Override
-		public void receiveUi(Status status) {
-			Log.v(this, status.toString());
-			if (status.isUpdating()) {
-				if (!mIsUpdating && mUri.equals(status.getUri())) {
-					mIsUpdating = true;
-					invalidateOptionsMenu();
-				}
-			} else {
-				if (mIsUpdating && mUri.equals(status.getUri())) {
-					mIsUpdating = false;
-					invalidateOptionsMenu();
-				}
+		public void onSingleUpdateStopped(Uri podcast) {
+			if (mUri.equals(podcast)) {
+				mIsUpdating = false;
+				invalidateOptionsMenu();
 			}
 		}
+
 	}
 
 	/* Menu */
@@ -199,7 +199,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		switch (item.getItemId()) {
 
 		case R.id.item_update:
-			intent = new Intent(this, LegacyUpdateService.class);
+			intent = new Intent(this, UpdateService.class);
 			intent.setData(mUri);
 			startService(intent);
 			return true;

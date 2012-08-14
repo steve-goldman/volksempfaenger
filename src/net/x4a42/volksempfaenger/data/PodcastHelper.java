@@ -7,7 +7,7 @@ import net.x4a42.volksempfaenger.net.CacheInformation;
 import net.x4a42.volksempfaenger.net.LegacyFeedDownloader;
 import net.x4a42.volksempfaenger.net.LogoDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
-import net.x4a42.volksempfaenger.service.LegacyUpdateService;
+import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +32,7 @@ public class PodcastHelper {
 				VolksempfaengerContentProvider.PODCAST_URI, values);
 
 		PodcastHelper.updateCacheInformation(context, newPodcastUri, cacheInfo);
-		final Intent updatePodcast = new Intent(context, LegacyUpdateService.class);
+		final Intent updatePodcast = new Intent(context, UpdateService.class);
 		updatePodcast.setData(newPodcastUri);
 		updatePodcast.putExtra("first_sync", true);
 		context.startService(updatePodcast);

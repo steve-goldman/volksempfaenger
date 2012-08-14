@@ -21,13 +21,35 @@ public class UpdateState {
 	private AtomicInteger remainingFeedCounter = new AtomicInteger();
 	private AtomicBoolean remainingFeedCounterSet = new AtomicBoolean();
 	private long startTime;
+	private boolean globalUpdate;
 
 	public UpdateState(UpdateService updateService, Intent intent, int startId) {
 		this.updateService = updateService;
 		this.intent = intent;
 		this.startId = startId;
-		startTime = System.currentTimeMillis();
+		globalUpdate = intent.getData() == null;
 		Log.i(TAG, "Starting update");
+	}
+
+	public void startUpdate() {
+		if (globalUpdate) {
+			UpdateService.Status.startGlobalUpdate();
+		} else {
+			UpdateService.Status.startSingleUpdate(intent.getData());
+		}
+		startTime = System.currentTimeMillis();
+		updateService.enqueueUpdate(this);
+	}
+
+	public void stopUpdate() {
+		long endTime = System.currentTimeMillis();
+		Log.i(TAG, "Finished update (took " + (endTime - startTime) + "ms)");
+		if (globalUpdate) {
+			UpdateService.Status.stopGlobalUpdate();
+		} else {
+			UpdateService.Status.stopSingleUpdate(intent.getData());
+		}
+		updateService.stopSelf(startId);
 	}
 
 	public UpdateService getUpdateService() {
@@ -58,12 +80,6 @@ public class UpdateState {
 
 	public int getRemainingFeedCounter() {
 		return remainingFeedCounter.get();
-	}
-
-	public void stopUpdate() {
-		long endTime = System.currentTimeMillis();
-		Log.i(TAG, "Finished update (took " + (endTime - startTime) + "ms)");
-		getUpdateService().stopSelf(startId);
 	}
 
 }
