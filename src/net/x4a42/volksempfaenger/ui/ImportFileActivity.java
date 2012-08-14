@@ -47,7 +47,8 @@ public class ImportFileActivity extends Activity implements
 		cancelButton.setOnClickListener(this);
 
 		mListView.setOnItemClickListener(this);
-		final String filename = getIntent().getStringExtra(
+		final String filename = getIntent().getData() != null ? getIntent()
+				.getData().getPath() : getIntent().getStringExtra(
 				EXTRA_IMPORT_FILE_PATH);
 		if (filename == null) {
 			finish();
