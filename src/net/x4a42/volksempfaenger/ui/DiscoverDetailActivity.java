@@ -5,11 +5,15 @@ import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +43,7 @@ public class DiscoverDetailActivity extends Activity implements
 		TextView titleView = (TextView) findViewById(R.id.podcast_title);
 		TextView descriptionView = (TextView) findViewById(R.id.podcast_description);
 		ImageView logoView = (ImageView) findViewById(R.id.podcast_logo);
+		Button websiteButton = (Button) findViewById(R.id.button_website);
 
 		Intent intent = getIntent();
 		String title = intent.getStringExtra(DiscoverFragment.KEY_NAME);
@@ -46,11 +51,23 @@ public class DiscoverDetailActivity extends Activity implements
 				.getStringExtra(DiscoverFragment.KEY_DESCRIPTION);
 		String logo = intent.getStringExtra(DiscoverFragment.KEY_THUMBNAIL_URL);
 		feedUrl = intent.getStringExtra(DiscoverFragment.KEY_URL);
+		final String websiteUrl = intent
+				.getStringExtra(DiscoverFragment.KEY_WEBSITE_URL);
 
 		actionBar.setTitle(title);
 		titleView.setText(title);
 		descriptionView.setText(description);
 		imageLoader.displayImage(logo, logoView, options);
+		websiteButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri
+						.parse(websiteUrl));
+				startActivity(intent);
+			}
+		});
 	}
 
 	@Override

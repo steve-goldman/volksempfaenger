@@ -31,4 +31,12 @@
         android:layout_marginTop="@dimen/padding_medium"
         android:text="Description" />
 
+    <Button
+        android:id="@+id/button_website"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/podcast_description"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:text="@string/menu_website" />
+
 </RelativeLayout>
