@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -267,6 +269,18 @@ public class Utils {
 			written += n;
 		}
 		return written;
+	}
+
+	public static int copyStream(InputStream in, OutputStream out)
+			throws IOException {
+		byte[] buffer = new byte[4096];
+		int written = 0, n = 0;
+		while ((n = in.read(buffer)) != -1) {
+			out.write(buffer);
+			written += n;
+		}
+		return written;
+
 	}
 
 }

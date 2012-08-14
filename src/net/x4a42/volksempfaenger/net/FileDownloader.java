@@ -1,14 +1,14 @@
 package net.x4a42.volksempfaenger.net;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 
+import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.misc.StorageException;
 import android.content.Context;
-import net.x4a42.volksempfaenger.Log;
 
 public class FileDownloader extends Downloader {
 
@@ -29,20 +29,12 @@ public class FileDownloader extends Downloader {
 			target.createNewFile();
 			deleteTargetOnFailure = true;
 
-			BufferedOutputStream bufout = new BufferedOutputStream(
-					new FileOutputStream(target));
-			BufferedInputStream bufin = new BufferedInputStream(
-					connection.getInputStream());
+			FileOutputStream out = new FileOutputStream(target);
+			InputStream in = connection.getInputStream();
 
-			byte[] buf = new byte[1024];
-			int i;
-			while ((i = bufin.read(buf)) > 0) {
-				bufout.write(buf, 0, i);
-			}
-
-			bufout.flush();
-			bufout.close();
-			bufin.close();
+			Utils.copyStream(in, out);
+			in.close();
+			out.close();
 			connection.disconnect();
 
 		} catch (Exception e) {
