@@ -99,6 +99,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 			for (int i = 0; i < fragmentTabs.size(); ++i) {
 				if (fragmentTabs.get(i).tag.equals(tag)) {
 					viewpager.setCurrentItem(i, false);
+					break;
 				}
 			}
 		}

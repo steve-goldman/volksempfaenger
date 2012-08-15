@@ -84,10 +84,9 @@ public class DiscoverDetailActivity extends Activity implements
 
 	@Override
 	public void onUpPressed() {
-		Intent intent = NavUtils
-				.getParentActivityIntent(DiscoverDetailActivity.this);
+		Intent intent = NavUtils.getParentActivityIntent(this);
 		intent.putExtra("tag", MainActivity.discoverTag);
-		NavUtils.navigateUpTo(DiscoverDetailActivity.this, intent);
+		NavUtils.navigateUpTo(this, intent);
 	}
 
 	@Override

@@ -113,5 +113,6 @@
     <string name="error_shownotes">Unable to display shownotes</string>
     <string name="title_tab_discover">Discover</string>
     <string name="menu_search">Search</string>
+    <string name="search_hint">Search podcasts</string>
 
 </resources>
