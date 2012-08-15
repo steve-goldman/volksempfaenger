@@ -276,7 +276,7 @@ public class Utils {
 		byte[] buffer = new byte[4096];
 		int written = 0, n = 0;
 		while ((n = in.read(buffer)) != -1) {
-			out.write(buffer);
+			out.write(buffer, 0, n);
 			written += n;
 		}
 		return written;
