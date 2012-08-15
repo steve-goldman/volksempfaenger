@@ -2,6 +2,7 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -46,13 +47,13 @@ public class DiscoverDetailActivity extends Activity implements
 		Button websiteButton = (Button) findViewById(R.id.button_website);
 
 		Intent intent = getIntent();
-		String title = intent.getStringExtra(DiscoverFragment.KEY_NAME);
+		String title = intent.getStringExtra(GpodderJsonReader.KEY_TITLE);
 		String description = intent
-				.getStringExtra(DiscoverFragment.KEY_DESCRIPTION);
-		String logo = intent.getStringExtra(DiscoverFragment.KEY_THUMBNAIL_URL);
-		feedUrl = intent.getStringExtra(DiscoverFragment.KEY_URL);
+				.getStringExtra(GpodderJsonReader.KEY_DESCRIPTION);
+		String logo = intent.getStringExtra(GpodderJsonReader.KEY_SCALED_LOGO);
+		feedUrl = intent.getStringExtra(GpodderJsonReader.KEY_URL);
 		final String websiteUrl = intent
-				.getStringExtra(DiscoverFragment.KEY_WEBSITE_URL);
+				.getStringExtra(GpodderJsonReader.KEY_WEBSITE);
 
 		actionBar.setTitle(title);
 		titleView.setText(title);

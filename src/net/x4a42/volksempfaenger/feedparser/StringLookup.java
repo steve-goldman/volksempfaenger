@@ -4,6 +4,7 @@ import net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;
 import net.x4a42.volksempfaenger.feedparser.Enums.Mime;
 import net.x4a42.volksempfaenger.feedparser.Enums.Namespace;
 import net.x4a42.volksempfaenger.feedparser.Enums.Tag;
+import net.x4a42.volksempfaenger.feedparser.Enums.GpodderKey;
 
 public class StringLookup {
 	public static Namespace lookupNamespace(String input) {
@@ -35,7 +36,8 @@ public class StringLookup {
 				if (input.startsWith("ww.", 8)) {
 					switch (input.charAt(11)) {
 					case 'i':
-						if (input.startsWith("tunes.com/dtds/podcast-1.0.dtd", 12)) {
+						if (input.startsWith("tunes.com/dtds/podcast-1.0.dtd",
+								12)) {
 							if (length == 42) {
 								return Namespace.ITUNES;
 							}
@@ -83,6 +85,7 @@ public class StringLookup {
 			return Namespace.UNKNOWN;
 		}
 	}
+
 	public static Tag lookupAtomTag(String input) {
 		final int length = input.length();
 		switch (input.charAt(0)) {
@@ -181,6 +184,7 @@ public class StringLookup {
 			return Tag.UNKNOWN;
 		}
 	}
+
 	public static Tag lookupRssTag(String input) {
 		final int length = input.length();
 		switch (input.charAt(0)) {
@@ -292,6 +296,7 @@ public class StringLookup {
 			return Tag.UNKNOWN;
 		}
 	}
+
 	public static Tag lookupITunesTag(String input) {
 		final int length = input.length();
 		switch (input.charAt(0)) {
@@ -317,6 +322,7 @@ public class StringLookup {
 			return Tag.UNKNOWN;
 		}
 	}
+
 	public static AtomRel lookupAtomRel(String input) {
 		final int length = input.length();
 		switch (input.charAt(0)) {
@@ -360,6 +366,7 @@ public class StringLookup {
 			return AtomRel.UNKNOWN;
 		}
 	}
+
 	public static Mime lookupMime(String input) {
 		final int length = input.length();
 		if (input.startsWith("text/", 0)) {
@@ -387,6 +394,59 @@ public class StringLookup {
 			}
 		} else {
 			return Mime.UNKNOWN;
+		}
+	}
+
+	public static GpodderKey lookupGpodderKey(String input) {
+		final int length = input.length();
+		switch (input.charAt(0)) {
+		case 's':
+			if (input.startsWith("caled_logo_url", 1)) {
+				if (length == 15) {
+					return GpodderKey.SCALED_LOGO_URL;
+				}
+				return GpodderKey.UNKNOWN;
+			} else {
+				return GpodderKey.UNKNOWN;
+			}
+		case 'u':
+			if (input.startsWith("rl", 1)) {
+				if (length == 3) {
+					return GpodderKey.URL;
+				}
+				return GpodderKey.UNKNOWN;
+			} else {
+				return GpodderKey.UNKNOWN;
+			}
+		case 'd':
+			if (input.startsWith("escription", 1)) {
+				if (length == 11) {
+					return GpodderKey.DESCRIPTION;
+				}
+				return GpodderKey.UNKNOWN;
+			} else {
+				return GpodderKey.UNKNOWN;
+			}
+		case 'w':
+			if (input.startsWith("ebsite", 1)) {
+				if (length == 7) {
+					return GpodderKey.WEBSITE;
+				}
+				return GpodderKey.UNKNOWN;
+			} else {
+				return GpodderKey.UNKNOWN;
+			}
+		case 't':
+			if (input.startsWith("itle", 1)) {
+				if (length == 5) {
+					return GpodderKey.TITLE;
+				}
+				return GpodderKey.UNKNOWN;
+			} else {
+				return GpodderKey.UNKNOWN;
+			}
+		default:
+			return GpodderKey.UNKNOWN;
 		}
 	}
 }

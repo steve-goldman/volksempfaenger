@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,14 +11,10 @@ import java.util.HashMap;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import net.x4a42.volksempfaenger.misc.StorageException;
 import net.x4a42.volksempfaenger.net.FileDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -40,11 +37,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public class DiscoverFragment extends ListFragment implements
 		OnItemClickListener {
 
-	public final static String KEY_NAME = "title";
-	public final static String KEY_URL = "url";
-	public final static String KEY_DESCRIPTION = "description";
-	public final static String KEY_WEBSITE_URL = "website";
-	public final static String KEY_THUMBNAIL_URL = "scaled_logo_url";
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
@@ -80,53 +72,19 @@ public class DiscoverFragment extends ListFragment implements
 
 	private class LoadPopularListTask extends AsyncTask<Void, Void, Void> {
 
-		private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+		private ArrayList<HashMap<String, String>> list;
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			JSONArray feeds;
 			try {
-				StringWriter stringWriter;
 				synchronized (toplistFile) {
-					FileReader fileReader = new FileReader(toplistFile);
-					stringWriter = new StringWriter();
-					Utils.copy(fileReader, stringWriter);
-					fileReader.close();
+					BufferedReader fileReader = new BufferedReader(
+							new FileReader(toplistFile));
+					list = new GpodderJsonReader(fileReader).read();
 				}
-				feeds = new JSONArray(stringWriter.toString());
 			} catch (IOException e) {
 				// TODO handle error
 				return null;
-			} catch (JSONException e) {
-				// TODO handle error
-				return null;
-			}
-			for (int i = 0; i < feeds.length(); i++) {
-				try {
-					JSONObject feed = feeds.getJSONObject(i);
-					HashMap<String, String> feedMap = new HashMap<String, String>();
-					if (feed.isNull(KEY_NAME) || feed.isNull(KEY_URL)) {
-						continue;
-					}
-					feedMap.put(KEY_NAME, feed.getString(KEY_NAME));
-					feedMap.put(KEY_URL, feed.getString(KEY_URL));
-					feedMap.put(
-							KEY_DESCRIPTION,
-							feed.isNull(KEY_DESCRIPTION) ? "" : feed
-									.getString(KEY_DESCRIPTION));
-					feedMap.put(
-							KEY_WEBSITE_URL,
-							feed.isNull(KEY_WEBSITE_URL) ? "" : feed
-									.getString(KEY_WEBSITE_URL));
-					feedMap.put(
-							KEY_THUMBNAIL_URL,
-							feed.isNull(KEY_THUMBNAIL_URL) ? "" : feed
-									.getString(KEY_THUMBNAIL_URL));
-					list.add(feedMap);
-				} catch (JSONException e) {
-					// TODO handle error
-					continue;
-				}
 			}
 			return null;
 		}
@@ -134,9 +92,10 @@ public class DiscoverFragment extends ListFragment implements
 		@Override
 		protected void onPostExecute(Void result) {
 			SimpleAdapter adapter = new SimpleAdapter(getActivity(), list,
-					R.layout.discover_list_row, new String[] { KEY_NAME,
-							KEY_THUMBNAIL_URL }, new int[] { R.id.podcast_name,
-							R.id.podcast_logo });
+					R.layout.discover_list_row, new String[] {
+							GpodderJsonReader.KEY_TITLE,
+							GpodderJsonReader.KEY_SCALED_LOGO }, new int[] {
+							R.id.podcast_name, R.id.podcast_logo });
 			adapter.setViewBinder(new ViewBinder() {
 
 				@Override
@@ -218,11 +177,16 @@ public class DiscoverFragment extends ListFragment implements
 		HashMap<String, String> row = (HashMap<String, String>) list
 				.getItemAtPosition(position);
 		Intent intent = new Intent(getActivity(), DiscoverDetailActivity.class);
-		intent.putExtra(KEY_NAME, row.get(KEY_NAME));
-		intent.putExtra(KEY_DESCRIPTION, row.get(KEY_DESCRIPTION));
-		intent.putExtra(KEY_THUMBNAIL_URL, row.get(KEY_THUMBNAIL_URL));
-		intent.putExtra(KEY_URL, row.get(KEY_URL));
-		intent.putExtra(KEY_WEBSITE_URL, row.get(KEY_WEBSITE_URL));
+		intent.putExtra(GpodderJsonReader.KEY_TITLE,
+				row.get(GpodderJsonReader.KEY_TITLE));
+		intent.putExtra(GpodderJsonReader.KEY_DESCRIPTION,
+				row.get(GpodderJsonReader.KEY_DESCRIPTION));
+		intent.putExtra(GpodderJsonReader.KEY_SCALED_LOGO,
+				row.get(GpodderJsonReader.KEY_SCALED_LOGO));
+		intent.putExtra(GpodderJsonReader.KEY_URL,
+				row.get(GpodderJsonReader.KEY_URL));
+		intent.putExtra(GpodderJsonReader.KEY_WEBSITE,
+				row.get(GpodderJsonReader.KEY_WEBSITE));
 		startActivity(intent);
 	}
 
