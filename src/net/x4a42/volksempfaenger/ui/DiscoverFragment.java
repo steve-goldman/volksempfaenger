@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,6 +11,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReaderListener;
 import net.x4a42.volksempfaenger.misc.StorageException;
 import net.x4a42.volksempfaenger.net.FileDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
@@ -43,7 +43,8 @@ public class DiscoverFragment extends ListFragment implements
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
 			.imageScaleType(ImageScaleType.POWER_OF_2).build();
 	private File toplistFile;
-	private AsyncTask<Void, Void, Void> loadTask;
+	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
+	private SimpleAdapter toplistAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,33 +71,20 @@ public class DiscoverFragment extends ListFragment implements
 				.getActionView();
 	}
 
-	private class LoadPopularListTask extends AsyncTask<Void, Void, Void> {
+	private class LoadPopularListTask extends
+			AsyncTask<Void, HashMap<String, String>, Void> {
 
-		private ArrayList<HashMap<String, String>> list;
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			try {
-				synchronized (toplistFile) {
-					BufferedReader fileReader = new BufferedReader(
-							new FileReader(toplistFile));
-					list = new GpodderJsonReader(fileReader).read();
-				}
-			} catch (IOException e) {
-				// TODO handle error
-				return null;
-			}
-			return null;
-		}
+		private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 
 		@Override
-		protected void onPostExecute(Void result) {
-			SimpleAdapter adapter = new SimpleAdapter(getActivity(), list,
+		protected void onPreExecute() {
+			toplistAdapter = new SimpleAdapter(getActivity(), list,
 					R.layout.discover_list_row, new String[] {
 							GpodderJsonReader.KEY_TITLE,
 							GpodderJsonReader.KEY_SCALED_LOGO }, new int[] {
 							R.id.podcast_name, R.id.podcast_logo });
-			adapter.setViewBinder(new ViewBinder() {
+
+			toplistAdapter.setViewBinder(new ViewBinder() {
 
 				@Override
 				public boolean setViewValue(View view, Object data,
@@ -111,7 +99,38 @@ public class DiscoverFragment extends ListFragment implements
 					}
 				}
 			});
-			setListAdapter(adapter);
+			setListAdapter(toplistAdapter);
+
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				synchronized (toplistFile) {
+					BufferedReader fileReader = new BufferedReader(
+							new FileReader(toplistFile));
+					new GpodderJsonReader(fileReader,
+							new GpodderJsonReaderListener() {
+
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onPodcast(
+										HashMap<String, String> podcast) {
+									publishProgress(podcast);
+								}
+							}).read();
+				}
+			} catch (IOException e) {
+				// TODO handle error
+				return null;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(HashMap<String, String>... rows) {
+			list.add(rows[0]);
+			toplistAdapter.notifyDataSetChanged();
 		}
 	}
 
