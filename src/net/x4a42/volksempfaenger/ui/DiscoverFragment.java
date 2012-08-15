@@ -75,33 +75,7 @@ public class DiscoverFragment extends ListFragment implements
 			AsyncTask<Void, HashMap<String, String>, Void> {
 
 		private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-
-		@Override
-		protected void onPreExecute() {
-			toplistAdapter = new SimpleAdapter(getActivity(), list,
-					R.layout.discover_list_row, new String[] {
-							GpodderJsonReader.KEY_TITLE,
-							GpodderJsonReader.KEY_SCALED_LOGO }, new int[] {
-							R.id.podcast_name, R.id.podcast_logo });
-
-			toplistAdapter.setViewBinder(new ViewBinder() {
-
-				@Override
-				public boolean setViewValue(View view, Object data,
-						String textRepresentation) {
-					if (view.getId() == R.id.podcast_logo) {
-						ImageView logoView = (ImageView) view;
-						imageLoader.displayImage(textRepresentation, logoView,
-								options);
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
-			setListAdapter(toplistAdapter);
-
-		}
+		private boolean first = true;
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -129,6 +103,31 @@ public class DiscoverFragment extends ListFragment implements
 
 		@Override
 		protected void onProgressUpdate(HashMap<String, String>... rows) {
+			if (first) {
+				first = false;
+				toplistAdapter = new SimpleAdapter(getActivity(), list,
+						R.layout.discover_list_row, new String[] {
+								GpodderJsonReader.KEY_TITLE,
+								GpodderJsonReader.KEY_SCALED_LOGO }, new int[] {
+								R.id.podcast_name, R.id.podcast_logo });
+
+				toplistAdapter.setViewBinder(new ViewBinder() {
+
+					@Override
+					public boolean setViewValue(View view, Object data,
+							String textRepresentation) {
+						if (view.getId() == R.id.podcast_logo) {
+							ImageView logoView = (ImageView) view;
+							imageLoader.displayImage(textRepresentation,
+									logoView, options);
+							return true;
+						} else {
+							return false;
+						}
+					}
+				});
+				setListAdapter(toplistAdapter);
+			}
 			list.add(rows[0]);
 			toplistAdapter.notifyDataSetChanged();
 		}
