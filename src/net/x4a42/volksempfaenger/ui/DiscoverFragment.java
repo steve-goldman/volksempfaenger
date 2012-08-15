@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.R;
@@ -16,26 +15,24 @@ import net.x4a42.volksempfaenger.misc.StorageException;
 import net.x4a42.volksempfaenger.net.FileDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.ListFragment;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleAdapter.ViewBinder;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class DiscoverFragment extends ListFragment implements
-		OnItemClickListener {
+public class DiscoverFragment extends ListFragment {
 
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -44,7 +41,6 @@ public class DiscoverFragment extends ListFragment implements
 			.imageScaleType(ImageScaleType.POWER_OF_2).build();
 	private File toplistFile;
 	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
-	private SimpleAdapter toplistAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,13 +65,24 @@ public class DiscoverFragment extends ListFragment implements
 		inflater.inflate(R.menu.discover, menu);
 		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search)
 				.getActionView();
+		SearchManager searchManager = (SearchManager) getActivity()
+				.getSystemService(Context.SEARCH_SERVICE);
+		searchView.setSearchableInfo(searchManager
+				.getSearchableInfo(new ComponentName(getActivity()
+						.getPackageName(), SearchActivity.class.getName())));
 	}
 
-	private class LoadPopularListTask extends
-			AsyncTask<Void, HashMap<String, String>, Void> {
+	private class LoadPopularListTask extends LoadGpodderListTask {
 
-		private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-		private boolean first = true;
+		public LoadPopularListTask() {
+			super(getActivity(), imageLoader, options,
+					new SetAdapterCallback() {
+						@Override
+						public void setAdapter(ListAdapter adapter) {
+							setListAdapter(adapter);
+						}
+					});
+		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -99,37 +106,6 @@ public class DiscoverFragment extends ListFragment implements
 				return null;
 			}
 			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(HashMap<String, String>... rows) {
-			if (first) {
-				first = false;
-				toplistAdapter = new SimpleAdapter(getActivity(), list,
-						R.layout.discover_list_row, new String[] {
-								GpodderJsonReader.KEY_TITLE,
-								GpodderJsonReader.KEY_SCALED_LOGO }, new int[] {
-								R.id.podcast_name, R.id.podcast_logo });
-
-				toplistAdapter.setViewBinder(new ViewBinder() {
-
-					@Override
-					public boolean setViewValue(View view, Object data,
-							String textRepresentation) {
-						if (view.getId() == R.id.podcast_logo) {
-							ImageView logoView = (ImageView) view;
-							imageLoader.displayImage(textRepresentation,
-									logoView, options);
-							return true;
-						} else {
-							return false;
-						}
-					}
-				});
-				setListAdapter(toplistAdapter);
-			}
-			list.add(rows[0]);
-			toplistAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -189,8 +165,7 @@ public class DiscoverFragment extends ListFragment implements
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> list, View view, int position,
-			long id) {
+	public void onListItemClick(ListView list, View view, int position, long id) {
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> row = (HashMap<String, String>) list
 				.getItemAtPosition(position);
@@ -206,12 +181,5 @@ public class DiscoverFragment extends ListFragment implements
 		intent.putExtra(GpodderJsonReader.KEY_WEBSITE,
 				row.get(GpodderJsonReader.KEY_WEBSITE));
 		startActivity(intent);
-	}
-
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		ListView list = (ListView) view.findViewById(android.R.id.list);
-		list.setOnItemClickListener(this);
 	}
 }

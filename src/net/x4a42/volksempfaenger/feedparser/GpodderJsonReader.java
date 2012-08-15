@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.feedparser.Enums.GpodderKey;
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 public class GpodderJsonReader {
 	public final static String KEY_TITLE = "title";
@@ -46,19 +47,44 @@ public class GpodderJsonReader {
 			GpodderKey key = StringLookup.lookupGpodderKey(name);
 			switch (key) {
 			case DESCRIPTION:
-				podcast.put(KEY_DESCRIPTION, reader.nextString());
+				if (reader.peek() == JsonToken.STRING) {
+					podcast.put(KEY_DESCRIPTION, reader.nextString());
+				} else {
+					podcast.put(KEY_DESCRIPTION, "");
+					reader.skipValue();
+				}
 				break;
 			case SCALED_LOGO_URL:
-				podcast.put(KEY_SCALED_LOGO, reader.nextString());
+				if (reader.peek() == JsonToken.STRING) {
+					podcast.put(KEY_SCALED_LOGO, reader.nextString());
+				} else {
+					podcast.put(KEY_SCALED_LOGO, "");
+					reader.skipValue();
+				}
 				break;
 			case TITLE:
-				podcast.put(KEY_TITLE, reader.nextString());
+				if (reader.peek() == JsonToken.STRING) {
+					podcast.put(KEY_TITLE, reader.nextString());
+				} else {
+					podcast.put(KEY_TITLE, "");
+					reader.skipValue();
+				}
 				break;
 			case URL:
-				podcast.put(KEY_URL, reader.nextString());
+				if (reader.peek() == JsonToken.STRING) {
+					podcast.put(KEY_URL, reader.nextString());
+				} else {
+					podcast.put(KEY_URL, "");
+					reader.skipValue();
+				}
 				break;
 			case WEBSITE:
-				podcast.put(KEY_WEBSITE, reader.nextString());
+				if (reader.peek() == JsonToken.STRING) {
+					podcast.put(KEY_WEBSITE, reader.nextString());
+				} else {
+					podcast.put(KEY_WEBSITE, "");
+					reader.skipValue();
+				}
 				break;
 			case UNKNOWN:
 				reader.skipValue();

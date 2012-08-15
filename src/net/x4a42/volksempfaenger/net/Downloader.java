@@ -12,8 +12,7 @@ import android.content.Context;
 import android.net.http.HttpResponseCache;
 import net.x4a42.volksempfaenger.Log;
 
-public abstract class Downloader {
-
+public class Downloader {
 
 	private Context context;
 	private static HttpResponseCache cache;
