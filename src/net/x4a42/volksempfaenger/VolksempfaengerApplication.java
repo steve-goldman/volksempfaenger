@@ -153,7 +153,8 @@ public class VolksempfaengerApplication extends Application implements
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				getApplicationContext()).memoryCacheSize(memoryClassBytes / 4)
 				.discCacheSize(Constants.LOGO_DISC_CACHE_SIZE)
-				.memoryCacheExtraOptions(maxSize, maxSize)
+				.memoryCacheExtraOptions(maxSize, maxSize).threadPoolSize(8)
+				.threadPriority(Thread.MIN_PRIORITY)
 				.imageDownloader(new HttpURLConnctionImageDownloader()).build();
 		imageLoader.init(config);
 	}

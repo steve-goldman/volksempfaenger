@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 		// ViewPager
 		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
 			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-				viewpager.setCurrentItem(tab.getPosition());
+				setViewPagerCurrentItem(tab.getPosition());
 			}
 
 			public void onTabUnselected(Tab tab, FragmentTransaction ft) {
@@ -204,7 +204,15 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 
 	@Override
 	public void onUpPressed() {
-		viewpager.setCurrentItem(0);
+		setViewPagerCurrentItem(0);
+	}
+
+	public void setViewPagerCurrentItem(int item) {
+		// workaround for bug in viewpager. see
+		// https://code.google.com/p/android/issues/detail?id=29472#c8
+		if (viewpager.getCurrentItem() != item) {
+			viewpager.setCurrentItem(item);
+		}
 	}
 
 	@Override
