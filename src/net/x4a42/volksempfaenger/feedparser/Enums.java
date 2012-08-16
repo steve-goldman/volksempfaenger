@@ -16,4 +16,8 @@ public class Enums {
 	public static enum Mime {
 		HTML, XHTML, UNKNOWN
 	}
+
+	public static enum GpodderKey {
+		TITLE, URL, DESCRIPTION, WEBSITE, SCALED_LOGO_URL, UNKNOWN
+	}
 }

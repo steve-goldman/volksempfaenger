@@ -1,5 +1,12 @@
 package net.x4a42.volksempfaenger;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.ActivityManager;
@@ -18,6 +25,8 @@ import android.preference.PreferenceManager;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 public class VolksempfaengerApplication extends Application implements
 		OnSharedPreferenceChangeListener, ComponentCallbacks2 {
@@ -145,7 +154,28 @@ public class VolksempfaengerApplication extends Application implements
 				getApplicationContext()).memoryCacheSize(memoryClassBytes / 4)
 				.discCacheSize(Constants.LOGO_DISC_CACHE_SIZE)
 				.memoryCacheExtraOptions(maxSize, maxSize).threadPoolSize(8)
-				.threadPriority(Thread.MIN_PRIORITY).build();
+				.threadPriority(Thread.MIN_PRIORITY)
+				.imageDownloader(new HttpURLConnctionImageDownloader()).build();
 		imageLoader.init(config);
+	}
+
+	private class HttpURLConnctionImageDownloader extends ImageDownloader {
+
+		@Override
+		protected InputStream getStreamFromNetwork(URI imageUri)
+				throws IOException {
+			HttpURLConnection conn = (HttpURLConnection) imageUri.toURL()
+					.openConnection();
+			if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+					|| conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+
+				conn = (HttpURLConnection) new URL(
+						conn.getHeaderField("Location")).openConnection();
+			}
+
+			return new FlushedInputStream(new BufferedInputStream(
+					conn.getInputStream()));
+		}
+
 	}
 }

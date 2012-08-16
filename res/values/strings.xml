@@ -111,6 +111,9 @@
     <string name="message_no_episodes">No episodes</string>
     <string name="title_playlist_downloaded">Downloaded</string>
     <string name="error_shownotes">Unable to display shownotes</string>
+    <string name="title_tab_discover">Discover</string>
+    <string name="menu_search">Search</string>
+    <string name="search_hint">Search podcasts</string>
     <string name="import_to_volksempfaenger">Import to Volksempfänger</string>
 
 </resources>

@@ -1,6 +1,6 @@
 {
 	"class": "StringLookup",
-	"pre": "package net.x4a42.volksempfaenger.feedparser;\n\nimport net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Mime;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Namespace;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Tag;\n\n",
+	"pre": "package net.x4a42.volksempfaenger.feedparser;\n\nimport net.x4a42.volksempfaenger.feedparser.Enums.AtomRel;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Mime;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Namespace;\nimport net.x4a42.volksempfaenger.feedparser.Enums.Tag;\nimport net.x4a42.volksempfaenger.feedparser.Enums.GpodderKey;\n\n",
 	"groups": [
 		{
 			"name": "Namespace",
@@ -77,6 +77,18 @@
 			"pairs": {
 				"text/html": "Mime.HTML",
 				"text/xhtml": "Mime.XHTML"
+			}
+		},
+		{
+			"name": "GpodderKey",
+			"return_type": "GpodderKey",
+			"default": "GpodderKey.UNKNOWN",
+			"pairs": {
+				"title": "GpodderKey.TITLE",
+				"url": "GpodderKey.URL",
+				"description": "GpodderKey.DESCRIPTION",
+				"website": "GpodderKey.WEBSITE",
+				"scaled_logo_url": "GpodderKey.SCALED_LOGO_URL"
 			}
 		}
 	]

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,6 +26,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	public final static String subscriptionsTag = "subscriptions";
 	public final static String downloadsTag = "downloads";
 	public final static String playlistsTag = "playlists";
+	public final static String discoverTag = "discover";
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
@@ -35,9 +37,12 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 				R.string.title_tab_playlists, PlaylistsFragment.class));
 		fragmentTabs.add(new FragmentTab(downloadsTag,
 				R.string.title_tab_downloads, DownloadListFragment.class));
+		fragmentTabs.add(new FragmentTab(discoverTag,
+				R.string.title_tab_discover, DiscoverFragment.class));
 	}
 
 	private ViewPager viewpager;
+	private MenuItem searchMenuItem;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +99,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 			for (int i = 0; i < fragmentTabs.size(); ++i) {
 				if (fragmentTabs.get(i).tag.equals(tag)) {
 					viewpager.setCurrentItem(i, false);
+					break;
 				}
 			}
 		}
@@ -124,6 +130,12 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 				}
 			}
 		}
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		searchMenuItem = menu.findItem(R.id.menu_search);
 		return true;
 	}
 
@@ -201,6 +213,20 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 		if (viewpager.getCurrentItem() != item) {
 			viewpager.setCurrentItem(item);
 		}
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SEARCH
+				&& fragmentTabs
+						.get(getActionBar().getSelectedNavigationIndex()).tag
+						.equals(discoverTag)) {
+			if (searchMenuItem != null) {
+				searchMenuItem.expandActionView();
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
