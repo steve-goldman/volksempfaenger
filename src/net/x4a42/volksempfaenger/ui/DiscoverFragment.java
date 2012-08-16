@@ -38,7 +38,7 @@ public class DiscoverFragment extends ListFragment {
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
 	private File toplistFile;
 	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
 

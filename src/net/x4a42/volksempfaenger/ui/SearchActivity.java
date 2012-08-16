@@ -33,7 +33,7 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.build();
+			.cacheOnDisc().build();
 	private LoadSearchTask searchTask;
 
 	@Override
