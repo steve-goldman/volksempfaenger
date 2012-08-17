@@ -75,6 +75,13 @@
                 android:layout_height="wrap_content"
                 android:text="Signpost"
                 tools:ignore="HardcodedText" />
+
+            <Button
+                android:id="@+id/acraText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ACRA"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
     </ScrollView>
 
