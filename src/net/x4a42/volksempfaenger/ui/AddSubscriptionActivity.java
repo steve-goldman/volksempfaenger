@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
@@ -41,8 +40,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -106,21 +105,8 @@ public class AddSubscriptionActivity extends Activity implements
 			if (clip != null) {
 				ClipData.Item item = clip.getItemAt(0);
 				if (item != null && item.getText() != null) {
-					String text = item.getText().toString();
-					try {
-						URL url = new URL(text);
-						query = url.toString();
-					} catch (MalformedURLException e) {
-						Log.e(this, "no url");
-						Matcher matcher = Pattern.compile(
-								"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+")
-								.matcher(text);
-						if (matcher.find()) {
-							Log.e(this, "url found");
-							query = matcher.group();
-						}
-						Log.e(this, "finish");
-					}
+					// return value may be null
+					query = getUrlString(item.getText().toString());
 				}
 			}
 		}
@@ -303,15 +289,30 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public boolean onQueryTextSubmit(String query) {
-		if (query.startsWith("http://") || query.startsWith("https://")) {
-			// TODO better url detection
+		String url = getUrlString(query);
+		if (url != null) {
 			Toast.makeText(this, R.string.message_subscribing_podcast,
 					Toast.LENGTH_SHORT).show();
-			new AddFeedTask(getApplicationContext()).execute(query);
+			new AddFeedTask(getApplicationContext()).execute(url);
 			finish();
 			return true;
 		}
 		return false;
+	}
+
+	private String getUrlString(String input) {
+		try {
+			URL url = new URL(input);
+			return url.toString();
+		} catch (MalformedURLException e) {
+			Matcher matcher = Pattern.compile(
+					"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+").matcher(
+					input);
+			if (matcher.find()) {
+				return matcher.group();
+			}
+		}
+		return null;
 	}
 
 }
