@@ -4,8 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
@@ -17,9 +22,12 @@ import net.x4a42.volksempfaenger.net.NetException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -33,13 +41,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
+import android.widget.SearchView.OnQueryTextListener;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class AddSubscriptionActivity extends Activity implements
-		OnUpPressedCallback, OnItemClickListener {
+		OnUpPressedCallback, OnItemClickListener, OnQueryTextListener {
 
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -50,6 +60,7 @@ public class AddSubscriptionActivity extends Activity implements
 	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
 	private ListView popularList;
 	private MenuItem searchMenuItem;
+	private String query;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,9 +74,12 @@ public class AddSubscriptionActivity extends Activity implements
 		popularList = (ListView) findViewById(R.id.popular_list);
 		popularList.setOnItemClickListener(this);
 
-		View header = (View) getLayoutInflater().inflate(
-				R.layout.add_subscription_header, popularList, false);
-		popularList.addHeaderView(header);
+		View header_text = (View) getLayoutInflater().inflate(
+				R.layout.add_subscription_header_text, popularList, false);
+		View header_title = (View) getLayoutInflater().inflate(
+				R.layout.add_subscription_header_title, popularList, false);
+		popularList.addHeaderView(header_text, null, false);
+		popularList.addHeaderView(header_title, null, false);
 
 		toplistFile = new File(getFilesDir(), "popular.json");
 
@@ -76,6 +90,40 @@ public class AddSubscriptionActivity extends Activity implements
 		}
 		new RefreshPopularListTask()
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		Uri data = getIntent().getData();
+		if (data != null) {
+			query = data.toString();
+		} else {
+			// see if there is a link in the clipboard
+			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
+			ClipData clip = cm.getPrimaryClip();
+			if (clip != null) {
+				ClipData.Item item = clip.getItemAt(0);
+				if (item != null && item.getText() != null) {
+					String text = item.getText().toString();
+					try {
+						URL url = new URL(text);
+						query = url.toString();
+					} catch (MalformedURLException e) {
+						Log.e(this, "no url");
+						Matcher matcher = Pattern.compile(
+								"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+")
+								.matcher(text);
+						if (matcher.find()) {
+							Log.e(this, "url found");
+							query = matcher.group();
+						}
+						Log.e(this, "finish");
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -90,6 +138,11 @@ public class AddSubscriptionActivity extends Activity implements
 		searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(new ComponentName(getPackageName(),
 						SearchActivity.class.getName())));
+		searchView.setOnQueryTextListener(this);
+		if (query != null) {
+			searchMenuItem.expandActionView();
+			searchView.setQuery(query, false);
+		}
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
 	}
@@ -239,6 +292,24 @@ public class AddSubscriptionActivity extends Activity implements
 				searchMenuItem.expandActionView();
 				return true;
 			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String newText) {
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		if (query.startsWith("http://") || query.startsWith("https://")) {
+			// TODO better url detection
+			Toast.makeText(this, R.string.message_subscribing_podcast,
+					Toast.LENGTH_SHORT).show();
+			new AddFeedTask(getApplicationContext()).execute(query);
+			finish();
+			return true;
 		}
 		return false;
 	}
