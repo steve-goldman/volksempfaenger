@@ -266,7 +266,7 @@ public class AddSubscriptionActivity extends Activity implements
 				return true;
 			}
 		}
-		return false;
+		return super.onKeyUp(keyCode, event);
 	}
 
 	@Override
