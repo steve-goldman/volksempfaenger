@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -42,6 +43,11 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle(getString(R.string.title_search_results));
+
+		TextView header = (TextView) getLayoutInflater().inflate(
+				R.layout.search_results_header, getListView(), false);
+		getListView().addHeaderView(header);
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
 
@@ -49,6 +55,8 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 		Intent intent = getIntent();
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
+			header.setText(String.format(
+					getString(R.string.title_search_results_for), query));
 			onSearch(query);
 		}
 	}
