@@ -21,8 +21,6 @@ import net.x4a42.volksempfaenger.net.NetException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -98,17 +96,6 @@ public class AddSubscriptionActivity extends Activity implements
 		Uri data = getIntent().getData();
 		if (data != null) {
 			query = data.toString();
-		} else {
-			// see if there is a link in the clipboard
-			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
-			ClipData clip = cm.getPrimaryClip();
-			if (clip != null) {
-				ClipData.Item item = clip.getItemAt(0);
-				if (item != null && item.getText() != null) {
-					// return value may be null
-					query = getUrlString(item.getText().toString());
-				}
-			}
 		}
 	}
 
