@@ -29,9 +29,11 @@
         </activity>
         <activity
             android:name=".ui.AddSubscriptionActivity"
-            android:theme="@style/Theme.Dialog"
-            android:windowSoftInputMode="stateVisible"
+            android:parentActivityName=".ui.MainActivity"
             tools:ignore="ExportedActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Intent filters taken from http://stackoverflow.com/a/5502710/731539 -->
             <intent-filter>
@@ -129,17 +131,18 @@
         </activity>
         <activity
             android:name=".ui.DiscoverDetailActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.AddSubscriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.AddSubscriptionActivity" />
         </activity>
         <activity
             android:name=".ui.SearchActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.AddSubscriptionActivity"
+            tools:ignore="ExportedActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.AddSubscriptionActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

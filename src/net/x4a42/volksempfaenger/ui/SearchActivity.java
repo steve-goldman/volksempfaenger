@@ -63,9 +63,7 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 
 	@Override
 	public void onUpPressed() {
-		Intent intent = NavUtils.getParentActivityIntent(this);
-		intent.putExtra("tag", MainActivity.discoverTag);
-		NavUtils.navigateUpTo(this, intent);
+		NavUtils.navigateUpFromSameTask(this);
 	}
 
 	private void onSearch(String query) {
