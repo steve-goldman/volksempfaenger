@@ -115,5 +115,6 @@
     <string name="menu_search">Search</string>
     <string name="search_hint">Search podcasts</string>
     <string name="import_to_volksempfaenger">Import to Volksempfänger</string>
+    <string name="title_popular">Popular</string>
 
 </resources>

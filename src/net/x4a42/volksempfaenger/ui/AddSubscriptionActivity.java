@@ -63,6 +63,10 @@ public class AddSubscriptionActivity extends Activity implements
 		popularList = (ListView) findViewById(R.id.popular_list);
 		popularList.setOnItemClickListener(this);
 
+		View header = (View) getLayoutInflater().inflate(
+				R.layout.add_subscription_header, popularList, false);
+		popularList.addHeaderView(header);
+
 		toplistFile = new File(getFilesDir(), "popular.json");
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
