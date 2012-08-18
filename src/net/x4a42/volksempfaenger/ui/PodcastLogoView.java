@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
+
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
@@ -18,9 +20,9 @@ public class PodcastLogoView extends ImageView {
 	private long podcastId;
 	private VolksempfaengerApplication application;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.default_logo)
-			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.cacheInMemory().cacheOnDisc()
+			.showImageForEmptyUri(R.drawable.default_logo)
+			.imageScaleType(ImageScaleType.POWER_OF_2).build();
 
 	public PodcastLogoView(Context context) {
 		super(context);
@@ -55,11 +57,17 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	private void loadImage() {
-		String url = "";
-		if (podcastId != -1) {
-			url = Utils.getPodcastLogoFile(getContext(), podcastId).toURI()
-					.toString();
+		if (podcastId == -1) {
+			setImageBitmap(null);
+			return;
 		}
+		File podcastLogoFile = Utils
+				.getPodcastLogoFile(getContext(), podcastId);
+		String url = null;
+		if (podcastLogoFile.exists()) {
+			url = podcastLogoFile.toURI().toString();
+		}
+
 		application.imageLoader.displayImage(url, this, options,
 				new SimpleImageLoadingListener() {
 					private long startTime;

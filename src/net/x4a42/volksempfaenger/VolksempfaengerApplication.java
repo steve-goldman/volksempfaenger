@@ -9,6 +9,10 @@ import java.net.URL;
 
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
+
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
+
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -28,6 +32,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
+@ReportsCrashes(formKey = "dGxaSnIySTF3bWc0Zkx4UHNvWWxJTWc6MQ")
 public class VolksempfaengerApplication extends Application implements
 		OnSharedPreferenceChangeListener, ComponentCallbacks2 {
 	private SharedPreferences settings;
@@ -37,6 +42,7 @@ public class VolksempfaengerApplication extends Application implements
 
 	@Override
 	public void onCreate() {
+		ACRA.init(this);
 		super.onCreate();
 		packageinfo = getPackageInfo(this);
 
