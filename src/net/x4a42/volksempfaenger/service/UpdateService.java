@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -123,6 +125,8 @@ public class UpdateService extends Service {
 		shutdownPool(feedParserPool);
 		shutdownPool(databaseWriterPool);
 
+		new RemoveTempFilesTask().execute();
+
 	}
 
 	private ThreadPoolExecutor createThreadPool(String name, int threads) {
@@ -155,6 +159,32 @@ public class UpdateService extends Service {
 
 	public static void setLastRun(long lastRun) {
 		UpdateService.lastRun = lastRun;
+	}
+
+	private class RemoveTempFilesTask extends AsyncTask<Void, Void, Void> {
+
+		private static final String PREFIX = FeedDownloaderRunnable.TEMP_FILE_PREFIX;
+		private static final String SUFFIX = FeedDownloaderRunnable.TEMP_FILE_SUFFIX;
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			File[] tempFiles = getCacheDir().listFiles(new FilenameFilter() {
+
+				@Override
+				public boolean accept(File dir, String filename) {
+					return filename.startsWith(PREFIX)
+							&& filename.endsWith(SUFFIX);
+				}
+			});
+
+			for (File file : tempFiles) {
+				file.delete();
+			}
+
+			return null;
+
+		}
 	}
 
 }
