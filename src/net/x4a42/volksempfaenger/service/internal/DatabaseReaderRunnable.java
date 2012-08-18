@@ -31,8 +31,6 @@ public class DatabaseReaderRunnable extends UpdateRunnable {
 		boolean extraFirstSync = intent.getBooleanExtra(
 				UpdateService.EXTRA_FIRST_SYNC, false);
 
-		// TODO networking stuff
-
 		ContentResolver resolver = getUpdate().getUpdateService()
 				.getContentResolver();
 
