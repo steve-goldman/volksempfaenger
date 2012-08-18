@@ -12,7 +12,9 @@ import net.x4a42.volksempfaenger.service.UpdateService;
 public class FeedDownloaderRunnable extends UpdateRunnable {
 
 	private static final String TAG = "UpdateService";
-	private static final String TEMP_FILE_PREFIX = "feed_";
+
+	public static final String TEMP_FILE_PREFIX = "feed_";
+	public static final String TEMP_FILE_SUFFIX = ".tmp";
 
 	private PodcastData podcast;
 	private long startTime;
@@ -32,8 +34,8 @@ public class FeedDownloaderRunnable extends UpdateRunnable {
 		UpdateService service = getUpdate().getUpdateService();
 
 		try {
-			File target = File.createTempFile(TEMP_FILE_PREFIX, null,
-					service.getCacheDir());
+			File target = File.createTempFile(TEMP_FILE_PREFIX,
+					TEMP_FILE_SUFFIX, service.getCacheDir());
 			service.getFeedDownloader().fetchFeed(podcast.feed,
 					podcast.forceUpdate ? null : podcast.cacheInfo, target);
 			PodcastHelper.updateCacheInformation(
