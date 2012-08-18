@@ -41,15 +41,12 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 						startTime = System.currentTimeMillis();
 						Log.i(TAG, "Started writing to database");
 					}
-					// ensureTransaction();
 					handleFeed(feed);
 				}
 			}
 		} catch (InterruptedException e) {
 			Log.i(this, "Exception", e);
 		}
-
-		// finishTransaction();
 
 		if (startTime != -1) {
 			long endTime = System.currentTimeMillis();
@@ -61,16 +58,6 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 		getUpdate().stopUpdate();
 
 	}
-
-	// private void ensureTransaction() {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// private void finishTransaction() {
-	// // TODO Auto-generated method stub
-	//
-	// }
 
 	private void handleFeed(Feed feed) {
 		long startTime = System.currentTimeMillis();
