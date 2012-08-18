@@ -17,7 +17,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-@Deprecated
 public class LegacyUpdateServiceHelper {
 
 	private static final String EPISODE_WHERE_ID = Episode._ID + "=?";
