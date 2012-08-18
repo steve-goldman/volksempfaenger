@@ -17,8 +17,12 @@ import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
 import net.x4a42.volksempfaenger.service.internal.UpdateState;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
+import android.widget.Toast;
 
 public class UpdateService extends Service {
 
@@ -38,12 +42,16 @@ public class UpdateService extends Service {
 	private ThreadPoolExecutor databaseWriterPool;
 	private FeedDownloader feedDownloader;
 	private LegacyUpdateServiceHelper updateHelper;
+	private ConnectivityManager connectivityManager;
 
 	@Override
 	public void onCreate() {
+
 		super.onCreate();
 
 		Log.d(TAG, "Creating UpdateService");
+
+		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		databaseReaderPool = createThreadPool("UpdateService.DatabaseReader", 1);
 		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
@@ -62,10 +70,23 @@ public class UpdateService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+
 		Log.d(TAG, "Starting update for " + intent.toString());
-		UpdateState update = new UpdateState(this, intent, startId);
-		update.startUpdate();
+
+		NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+		if (netInfo == null || !netInfo.isConnected()) {
+			Log.i(TAG, "Network unavailable, stopping service");
+			// TODO show toast only for manual updates
+			Toast.makeText(this, "Network unavailable", Toast.LENGTH_SHORT)
+					.show();
+			stopSelf();
+		} else {
+			UpdateState update = new UpdateState(this, intent, startId);
+			update.startUpdate();
+		}
+
 		return START_REDELIVER_INTENT;
+
 	}
 
 	public void enqueueUpdate(UpdateState update) {
@@ -92,6 +113,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public void onDestroy() {
+
 		super.onDestroy();
 
 		Log.d(TAG, "Destroying UpdateService");
@@ -100,6 +122,7 @@ public class UpdateService extends Service {
 		shutdownPool(feedDownloaderPool);
 		shutdownPool(feedParserPool);
 		shutdownPool(databaseWriterPool);
+
 	}
 
 	private ThreadPoolExecutor createThreadPool(String name, int threads) {
