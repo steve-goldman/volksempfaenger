@@ -20,9 +20,6 @@ import net.x4a42.volksempfaenger.net.FileDownloader;
 import net.x4a42.volksempfaenger.net.NetException;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.SearchManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -30,15 +27,20 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -46,7 +48,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class AddSubscriptionActivity extends Activity implements
-		OnUpPressedCallback, OnItemClickListener, OnQueryTextListener {
+		OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
+		OnEditorActionListener, OnClickListener {
 
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -56,8 +59,8 @@ public class AddSubscriptionActivity extends Activity implements
 	private File toplistFile;
 	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
 	private ListView popularList;
-	private MenuItem searchMenuItem;
-	private String query;
+	private AutoCompleteTextView searchEntry;
+	private ImageButton searchButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,15 +71,15 @@ public class AddSubscriptionActivity extends Activity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
+		searchEntry = (AutoCompleteTextView) findViewById(R.id.entry_search);
+		searchEntry.setOnFocusChangeListener(this);
+		searchEntry.setOnEditorActionListener(this);
+
+		searchButton = (ImageButton) findViewById(R.id.button_search);
+		searchButton.setOnClickListener(this);
+
 		popularList = (ListView) findViewById(R.id.popular_list);
 		popularList.setOnItemClickListener(this);
-
-		View header_text = (View) getLayoutInflater().inflate(
-				R.layout.add_subscription_header_text, popularList, false);
-		View header_title = (View) getLayoutInflater().inflate(
-				R.layout.add_subscription_header_title, popularList, false);
-		popularList.addHeaderView(header_text, null, false);
-		popularList.addHeaderView(header_title, null, false);
 
 		toplistFile = new File(getFilesDir(), "popular.json");
 
@@ -95,27 +98,12 @@ public class AddSubscriptionActivity extends Activity implements
 
 		Uri data = getIntent().getData();
 		if (data != null) {
-			query = data.toString();
+			searchEntry.setText(data.toString());
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.discover, menu);
-		searchMenuItem = menu.findItem(R.id.menu_search);
-
-		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search)
-				.getActionView();
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		searchView.setSearchableInfo(searchManager
-				.getSearchableInfo(new ComponentName(getPackageName(),
-						SearchActivity.class.getName())));
-		searchView.setOnQueryTextListener(this);
-		if (query != null) {
-			searchMenuItem.expandActionView();
-			searchView.setQuery(query, false);
-		}
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
 	}
@@ -258,35 +246,6 @@ public class AddSubscriptionActivity extends Activity implements
 		startActivity(intent);
 	}
 
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-			if (searchMenuItem != null) {
-				searchMenuItem.expandActionView();
-				return true;
-			}
-		}
-		return super.onKeyUp(keyCode, event);
-	}
-
-	@Override
-	public boolean onQueryTextChange(String newText) {
-		return false;
-	}
-
-	@Override
-	public boolean onQueryTextSubmit(String query) {
-		String url = getUrlString(query);
-		if (url != null) {
-			Toast.makeText(this, R.string.message_subscribing_podcast,
-					Toast.LENGTH_SHORT).show();
-			new AddFeedTask(getApplicationContext()).execute(url);
-			finish();
-			return true;
-		}
-		return false;
-	}
-
 	private String getUrlString(String input) {
 		try {
 			URL url = new URL(input);
@@ -300,6 +259,60 @@ public class AddSubscriptionActivity extends Activity implements
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void onFocusChange(View v, boolean hasFocus) {
+		if (v.getId() == R.id.entry_search) {
+			if (hasFocus) {
+				showButton();
+			} else {
+				hideButton();
+			}
+		}
+	}
+
+	private void hideButton() {
+		LayoutParams params = searchButton.getLayoutParams();
+		params.width = 0;
+		searchButton.setLayoutParams(params);
+	}
+
+	private void showButton() {
+		LayoutParams params = searchButton.getLayoutParams();
+		params.width = LayoutParams.WRAP_CONTENT;
+		searchButton.setLayoutParams(params);
+	}
+
+	@Override
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+			submitSearch();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.button_search) {
+			submitSearch();
+		}
+	}
+
+	private void submitSearch() {
+		String query = searchEntry.getText().toString();
+		String url = getUrlString(query);
+		if (url != null) {
+			Toast.makeText(this, R.string.message_subscribing_podcast,
+					Toast.LENGTH_SHORT).show();
+			new AddFeedTask(getApplicationContext()).execute(url);
+			finish();
+		} else {
+			Intent intent = new Intent(this, SearchActivity.class);
+			intent.putExtra("query", query);
+			startActivity(intent);
+		}
 	}
 
 }
