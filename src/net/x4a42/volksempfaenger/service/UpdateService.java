@@ -32,8 +32,6 @@ public class UpdateService extends Service {
 	private static final long AWAIT_TERMINATION_TIMEOUT = 16000;
 	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
-	public static final String EXTRA_FIRST_SYNC = "first_sync";
-
 	public static final UpdateServiceStatus Status = new UpdateServiceStatus();
 
 	private static long lastRun = 0;

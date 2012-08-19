@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
-import net.x4a42.volksempfaenger.service.UpdateService;
 
 public class DatabaseWriterRunnable extends UpdateRunnable {
 
@@ -61,11 +60,8 @@ public class DatabaseWriterRunnable extends UpdateRunnable {
 
 	private void handleFeed(Feed feed) {
 		long startTime = System.currentTimeMillis();
-		databaseHelper.updatePodcastFromFeed(
-				feed.local_id,
-				feed,
-				getUpdate().getIntent().getBooleanExtra(
-						UpdateService.EXTRA_FIRST_SYNC, false));
+		databaseHelper.updatePodcastFromFeed(feed.localId, feed,
+				feed.firstSync);
 		long endTime = System.currentTimeMillis();
 		timeInTransaction += endTime - startTime;
 	}

@@ -53,7 +53,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final int PICK_FILE_REQUEST = 0;
 
-	private static final String PODCAST_ORDER = "title COLLATE NOCASE ASC";
+	private static final String PODCAST_ORDER = "title IS NULL, title COLLATE NOCASE ASC";
 
 	private GridView grid;
 	private View loading;
@@ -310,33 +310,48 @@ public class SubscriptionGridFragment extends Fragment implements
 			super.bindView(view, context, c);
 			PodcastCursor cursor = (PodcastCursor) c;
 
-			TextView newEpisodesText = (TextView) view
-					.findViewById(R.id.new_episodes);
-			int newEpisodes = cursor.getNewEpisodes();
-			int listeningEpisodes = cursor.getListeningEpisodes();
-			int listeningOrNewEpisodes = newEpisodes + listeningEpisodes;
-			if (listeningOrNewEpisodes > 0) {
-				if (listeningOrNewEpisodes > 9) {
-					newEpisodesText.setText("+");
-				} else {
-					newEpisodesText.setText(String
-							.valueOf(listeningOrNewEpisodes));
-				}
-				if (newEpisodes == 0) {
-					newEpisodesText
-							.setBackgroundResource(R.drawable.badge_subscription_listening);
-				} else {
-					newEpisodesText
-							.setBackgroundResource(R.drawable.badge_subscription_new);
-				}
-				newEpisodesText.setVisibility(View.VISIBLE);
-			} else {
-				newEpisodesText.setVisibility(View.INVISIBLE);
-			}
-
 			PodcastLogoView podcastLogo = (PodcastLogoView) view
 					.findViewById(R.id.podcast_logo);
-			podcastLogo.setPodcastId(cursor.getId());
+			TextView podcastTitle = (TextView) view
+					.findViewById(R.id.podcast_title);
+			TextView newEpisodesText = (TextView) view
+					.findViewById(R.id.new_episodes);
+			View loading = view.findViewById(R.id.loading);
+
+			boolean titleIsNull = cursor.titleIsNull();
+
+			podcastLogo.setVisibility(titleIsNull ? View.GONE : View.VISIBLE);
+			newEpisodesText.setVisibility(titleIsNull ? View.GONE
+					: View.VISIBLE);
+			loading.setVisibility(titleIsNull ? View.VISIBLE : View.GONE);
+
+			if (titleIsNull) {
+				podcastTitle.setText(cursor.getFeed());
+			} else {
+				int newEpisodes = cursor.getNewEpisodes();
+				int listeningEpisodes = cursor.getListeningEpisodes();
+				int listeningOrNewEpisodes = newEpisodes + listeningEpisodes;
+				if (listeningOrNewEpisodes > 0) {
+					if (listeningOrNewEpisodes > 9) {
+						newEpisodesText.setText("+");
+					} else {
+						newEpisodesText.setText(String
+								.valueOf(listeningOrNewEpisodes));
+					}
+					if (newEpisodes == 0) {
+						newEpisodesText
+								.setBackgroundResource(R.drawable.badge_subscription_listening);
+					} else {
+						newEpisodesText
+								.setBackgroundResource(R.drawable.badge_subscription_new);
+					}
+					newEpisodesText.setVisibility(View.VISIBLE);
+				} else {
+					newEpisodesText.setVisibility(View.INVISIBLE);
+				}
+				podcastLogo.setPodcastId(cursor.getId());
+			}
+
 		}
 	}
 
@@ -344,8 +359,9 @@ public class SubscriptionGridFragment extends Fragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(getActivity(),
 				VolksempfaengerContentProvider.PODCAST_URI, new String[] {
-						Podcast._ID, Podcast.TITLE, Podcast.NEW_EPISODES,
-						Podcast.LISTENING_EPISODES }, null, null, PODCAST_ORDER);
+						Podcast._ID, Podcast.TITLE, Podcast.FEED,
+						Podcast.NEW_EPISODES, Podcast.LISTENING_EPISODES },
+				null, null, PODCAST_ORDER);
 	}
 
 	@Override

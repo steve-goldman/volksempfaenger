@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import android.content.ContentResolver;
@@ -19,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class LegacyUpdateServiceHelper {
 
+	private static final String PODCAST_WHERE_ID = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE_ID = Episode._ID + "=?";
 	private static final String EPISODE_WHERE_PODCAST_ID = Episode.PODCAST_ID
 			+ "=?";
@@ -67,7 +69,18 @@ public class LegacyUpdateServiceHelper {
 
 		db.beginTransaction();
 
+		// update podcast table
 		ContentValues values = new ContentValues();
+		values.put(Podcast.TITLE, feed.title);
+		values.put(Podcast.DESCRIPTION, feed.description);
+		values.put(Podcast.WEBSITE, feed.website);
+		// TODO update feed url after redirect, see #1
+		// values.put(Podcast.FEED, ...);
+		db.update(DatabaseHelper.TABLE_PODCAST, values, PODCAST_WHERE_ID,
+				new String[] { String.valueOf(podcastId) });
+
+		db.yieldIfContendedSafely();
+
 		long latestEpisodeId = -1;
 		Date latestEpisodeDate = null;
 

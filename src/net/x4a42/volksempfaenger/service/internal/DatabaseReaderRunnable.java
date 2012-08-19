@@ -4,7 +4,6 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
-import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,8 +27,6 @@ public class DatabaseReaderRunnable extends UpdateRunnable {
 
 		Intent intent = getUpdate().getIntent();
 		Uri podcastUri = intent.getData();
-		boolean extraFirstSync = intent.getBooleanExtra(
-				UpdateService.EXTRA_FIRST_SYNC, false);
 
 		ContentResolver resolver = getUpdate().getUpdateService()
 				.getContentResolver();
@@ -67,7 +64,7 @@ public class DatabaseReaderRunnable extends UpdateRunnable {
 				podcast.title = cursor.getTitle();
 				podcast.feed = cursor.getFeed();
 				podcast.cacheInfo = cursor.getCacheInformation();
-				podcast.firstSync = extraFirstSync;
+				podcast.firstSync = cursor.titleIsNull();
 				podcast.forceUpdate = (podcastUri != null);
 				getUpdate().getUpdateService().enqueueFeedDownloader(
 						getUpdate(), podcast);
