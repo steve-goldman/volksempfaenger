@@ -21,19 +21,20 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity implements OnUpPressedCallback {
 
+	public static final String TAG_SUBSCRIPTIONS = "subscriptions";
+	public static final String TAG_DOWNLOADS = "downloads";
+	public static final String TAG_PLAYLISTS = "playlists";
+
 	private static List<FragmentTab> fragmentTabs;
-	public final static String subscriptionsTag = "subscriptions";
-	public final static String downloadsTag = "downloads";
-	public final static String playlistsTag = "playlists";
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
-		fragmentTabs.add(new FragmentTab(subscriptionsTag,
+		fragmentTabs.add(new FragmentTab(TAG_SUBSCRIPTIONS,
 				R.string.title_tab_subscriptions,
 				SubscriptionGridFragment.class));
-		fragmentTabs.add(new FragmentTab(playlistsTag,
+		fragmentTabs.add(new FragmentTab(TAG_PLAYLISTS,
 				R.string.title_tab_playlists, PlaylistsFragment.class));
-		fragmentTabs.add(new FragmentTab(downloadsTag,
+		fragmentTabs.add(new FragmentTab(TAG_DOWNLOADS,
 				R.string.title_tab_downloads, DownloadListFragment.class));
 	}
 
