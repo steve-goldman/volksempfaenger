@@ -1,7 +1,8 @@
 package net.x4a42.volksempfaenger.service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
@@ -9,110 +10,204 @@ import android.net.Uri;
 
 public class UpdateServiceStatus {
 
-	private static int updating = 0;
-	private static Uri uri = null;
-	private static final Set<Receiver> receivers = Collections
-			.synchronizedSet(new HashSet<Receiver>());
+	private int globalUpdatesRunning = 0;
+	private final List<Uri> singleUpdatesRunning = new ArrayList<Uri>();
+	private final Set<UpdateServiceStatusListener> listeners = new HashSet<UpdateServiceStatusListener>();
 
-	private UpdateServiceStatus() {
-		throw new UnsupportedOperationException();
+	protected UpdateServiceStatus() {
 	}
 
-	public static synchronized void startUpdate() {
-		updating++;
-		sendStatus(new Status(true, null));
-	}
-
-	public static synchronized void startUpdate(Uri uri) {
-		UpdateServiceStatus.uri = uri;
-		sendStatus(new Status(true, uri));
-	}
-
-	public static synchronized void stopUpdate(Uri uri) {
-		if (uri == null || UpdateServiceStatus.uri == null)
-			return;
-		if (UpdateServiceStatus.uri.equals(uri)) {
-			UpdateServiceStatus.uri = null;
-			sendStatus(new Status(false, uri));
+	public synchronized void registerUpdateServiceStatusListener(
+			UpdateServiceStatusListener listener) {
+		if (globalUpdatesRunning > 0) {
+			listener.onGlobalUpdateStarted();
 		}
-	}
-
-	public static synchronized void stopUpdate() {
-		updating--;
-		uri = null;
-		if (updating == 0) {
-			sendStatus(new Status(false, null));
+		for (Uri podcast : singleUpdatesRunning) {
+			listener.onSingleUpdateStarted(podcast);
 		}
+		listeners.add(listener);
 	}
 
-	public static synchronized void registerReceiver(Receiver receiver) {
-		if (updating > 0) {
-			receiver.receive(new Status(true, uri));
-		} else {
-			receiver.receive(new Status(false, null));
+	public synchronized void unregisterUpdateServiceStatusListener(
+			UpdateServiceStatusListener listener) {
+		listeners.remove(listener);
+	}
+
+	public synchronized void startGlobalUpdate() {
+
+		if (globalUpdatesRunning++ == 0) {
+			for (UpdateServiceStatusListener listener : listeners) {
+				listener.onGlobalUpdateStarted();
+			}
 		}
-		receivers.add(receiver);
+
 	}
 
-	public static synchronized void unregisterReceiver(Receiver receiver) {
-		receivers.remove(receiver);
-	}
+	public synchronized void stopGlobalUpdate() {
 
-	private static synchronized void sendStatus(Status status) {
-		for (Receiver receiver : receivers) {
-			receiver.receive(status);
+		if (--globalUpdatesRunning == 0) {
+			for (UpdateServiceStatusListener listener : listeners) {
+				listener.onGlobalUpdateStopped();
+			}
 		}
+
 	}
 
-	public static class Status {
-		private boolean isUpdating;
-		private Uri uri;
+	public synchronized void startSingleUpdate(Uri podcast) {
 
-		public Status(boolean isUpdating, Uri uri) {
-			this.isUpdating = isUpdating;
-			this.uri = uri;
+		if (!singleUpdatesRunning.contains(podcast)) {
+			for (UpdateServiceStatusListener listener : listeners) {
+				listener.onSingleUpdateStarted(podcast);
+			}
+		}
+		singleUpdatesRunning.add(podcast);
+
+	}
+
+	public synchronized void stopSingleUpdate(Uri podcast) {
+
+		singleUpdatesRunning.remove(podcast);
+		if (!singleUpdatesRunning.contains(podcast)) {
+			for (UpdateServiceStatusListener listener : listeners) {
+				listener.onSingleUpdateStopped(podcast);
+			}
+		}
+
+	}
+
+	public static interface UpdateServiceStatusListener {
+
+		public void onGlobalUpdateStarted();
+
+		public void onGlobalUpdateStopped();
+
+		public void onSingleUpdateStarted(Uri podcast);
+
+		public void onSingleUpdateStopped(Uri podcast);
+
+	}
+
+	public static abstract class GlobalUpdateListener implements
+			UpdateServiceStatusListener {
+
+		@Override
+		public void onSingleUpdateStarted(Uri podcast) {
 		}
 
 		@Override
-		public String toString() {
-			return getClass().getName() + "[" + "isUpdating=" + isUpdating()
-					+ ", " + "uri=" + (uri == null ? uri : uri.toString())
-					+ "]";
+		public void onSingleUpdateStopped(Uri podcast) {
 		}
 
-		public boolean isUpdating() {
-			return isUpdating;
-		}
-
-		public Uri getUri() {
-			return uri;
-		}
 	}
 
-	public static abstract class Receiver {
-		public abstract void receive(Status status);
+	public static abstract class SingleUpdateListener implements
+			UpdateServiceStatusListener {
+
+		@Override
+		public void onGlobalUpdateStarted() {
+		}
+
+		@Override
+		public void onGlobalUpdateStopped() {
+		}
+
 	}
 
-	public static abstract class UiReceiver extends Receiver {
+	public static abstract class SimpleUpdateListener implements
+			UpdateServiceStatusListener {
+
+		@Override
+		public void onGlobalUpdateStarted() {
+			onUpdateStarted(null);
+		}
+
+		@Override
+		public void onGlobalUpdateStopped() {
+			onUpdateStopped(null);
+		}
+
+		@Override
+		public void onSingleUpdateStarted(Uri podcast) {
+			onUpdateStarted(podcast);
+		}
+
+		@Override
+		public void onSingleUpdateStopped(Uri podcast) {
+			onUpdateStopped(podcast);
+		}
+
+		public abstract void onUpdateStarted(Uri podcast);
+
+		public abstract void onUpdateStopped(Uri podcast);
+
+	}
+
+	public static class UiThreadUpdateServiceStatusListenerWrapper implements
+			UpdateServiceStatusListener {
 
 		private Activity activity;
+		private UpdateServiceStatusListener listener;
 
-		public final void setActivity(Activity activity) {
+		public UiThreadUpdateServiceStatusListenerWrapper(Activity activity,
+				UpdateServiceStatusListener listener) {
+			if (activity == null) {
+				throw new NullPointerException("activity must not be null");
+			}
+			if (listener == null) {
+				throw new NullPointerException("listener must not be null");
+			}
 			this.activity = activity;
+			this.listener = listener;
 		}
 
 		@Override
-		public final void receive(final Status status) {
+		public void onGlobalUpdateStarted() {
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
-					receiveUi(status);
+					listener.onGlobalUpdateStarted();
 				}
+
 			});
 		}
 
-		public abstract void receiveUi(Status status);
+		@Override
+		public void onGlobalUpdateStopped() {
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					listener.onGlobalUpdateStopped();
+				}
+
+			});
+		}
+
+		@Override
+		public void onSingleUpdateStarted(final Uri podcast) {
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					listener.onSingleUpdateStarted(podcast);
+				}
+
+			});
+		}
+
+		@Override
+		public void onSingleUpdateStopped(final Uri podcast) {
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					listener.onSingleUpdateStopped(podcast);
+				}
+
+			});
+		}
+
 	}
 
 }
