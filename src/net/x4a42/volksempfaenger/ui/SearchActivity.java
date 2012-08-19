@@ -53,12 +53,10 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 
 		// Get the intent, verify the action and get the query
 		Intent intent = getIntent();
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			header.setText(String.format(
-					getString(R.string.title_search_results_for), query));
-			onSearch(query);
-		}
+		String query = intent.getStringExtra("query");
+		header.setText(String.format(
+				getString(R.string.title_search_results_for), query));
+		onSearch(query);
 	}
 
 	@Override

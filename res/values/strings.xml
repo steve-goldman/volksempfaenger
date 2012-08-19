@@ -113,12 +113,11 @@
     <string name="error_shownotes">Unable to display shownotes</string>
     <string name="title_tab_discover">Discover</string>
     <string name="menu_search">Search</string>
-    <string name="search_hint">Search or enter URL</string>
+    <string name="search_hint">Search or type URL</string>
     <string name="import_to_volksempfaenger">Import to Volksempfänger</string>
     <string name="title_popular">Popular</string>
     <string name="title_search_results">Search results</string>
     <string name="title_search_results_for">Search results for “%s”</string>
-    <string name="text_help_add_subscription">Choose a popular podcasts, search for your favorite ones or enter a URL directly into the search form.</string>
     <string name="message_subscribing_podcast">Subscribing to podcast…</string>
 
 </resources>
