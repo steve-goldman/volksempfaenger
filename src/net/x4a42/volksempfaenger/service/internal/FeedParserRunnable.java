@@ -37,7 +37,8 @@ public class FeedParserRunnable extends UpdateRunnable {
 		try {
 			Reader reader = new BufferedReader(new FileReader(feedFile));
 			Feed feed = FeedParser.parse(reader);
-			feed.local_id = podcast.id;
+			feed.localId = podcast.id;
+			feed.firstSync = podcast.firstSync;
 			onSuccess(feed);
 		} catch (FileNotFoundException e) {
 			onError(e);
