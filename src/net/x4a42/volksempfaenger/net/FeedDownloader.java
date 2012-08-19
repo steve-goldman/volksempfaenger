@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import net.x4a42.volksempfaenger.misc.StorageException;
-
 import android.content.Context;
 
 public class FeedDownloader extends FileDownloader {
@@ -23,10 +22,10 @@ public class FeedDownloader extends FileDownloader {
 		return connection;
 	}
 
-	public void fetchFeed(String url, CacheInformation cacheInfo, File target)
+	public Result fetchFeed(String url, CacheInformation cacheInfo, File target)
 			throws NetException, StorageException {
 
-		fetchFile(url, cacheInfo, target);
+		return fetchFile(url, cacheInfo, target);
 
 	}
 

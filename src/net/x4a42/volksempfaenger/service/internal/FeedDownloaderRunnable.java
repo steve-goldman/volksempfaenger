@@ -6,6 +6,7 @@ import java.io.IOException;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
 import net.x4a42.volksempfaenger.misc.StorageException;
+import net.x4a42.volksempfaenger.net.FileDownloader.Result;
 import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.service.UpdateService;
 
@@ -36,12 +37,17 @@ public class FeedDownloaderRunnable extends UpdateRunnable {
 		try {
 			File target = File.createTempFile(TEMP_FILE_PREFIX,
 					TEMP_FILE_SUFFIX, service.getCacheDir());
-			service.getFeedDownloader().fetchFeed(podcast.feed,
+			Result result = service.getFeedDownloader().fetchFeed(podcast.feed,
 					podcast.forceUpdate ? null : podcast.cacheInfo, target);
-			PodcastHelper.updateCacheInformation(
-					getUpdate().getUpdateService(), podcast.uri,
-					podcast.cacheInfo);
-			onSuccess(target);
+			if (result == Result.CACHED) {
+				target.delete();
+				onCached();
+			} else {
+				// TODO move to database writer thread
+				PodcastHelper.updateCacheInformation(getUpdate()
+						.getUpdateService(), podcast.uri, podcast.cacheInfo);
+				onSuccess(target);
+			}
 		} catch (IOException e) {
 			onError(e);
 		} catch (NetException e) {
@@ -63,6 +69,17 @@ public class FeedDownloaderRunnable extends UpdateRunnable {
 
 		getUpdate().getUpdateService().enqueueFeedParser(getUpdate(), podcast,
 				feed);
+
+	}
+
+	private void onCached() {
+
+		long endTime = System.currentTimeMillis();
+		Log.i(TAG, "Finished downloading \"" + podcast.title + "\" [id="
+				+ podcast.id + "]; local version still valid (took "
+				+ (endTime - startTime) + "ms)");
+
+		getUpdate().decrementRemainingFeedCounter();
 
 	}
 
