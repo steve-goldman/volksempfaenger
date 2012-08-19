@@ -68,7 +68,7 @@ public class DatabaseReaderRunnable extends UpdateRunnable {
 				podcast.feed = cursor.getFeed();
 				podcast.cacheInfo = cursor.getCacheInformation();
 				podcast.firstSync = extraFirstSync;
-				podcast.forceUpdate = (podcastUri == null);
+				podcast.forceUpdate = (podcastUri != null);
 				getUpdate().getUpdateService().enqueueFeedDownloader(
 						getUpdate(), podcast);
 			}
