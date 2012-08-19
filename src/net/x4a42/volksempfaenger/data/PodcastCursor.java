@@ -103,6 +103,13 @@ public class PodcastCursor extends ExtendedCursorWrapper {
 	}
 
 	/**
+	 * @return true if title is null.
+	 */
+	public boolean titleIsNull() {
+		return isNull(COLUMN_TITLE);
+	}
+
+	/**
 	 * @return Podcast website URL.
 	 */
 	public String getWebsite() {

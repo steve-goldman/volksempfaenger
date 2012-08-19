@@ -518,7 +518,7 @@ public class ViewEpisodeActivity extends Activity implements
 			intent.putExtra("id", subscriptionId);
 		} else {
 			intent = new Intent(this, SubscriptionGridFragment.class);
-			intent.putExtra("tag", MainActivity.subscriptionsTag);
+			intent.putExtra("tag", MainActivity.TAG_SUBSCRIPTIONS);
 		}
 		NavUtils.navigateUpTo(this, intent);
 	}
