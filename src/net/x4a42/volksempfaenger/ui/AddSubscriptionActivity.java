@@ -125,7 +125,7 @@ public class AddSubscriptionActivity extends Activity implements
 	@Override
 	public void onUpPressed() {
 		Intent intent = NavUtils.getParentActivityIntent(this);
-		intent.putExtra("tag", MainActivity.subscriptionsTag);
+		intent.putExtra("tag", MainActivity.TAG_SUBSCRIPTIONS);
 		NavUtils.navigateUpTo(this, intent);
 	}
 
@@ -189,7 +189,7 @@ public class AddSubscriptionActivity extends Activity implements
 								"http://gpodder.net/toplist/100.json?scale_logo="
 										+ Utils.dpToPx(
 												AddSubscriptionActivity.this,
-												64), tempFile);
+												64), null, tempFile);
 				synchronized (toplistFile) {
 					tempFile.renameTo(toplistFile);
 				}

@@ -12,12 +12,21 @@ import android.content.Context;
 
 public class FileDownloader extends Downloader {
 
+	public enum Result {
+		OK, CACHED
+	}
+
 	public FileDownloader(Context context) {
 		super(context);
 	}
 
-	public void fetchFile(String url, File target) throws NetException,
-			StorageException {
+	public Result fetchFile(String url, CacheInformation cacheInfo, File target)
+			throws NetException, StorageException {
+
+		if (cacheInfo != null && !cacheInfo.expired()) {
+			// file is not expired - no need to re-fetch
+			return Result.CACHED;
+		}
 
 		boolean deleteTargetOnFailure = false;
 
@@ -25,17 +34,29 @@ public class FileDownloader extends Downloader {
 
 			HttpURLConnection connection = getConnection(url);
 
+			if (cacheInfo != null) {
+				cacheInfo.prepareConnection(connection);
+			}
+
 			target.getParentFile().mkdirs();
 			target.createNewFile();
 			deleteTargetOnFailure = true;
 
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
+				return Result.CACHED;
+			} else if (cacheInfo != null) {
+				cacheInfo.updateFromConnection(connection);
+			}
+
 			FileOutputStream out = new FileOutputStream(target);
 			InputStream in = connection.getInputStream();
-
 			Utils.copyStream(in, out);
 			in.close();
 			out.close();
 			connection.disconnect();
+
+			return Result.OK;
 
 		} catch (Exception e) {
 

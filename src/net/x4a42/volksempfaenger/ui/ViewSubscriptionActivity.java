@@ -3,7 +3,6 @@ package net.x4a42.volksempfaenger.ui;
 import java.text.DateFormat;
 import java.util.Date;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
@@ -11,8 +10,9 @@ import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.service.UpdateService;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.SingleUpdateListener;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UiThreadUpdateServiceStatusListenerWrapper;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UpdateServiceStatusListener;
 import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -31,6 +31,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	/* Static Variables */
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
+	private static final int REQUEST_DELETE = 0;
 
 	/* Subscription Attributes */
 	private long mId;
@@ -42,7 +43,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 
 	/* Other Attributes */
 	private boolean mIsUpdating;
-	private UpdateServiceStatus.UiReceiver mUpdateReceiver;
+	private UpdateServiceStatusListener mUpdateListener;
 	private PodcastCursor podcastCursor;
 
 	/* Activity Lifecycle */
@@ -66,7 +67,8 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 			mId = ContentUris.parseId(mUri);
 		}
 
-		mUpdateReceiver = new UpdateReceiver();
+		mUpdateListener = new UiThreadUpdateServiceStatusListenerWrapper(this,
+				new UpdateListener());
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			ViewGroup header = (ViewGroup) getLayoutInflater().inflate(
@@ -108,13 +110,22 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		UpdateServiceStatus.registerReceiver(mUpdateReceiver);
+		UpdateService.Status
+				.registerUpdateServiceStatusListener(mUpdateListener);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		UpdateServiceStatus.unregisterReceiver(mUpdateReceiver);
+		UpdateService.Status
+				.unregisterUpdateServiceStatusListener(mUpdateListener);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_DELETE && resultCode == RESULT_OK) {
+			finish();
+		}
 	}
 
 	/* Content */
@@ -142,27 +153,24 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		return false;
 	}
 
-	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+	private class UpdateListener extends SingleUpdateListener {
 
-		public UpdateReceiver() {
-			setActivity(ViewSubscriptionActivity.this);
+		@Override
+		public void onSingleUpdateStarted(Uri podcast) {
+			if (mUri.equals(podcast)) {
+				mIsUpdating = true;
+				invalidateOptionsMenu();
+			}
 		}
 
 		@Override
-		public void receiveUi(Status status) {
-			Log.v(this, status.toString());
-			if (status.isUpdating()) {
-				if (!mIsUpdating && mUri.equals(status.getUri())) {
-					mIsUpdating = true;
-					invalidateOptionsMenu();
-				}
-			} else {
-				if (mIsUpdating && mUri.equals(status.getUri())) {
-					mIsUpdating = false;
-					invalidateOptionsMenu();
-				}
+		public void onSingleUpdateStopped(Uri podcast) {
+			if (mUri.equals(podcast)) {
+				mIsUpdating = false;
+				invalidateOptionsMenu();
 			}
 		}
+
 	}
 
 	/* Menu */
@@ -207,7 +215,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		case R.id.item_delete:
 			intent = new Intent(this, DeleteSubscriptionActivity.class);
 			intent.putExtra("id", mId);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_DELETE);
 			return true;
 
 		case R.id.item_website:

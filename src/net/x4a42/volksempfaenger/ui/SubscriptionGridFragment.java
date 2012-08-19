@@ -11,8 +11,9 @@ import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import net.x4a42.volksempfaenger.service.UpdateService;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus;
-import net.x4a42.volksempfaenger.service.UpdateServiceStatus.Status;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.GlobalUpdateListener;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UiThreadUpdateServiceStatusListenerWrapper;
+import net.x4a42.volksempfaenger.service.UpdateServiceStatus.UpdateServiceStatusListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -52,7 +53,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private static final int PICK_FILE_REQUEST = 0;
 
-	private static final String PODCAST_ORDER = "title COLLATE NOCASE ASC";
+	private static final String PODCAST_ORDER = "title IS NULL, title COLLATE NOCASE ASC";
 
 	private GridView grid;
 	private View loading;
@@ -61,7 +62,7 @@ public class SubscriptionGridFragment extends Fragment implements
 	private AdapterView.AdapterContextMenuInfo currentMenuInfo;
 
 	private boolean isUpdating = false;
-	private UpdateServiceStatus.UiReceiver updateReceiver = new UpdateReceiver();
+	private UpdateServiceStatusListener updateListener;
 
 	private BroadcastReceiver mErrorReceiver = new ErrorReceiver();
 
@@ -77,6 +78,8 @@ public class SubscriptionGridFragment extends Fragment implements
 						.equals(BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR)) {
 			showErrorIntent(intent);
 		}
+		updateListener = new UiThreadUpdateServiceStatusListenerWrapper(
+				getActivity(), new UpdateListener());
 	}
 
 	@Override
@@ -101,7 +104,6 @@ public class SubscriptionGridFragment extends Fragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		updateReceiver.setActivity(getActivity());
 	}
 
 	@Override
@@ -110,7 +112,8 @@ public class SubscriptionGridFragment extends Fragment implements
 
 		getLoaderManager().restartLoader(0, null, this);
 
-		UpdateServiceStatus.registerReceiver(updateReceiver);
+		UpdateService.Status
+				.registerUpdateServiceStatusListener(updateListener);
 
 		IntentFilter filter = new IntentFilter(
 				BackgroundErrorReceiver.ACTION_BACKGROUND_ERROR);
@@ -122,7 +125,8 @@ public class SubscriptionGridFragment extends Fragment implements
 	public void onPause() {
 		super.onPause();
 
-		UpdateServiceStatus.unregisterReceiver(updateReceiver);
+		UpdateService.Status
+				.unregisterUpdateServiceStatusListener(updateListener);
 
 		getActivity().unregisterReceiver(mErrorReceiver);
 	}
@@ -306,33 +310,48 @@ public class SubscriptionGridFragment extends Fragment implements
 			super.bindView(view, context, c);
 			PodcastCursor cursor = (PodcastCursor) c;
 
-			TextView newEpisodesText = (TextView) view
-					.findViewById(R.id.new_episodes);
-			int newEpisodes = cursor.getNewEpisodes();
-			int listeningEpisodes = cursor.getListeningEpisodes();
-			int listeningOrNewEpisodes = newEpisodes + listeningEpisodes;
-			if (listeningOrNewEpisodes > 0) {
-				if (listeningOrNewEpisodes > 9) {
-					newEpisodesText.setText("+");
-				} else {
-					newEpisodesText.setText(String
-							.valueOf(listeningOrNewEpisodes));
-				}
-				if (newEpisodes == 0) {
-					newEpisodesText
-							.setBackgroundResource(R.drawable.badge_subscription_listening);
-				} else {
-					newEpisodesText
-							.setBackgroundResource(R.drawable.badge_subscription_new);
-				}
-				newEpisodesText.setVisibility(View.VISIBLE);
-			} else {
-				newEpisodesText.setVisibility(View.INVISIBLE);
-			}
-
 			PodcastLogoView podcastLogo = (PodcastLogoView) view
 					.findViewById(R.id.podcast_logo);
-			podcastLogo.setPodcastId(cursor.getId());
+			TextView podcastTitle = (TextView) view
+					.findViewById(R.id.podcast_title);
+			TextView newEpisodesText = (TextView) view
+					.findViewById(R.id.new_episodes);
+			View loading = view.findViewById(R.id.loading);
+
+			boolean titleIsNull = cursor.titleIsNull();
+
+			podcastLogo.setVisibility(titleIsNull ? View.GONE : View.VISIBLE);
+			newEpisodesText.setVisibility(titleIsNull ? View.GONE
+					: View.VISIBLE);
+			loading.setVisibility(titleIsNull ? View.VISIBLE : View.GONE);
+
+			if (titleIsNull) {
+				podcastTitle.setText(cursor.getFeed());
+			} else {
+				int newEpisodes = cursor.getNewEpisodes();
+				int listeningEpisodes = cursor.getListeningEpisodes();
+				int listeningOrNewEpisodes = newEpisodes + listeningEpisodes;
+				if (listeningOrNewEpisodes > 0) {
+					if (listeningOrNewEpisodes > 9) {
+						newEpisodesText.setText("+");
+					} else {
+						newEpisodesText.setText(String
+								.valueOf(listeningOrNewEpisodes));
+					}
+					if (newEpisodes == 0) {
+						newEpisodesText
+								.setBackgroundResource(R.drawable.badge_subscription_listening);
+					} else {
+						newEpisodesText
+								.setBackgroundResource(R.drawable.badge_subscription_new);
+					}
+					newEpisodesText.setVisibility(View.VISIBLE);
+				} else {
+					newEpisodesText.setVisibility(View.INVISIBLE);
+				}
+				podcastLogo.setPodcastId(cursor.getId());
+			}
+
 		}
 	}
 
@@ -340,8 +359,9 @@ public class SubscriptionGridFragment extends Fragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(getActivity(),
 				VolksempfaengerContentProvider.PODCAST_URI, new String[] {
-						Podcast._ID, Podcast.TITLE, Podcast.NEW_EPISODES,
-						Podcast.LISTENING_EPISODES }, null, null, PODCAST_ORDER);
+						Podcast._ID, Podcast.TITLE, Podcast.FEED,
+						Podcast.NEW_EPISODES, Podcast.LISTENING_EPISODES },
+				null, null, PODCAST_ORDER);
 	}
 
 	@Override
@@ -387,22 +407,20 @@ public class SubscriptionGridFragment extends Fragment implements
 		}
 	}
 
-	private class UpdateReceiver extends UpdateServiceStatus.UiReceiver {
+	private class UpdateListener extends GlobalUpdateListener {
 
 		@Override
-		public void receiveUi(Status status) {
-			if (status.isUpdating()) {
-				if (!isUpdating) {
-					isUpdating = true;
-					getActivity().invalidateOptionsMenu();
-				}
-			} else {
-				if (isUpdating && status.getUri() == null) {
-					isUpdating = false;
-					getActivity().invalidateOptionsMenu();
-				}
-			}
+		public void onGlobalUpdateStarted() {
+			isUpdating = true;
+			getActivity().invalidateOptionsMenu();
 		}
+
+		@Override
+		public void onGlobalUpdateStopped() {
+			isUpdating = false;
+			getActivity().invalidateOptionsMenu();
+		}
+
 	}
 
 	private class ErrorReceiver extends BroadcastReceiver {
