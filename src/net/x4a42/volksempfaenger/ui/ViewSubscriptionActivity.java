@@ -31,6 +31,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 	/* Static Variables */
 	private static final String PODCAST_WHERE = Podcast._ID + "=?";
 	private static final String EPISODE_WHERE = Episode.PODCAST_ID + "=?";
+	private static final int REQUEST_DELETE = 0;
 
 	/* Subscription Attributes */
 	private long mId;
@@ -120,6 +121,13 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 				.unregisterUpdateServiceStatusListener(mUpdateListener);
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_DELETE && resultCode == RESULT_OK) {
+			finish();
+		}
+	}
+
 	/* Content */
 	@Override
 	protected int getLayout() {
@@ -207,7 +215,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 		case R.id.item_delete:
 			intent = new Intent(this, DeleteSubscriptionActivity.class);
 			intent.putExtra("id", mId);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_DELETE);
 			return true;
 
 		case R.id.item_website:

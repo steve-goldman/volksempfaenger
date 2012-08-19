@@ -78,8 +78,11 @@ public class DeleteSubscriptionActivity extends Activity implements
 		switch (v.getId()) {
 		case R.id.button_ok:
 			deletePodcast();
+			setResult(RESULT_OK);
+			finish();
 			return;
 		case R.id.button_cancel:
+			setResult(RESULT_CANCELED);
 			finish();
 			return;
 		}
@@ -94,6 +97,5 @@ public class DeleteSubscriptionActivity extends Activity implements
 		}
 		// delete podcast logo
 		Utils.getPodcastLogoFile(this, id).delete();
-		finish();
 	}
 }
