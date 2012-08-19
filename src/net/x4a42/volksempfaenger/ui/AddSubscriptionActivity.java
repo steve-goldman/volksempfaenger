@@ -61,6 +61,7 @@ public class AddSubscriptionActivity extends Activity implements
 	private ListView popularList;
 	private AutoCompleteTextView searchEntry;
 	private ImageButton searchButton;
+	private View loadingIndicator;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,10 @@ public class AddSubscriptionActivity extends Activity implements
 
 		popularList = (ListView) findViewById(R.id.popular_list);
 		popularList.setOnItemClickListener(this);
+
+		loadingIndicator = findViewById(R.id.loading);
+
+		setLoading(true);
 
 		toplistFile = new File(getFilesDir(), "popular.json");
 
@@ -137,6 +142,7 @@ public class AddSubscriptionActivity extends Activity implements
 						@Override
 						public void setAdapter(ListAdapter adapter) {
 							popularList.setAdapter(adapter);
+							setLoading(false);
 						}
 					});
 		}
@@ -312,6 +318,17 @@ public class AddSubscriptionActivity extends Activity implements
 			Intent intent = new Intent(this, SearchActivity.class);
 			intent.putExtra("query", query);
 			startActivity(intent);
+		}
+	}
+
+	private void setLoading(boolean loading) {
+		if (loading) {
+			loadingIndicator.setVisibility(View.VISIBLE);
+			popularList.setVisibility(View.GONE);
+		} else {
+			loadingIndicator.setVisibility(View.GONE);
+			popularList.setVisibility(View.VISIBLE);
+
 		}
 	}
 
