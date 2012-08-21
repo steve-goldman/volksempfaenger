@@ -61,7 +61,7 @@ public class FeedParserRunnable extends UpdateRunnable {
 		}
 
 		long endTime = System.currentTimeMillis();
-		Log.i(TAG, "Finished parsind \"" + podcast.title + "\" [id="
+		Log.i(TAG, "Finished parsing \"" + podcast.title + "\" [id="
 				+ podcast.id + "] (took " + (endTime - startTime) + "ms)");
 
 		getUpdate().decrementRemainingFeedCounter();
