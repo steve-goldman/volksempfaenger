@@ -1,9 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
@@ -11,11 +8,8 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
-import net.x4a42.volksempfaenger.feedparser.GpodderJsonReaderListener;
-import net.x4a42.volksempfaenger.net.Downloader;
 import android.app.ActionBar;
 import android.app.ListActivity;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,52 +76,16 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 	}
 
 	private class LoadSearchTask extends LoadGpodderListTask {
-		private final String query;
 
 		public LoadSearchTask(String query) {
-			super(SearchActivity.this, imageLoader, options,
+			super(SearchActivity.this, buildUrl(query), imageLoader, options,
 					new SetAdapterCallback() {
-
 						@Override
 						public void setAdapter(ListAdapter adapter) {
 							setListAdapter(adapter);
 						}
 					});
-			this.query = query;
 		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			Downloader downloader = new Downloader(SearchActivity.this);
-			try {
-				HttpURLConnection connection = downloader
-						.getConnection("http://gpodder.net/search.json?scale_logo="
-								+ Utils.dpToPx(SearchActivity.this, 64)
-								+ "&q="
-								+ URLEncoder.encode(query, "UTF-8"));
-				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(connection.getInputStream()));
-					new GpodderJsonReader(reader,
-							new GpodderJsonReaderListener() {
-
-								@SuppressWarnings("unchecked")
-								@Override
-								public void onPodcast(
-										HashMap<String, String> podcast) {
-									publishProgress(podcast);
-								}
-							}).read();
-				} else {
-					// handle failure TODO
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
-		}
-
 	}
 
 	@Override
@@ -147,5 +105,16 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 		intent.putExtra(GpodderJsonReader.KEY_WEBSITE,
 				row.get(GpodderJsonReader.KEY_WEBSITE));
 		startActivity(intent);
+	}
+
+	private String buildUrl(String query) {
+		try {
+			return "http://gpodder.net/search.json?scale_logo="
+					+ Utils.dpToPx(this, 64) + "&q="
+					+ URLEncoder.encode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// should not happen
+			return null;
+		}
 	}
 }
