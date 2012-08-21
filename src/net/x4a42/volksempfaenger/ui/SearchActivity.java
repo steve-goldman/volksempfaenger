@@ -9,13 +9,15 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import android.app.ActionBar;
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,13 +25,16 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class SearchActivity extends ListActivity implements OnUpPressedCallback {
+public class SearchActivity extends Activity implements OnUpPressedCallback,
+		OnItemClickListener {
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
 			.cacheOnDisc().build();
 	private LoadSearchTask searchTask;
+	private ListView resultsList;
+	private View loadingIndicator;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +44,16 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(getString(R.string.title_search_results));
 
+		setContentView(R.layout.search_results);
+
+		resultsList = (ListView) findViewById(R.id.results_list);
+		resultsList.setOnItemClickListener(this);
+
 		TextView header = (TextView) getLayoutInflater().inflate(
-				R.layout.search_results_header, getListView(), false);
-		getListView().addHeaderView(header);
+				R.layout.search_results_header, resultsList, false);
+		resultsList.addHeaderView(header);
+
+		loadingIndicator = findViewById(R.id.loading);
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
 
@@ -67,6 +79,7 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 	}
 
 	private void onSearch(String query) {
+		setLoading(true);
 		if (searchTask != null
 				&& searchTask.getStatus() != AsyncTask.Status.FINISHED) {
 			searchTask.cancel(true);
@@ -82,14 +95,16 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 					new SetAdapterCallback() {
 						@Override
 						public void setAdapter(ListAdapter adapter) {
-							setListAdapter(adapter);
+							resultsList.setAdapter(adapter);
+							setLoading(false);
 						}
 					});
 		}
 	}
 
 	@Override
-	public void onListItemClick(ListView list, View view, int position, long id) {
+	public void onItemClick(AdapterView<?> list, View view, int position,
+			long id) {
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> row = (HashMap<String, String>) list
 				.getItemAtPosition(position);
@@ -115,6 +130,17 @@ public class SearchActivity extends ListActivity implements OnUpPressedCallback 
 		} catch (UnsupportedEncodingException e) {
 			// should not happen
 			return null;
+		}
+	}
+
+	private void setLoading(boolean loading) {
+		if (loading) {
+			loadingIndicator.setVisibility(View.VISIBLE);
+			resultsList.setVisibility(View.GONE);
+		} else {
+			loadingIndicator.setVisibility(View.GONE);
+			resultsList.setVisibility(View.VISIBLE);
+
 		}
 	}
 }
