@@ -1,7 +1,13 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +16,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.net.Downloader;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.JsonReader;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,10 +35,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -41,7 +52,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class AddSubscriptionActivity extends Activity implements
 		OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
-		OnEditorActionListener, OnClickListener {
+		OnEditorActionListener, OnClickListener, OnItemSelectedListener {
 
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -52,6 +63,9 @@ public class AddSubscriptionActivity extends Activity implements
 	private AutoCompleteTextView searchEntry;
 	private ImageButton searchButton;
 	private View loadingIndicator;
+	private Spinner tagSpinner;
+	private ArrayAdapter<String> tagAdapter;
+	private LoadPopularListTask loadTask;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,12 +88,18 @@ public class AddSubscriptionActivity extends Activity implements
 
 		loadingIndicator = findViewById(R.id.loading);
 
-		setLoading(true);
+		tagSpinner = (Spinner) findViewById(R.id.tag_spinner);
+		tagAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_dropdown_item);
+		tagAdapter.add(getString(R.string.title_tag_all));
+		tagSpinner.setAdapter(tagAdapter);
+		tagSpinner.setOnItemSelectedListener(this);
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
 
-		new LoadPopularListTask()
-				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		loadTask = new LoadPopularListTask(getToplistUrl());
+		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new LoadTagsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
@@ -121,22 +141,23 @@ public class AddSubscriptionActivity extends Activity implements
 
 	private class LoadPopularListTask extends LoadGpodderListTask {
 
-		public LoadPopularListTask() {
-			super(AddSubscriptionActivity.this, getToplistUrl(), imageLoader,
-					options, new SetAdapterCallback() {
+		public LoadPopularListTask(String url) {
+			super(AddSubscriptionActivity.this, url, imageLoader, options,
+					new SetAdapterCallback() {
 						@Override
 						public void setAdapter(ListAdapter adapter) {
 							popularList.setAdapter(adapter);
 							setLoading(false);
 						}
 					});
+
+			setLoading(true);
 		}
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> list, View view, int position,
 			long id) {
-
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> row = (HashMap<String, String>) list
 				.getItemAtPosition(position);
@@ -237,6 +258,85 @@ public class AddSubscriptionActivity extends Activity implements
 	private String getToplistUrl() {
 		return "http://gpodder.net/toplist/100.json?scale_logo="
 				+ Utils.dpToPx(AddSubscriptionActivity.this, 64);
+	}
+
+	private String getPopularForTagUrl(String tag) {
+
+		try {
+			return "http://gpodder.net/api/2/tag/"
+					+ URLEncoder.encode(tag, "UTF-8") + "/100.json?scale_logo="
+					+ Utils.dpToPx(AddSubscriptionActivity.this, 64);
+		} catch (UnsupportedEncodingException e) {
+			// should not happen
+			return null;
+		}
+	}
+
+	private class LoadTagsTask extends AsyncTask<Void, String, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			Downloader downloader = new Downloader(AddSubscriptionActivity.this);
+			try {
+				HttpURLConnection connection = downloader
+						.getConnection("https://gpodder.net/api/2/tags/20.json");
+				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(connection.getInputStream()));
+					JsonReader json = new JsonReader(reader);
+					json.beginArray();
+
+					while (json.hasNext()) {
+						json.beginObject();
+						while (json.hasNext()) {
+
+							String name = json.nextName();
+							if (name.equals("tag")) {
+								publishProgress(json.nextString());
+							} else {
+								json.skipValue();
+							}
+						}
+						json.endObject();
+					}
+					json.endArray();
+					json.close();
+				} else {
+					// handle failure TODO
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(String... progress) {
+			tagAdapter.addAll(progress);
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> spinner, View view, int position,
+			long id) {
+		if (loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+			loadTask.cancel(true);
+		}
+		String item = (String) spinner.getItemAtPosition(position);
+		String url;
+		if (item.equals(getString(R.string.title_tag_all))) {
+			url = getToplistUrl();
+		} else {
+			url = getPopularForTagUrl(item);
+		}
+		loadTask = new LoadPopularListTask(url);
+		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> spinner) {
 	}
 
 }

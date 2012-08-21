@@ -119,5 +119,6 @@
     <string name="title_search_results">Search results</string>
     <string name="title_search_results_for">Search results for “%s”</string>
     <string name="message_subscribing_podcast">Subscribing to podcast…</string>
+    <string name="title_tag_all">All</string>
 
 </resources>
