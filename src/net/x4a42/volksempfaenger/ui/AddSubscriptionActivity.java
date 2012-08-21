@@ -280,7 +280,7 @@ public class AddSubscriptionActivity extends Activity implements
 			Downloader downloader = new Downloader(AddSubscriptionActivity.this);
 			try {
 				HttpURLConnection connection = downloader
-						.getConnection("https://gpodder.net/api/2/tags/20.json");
+						.getConnection("https://gpodder.net/api/2/tags/40.json");
 				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 					BufferedReader reader = new BufferedReader(
 							new InputStreamReader(connection.getInputStream()));
