@@ -1,9 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -14,10 +10,6 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
-import net.x4a42.volksempfaenger.feedparser.GpodderJsonReaderListener;
-import net.x4a42.volksempfaenger.misc.StorageException;
-import net.x4a42.volksempfaenger.net.FileDownloader;
-import net.x4a42.volksempfaenger.net.NetException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -56,8 +48,6 @@ public class AddSubscriptionActivity extends Activity implements
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
 			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
-	private File toplistFile;
-	private AsyncTask<Void, HashMap<String, String>, Void> loadTask;
 	private ListView popularList;
 	private AutoCompleteTextView searchEntry;
 	private ImageButton searchButton;
@@ -86,14 +76,9 @@ public class AddSubscriptionActivity extends Activity implements
 
 		setLoading(true);
 
-		toplistFile = new File(getFilesDir(), "popular.json");
-
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
-		if (toplistFile.exists()) {
-			loadTask = new LoadPopularListTask()
-					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		}
-		new RefreshPopularListTask()
+
+		new LoadPopularListTask()
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
@@ -137,8 +122,8 @@ public class AddSubscriptionActivity extends Activity implements
 	private class LoadPopularListTask extends LoadGpodderListTask {
 
 		public LoadPopularListTask() {
-			super(AddSubscriptionActivity.this, imageLoader, options,
-					new SetAdapterCallback() {
+			super(AddSubscriptionActivity.this, getToplistUrl(), imageLoader,
+					options, new SetAdapterCallback() {
 						@Override
 						public void setAdapter(ListAdapter adapter) {
 							popularList.setAdapter(adapter);
@@ -146,89 +131,6 @@ public class AddSubscriptionActivity extends Activity implements
 						}
 					});
 		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			try {
-				synchronized (toplistFile) {
-					BufferedReader fileReader = new BufferedReader(
-							new FileReader(toplistFile));
-					new GpodderJsonReader(fileReader,
-							new GpodderJsonReaderListener() {
-
-								@SuppressWarnings("unchecked")
-								@Override
-								public void onPodcast(
-										HashMap<String, String> podcast) {
-									publishProgress(podcast);
-								}
-							}).read();
-				}
-			} catch (IOException e) {
-				// TODO handle error
-				return null;
-			}
-			return null;
-		}
-	}
-
-	private class RefreshPopularListTask extends AsyncTask<Void, Void, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			try {
-				synchronized (toplistFile) {
-					// 1 day
-					final long minTime = System.currentTimeMillis() - 24 * 60
-							* 60 * 1000;
-					if (toplistFile.exists()
-							&& toplistFile.lastModified() < minTime) {
-						return false;
-					}
-				}
-				File tempFile = File.createTempFile("popular", ".json",
-						getCacheDir());
-				FileDownloader downloader = new FileDownloader(
-						AddSubscriptionActivity.this);
-				downloader
-						.fetchFile(
-								"http://gpodder.net/toplist/100.json?scale_logo="
-										+ Utils.dpToPx(
-												AddSubscriptionActivity.this,
-												64), null, tempFile);
-				synchronized (toplistFile) {
-					tempFile.renameTo(toplistFile);
-				}
-			} catch (NetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			} catch (StorageException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			}
-			return true;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			if (!result) {
-				return;
-			}
-			if (loadTask != null
-					&& loadTask.getStatus() != AsyncTask.Status.FINISHED) {
-				loadTask.cancel(true);
-			}
-
-			loadTask = new LoadPopularListTask()
-					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		}
-
 	}
 
 	@Override
@@ -330,6 +232,11 @@ public class AddSubscriptionActivity extends Activity implements
 			popularList.setVisibility(View.VISIBLE);
 
 		}
+	}
+
+	private String getToplistUrl() {
+		return "http://gpodder.net/toplist/100.json?scale_logo="
+				+ Utils.dpToPx(AddSubscriptionActivity.this, 64);
 	}
 
 }

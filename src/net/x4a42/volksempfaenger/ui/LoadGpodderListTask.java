@@ -1,10 +1,16 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReaderListener;
+import net.x4a42.volksempfaenger.net.Downloader;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
@@ -15,7 +21,7 @@ import android.widget.SimpleAdapter.ViewBinder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public abstract class LoadGpodderListTask extends
+public class LoadGpodderListTask extends
 		AsyncTask<Void, HashMap<String, String>, Void> {
 
 	private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
@@ -25,14 +31,17 @@ public abstract class LoadGpodderListTask extends
 	private final Context context;
 	private final ImageLoader imageLoader;
 	private final DisplayImageOptions options;
+	private String url;
 
-	public LoadGpodderListTask(Context context, ImageLoader imageLoader,
-			DisplayImageOptions options, SetAdapterCallback callback) {
+	public LoadGpodderListTask(Context context, String url,
+			ImageLoader imageLoader, DisplayImageOptions options,
+			SetAdapterCallback callback) {
 		super();
 		this.callback = callback;
 		this.context = context;
 		this.imageLoader = imageLoader;
 		this.options = options;
+		this.url = url;
 	}
 
 	@Override
@@ -64,5 +73,31 @@ public abstract class LoadGpodderListTask extends
 		}
 		list.add(rows[0]);
 		listAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	protected Void doInBackground(Void... params) {
+		Downloader downloader = new Downloader(context);
+		try {
+			HttpURLConnection connection = downloader.getConnection(url);
+			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(connection.getInputStream()));
+				new GpodderJsonReader(reader, new GpodderJsonReaderListener() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onPodcast(HashMap<String, String> podcast) {
+						publishProgress(podcast);
+					}
+				}).read();
+			} else {
+				// handle failure TODO
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
