@@ -65,7 +65,7 @@ public class CleanCacheService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		new CleanCacheTask().execute();
+		new CleanCacheTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		return START_STICKY;
 	}
 

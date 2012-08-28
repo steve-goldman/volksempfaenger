@@ -37,8 +37,10 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		signpostText.setOnClickListener(this);
 		acraText.setOnClickListener(this);
 
-		new LoadAssetTask("LICENSE", textLicense, true).execute();
-		new LoadAssetTask("AUTHORS", textAuthors, false).execute();
+		new LoadAssetTask("LICENSE", textLicense, true)
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new LoadAssetTask("AUTHORS", textAuthors, false)
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	private class LoadAssetTask extends AsyncTask<Void, Void, String> {
@@ -131,15 +133,16 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.universalImageLoaderText:
 			new DialogLoadAssetTask("universal_image_loader_license.txt",
-					"Universal Image Loader", true).execute();
+					"Universal Image Loader", true)
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		case R.id.signpostText:
 			new DialogLoadAssetTask("apache_2_license.txt", "Signpost", true)
-					.execute();
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		case R.id.acraText:
 			new DialogLoadAssetTask("apache_2_license.txt", "ACRA", true)
-					.execute();
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		}
 	}

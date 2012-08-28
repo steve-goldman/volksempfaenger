@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
@@ -27,11 +28,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.IBinder;
-import net.x4a42.volksempfaenger.Log;
 import android.widget.Toast;
 
 public class DownloadService extends Service {
-
 
 	private static final int NETWORK_WIFI = 1;
 	private static final int NETWORK_MOBILE = 2;
@@ -77,8 +76,7 @@ public class DownloadService extends Service {
 								PreferenceKeys.DOWNLOAD_AUTO,
 								Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
 					// automatic downloading is disabled
-					Log.v(this,
-							"automatic downloading is disabled");
+					Log.v(this, "automatic downloading is disabled");
 					return null;
 				}
 
@@ -115,8 +113,7 @@ public class DownloadService extends Service {
 
 				if ((networkType & networkAllowed) == 0) {
 					// no allowed network connection
-					Log.v(this,
-							"network type is not allowed");
+					Log.v(this, "network type is not allowed");
 					return null;
 				}
 
@@ -269,7 +266,8 @@ public class DownloadService extends Service {
 		Log.v(this, "onStartCommand()");
 
 		long[] extraId = intent.getLongArrayExtra("id");
-		new DownloadTask(extraId).execute();
+		new DownloadTask(extraId)
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 		return START_STICKY;
 	}
