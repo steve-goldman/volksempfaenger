@@ -24,7 +24,7 @@ public class FeedDownloader extends FileDownloader {
 
 	public Result fetchFeed(String url, CacheInformation cacheInfo, File target)
 			throws NetException, StorageException {
-
+		cacheInfo.expires = 0;
 		return fetchFile(url, cacheInfo, target);
 
 	}
