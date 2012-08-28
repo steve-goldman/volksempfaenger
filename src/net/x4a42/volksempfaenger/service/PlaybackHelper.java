@@ -13,7 +13,6 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.os.PowerManager;
 
 public class PlaybackHelper implements OnPreparedListener,
 		OnCompletionListener, OnAudioFocusChangeListener {
@@ -40,7 +39,8 @@ public class PlaybackHelper implements OnPreparedListener,
 				.getSystemService(Context.AUDIO_SERVICE);
 		context.registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-		player.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
+		// TODO see #97: Test if wake lock is necessary
+		// player.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 	}
 
 	public AudioManager getAudioManager() {
