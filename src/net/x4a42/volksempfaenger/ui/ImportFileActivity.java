@@ -55,7 +55,8 @@ public class ImportFileActivity extends Activity implements
 			return;
 		}
 
-		new LoadFileTask().execute(filename);
+		new LoadFileTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+				filename);
 	}
 
 	@Override
@@ -84,7 +85,8 @@ public class ImportFileActivity extends Activity implements
 			for (int i = 0; i < checked.size(); i++) {
 				checkedItems[i] = items.get(checked.keyAt(i));
 			}
-			new ImportTask(getApplicationContext()).execute(checkedItems);
+			new ImportTask(getApplicationContext()).executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR, checkedItems);
 			Toast.makeText(getApplicationContext(),
 					R.string.message_import_started, Toast.LENGTH_SHORT).show();
 			finish();

@@ -478,7 +478,8 @@ public class ViewEpisodeActivity extends Activity implements
 			setDescription(episodeCursor.getDescription());
 		} else {
 			setDescription(descriptionSpanned);
-			lastImageLoadTask = new ImageLoadTask().execute();
+			lastImageLoadTask = new ImageLoadTask()
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 	}
 

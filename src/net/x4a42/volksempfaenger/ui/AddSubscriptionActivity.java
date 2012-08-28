@@ -235,7 +235,8 @@ public class AddSubscriptionActivity extends Activity implements
 		if (url != null) {
 			Toast.makeText(this, R.string.message_subscribing_podcast,
 					Toast.LENGTH_SHORT).show();
-			new AddFeedTask(getApplicationContext()).execute(url);
+			new AddFeedTask(getApplicationContext()).executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR, url);
 			finish();
 		} else {
 			Intent intent = new Intent(this, SearchActivity.class);

@@ -7,6 +7,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -78,7 +79,8 @@ public class DiscoverDetailActivity extends Activity implements
 		case R.id.item_add:
 			Toast.makeText(this, R.string.message_subscribing_podcast,
 					Toast.LENGTH_SHORT).show();
-			new AddFeedTask(getApplicationContext()).execute(feedUrl);
+			new AddFeedTask(getApplicationContext()).executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR, feedUrl);
 			return true;
 		default:
 			return ActivityHelper.handleGlobalMenu(this, item);

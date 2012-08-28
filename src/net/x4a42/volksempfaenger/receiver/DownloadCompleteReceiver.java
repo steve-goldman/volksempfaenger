@@ -91,7 +91,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
 			return;
 		}
 
-		new DownloadCompleteTask(context, intent).execute();
+		new DownloadCompleteTask(context, intent)
+				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
-
 }
