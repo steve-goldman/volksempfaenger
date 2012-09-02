@@ -1,9 +1,7 @@
 package net.x4a42.volksempfaenger.data;
 
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
-import net.x4a42.volksempfaenger.feedparser.FeedParserException;
 import net.x4a42.volksempfaenger.net.CacheInformation;
-import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,8 +11,7 @@ import android.net.Uri;
 public class PodcastHelper {
 
 	public static void addFeed(Context context, String url)
-			throws NetException, FeedParserException, Error.DuplicateException,
-			Error.InsertException {
+			throws Error.DuplicateException, Error.InsertException {
 
 		ContentValues values = new ContentValues();
 		values.put(Podcast.FEED, url);

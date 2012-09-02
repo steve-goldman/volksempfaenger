@@ -19,6 +19,7 @@ public class FeedDownloader extends FileDownloader {
 	public HttpURLConnection getConnection(String url) throws IOException {
 		HttpURLConnection connection = super.getConnection(url);
 		connection.setRequestProperty("Accept", HEADER_ACCEPT);
+		connection.setUseCaches(false);
 		return connection;
 	}
 

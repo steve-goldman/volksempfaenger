@@ -1,35 +1,34 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
+import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.misc.SimpleThreadFactory;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.service.internal.DatabaseReaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.DatabaseWriterRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
+import net.x4a42.volksempfaenger.service.internal.LogoDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
+import net.x4a42.volksempfaenger.service.internal.RemoveTempUpdateFilesTask;
 import net.x4a42.volksempfaenger.service.internal.UpdateState;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.Toast;
 
 public class UpdateService extends Service {
 
 	private static final String TAG = "UpdateService";
-	private static final long AWAIT_TERMINATION_TIMEOUT = 16000;
 	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
 	public static final UpdateServiceStatus Status = new UpdateServiceStatus();
@@ -39,6 +38,7 @@ public class UpdateService extends Service {
 	private ThreadPoolExecutor databaseReaderPool;
 	private ThreadPoolExecutor feedDownloaderPool;
 	private ThreadPoolExecutor feedParserPool;
+	private ThreadPoolExecutor logoDownloaderPool;
 	private ThreadPoolExecutor databaseWriterPool;
 	private FeedDownloader feedDownloader;
 	private LegacyUpdateServiceHelper updateHelper;
@@ -57,6 +57,7 @@ public class UpdateService extends Service {
 		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
 		feedParserPool = createThreadPool("UpdateService.FeedParser", Runtime
 				.getRuntime().availableProcessors());
+		logoDownloaderPool = createThreadPool("UpdateService.LogoDownloader", 4);
 		databaseWriterPool = createThreadPool("UpdateService.DatabaseWriter", 1);
 		feedDownloader = new FeedDownloader(this);
 		updateHelper = new LegacyUpdateServiceHelper(this);
@@ -107,6 +108,12 @@ public class UpdateService extends Service {
 		feedParserPool.execute(new FeedParserRunnable(update, podcast, feed));
 	}
 
+	public void enqueueLogoDownloader(UpdateState update, PodcastData podcast,
+			Feed feed) {
+		logoDownloaderPool.execute(new LogoDownloaderRunnable(update, podcast,
+				feed));
+	}
+
 	public void enqueueDatabaseWriter(UpdateState update) {
 		databaseWriterPool.execute(new DatabaseWriterRunnable(update));
 	}
@@ -118,12 +125,13 @@ public class UpdateService extends Service {
 
 		Log.d(TAG, "Destroying UpdateService");
 
-		shutdownPool(databaseReaderPool);
-		shutdownPool(feedDownloaderPool);
-		shutdownPool(feedParserPool);
-		shutdownPool(databaseWriterPool);
+		databaseReaderPool.shutdown();
+		feedDownloaderPool.shutdown();
+		feedParserPool.shutdown();
+		logoDownloaderPool.shutdown();
+		databaseWriterPool.shutdown();
 
-		new RemoveTempFilesTask().execute();
+		new RemoveTempUpdateFilesTask(this).execute();
 
 	}
 
@@ -131,16 +139,6 @@ public class UpdateService extends Service {
 		return new ThreadPoolExecutor(threads, threads, THREAD_KEEP_ALIVE_TIME,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				new SimpleThreadFactory(name));
-	}
-
-	private void shutdownPool(ExecutorService pool) {
-		try {
-			pool.shutdown();
-			pool.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
-					TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			Log.w(TAG, "Catched InterruptedException:", e);
-		}
 	}
 
 	public FeedDownloader getFeedDownloader() {
@@ -157,32 +155,6 @@ public class UpdateService extends Service {
 
 	public static void setLastRun(long lastRun) {
 		UpdateService.lastRun = lastRun;
-	}
-
-	private class RemoveTempFilesTask extends AsyncTask<Void, Void, Void> {
-
-		private static final String PREFIX = FeedDownloaderRunnable.TEMP_FILE_PREFIX;
-		private static final String SUFFIX = FeedDownloaderRunnable.TEMP_FILE_SUFFIX;
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			File[] tempFiles = getCacheDir().listFiles(new FilenameFilter() {
-
-				@Override
-				public boolean accept(File dir, String filename) {
-					return filename.startsWith(PREFIX)
-							&& filename.endsWith(SUFFIX);
-				}
-			});
-
-			for (File file : tempFiles) {
-				file.delete();
-			}
-
-			return null;
-
-		}
 	}
 
 }
