@@ -29,7 +29,6 @@ import android.widget.Toast;
 public class UpdateService extends Service {
 
 	private static final String TAG = "UpdateService";
-	private static final long AWAIT_TERMINATION_TIMEOUT = 16000;
 	private static final long THREAD_KEEP_ALIVE_TIME = 8000;
 
 	public static final UpdateServiceStatus Status = new UpdateServiceStatus();
