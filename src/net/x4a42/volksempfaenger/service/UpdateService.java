@@ -128,11 +128,11 @@ public class UpdateService extends Service {
 
 		Log.d(TAG, "Destroying UpdateService");
 
-		shutdownPool(databaseReaderPool);
-		shutdownPool(feedDownloaderPool);
-		shutdownPool(feedParserPool);
-		shutdownPool(logoDownloaderPool);
-		shutdownPool(databaseWriterPool);
+		databaseReaderPool.shutdown();
+		feedDownloaderPool.shutdown();
+		feedParserPool.shutdown();
+		logoDownloaderPool.shutdown();
+		databaseWriterPool.shutdown();
 
 		new RemoveTempFilesTask().execute();
 
@@ -142,16 +142,6 @@ public class UpdateService extends Service {
 		return new ThreadPoolExecutor(threads, threads, THREAD_KEEP_ALIVE_TIME,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				new SimpleThreadFactory(name));
-	}
-
-	private void shutdownPool(ExecutorService pool) {
-		try {
-			pool.shutdown();
-			pool.awaitTermination(AWAIT_TERMINATION_TIMEOUT,
-					TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			Log.w(TAG, "Catched InterruptedException:", e);
-		}
 	}
 
 	public FeedDownloader getFeedDownloader() {
