@@ -1,12 +1,9 @@
 package net.x4a42.volksempfaenger.ui;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Error.DuplicateException;
 import net.x4a42.volksempfaenger.data.Error.InsertException;
 import net.x4a42.volksempfaenger.data.PodcastHelper;
-import net.x4a42.volksempfaenger.feedparser.FeedParserException;
-import net.x4a42.volksempfaenger.net.NetException;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import net.x4a42.volksempfaenger.ui.AddFeedTask.AddFeedTaskResult;
@@ -24,7 +21,7 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 	}
 
 	static enum AddFeedTaskResult {
-		SUCCEEDED, DOWNLOAD_FAILED, XML_EXCEPTION, IO_EXCEPTION, DUPLICATE, INSERT_ERROR
+		SUCCEEDED, DUPLICATE, INSERT_ERROR
 	}
 
 	@Override
@@ -37,12 +34,6 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 		final String feedUrl = params[0];
 		try {
 			PodcastHelper.addFeed(context, feedUrl);
-		} catch (NetException e) {
-			Log.i(this, "Exception handled", e);
-			return AddFeedTaskResult.DOWNLOAD_FAILED;
-		} catch (FeedParserException e) {
-			Log.i(this, "Exception handled", e);
-			return AddFeedTaskResult.XML_EXCEPTION;
 		} catch (DuplicateException e) {
 			return AddFeedTaskResult.DUPLICATE;
 		} catch (InsertException e) {
@@ -58,22 +49,9 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 
 		switch (result) {
 		case SUCCEEDED:
-			Toast.makeText(context,
-					R.string.message_podcast_successfully_added,
+			Toast.makeText(context, R.string.message_podcast_adding,
 					Toast.LENGTH_SHORT).show();
 			return;
-		case DOWNLOAD_FAILED:
-			message = context
-					.getString(R.string.message_podcast_feed_download_failed);
-			break;
-		case XML_EXCEPTION:
-			message = context
-					.getString(R.string.message_podcast_feed_parsing_failed);
-			break;
-		case IO_EXCEPTION:
-			message = context
-					.getString(R.string.message_podcast_feed_io_exception);
-			break;
 		case DUPLICATE:
 			message = context.getString(R.string.message_podcast_already_added);
 			break;
