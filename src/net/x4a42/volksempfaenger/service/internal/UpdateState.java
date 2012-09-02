@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.x4a42.volksempfaenger.feedparser.Feed;
+import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.content.Intent;
 import android.util.Log;
@@ -44,11 +45,18 @@ public class UpdateState {
 	public void stopUpdate() {
 		long endTime = System.currentTimeMillis();
 		Log.i(TAG, "Finished update (took " + (endTime - startTime) + "ms)");
+
 		if (globalUpdate) {
 			UpdateService.Status.stopGlobalUpdate();
 		} else {
 			UpdateService.Status.stopSingleUpdate(intent.getData());
 		}
+
+		// start DownloadService for automatic downloads
+		updateService.startService(new Intent(updateService,
+				DownloadService.class));
+
+		// stop UpdateService
 		updateService.stopSelf(startId);
 	}
 
