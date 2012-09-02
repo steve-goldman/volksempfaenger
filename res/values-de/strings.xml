@@ -35,6 +35,9 @@
   <string name="message_podcast_feed_download_failed">Podcast konnte nicht heruntergeladen werden</string>
   <string name="message_podcast_feed_parsing_failed">Podcast-XML konnte nicht geparst werden</string>
   <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_podcast_adding">Podcast wird zu Abonnements hinzugefügt…</string>
   <string name="message_no_subscriptions">Keine Abonnements</string>
   <string name="message_download_started">Der Download wurde gestartet</string>
   <string name="message_download_already_running">Der Download läuft bereits</string>
@@ -107,4 +110,14 @@
   <string name="message_no_episodes">Keine Episoden</string>
   <string name="title_playlist_downloaded">Heruntergeladen</string>
   <string name="error_shownotes">Shownotes können nicht angezeigt werden</string>
+  <string name="title_tab_discover">Entdecke</string>
+  <string name="menu_search">Suche</string>
+  <string name="search_hint">Suchen oder URL eingeben</string>
+  <string name="import_to_volksempfaenger">In Volksempfänger importieren</string>
+  <string name="unknown_error">Unbekannter Fehler</string>
+  <string name="title_popular">Beliebt</string>
+  <string name="title_search_results">Suchergebnisse</string>
+  <string name="title_search_results_for">Suchergebnisse für \"%s\"</string>
+  <string name="message_subscribing_podcast">Podcast wird abonnier…</string>
+  <string name="title_tag_all">Alle</string>
 </resources>
