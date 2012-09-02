@@ -1,8 +1,6 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,13 +16,13 @@ import net.x4a42.volksempfaenger.service.internal.FeedDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
 import net.x4a42.volksempfaenger.service.internal.LogoDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
+import net.x4a42.volksempfaenger.service.internal.RemoveTempUpdateFilesTask;
 import net.x4a42.volksempfaenger.service.internal.UpdateState;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -134,7 +132,7 @@ public class UpdateService extends Service {
 		logoDownloaderPool.shutdown();
 		databaseWriterPool.shutdown();
 
-		new RemoveTempFilesTask().execute();
+		new RemoveTempUpdateFilesTask(this).execute();
 
 	}
 
@@ -158,32 +156,6 @@ public class UpdateService extends Service {
 
 	public static void setLastRun(long lastRun) {
 		UpdateService.lastRun = lastRun;
-	}
-
-	private class RemoveTempFilesTask extends AsyncTask<Void, Void, Void> {
-
-		private static final String PREFIX = FeedDownloaderRunnable.TEMP_FILE_PREFIX;
-		private static final String SUFFIX = FeedDownloaderRunnable.TEMP_FILE_SUFFIX;
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			File[] tempFiles = getCacheDir().listFiles(new FilenameFilter() {
-
-				@Override
-				public boolean accept(File dir, String filename) {
-					return filename.startsWith(PREFIX)
-							&& filename.endsWith(SUFFIX);
-				}
-			});
-
-			for (File file : tempFiles) {
-				file.delete();
-			}
-
-			return null;
-
-		}
 	}
 
 }
