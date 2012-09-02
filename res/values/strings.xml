@@ -37,6 +37,8 @@
     <string name="message_podcast_feed_download_failed">Unable to download podcast</string>
     <string name="message_podcast_feed_parsing_failed">Unable to parse podcast XML feed</string>
     <string name="message_podcast_feed_io_exception">IOException</string>
+    <string name="message_podcast_feed_storage_exception">StorageException</string>
+    <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
     <string name="message_podcast_adding">Adding podcast to your subscriptions…</string>
     <string name="message_no_subscriptions">No subscriptions</string>
     <string name="message_download_started">The download was started</string>
@@ -113,5 +115,6 @@
     <string name="title_playlist_downloaded">Downloaded</string>
     <string name="error_shownotes">Unable to display shownotes</string>
     <string name="import_to_volksempfaenger">Import to Volksempfänger</string>
+    <string name="unknown_error">Unknown error</string>
 
 </resources>
