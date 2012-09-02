@@ -1,7 +1,10 @@
 package net.x4a42.volksempfaenger.service.internal;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.feedparser.Feed;
+import net.x4a42.volksempfaenger.net.LogoDownloader;
+import net.x4a42.volksempfaenger.service.UpdateService;
 
 public class LogoDownloaderRunnable extends UpdateRunnable {
 
@@ -24,12 +27,41 @@ public class LogoDownloaderRunnable extends UpdateRunnable {
 		Log.i(TAG, "Started downloading logo of \"" + podcast.title + "\" [id="
 				+ podcast.id + "]");
 
-		// TODO
+		UpdateService updateService = getUpdate().getUpdateService();
 
-		long endTime = System.currentTimeMillis();
-		Log.i(TAG, "Finished downloading logo of \"" + podcast.title
-				+ "\" [id=" + podcast.id + "] (took " + (endTime - startTime)
-				+ "ms)");
+		if (feed != null
+				&& feed.image != null
+				&& !Utils.getPodcastLogoFile(updateService, podcast.id)
+						.exists()) {
+
+			LogoDownloader ld = new LogoDownloader(updateService);
+			try {
+
+				ld.fetchLogo(feed.image, podcast.id);
+
+				long endTime = System.currentTimeMillis();
+				Log.i(TAG, "Finished downloading logo of \"" + podcast.title
+						+ "\" [id=" + podcast.id + "] (took "
+						+ (endTime - startTime) + "ms)");
+
+			} catch (Exception e) {
+
+				long endTime = System.currentTimeMillis();
+				Log.w(TAG, "Failed downloading logo of \"" + podcast.title
+						+ "\" [id=" + podcast.id + "] (took "
+						+ (endTime - startTime) + "ms)");
+
+			}
+
+		} else {
+
+			// TODO update the logo
+			long endTime = System.currentTimeMillis();
+			Log.i(TAG, "Skipped downloading logo of \"" + podcast.title
+					+ "\" [id=" + podcast.id + "] (took "
+					+ (endTime - startTime) + "ms)");
+
+		}
 
 	}
 
