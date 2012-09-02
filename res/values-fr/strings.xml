@@ -7,7 +7,7 @@
   <string name="title_settings">Paramètres de Volksempfänger</string>
   <string name="title_tab_subscriptions">Abonnements</string>
   <string name="title_tab_downloads">Téléchargements</string>
-  <string name="description_add_subscription">Entrer l\'URL du flux de podcast pour s\'y abonner</string>
+  <string name="description_add_subscription">Entrez l\'URL du flux du podcast pour vous y abonner</string>
   <string name="menu_add">Ajouter</string>
   <string name="menu_delete">Supprimer</string>
   <string name="menu_settings">Paramètres</string>
@@ -15,8 +15,8 @@
   <string name="menu_mark_listened">Marquer comme écouté</string>
   <string name="menu_mark_new">Marquer comme non-écouté</string>
   <string name="menu_update">Actualiser</string>
-  <string name="menu_feedback">Retours</string>
-  <string name="menu_play">Jouer</string>
+  <string name="menu_feedback">Donnez votre avis</string>
+  <string name="menu_play">Lancer</string>
   <string name="context_delete">Supprimer</string>
   <string name="hint_http">http://</string>
   <string name="yes">Oui</string>
@@ -27,7 +27,7 @@
   <string name="install">Installer</string>
   <string name="dialog_error_title">Une erreur s\'est produite</string>
   <string name="dialog_choose_download_enclosure">Choisir un fichier</string>
-  <string name="dialog_filemanager_missing_message">Aucun explorateur de fichiers installé. Installer OpenIntents File Manager ?</string>
+  <string name="dialog_filemanager_missing_message">Aucun explorateur de fichiers installé. Voulez-vous installer OpenIntents File Manager ?</string>
   <string name="message_podcast_already_added">Podcast déjà ajouté aux abonnements</string>
   <string name="message_podcast_successfully_added">Podcast ajouté avec succès</string>
   <string name="message_podcast_confirm_delete">Supprimer \"%s\" ?</string>
@@ -41,14 +41,14 @@
   <string name="message_download_episode_already_downloaded">Cet épisode a déjà été téléchargé</string>
   <string name="message_episode_without_enclosure">Il n\'y a aucun fichier attaché à cet épisode</string>
   <string name="message_play_store_missing">Le Google Play Store n\'est pas installé sur cet appareil. Téléchargez l\'APK depuis le site d\'OpenIntents.</string>
-  <string name="settings_download">Télécharger</string>
+  <string name="settings_download">Téléchargement</string>
   <string name="settings_download_interval">Intervalle d\'actualisation</string>
   <string name="settings_download_auto">Téléchargement automatique</string>
   <string name="settings_download_wifi">Uniquement en WiFi</string>
   <string name="settings_download_charging">Uniquement pendant le chargement</string>
   <string name="settings_download_concurrent">Téléchargements parallèles</string>
-  <string name="settings_storage">Stockage</string>
-  <string name="settings_storage_location">Location du stockage</string>
+  <string name="settings_storage">Données</string>
+  <string name="settings_storage_location">Location des données</string>
   <string name="settings_about">À propos</string>
   <string name="settings_about_version">Version</string>
   <string name="settings_about_website">Site web</string>
@@ -56,10 +56,10 @@
   <string name="settings_about_authors">Auteurs</string>
   <string name="settings_summary_download">Paramètres de téléchargement des podcasts</string>
   <string name="settings_summary_download_auto">Télécharger automatiquement les nouveaux épisodes</string>
-  <string name="settings_summary_download_wifi">Télécharger les nouveaux épisodes uniquement lorsque l\'appareil est connecté en WiFi</string>
-  <string name="settings_summary_download_charging">Télécharger les nouveaux épisodes uniquement lorsque l\'appareil est en chargement</string>
+  <string name="settings_summary_download_wifi">Ne télécharger les nouveaux épisodes que lorsque l\'appareil est connecté en WiFi</string>
+  <string name="settings_summary_download_charging">Ne télécharger les nouveaux épisodes que lorsque l\'appareil est en chargement</string>
   <string name="settings_summary_download_concurrent">Nombre maximum de téléchargements parallèles</string>
-  <string name="settings_summary_storage">Paramètres de stockage local des podcasts</string>
+  <string name="settings_summary_storage">Paramètres d\'enregistrement local des podcasts</string>
   <string name="settings_summary_about">Informations à propos de Volksempfänger</string>
   <string name="settings_summary_about_license">Afficher les informations sur la licence</string>
   <string name="menu_import">Importer</string>
@@ -70,16 +70,16 @@
   <string name="empty_description">Aucune description</string>
   <string-array name="settings_interval_choices">
     <item>Manuellement</item>
-    <item>Chaque heure</item>
+    <item>Toutes les heures</item>
     <item>Toutes les deux heures</item>
     <item>Toutes les quatre heures</item>
     <item>Toutes les huit heures</item>
     <item>Toutes les douze heures</item>
-    <item>Chaque jour</item>
+    <item>Tous les jours</item>
   </string-array>
   <string name="episode_name">Nom de l\'épisode</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Insérer un support extérieur de stockage pour utiliser Volksempfänger</string>
+  <string name="message_insert_sdcard">Insérez un support extérieur de stockage pour utiliser Volksempfänger</string>
   <string name="unknown_duration">durée inconnue</string>
   <string name="unknown_size">taille inconnue</string>
   <string name="message_error_file_not_found">Le fichier \"%s\" est introuvable</string>
@@ -96,12 +96,12 @@
   <string name="title_share">Partager</string>
   <string name="menu_share">Partager</string>
   <string name="menu_website">Site web</string>
-  <string name="message_import_started">Import commencé</string>
+  <string name="message_import_started">Import commencé...</string>
   <string name="settings_about_libraries">Bibliothèques</string>
   <string name="settings_summary_about_flattr">Soutenir le développement de Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">effondrement</string>
-  <string name="title_tab_playlists">Listes de lecture</string>
+  <string name="title_tab_playlists">Playlists</string>
   <string name="title_playlist_new">Nouveau</string>
   <string name="title_playlist_listening">En cours</string>
   <string name="message_no_episodes">Aucun épisode</string>
