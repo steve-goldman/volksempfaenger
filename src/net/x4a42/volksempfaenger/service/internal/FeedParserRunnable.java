@@ -55,6 +55,8 @@ public class FeedParserRunnable extends UpdateRunnable {
 	private void onSuccess(Feed feed) {
 
 		try {
+			getUpdate().getUpdateService().enqueueLogoDownloader(getUpdate(),
+					podcast, feed);
 			getUpdate().getDatabaseWriterQueue().put(feed);
 		} catch (InterruptedException e) {
 			Log.w(TAG, e);

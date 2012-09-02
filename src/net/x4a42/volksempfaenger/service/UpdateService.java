@@ -9,12 +9,14 @@ import java.util.concurrent.TimeUnit;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.LegacyUpdateServiceHelper;
+import net.x4a42.volksempfaenger.feedparser.Feed;
 import net.x4a42.volksempfaenger.misc.SimpleThreadFactory;
 import net.x4a42.volksempfaenger.net.FeedDownloader;
 import net.x4a42.volksempfaenger.service.internal.DatabaseReaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.DatabaseWriterRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.FeedParserRunnable;
+import net.x4a42.volksempfaenger.service.internal.LogoDownloaderRunnable;
 import net.x4a42.volksempfaenger.service.internal.PodcastData;
 import net.x4a42.volksempfaenger.service.internal.UpdateState;
 import android.app.Service;
@@ -39,6 +41,7 @@ public class UpdateService extends Service {
 	private ThreadPoolExecutor databaseReaderPool;
 	private ThreadPoolExecutor feedDownloaderPool;
 	private ThreadPoolExecutor feedParserPool;
+	private ThreadPoolExecutor logoDownloaderPool;
 	private ThreadPoolExecutor databaseWriterPool;
 	private FeedDownloader feedDownloader;
 	private LegacyUpdateServiceHelper updateHelper;
@@ -57,6 +60,7 @@ public class UpdateService extends Service {
 		feedDownloaderPool = createThreadPool("UpdateService.FeedDownloader", 4);
 		feedParserPool = createThreadPool("UpdateService.FeedParser", Runtime
 				.getRuntime().availableProcessors());
+		logoDownloaderPool = createThreadPool("UpdateService.LogoDownloader", 4);
 		databaseWriterPool = createThreadPool("UpdateService.DatabaseWriter", 1);
 		feedDownloader = new FeedDownloader(this);
 		updateHelper = new LegacyUpdateServiceHelper(this);
@@ -107,6 +111,12 @@ public class UpdateService extends Service {
 		feedParserPool.execute(new FeedParserRunnable(update, podcast, feed));
 	}
 
+	public void enqueueLogoDownloader(UpdateState update, PodcastData podcast,
+			Feed feed) {
+		logoDownloaderPool.execute(new LogoDownloaderRunnable(update, podcast,
+				feed));
+	}
+
 	public void enqueueDatabaseWriter(UpdateState update) {
 		databaseWriterPool.execute(new DatabaseWriterRunnable(update));
 	}
@@ -121,6 +131,7 @@ public class UpdateService extends Service {
 		shutdownPool(databaseReaderPool);
 		shutdownPool(feedDownloaderPool);
 		shutdownPool(feedParserPool);
+		shutdownPool(logoDownloaderPool);
 		shutdownPool(databaseWriterPool);
 
 		new RemoveTempFilesTask().execute();
