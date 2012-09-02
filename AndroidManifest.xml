@@ -35,7 +35,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
 
-            <!-- Intent filters taken from http://stackoverflow.com/a/5502710/731539 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -55,9 +54,6 @@
 
                 <data android:scheme="http" />
                 <data android:host="feeds.feedburner.com" />
-                <data android:host="feedproxy.google.com" />
-                <data android:host="feeds2.feedburner.com" />
-                <data android:host="feedsproxy.google.com" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
