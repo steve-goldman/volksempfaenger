@@ -19,6 +19,8 @@ import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import net.x4a42.volksempfaenger.net.Downloader;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -99,7 +101,8 @@ public class AddSubscriptionActivity extends Activity implements
 		tagSpinner = (Spinner) findViewById(R.id.tag_spinner);
 		tagAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item);
-		tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		tagAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		tagAdapter.add(getString(R.string.title_tag_all));
 		tagSpinner.setAdapter(tagAdapter);
 		tagSpinner.setOnItemSelectedListener(this);
@@ -118,6 +121,20 @@ public class AddSubscriptionActivity extends Activity implements
 		Uri data = getIntent().getData();
 		if (data != null) {
 			searchEntry.setText(data.toString());
+		} else {
+			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
+			ClipData clip = cm.getPrimaryClip();
+			String[] suggestions = new String[1];
+			if (clip != null) {
+				ClipData.Item item = clip.getItemAt(0);
+				if (item != null && item.getText() != null) {
+					suggestions = new String[2];
+					suggestions[1] = item.getText().toString();
+				}
+			}
+			suggestions[0] = "http://";
+			searchEntry.setAdapter(new ArrayAdapter<String>(this,
+					android.R.layout.simple_dropdown_item_1line, suggestions));
 		}
 	}
 
