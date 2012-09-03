@@ -98,7 +98,8 @@ public class AddSubscriptionActivity extends Activity implements
 
 		tagSpinner = (Spinner) findViewById(R.id.tag_spinner);
 		tagAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_dropdown_item);
+				android.R.layout.simple_spinner_item);
+		tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		tagAdapter.add(getString(R.string.title_tag_all));
 		tagSpinner.setAdapter(tagAdapter);
 		tagSpinner.setOnItemSelectedListener(this);
