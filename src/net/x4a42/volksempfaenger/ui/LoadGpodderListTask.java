@@ -22,7 +22,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class LoadGpodderListTask extends
-		AsyncTask<Void, HashMap<String, String>, Void> {
+		AsyncTask<Void, HashMap<String, String>, Boolean> {
 
 	private final ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 	private boolean first = true;
@@ -76,7 +76,7 @@ public class LoadGpodderListTask extends
 	}
 
 	@Override
-	protected Void doInBackground(Void... params) {
+	protected Boolean doInBackground(Void... params) {
 		Downloader downloader = new Downloader(context);
 		try {
 			HttpURLConnection connection = downloader.getConnection(url);
@@ -91,13 +91,12 @@ public class LoadGpodderListTask extends
 						publishProgress(podcast);
 					}
 				}).read();
+				return true;
 			} else {
-				// handle failure TODO
+				return false;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
-		return null;
 	}
 }

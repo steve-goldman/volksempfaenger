@@ -49,8 +49,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/popular_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <include layout="@layout/loading_indicator" />
+
+    <include layout="@layout/loading_error_indicator" />
 
 </LinearLayout>

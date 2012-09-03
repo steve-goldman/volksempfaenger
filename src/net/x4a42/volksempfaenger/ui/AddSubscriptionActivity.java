@@ -38,6 +38,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -66,6 +67,9 @@ public class AddSubscriptionActivity extends Activity implements
 	private Spinner tagSpinner;
 	private ArrayAdapter<String> tagAdapter;
 	private LoadPopularListTask loadTask;
+	private View loadingErrorIndicator;
+	private Button retryButton;
+	private String url;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,10 +87,14 @@ public class AddSubscriptionActivity extends Activity implements
 		searchButton = (ImageButton) findViewById(R.id.button_search);
 		searchButton.setOnClickListener(this);
 
+		retryButton = (Button) findViewById(R.id.button_retry);
+		retryButton.setOnClickListener(this);
+
 		popularList = (ListView) findViewById(R.id.popular_list);
 		popularList.setOnItemClickListener(this);
 
 		loadingIndicator = findViewById(R.id.loading);
+		loadingErrorIndicator = findViewById(R.id.loading_error);
 
 		tagSpinner = (Spinner) findViewById(R.id.tag_spinner);
 		tagAdapter = new ArrayAdapter<String>(this,
@@ -97,8 +105,8 @@ public class AddSubscriptionActivity extends Activity implements
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
 
-		loadTask = new LoadPopularListTask(getToplistUrl());
-		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		url = getToplistUrl();
+		loadPopularList();
 		new LoadTagsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
@@ -152,6 +160,15 @@ public class AddSubscriptionActivity extends Activity implements
 					});
 
 			setLoading(true);
+		}
+
+		@Override
+		protected void onPostExecute(Boolean successful) {
+			if (!successful) {
+				loadingIndicator.setVisibility(View.GONE);
+				popularList.setVisibility(View.GONE);
+				loadingErrorIndicator.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -224,8 +241,13 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.button_search) {
+		switch (v.getId()) {
+		case R.id.button_search:
 			submitSearch();
+			break;
+		case R.id.button_retry:
+			loadPopularList();
+			break;
 		}
 	}
 
@@ -246,6 +268,7 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private void setLoading(boolean loading) {
+		loadingErrorIndicator.setVisibility(View.GONE);
 		if (loading) {
 			loadingIndicator.setVisibility(View.VISIBLE);
 			popularList.setVisibility(View.GONE);
@@ -322,22 +345,26 @@ public class AddSubscriptionActivity extends Activity implements
 	@Override
 	public void onItemSelected(AdapterView<?> spinner, View view, int position,
 			long id) {
-		if (loadTask.getStatus() != AsyncTask.Status.FINISHED) {
-			loadTask.cancel(true);
-		}
 		String item = (String) spinner.getItemAtPosition(position);
-		String url;
 		if (item.equals(getString(R.string.title_tag_all))) {
 			url = getToplistUrl();
 		} else {
 			url = getPopularForTagUrl(item);
 		}
-		loadTask = new LoadPopularListTask(url);
-		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		loadPopularList();
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> spinner) {
+	}
+
+	private void loadPopularList() {
+		if (loadTask != null
+				&& loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+			loadTask.cancel(true);
+		}
+		loadTask = new LoadPopularListTask(url);
+		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 }
