@@ -234,6 +234,7 @@ public class AddSubscriptionActivity extends Activity implements
 		if (v.getId() == R.id.entry_search) {
 			if (hasFocus) {
 				showButton();
+				searchEntry.showDropDown();
 			} else {
 				hideButton();
 			}
