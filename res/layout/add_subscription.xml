@@ -21,7 +21,6 @@
             android:completionThreshold="1"
             android:ems="10"
             android:hint="@string/search_hint"
-            android:imeOptions="actionSearch"
             android:inputType="text" />
 
         <ImageButton

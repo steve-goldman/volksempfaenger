@@ -26,6 +26,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.JsonReader;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -55,7 +57,8 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class AddSubscriptionActivity extends Activity implements
 		OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
-		OnEditorActionListener, OnClickListener, OnItemSelectedListener {
+		OnEditorActionListener, OnClickListener, OnItemSelectedListener,
+		TextWatcher {
 
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -85,6 +88,7 @@ public class AddSubscriptionActivity extends Activity implements
 		searchEntry = (AutoCompleteTextView) findViewById(R.id.entry_search);
 		searchEntry.setOnFocusChangeListener(this);
 		searchEntry.setOnEditorActionListener(this);
+		searchEntry.addTextChangedListener(this);
 
 		searchButton = (ImageButton) findViewById(R.id.button_search);
 		searchButton.setOnClickListener(this);
@@ -383,6 +387,25 @@ public class AddSubscriptionActivity extends Activity implements
 		}
 		loadTask = new LoadPopularListTask(url);
 		loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		String url = getUrlString(s.toString());
+		if (url != null) {
+			searchButton.setImageResource(R.drawable.add_holo_light);
+		} else {
+			searchButton.setImageResource(R.drawable.search_holo_light);
+		}
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
 	}
 
 }
