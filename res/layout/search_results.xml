@@ -12,4 +12,6 @@
 
     <include layout="@layout/loading_indicator" />
 
+    <include layout="@layout/loading_error_indicator" />
+
 </LinearLayout>

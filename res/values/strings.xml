@@ -124,5 +124,7 @@
     <string name="title_search_results_for">Search results for “%s”</string>
     <string name="message_subscribing_podcast">Subscribing to podcast…</string>
     <string name="title_tag_all">All</string>
+    <string name="button_retry">Retry</string>
+    <string name="message_error_loading">Loading failed</string>
 
 </resources>

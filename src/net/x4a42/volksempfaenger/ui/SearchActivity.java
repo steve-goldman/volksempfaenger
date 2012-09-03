@@ -16,8 +16,10 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,7 +28,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class SearchActivity extends Activity implements OnUpPressedCallback,
-		OnItemClickListener {
+		OnItemClickListener, OnClickListener {
 	private ImageLoader imageLoader;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
@@ -35,6 +37,9 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 	private LoadSearchTask searchTask;
 	private ListView resultsList;
 	private View loadingIndicator;
+	private View loadingErrorIndicator;
+	private Button retryButton;
+	private String searchQuery;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,15 +59,19 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 		resultsList.addHeaderView(header);
 
 		loadingIndicator = findViewById(R.id.loading);
+		loadingErrorIndicator = findViewById(R.id.loading_error);
+
+		retryButton = (Button) findViewById(R.id.button_retry);
+		retryButton.setOnClickListener(this);
 
 		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
 
 		// Get the intent, verify the action and get the query
 		Intent intent = getIntent();
-		String query = intent.getStringExtra("query");
+		searchQuery = intent.getStringExtra("query");
 		header.setText(String.format(
-				getString(R.string.title_search_results_for), query));
-		onSearch(query);
+				getString(R.string.title_search_results_for), searchQuery));
+		onSearch();
 	}
 
 	@Override
@@ -78,13 +87,13 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 		NavUtils.navigateUpFromSameTask(this);
 	}
 
-	private void onSearch(String query) {
+	private void onSearch() {
 		setLoading(true);
 		if (searchTask != null
 				&& searchTask.getStatus() != AsyncTask.Status.FINISHED) {
 			searchTask.cancel(true);
 		}
-		searchTask = new LoadSearchTask(query);
+		searchTask = new LoadSearchTask(searchQuery);
 		searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
@@ -99,6 +108,15 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 							setLoading(false);
 						}
 					});
+		}
+
+		@Override
+		protected void onPostExecute(Boolean successful) {
+			if (!successful) {
+				loadingIndicator.setVisibility(View.GONE);
+				resultsList.setVisibility(View.GONE);
+				loadingErrorIndicator.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -134,6 +152,7 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 	}
 
 	private void setLoading(boolean loading) {
+		loadingErrorIndicator.setVisibility(View.GONE);
 		if (loading) {
 			loadingIndicator.setVisibility(View.VISIBLE);
 			resultsList.setVisibility(View.GONE);
@@ -141,6 +160,13 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 			loadingIndicator.setVisibility(View.GONE);
 			resultsList.setVisibility(View.VISIBLE);
 
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.button_retry) {
+			onSearch();
 		}
 	}
 }
