@@ -37,7 +37,6 @@
   <string name="message_podcast_feed_io_exception">IOException</string>
   <string name="message_podcast_feed_storage_exception">StorageException</string>
   <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
-  <string name="message_podcast_adding">Podcast wird zu Abonnements hinzugefügt…</string>
   <string name="message_no_subscriptions">Keine Abonnements</string>
   <string name="message_download_started">Der Download wurde gestartet</string>
   <string name="message_download_already_running">Der Download läuft bereits</string>
@@ -122,4 +121,5 @@
   <string name="title_tag_all">Alle</string>
   <string name="button_retry">Erneut versuchen</string>
   <string name="message_error_loading">Laden fehlgeschlagen</string>
+  <string name="unknown_error_occured">Ein unbekannter Fehler ist aufgetreten.</string>
 </resources>
