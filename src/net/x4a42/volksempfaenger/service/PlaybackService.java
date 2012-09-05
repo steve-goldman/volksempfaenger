@@ -74,9 +74,6 @@ public class PlaybackService extends Service implements EventListener {
 		mediaButtonEventReceiver = new ComponentName(getPackageName(),
 				MediaButtonEventReceiver.class.getName());
 
-		AudioManager am = helper.getAudioManager();
-		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
-
 		PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
 				getApplicationContext(), 0, new Intent(
 						Intent.ACTION_MEDIA_BUTTON)
@@ -91,7 +88,6 @@ public class PlaybackService extends Service implements EventListener {
 			remoteControlClient
 					.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
 		}
-		am.registerRemoteControlClient(remoteControlClient);
 
 		{
 			Intent i = new Intent(this, PlaybackService.class);
@@ -169,9 +165,6 @@ public class PlaybackService extends Service implements EventListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		AudioManager am = helper.getAudioManager();
-		am.unregisterRemoteControlClient(remoteControlClient);
-		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 		helper.destroy();
 	}
 
@@ -370,6 +363,15 @@ public class PlaybackService extends Service implements EventListener {
 		}
 	}
 
+	private void onPlayerPrepared() {
+		helper.seekTo(getDurationListened());
+		helper.play();
+
+		AudioManager am = helper.getAudioManager();
+		am.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
+		am.registerRemoteControlClient(remoteControlClient);
+	}
+
 	private void onPlayerPlay() {
 		if (notification == null) {
 			notification = makeNotification();
@@ -408,6 +410,10 @@ public class PlaybackService extends Service implements EventListener {
 		cursor = null;
 		uri = null;
 		uriTime = null;
+
+		AudioManager am = helper.getAudioManager();
+		am.unregisterRemoteControlClient(remoteControlClient);
+		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 	}
 
 	private void onPlayerPause() {
@@ -422,11 +428,6 @@ public class PlaybackService extends Service implements EventListener {
 				.setOnClickPendingIntent(R.id.pause, playIntent);
 		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 		nm.notify(NOTIFICATION_ID, notification);
-	}
-
-	private void onPlayerPrepared() {
-		helper.seekTo(getDurationListened());
-		helper.play();
 	}
 
 	/**
