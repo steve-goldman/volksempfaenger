@@ -18,7 +18,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -77,8 +76,6 @@ public class DiscoverDetailActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_add:
-			Toast.makeText(this, R.string.message_subscribing_podcast,
-					Toast.LENGTH_SHORT).show();
 			new AddFeedTask(getApplicationContext()).executeOnExecutor(
 					AsyncTask.THREAD_POOL_EXECUTOR, feedUrl);
 			return true;

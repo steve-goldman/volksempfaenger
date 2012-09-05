@@ -49,7 +49,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -278,8 +277,6 @@ public class AddSubscriptionActivity extends Activity implements
 		String query = searchEntry.getText().toString();
 		String url = getUrlString(query);
 		if (url != null) {
-			Toast.makeText(this, R.string.message_subscribing_podcast,
-					Toast.LENGTH_SHORT).show();
 			new AddFeedTask(getApplicationContext()).executeOnExecutor(
 					AsyncTask.THREAD_POOL_EXECUTOR, url);
 			finish();

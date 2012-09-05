@@ -13,7 +13,9 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
+
 	private final Context context;
+	private Toast toast;
 
 	public AddFeedTask(Context context) {
 		super();
@@ -27,6 +29,9 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 	@Override
 	protected void onPreExecute() {
 		UpdateService.Status.startGlobalUpdate();
+		toast = Toast.makeText(context, R.string.message_subscribing_podcast,
+				Toast.LENGTH_SHORT);
+		toast.show();
 	}
 
 	@Override
@@ -48,23 +53,22 @@ public class AddFeedTask extends AsyncTask<String, Void, AddFeedTaskResult> {
 		String message = null;
 
 		switch (result) {
-		case SUCCEEDED:
-			Toast.makeText(context, R.string.message_podcast_adding,
-					Toast.LENGTH_SHORT).show();
-			return;
 		case DUPLICATE:
 			message = context.getString(R.string.message_podcast_already_added);
 			break;
-		default:
+		case INSERT_ERROR:
+			// TODO report with ACRA
+			message = context.getString(R.string.unknown_error_occured);
 			break;
+		default:
+			return;
 		}
 
-		if (message != null) {
-			Intent intent = BackgroundErrorReceiver.getBackgroundErrorIntent(
-					context.getString(R.string.dialog_error_title), message,
-					BackgroundErrorReceiver.ERROR_ADD);
-			context.sendOrderedBroadcast(intent, null);
-		}
+		toast.cancel();
+		Intent intent = BackgroundErrorReceiver.getBackgroundErrorIntent(
+				context.getString(R.string.dialog_error_title), message,
+				BackgroundErrorReceiver.ERROR_ADD);
+		context.sendOrderedBroadcast(intent, null);
 	}
 
 }
