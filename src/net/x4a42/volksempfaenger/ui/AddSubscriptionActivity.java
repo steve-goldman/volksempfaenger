@@ -148,12 +148,6 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		ExternalStorageHelper.assertExternalStorageWritable(this);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		default:
@@ -233,9 +227,12 @@ public class AddSubscriptionActivity extends Activity implements
 		if (v.getId() == R.id.entry_search) {
 			if (hasFocus) {
 				showButton();
-				if (!isFinishing()) {
-					searchEntry.showDropDown();
-				}
+				searchEntry.post(new Runnable() {
+					@Override
+					public void run() {
+						searchEntry.showDropDown();
+					}
+				});
 			} else {
 				hideButton();
 			}
