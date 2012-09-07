@@ -256,17 +256,20 @@ public class PlaybackService extends Service implements EventListener {
 				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
 						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
 						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_LOCAL_URI,
-						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE },
-				null, null, null));
+						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE,
+						Episode.ENCLOSURE_URL }, null, null, null));
 
 		if (!cursor.moveToFirst()) {
 			throw new IllegalArgumentException("Episode not found");
 		}
 		File enclosureFile = cursor.getDownloadFile();
+		String path;
 		if (enclosureFile == null || !enclosureFile.isFile()) {
-			throw new IllegalArgumentException("Episode not found");
+			path = cursor.getEnclosureUrl();
+		} else {
+			path = enclosureFile.getAbsolutePath();
 		}
-		helper.open(enclosureFile.getAbsolutePath());
+		helper.open(path);
 		ContentValues values = new ContentValues();
 		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);

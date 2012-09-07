@@ -142,8 +142,6 @@ public class ViewEpisodeActivity extends Activity implements
 
 			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
 				menu.removeItem(R.id.item_download);
-			} else {
-				menu.removeItem(R.id.item_play);
 			}
 
 			if (remote.isPlaying()
