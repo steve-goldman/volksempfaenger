@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/padding_large"
+        android:layout_marginRight="@dimen/padding_large"
+        android:orientation="vertical" >
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_about_license" />
+
+        <TextView
+            android:id="@+id/license"
+            style="@style/LicenseText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_about_authors" />
+
+        <TextView
+            android:id="@+id/authors"
+            style="@style/LicenseText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_about_libraries" />
+
+        <Button
+            android:id="@+id/universalImageLoaderText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/signpostText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Signpost"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/acraText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ACRA"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+</ScrollView>
