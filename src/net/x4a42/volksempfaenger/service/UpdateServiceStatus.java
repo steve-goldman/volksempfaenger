@@ -17,20 +17,45 @@ public class UpdateServiceStatus {
 	protected UpdateServiceStatus() {
 	}
 
+	/**
+	 * Register a listener. Some callbacks will already be called from within
+	 * this method as documented in UpdateServiceStatusListener.
+	 * 
+	 * @param listener
+	 *            UpdateServiceStatusListener to register, must not be null.
+	 */
 	public synchronized void registerUpdateServiceStatusListener(
 			UpdateServiceStatusListener listener) {
+
 		if (globalUpdatesRunning > 0) {
 			listener.onGlobalUpdateStarted();
+		} else {
+			listener.onGlobalUpdateStopped();
 		}
-		for (Uri podcast : singleUpdatesRunning) {
-			listener.onSingleUpdateStarted(podcast);
+
+		if (!singleUpdatesRunning.isEmpty()) {
+			for (Uri podcast : singleUpdatesRunning) {
+				listener.onSingleUpdateStarted(podcast);
+			}
+		} else {
+			listener.onSingleUpdateStopped(null);
 		}
+
 		listeners.add(listener);
+
 	}
 
+	/**
+	 * Unregister a listener.
+	 * 
+	 * @param listener
+	 *            UpdateServiceStatusListener to unregister.
+	 */
 	public synchronized void unregisterUpdateServiceStatusListener(
 			UpdateServiceStatusListener listener) {
+
 		listeners.remove(listener);
+
 	}
 
 	public synchronized void startGlobalUpdate() {
@@ -77,16 +102,53 @@ public class UpdateServiceStatus {
 
 	public static interface UpdateServiceStatusListener {
 
+		/**
+		 * This method will be called when a global update gets started or if a
+		 * global update is already running at the time of registering this
+		 * listener. In this case this method will be called from within the
+		 * register method.
+		 */
 		public void onGlobalUpdateStarted();
 
+		/**
+		 * This method will be called when a global update finishes or if there
+		 * is no global update running at the time of registering this listener.
+		 * In this case this method will be called from within the register
+		 * method.
+		 */
 		public void onGlobalUpdateStopped();
 
+		/**
+		 * This method will be called for every single update that gets started.
+		 * If there are any single updates running at the time this listener
+		 * gets registered, this method will be called from within the register
+		 * method for every one with the Uri of the podcast being updated as an
+		 * parameter.
+		 * 
+		 * @param podcast
+		 *            The Uri of the podcast being updated.
+		 */
 		public void onSingleUpdateStarted(Uri podcast);
 
+		/**
+		 * This method will be called when a single update stops. If there are
+		 * no single updates running at the time of registering this receiver,
+		 * this method will be called with a null parameter from within the
+		 * register method.
+		 * 
+		 * @param podcast
+		 *            The Uri of the podcast that finished updating or null if
+		 *            there are no single updates running at the time of
+		 *            registering this receiver.
+		 */
 		public void onSingleUpdateStopped(Uri podcast);
 
 	}
 
+	/**
+	 * Abstract implementation of UpdateServiceStatusListener that just drops
+	 * all callbacks received for single updates.
+	 */
 	public static abstract class GlobalUpdateListener implements
 			UpdateServiceStatusListener {
 
@@ -100,6 +162,10 @@ public class UpdateServiceStatus {
 
 	}
 
+	/**
+	 * Abstract implementation of UpdateServiceStatusListener that just drops
+	 * all callbacks received for global updates.
+	 */
 	public static abstract class SingleUpdateListener implements
 			UpdateServiceStatusListener {
 
@@ -113,35 +179,10 @@ public class UpdateServiceStatus {
 
 	}
 
-	public static abstract class SimpleUpdateListener implements
-			UpdateServiceStatusListener {
-
-		@Override
-		public void onGlobalUpdateStarted() {
-			onUpdateStarted(null);
-		}
-
-		@Override
-		public void onGlobalUpdateStopped() {
-			onUpdateStopped(null);
-		}
-
-		@Override
-		public void onSingleUpdateStarted(Uri podcast) {
-			onUpdateStarted(podcast);
-		}
-
-		@Override
-		public void onSingleUpdateStopped(Uri podcast) {
-			onUpdateStopped(podcast);
-		}
-
-		public abstract void onUpdateStarted(Uri podcast);
-
-		public abstract void onUpdateStopped(Uri podcast);
-
-	}
-
+	/**
+	 * Wrapper for UpdateServiceStatusListener that runs all callbacks on the UI
+	 * thread of an Activity.
+	 */
 	public static class UiThreadUpdateServiceStatusListenerWrapper implements
 			UpdateServiceStatusListener {
 

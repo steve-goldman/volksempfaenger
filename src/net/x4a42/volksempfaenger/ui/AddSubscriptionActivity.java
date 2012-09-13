@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.JsonReader;
 import android.view.KeyEvent;
@@ -122,20 +123,33 @@ public class AddSubscriptionActivity extends Activity implements
 		super.onStart();
 
 		Uri data = getIntent().getData();
+
 		if (data != null) {
 			searchEntry.setText(data.toString());
 		} else {
 			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
 			ClipData clip = cm.getPrimaryClip();
-			String[] suggestions = new String[1];
+			String suggestionFromClipboard = null;
 			if (clip != null) {
 				ClipData.Item item = clip.getItemAt(0);
 				if (item != null && item.getText() != null) {
-					suggestions = new String[2];
-					suggestions[1] = item.getText().toString();
+					suggestionFromClipboard = getUrlString(item.getText()
+							.toString());
 				}
 			}
+
+			String[] suggestions;
+
+			if (suggestionFromClipboard == null) {
+				suggestions = new String[2];
+			} else {
+				suggestions = new String[3];
+				suggestions[2] = suggestionFromClipboard;
+			}
+
 			suggestions[0] = "http://";
+			suggestions[1] = "https://";
+
 			searchEntry.setAdapter(new ArrayAdapter<String>(this,
 					android.R.layout.simple_dropdown_item_1line, suggestions));
 		}
@@ -207,14 +221,15 @@ public class AddSubscriptionActivity extends Activity implements
 		startActivity(intent);
 	}
 
+	private static final Pattern REGEX_URL = Pattern
+			.compile("\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+");
+
 	private String getUrlString(String input) {
 		try {
 			URL url = new URL(input);
 			return url.toString();
 		} catch (MalformedURLException e) {
-			Matcher matcher = Pattern.compile(
-					"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+").matcher(
-					input);
+			Matcher matcher = REGEX_URL.matcher(input);
 			if (matcher.find()) {
 				return matcher.group();
 			}
@@ -253,11 +268,17 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+		switch (actionId) {
+		case EditorInfo.IME_ACTION_SEARCH:
+		case EditorInfo.IME_ACTION_GO:
 			submitSearch();
 			return true;
+
+		default:
+			return false;
 		}
-		return false;
+
 	}
 
 	@Override
@@ -273,15 +294,14 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private void submitSearch() {
-		String query = searchEntry.getText().toString();
-		String url = getUrlString(query);
-		if (url != null) {
+		String text = searchEntry.getText().toString();
+		if (text.startsWith("http://") || text.startsWith("https://")) {
 			new AddFeedTask(getApplicationContext()).executeOnExecutor(
-					AsyncTask.THREAD_POOL_EXECUTOR, url);
+					AsyncTask.THREAD_POOL_EXECUTOR, text);
 			finish();
 		} else {
 			Intent intent = new Intent(this, SearchActivity.class);
-			intent.putExtra("query", query);
+			intent.putExtra("query", text);
 			startActivity(intent);
 		}
 	}
@@ -388,11 +408,16 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public void afterTextChanged(Editable s) {
-		String url = getUrlString(s.toString());
-		if (url != null) {
+		String text = s.toString();
+		if (text.startsWith("http://") || text.startsWith("https://")) {
 			searchButton.setImageResource(R.drawable.add_holo_light);
+			searchEntry.setImeOptions(EditorInfo.IME_ACTION_GO);
+			searchEntry.setInputType(InputType.TYPE_CLASS_TEXT
+					| InputType.TYPE_TEXT_VARIATION_URI);
 		} else {
 			searchButton.setImageResource(R.drawable.search_holo_light);
+			searchEntry.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+			searchEntry.setInputType(InputType.TYPE_CLASS_TEXT);
 		}
 	}
 
