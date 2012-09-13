@@ -133,7 +133,8 @@ public class AddSubscriptionActivity extends Activity implements
 			if (clip != null) {
 				ClipData.Item item = clip.getItemAt(0);
 				if (item != null && item.getText() != null) {
-					suggestionFromClipboard = item.getText().toString();
+					suggestionFromClipboard = getUrlString(item.getText()
+							.toString());
 				}
 			}
 
@@ -220,14 +221,15 @@ public class AddSubscriptionActivity extends Activity implements
 		startActivity(intent);
 	}
 
+	private static final Pattern REGEX_URL = Pattern
+			.compile("\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+");
+
 	private String getUrlString(String input) {
 		try {
 			URL url = new URL(input);
 			return url.toString();
 		} catch (MalformedURLException e) {
-			Matcher matcher = Pattern.compile(
-					"\\b(http|https):[/]*[\\w-]+\\.[\\w./?&@#-]+").matcher(
-					input);
+			Matcher matcher = REGEX_URL.matcher(input);
 			if (matcher.find()) {
 				return matcher.group();
 			}
@@ -292,15 +294,14 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private void submitSearch() {
-		String query = searchEntry.getText().toString();
-		String url = getUrlString(query);
-		if (url != null) {
+		String text = searchEntry.getText().toString();
+		if (text.startsWith("http://") || text.startsWith("https://")) {
 			new AddFeedTask(getApplicationContext()).executeOnExecutor(
-					AsyncTask.THREAD_POOL_EXECUTOR, url);
+					AsyncTask.THREAD_POOL_EXECUTOR, text);
 			finish();
 		} else {
 			Intent intent = new Intent(this, SearchActivity.class);
-			intent.putExtra("query", query);
+			intent.putExtra("query", text);
 			startActivity(intent);
 		}
 	}
