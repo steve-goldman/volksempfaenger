@@ -19,18 +19,30 @@ public class UpdateServiceStatus {
 
 	public synchronized void registerUpdateServiceStatusListener(
 			UpdateServiceStatusListener listener) {
+
 		if (globalUpdatesRunning > 0) {
 			listener.onGlobalUpdateStarted();
+		} else {
+			listener.onGlobalUpdateStopped();
 		}
-		for (Uri podcast : singleUpdatesRunning) {
-			listener.onSingleUpdateStarted(podcast);
+
+		if (!singleUpdatesRunning.isEmpty()) {
+			for (Uri podcast : singleUpdatesRunning) {
+				listener.onSingleUpdateStarted(podcast);
+			}
+		} else {
+			listener.onSingleUpdateStopped(null);
 		}
+
 		listeners.add(listener);
+
 	}
 
 	public synchronized void unregisterUpdateServiceStatusListener(
 			UpdateServiceStatusListener listener) {
+
 		listeners.remove(listener);
+
 	}
 
 	public synchronized void startGlobalUpdate() {

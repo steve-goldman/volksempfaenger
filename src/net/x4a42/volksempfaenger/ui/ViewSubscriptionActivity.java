@@ -165,7 +165,7 @@ public class ViewSubscriptionActivity extends EpisodeListActivity {
 
 		@Override
 		public void onSingleUpdateStopped(Uri podcast) {
-			if (mUri.equals(podcast)) {
+			if (podcast == null || mUri.equals(podcast)) {
 				mIsUpdating = false;
 				invalidateOptionsMenu();
 			}
