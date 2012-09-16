@@ -21,7 +21,7 @@ import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-public class SettingsActivity extends PreferenceActivity implements
+public class DeprecatedSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener,
 		OnUpPressedCallback {
 

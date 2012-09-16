@@ -1,0 +1,29 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:summary="@string/settings_summary_about"
+    android:title="@string/settings_about" >
+
+    <Preference
+        android:key="about_version"
+        android:summary="@string/unknown"
+        android:title="@string/settings_about_version" />
+    <Preference
+        android:key="about_website"
+        android:title="@string/settings_about_website" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://volksempfaenger.0x4a42.net/" />
+    </Preference>
+    <Preference
+        android:key="about_license"
+        android:summary="@string/settings_summary_about_license"
+        android:title="@string/settings_about_license" />
+    <Preference
+        android:key="about_flattr"
+        android:summary="@string/settings_summary_about_flattr"
+        android:title="@string/settings_about_flattr" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://flattr.com/thing/735145/Volksempfanger" />
+    </Preference>
+
+</PreferenceScreen>
