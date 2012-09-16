@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:summary="@string/settings_summary_storage"
+    android:title="@string/settings_storage" >
+
+    <EditTextPreference
+        android:key="storage_location"
+        android:title="@string/settings_storage_location" />
+
+</PreferenceScreen>

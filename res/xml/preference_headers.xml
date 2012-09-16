@@ -1,0 +1,19 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="net.x4a42.volksempfaenger.ui.SettingsActivity$DownloadFragment"
+        android:icon="@drawable/icon"
+        android:summary="@string/settings_summary_download"
+        android:title="@string/settings_download" />
+    <header
+        android:fragment="net.x4a42.volksempfaenger.ui.SettingsActivity$StorageFragment"
+        android:icon="@drawable/icon"
+        android:summary="@string/settings_summary_storage"
+        android:title="@string/settings_storage" />
+    <header
+        android:fragment="net.x4a42.volksempfaenger.ui.SettingsActivity$AboutFragment"
+        android:icon="@drawable/icon"
+        android:summary="@string/settings_summary_about"
+        android:title="@string/settings_about" />
+
+</preference-headers>
