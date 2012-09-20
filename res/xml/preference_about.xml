@@ -8,10 +8,11 @@
         android:title="@string/settings_about_version" />
     <Preference
         android:key="about_website"
+        android:summary="@string/url_volksempfaenger_website"
         android:title="@string/settings_about_website" >
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="http://volksempfaenger.0x4a42.net/" />
+            android:data="@string/url_volksempfaenger_website" />
     </Preference>
     <Preference
         android:key="about_license"
@@ -23,7 +24,7 @@
         android:title="@string/settings_about_flattr" >
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="http://flattr.com/thing/735145/Volksempfanger" />
+            android:data="@string/url_volksempfaenger_flattr" />
     </Preference>
 
 </PreferenceScreen>
