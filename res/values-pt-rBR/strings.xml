@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">Volksempfänger</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Adicionar Inscrição</string>
+  <string name="title_delete_subscription">Tem certeza?</string>
+  <string name="title_settings">Configurações do Volksempfänger</string>
+  <string name="title_tab_subscriptions">Inscrições</string>
+  <string name="title_tab_downloads">Downloads</string>
+  <string name="description_add_subscription">Insira a URL do feed do podcast para inscrever nele</string>
+  <string name="menu_add">Adicionar</string>
+  <string name="menu_delete">Excluir</string>
+  <string name="menu_settings">Configurações</string>
+  <string name="menu_download">Fazer download</string>
+  <string name="menu_mark_listened">Marcar como ouvido</string>
+  <string name="menu_mark_new">Marcar como novo</string>
+  <string name="menu_update">Atualizar</string>
+  <string name="menu_feedback">Enviar comentário</string>
+  <string name="menu_play">Reproduzir</string>
+  <string name="context_delete">Excluir</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Sim</string>
+  <string name="ok">OK</string>
+  <string name="add">Adicionar</string>
+  <string name="cancel">Cancelar</string>
+  <string name="unknown">desconhecido</string>
+  <string name="install">Instalar</string>
+  <string name="dialog_error_title">Ocorreu um erro</string>
+  <string name="dialog_choose_download_enclosure">Selecione um arquivo</string>
+  <string name="dialog_filemanager_missing_message">Não foi encontrado um gerenciador de arquivos em seu telefone. Deseja instalar OpenIntents File Manager?</string>
+  <string name="message_podcast_already_added">Este podcast já foi adicionado às suas inscrições</string>
+  <string name="message_podcast_successfully_added">Podcast adicionado com sucesso</string>
+  <string name="message_podcast_confirm_delete">Deseja excluir “%s”?</string>
+  <string name="message_podcast_successfully_deleted">Podcast excluído com sucesso</string>
+  <string name="message_podcast_feed_download_failed">Não foi possível fazer o download do podcast</string>
+  <string name="message_podcast_feed_parsing_failed">Não foi possível analisar o feed XML do podcast</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_no_subscriptions">Não há inscrições</string>
+  <string name="message_download_started">O download foi iniciado</string>
+  <string name="message_download_already_running">O download já está sendo feito</string>
+  <string name="message_download_episode_already_downloaded">O download deste episódio já foi feito</string>
+  <string name="message_episode_without_enclosure">Não há arquivo anexado a este episódio</string>
+  <string name="message_play_store_missing">Google Play Store não foi encontrado em seu telefone. Faça o download do APK diretamente da página da web de OpenIntents e instale o aplicativo.</string>
+  <string name="settings_download">Download</string>
+  <string name="settings_download_interval">Intervalo de atualização</string>
+  <string name="settings_download_auto">Download automático</string>
+  <string name="settings_download_wifi">Somente pela WiFi</string>
+  <string name="settings_download_charging">Somente enquanto estiver carregando</string>
+  <string name="settings_download_concurrent">Downloads simultâneos</string>
+  <string name="settings_storage">Armazenamento</string>
+  <string name="settings_storage_location">Local de armazenamento</string>
+  <string name="settings_about">Sobre</string>
+  <string name="settings_about_version">Versão</string>
+  <string name="settings_about_website">Página da web</string>
+  <string name="settings_about_license">Licença</string>
+  <string name="settings_about_authors">Criadores</string>
+  <string name="settings_summary_download">Configurações do download de podcasts</string>
+  <string name="settings_summary_download_auto">Fazer download de novos episódios automaticamente</string>
+  <string name="settings_summary_download_wifi">Fazer download de novos episódios somente quando conectado a uma rede WiFi</string>
+  <string name="settings_summary_download_charging">Fazer download de novos episódios somente quando conectado a uma fonte de energia</string>
+  <string name="settings_summary_download_concurrent">Número máximo de downloads sendo feitos ao mesmo tempo</string>
+  <string name="settings_summary_storage">Configurações do armazenamento local de podcasts</string>
+  <string name="settings_summary_about">Informações sobre Volksempfänger</string>
+  <string name="settings_summary_about_license">Detalhes sobre a licença</string>
+  <string name="menu_import">Importar</string>
+  <string name="dialog_choose_opml">Selecione o arquivo OPML</string>
+  <string name="button_import">Importar</string>
+  <string name="dialog_choose_import_feeds">Selecione os feeds que serão importados</string>
+  <string name="message_no_downloads">Não há downloads</string>
+  <string name="empty_description">não há descrição</string>
+  <string-array name="settings_interval_choices">
+    <item>Manualmente</item>
+    <item>A cada hora</item>
+    <item>A cada duas horas</item>
+    <item>A cada quatro horas</item>
+    <item>A cada oito horas</item>
+    <item>A cada doze horas</item>
+    <item>Todos os dias</item>
+  </string-array>
+  <string name="episode_name">Nome do Episódio</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Insira um meio de armazenamento externo para poder usar Volksempfänger</string>
+  <string name="unknown_duration">duração desconhecida</string>
+  <string name="unknown_size">tamanho desconhecido</string>
+  <string name="message_error_file_not_found">O arquivo “%s” não pôde ser encontrado</string>
+  <string name="title_file_not_found">Arquivo não encontrado</string>
+  <string name="title_import_error">Erro na Importação</string>
+  <string name="message_error_import">A importação dos seguintes podcasts falhou</string>
+  <string name="pause">Pausar</string>
+  <string name="error_download">erro no download</string>
+  <string name="rewind">Retroceder</string>
+  <string name="fast_forward">Avançar</string>
+  <string name="message_error_import_unexpected">Um erro inesperado ocorreu durante a importação</string>
+  <string name="title_send_error_report">Enviar relatório de erro</string>
+  <string name="report_error">Enviar</string>
+  <string name="title_share">Compartilhar</string>
+  <string name="menu_share">Compartilhar</string>
+  <string name="menu_website">Página da web</string>
+  <string name="message_import_started">Importação iniciada…</string>
+  <string name="settings_about_libraries">Bibliotecas</string>
+  <string name="settings_summary_about_flattr">Contribuir com o desenvolvimento de Volksempfänger</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">encolher</string>
+  <string name="title_tab_playlists">Listas</string>
+  <string name="title_playlist_new">Novos</string>
+  <string name="title_playlist_listening">Ouvindo</string>
+  <string name="message_no_episodes">Não há episódios</string>
+  <string name="title_playlist_downloaded">Downloads</string>
+  <string name="error_shownotes">Não foi possível exibir a descrição do episódio</string>
+  <string name="import_to_volksempfaenger">Importar para Volksempfänger</string>
+</resources>
