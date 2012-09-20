@@ -5,7 +5,9 @@ import java.util.List;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -56,6 +58,23 @@ public class SettingsActivity extends PreferenceActivity {
 			version.setSummary(application.getVersionName());
 		}
 
+	}
+
+	public static class FlattrCallbackProxyActivity extends Activity {
+		@Override
+		public void onStart() {
+			super.onStart();
+			Uri uri = getIntent().getData();
+			if (uri != null) {
+				Intent intent = new Intent(this, SettingsActivity.class);
+				intent.putExtra(EXTRA_SHOW_FRAGMENT,
+						FlattrSettingsFragment.class.getName());
+				Bundle bundle = new Bundle();
+				bundle.putString("code", uri.getQueryParameter("code"));
+				intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle);
+				startActivity(intent);
+			}
+		}
 	}
 
 }

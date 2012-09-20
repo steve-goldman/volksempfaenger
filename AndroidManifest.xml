@@ -149,6 +149,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.AddSubscriptionActivity" />
         </activity>
+        <activity android:name=".ui.SettingsActivity$FlattrCallbackProxyActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="net.x4a42.volksempfaenger" />
+                <data android:host="callback.oauth.flattr" />
+            </intent-filter>
+        </activity>
 
         <service android:name=".service.CleanCacheService" />
         <service android:name=".service.DownloadService" />
