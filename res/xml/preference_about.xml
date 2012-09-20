@@ -17,7 +17,11 @@
     <Preference
         android:key="about_license"
         android:summary="@string/settings_summary_about_license"
-        android:title="@string/settings_about_license" />
+        android:title="@string/settings_about_license" >
+        <intent
+            android:targetClass="net.x4a42.volksempfaenger.ui.LicenseActivity"
+            android:targetPackage="net.x4a42.volksempfaenger" />
+    </Preference>
     <Preference
         android:key="about_flattr"
         android:summary="@string/settings_summary_about_flattr"
