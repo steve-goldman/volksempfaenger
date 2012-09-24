@@ -7,4 +7,12 @@
         android:key="flattr_auth"
         android:title="@string/button_flattr_auth" />
 
+    <net.x4a42.volksempfaenger.ui.DisplayValueListPreference
+        android:defaultValue="@string/settings_default_flattr_auto"
+        android:entries="@array/settings_flattr_auto_choices"
+        android:entryValues="@array/settings_flattr_auto_values"
+        android:key="flattr_auto"
+        android:summary="%s"
+        android:title="@string/settings_flattr_auto" />
+
 </PreferenceScreen>
