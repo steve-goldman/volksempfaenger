@@ -8,10 +8,12 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 
 import net.x4a42.volksempfaenger.Constants;
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.net.Downloader;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +37,10 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 	private TextView textConnectedTo;
 	private ProgressBar progressConnecting;
 	private ListView list;
+	private SharedPreferences prefs;
+
+	private static final String KEY_USERNAME = "flattr_username";
+	private static final String KEY_ACCESS_TOKEN = "flattr_access_token";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +53,24 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 	}
 
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		prefs = ((VolksempfaengerApplication) getActivity().getApplication())
+				.getSharedPreferences();
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
+
+		String username = prefs.getString(KEY_USERNAME, null);
+		if (username == null) {
+			hideHeader();
+		} else {
+			showHeader();
+			setConnectedTo(username);
+		}
+
 		Bundle bundle = getArguments();
 		if (bundle != null) {
 			String callback = bundle.getString("callback");
@@ -76,7 +98,6 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 		View header = inflater.inflate(R.layout.flattr_settings_header, list,
 				false);
 		list.addHeaderView(header);
-		list.setHeaderDividersEnabled(false);
 		groupConnectedTo = header.findViewById(R.id.flattrConnectedToGroup);
 		textConnectedTo = (TextView) header
 				.findViewById(R.id.flattrConnectedTo);
@@ -107,6 +128,11 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 		textConnectedTo.setVisibility(View.GONE);
 		progressConnecting.setVisibility(View.GONE);
 		list.setHeaderDividersEnabled(false);
+	}
+
+	private void setConnectedTo(String username) {
+		textConnectedTo.setText(Html.fromHtml(getString(
+				R.string.flattr_connected_to, username)));
 	}
 
 	private class RetrieveAccessTokenTask extends
@@ -187,12 +213,14 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 			if (result != null) {
 				String accessToken = result[0];
 				String username = result[1];
-				Log.e(this, accessToken);
-				Log.e(this, username);
 				progressConnecting.setVisibility(View.INVISIBLE);
-				textConnectedTo.setText(Html.fromHtml(getString(
-						R.string.flattr_connected_to, username)));
-				// TODO save access token
+				setConnectedTo(username);
+				Editor editor = prefs.edit();
+				editor.putString(KEY_USERNAME, username);
+				editor.putString(KEY_ACCESS_TOKEN, accessToken);
+				if (!editor.commit()) {
+					// display error TODO
+				}
 			} else {
 				// display error TODO
 				Toast.makeText(getActivity(), "Connecting failed",
