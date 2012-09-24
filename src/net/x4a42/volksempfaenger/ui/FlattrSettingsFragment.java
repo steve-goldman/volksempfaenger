@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.text.Html;
 import android.util.Base64;
 import android.util.JsonReader;
 import android.view.LayoutInflater;
@@ -101,16 +102,24 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 		list.setHeaderDividersEnabled(true);
 	}
 
+	private void hideHeader() {
+		groupConnectedTo.setVisibility(View.GONE);
+		textConnectedTo.setVisibility(View.GONE);
+		progressConnecting.setVisibility(View.GONE);
+		list.setHeaderDividersEnabled(false);
+	}
+
 	private class RetrieveAccessTokenTask extends
-			AsyncTask<String, Void, String> {
+			AsyncTask<String, Void, String[]> {
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected String[] doInBackground(String... params) {
 			String code = params[0];
 			String body = String
 					.format("{\"grant_type\": \"authorization_code\", \"redirect_uri\": \"%s\", \"code\": \"%s\"}",
 							Constants.FLATTR_REDIRECT_URI, code);
 			Downloader downloader = new Downloader(getActivity());
+			String accessToken;
 			try {
 				HttpURLConnection connection = downloader
 						.getConnection("https://flattr.com/oauth/token");
@@ -136,7 +145,31 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 						BufferedReader reader = new BufferedReader(
 								new InputStreamReader(
 										connection.getInputStream()));
-						return getAccessToken(reader);
+						accessToken = getAccessToken(reader);
+					} else {
+						return null;
+					}
+				} finally {
+					connection.disconnect();
+				}
+
+			} catch (IOException e) {
+				return null;
+			}
+
+			// try out access token by getting the username
+			String username;
+			try {
+				HttpURLConnection connection = downloader
+						.getConnection("https://api.flattr.com/rest/v2/user");
+				try {
+					connection.setRequestProperty("Authorization", "Bearer "
+							+ accessToken);
+					if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(
+										connection.getInputStream()));
+						username = getUsername(reader);
 					} else {
 						return null;
 					}
@@ -146,29 +179,43 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 			} catch (IOException e) {
 				return null;
 			}
+			return new String[] { accessToken, username };
 		}
 
 		@Override
-		protected void onPostExecute(String accessToken) {
-			if (accessToken != null) {
-				progressConnecting.setVisibility(View.INVISIBLE);
-				textConnectedTo.setText(R.string.flattr_connected_to);
+		protected void onPostExecute(String[] result) {
+			if (result != null) {
+				String accessToken = result[0];
+				String username = result[1];
 				Log.e(this, accessToken);
+				Log.e(this, username);
+				progressConnecting.setVisibility(View.INVISIBLE);
+				textConnectedTo.setText(Html.fromHtml(getString(
+						R.string.flattr_connected_to, username)));
 				// TODO save access token
 			} else {
 				// display error TODO
 				Toast.makeText(getActivity(), "Connecting failed",
 						Toast.LENGTH_LONG).show();
+				hideHeader();
 			}
 		}
 
 		private String getAccessToken(Reader in) {
+			return getJsonStringValue(in, "access_token");
+		}
+
+		private String getUsername(Reader in) {
+			return getJsonStringValue(in, "username");
+		}
+
+		private String getJsonStringValue(Reader in, String key) {
 			JsonReader json = new JsonReader(in);
 			try {
 				try {
 					json.beginObject();
 					while (json.hasNext()) {
-						if (json.nextName().equals("access_token")) {
+						if (json.nextName().equals(key)) {
 							return json.nextString();
 						} else {
 							json.skipValue();

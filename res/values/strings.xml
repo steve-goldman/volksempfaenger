@@ -130,7 +130,7 @@
     <string name="settings_flattr">Flattr</string>
     <string name="button_flattr_auth">Connect to Flattr</string>
     <string name="settings_summary_flattr_auth">Allow %s to flattr episodes</string>
-    <string name="flattr_connected_to">Connected to <b>%s</b></string>
+    <string name="flattr_connected_to">Connected to &lt;b>%s&lt;/b> on Flattr</string>
     <string name="flattr_connecting">Connecting…</string>
 
 </resources>
