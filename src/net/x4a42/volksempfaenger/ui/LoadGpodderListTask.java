@@ -80,20 +80,26 @@ public class LoadGpodderListTask extends
 		Downloader downloader = new Downloader(context);
 		try {
 			HttpURLConnection connection = downloader.getConnection(url);
-			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(connection.getInputStream()));
-				new GpodderJsonReader(reader, new GpodderJsonReaderListener() {
+			try {
+				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(connection.getInputStream()));
+					new GpodderJsonReader(reader,
+							new GpodderJsonReaderListener() {
 
-					@SuppressWarnings("unchecked")
-					@Override
-					public void onPodcast(HashMap<String, String> podcast) {
-						publishProgress(podcast);
-					}
-				}).read();
-				return true;
-			} else {
-				return false;
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onPodcast(
+										HashMap<String, String> podcast) {
+									publishProgress(podcast);
+								}
+							}).read();
+					return true;
+				} else {
+					return false;
+				}
+			} finally {
+				connection.disconnect();
 			}
 		} catch (IOException e) {
 			return false;
