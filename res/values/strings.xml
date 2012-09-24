@@ -129,5 +129,6 @@
     <string name="settings_summary_flattr">Flattr settings</string>
     <string name="settings_flattr">Flattr</string>
     <string name="button_flattr_auth">Connect to Flattr</string>
+    <string name="settings_summary_flattr_auth">Allow %s to flattr episodes</string>
 
 </resources>

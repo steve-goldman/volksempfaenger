@@ -70,7 +70,7 @@ public class SettingsActivity extends PreferenceActivity {
 				intent.putExtra(EXTRA_SHOW_FRAGMENT,
 						FlattrSettingsFragment.class.getName());
 				Bundle bundle = new Bundle();
-				bundle.putString("code", uri.getQueryParameter("code"));
+				bundle.putString("callback", uri.toString());
 				intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle);
 				startActivity(intent);
 			}
