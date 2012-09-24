@@ -7,6 +7,7 @@
     <string name="settings_default_download_wifi">true</string>
     <string name="settings_default_download_charging">false</string>
     <string name="settings_default_download_concurrent">1</string>
+    <string name="settings_default_flattr_auto">0</string>
 
     <!-- We need to use a string-array here as ListPreference breaks otherwise -->
     <string-array name="settings_interval_values">
@@ -17,6 +18,12 @@
         <item>28800000</item>
         <item>43200000</item>
         <item>86400000</item>
+    </string-array>
+    <string-array name="settings_flattr_auto_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <dimen name="grid_column_width">150dp</dimen>

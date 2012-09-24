@@ -132,5 +132,13 @@
     <string name="settings_summary_flattr_auth">Allow %s to flattr episodes</string>
     <string name="flattr_connected_to">Connected to &lt;b>%s&lt;/b> on Flattr</string>
     <string name="flattr_connecting">Connecting…</string>
+    <string name="settings_flattr_auto">Flattr automatically</string>
+
+    <string-array name="settings_flattr_auto_choices">
+        <item>Never</item>
+        <item>New episodes</item>
+        <item>Played episodes</item>
+        <item>Finished episodes</item>
+    </string-array>
 
 </resources>
