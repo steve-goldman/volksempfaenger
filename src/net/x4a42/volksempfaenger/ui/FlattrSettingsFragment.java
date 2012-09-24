@@ -1,19 +1,32 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+
 import net.x4a42.volksempfaenger.Constants;
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.net.Downloader;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.util.Base64;
+import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FlattrSettingsFragment extends PreferenceFragment implements
 		OnPreferenceClickListener {
@@ -45,6 +58,8 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 					showHeader();
 					progressConnecting.setVisibility(View.VISIBLE);
 					textConnectedTo.setText(R.string.flattr_connecting);
+					new RetrieveAccessTokenTask().executeOnExecutor(
+							AsyncTask.THREAD_POOL_EXECUTOR, code);
 				} else {
 					// authorization failed TODO
 				}
@@ -84,5 +99,91 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 		textConnectedTo.setVisibility(View.VISIBLE);
 		progressConnecting.setVisibility(View.INVISIBLE);
 		list.setHeaderDividersEnabled(true);
+	}
+
+	private class RetrieveAccessTokenTask extends
+			AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			String code = params[0];
+			String body = String
+					.format("{\"grant_type\": \"authorization_code\", \"redirect_uri\": \"%s\", \"code\": \"%s\"}",
+							Constants.FLATTR_REDIRECT_URI, code);
+			Downloader downloader = new Downloader(getActivity());
+			try {
+				HttpURLConnection connection = downloader
+						.getConnection("https://flattr.com/oauth/token");
+				try {
+					connection.setRequestProperty("Content-Type",
+							"application/json");
+					String auth = Base64
+							.encodeToString(
+									(Constants.FLATTR_OAUTH_TOKEN + ":" + Constants.FLATTR_OAUTH_SECRET)
+											.getBytes(), Base64.NO_WRAP);
+					connection.setRequestProperty("Authorization", "Basic "
+							+ auth);
+					connection.setDoOutput(true);
+					connection.setFixedLengthStreamingMode(body.length());
+					OutputStreamWriter bodyStreamWriter = new OutputStreamWriter(
+							connection.getOutputStream());
+					try {
+						bodyStreamWriter.write(body);
+					} finally {
+						bodyStreamWriter.close();
+					}
+					if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(
+										connection.getInputStream()));
+						return getAccessToken(reader);
+					} else {
+						return null;
+					}
+				} finally {
+					connection.disconnect();
+				}
+			} catch (IOException e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String accessToken) {
+			if (accessToken != null) {
+				progressConnecting.setVisibility(View.INVISIBLE);
+				textConnectedTo.setText(R.string.flattr_connected_to);
+				Log.e(this, accessToken);
+				// TODO save access token
+			} else {
+				// display error TODO
+				Toast.makeText(getActivity(), "Connecting failed",
+						Toast.LENGTH_LONG).show();
+			}
+		}
+
+		private String getAccessToken(Reader in) {
+			JsonReader json = new JsonReader(in);
+			try {
+				try {
+					json.beginObject();
+					while (json.hasNext()) {
+						if (json.nextName().equals("access_token")) {
+							return json.nextString();
+						} else {
+							json.skipValue();
+						}
+					}
+					json.endObject();
+				} finally {
+					json.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+
 	}
 }
