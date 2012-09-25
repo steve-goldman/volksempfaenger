@@ -15,9 +15,12 @@ public class EpisodeHelper {
 	private static final String EPISODE_DOWNLOAD_NOT_NULL = Episode.DOWNLOAD_ID
 			+ " IS NOT NULL";
 	private static final String[] DOWNLOAD_ID_PROJECTION = { Episode.DOWNLOAD_ID };
+	private static final String EPISODE_FLATTRABLE = Episode.FLATTR_STATUS
+			+ " = " + Constants.FLATTR_STATE_NEW;
 	private static final ContentValues MARK_AS_LISTENED_VALUES = new ContentValues();
 	private static final ContentValues MARK_AS_NEW_VALUES = new ContentValues();
 	private static final ContentValues REMOVE_DOWNLOAD_VALUES = new ContentValues();
+	private static final ContentValues FLATTR_VALUES = new ContentValues();
 
 	static {
 		MARK_AS_LISTENED_VALUES.put(Episode.STATUS,
@@ -28,6 +31,8 @@ public class EpisodeHelper {
 		REMOVE_DOWNLOAD_VALUES.putNull(Episode.DOWNLOAD_ID);
 		REMOVE_DOWNLOAD_VALUES.put(Episode.STATUS,
 				Constants.EPISODE_STATE_LISTENED);
+		FLATTR_VALUES
+				.put(Episode.FLATTR_STATUS, Constants.FLATTR_STATE_PENDING);
 	}
 
 	public static void markAsListened(ContentResolver resolver, Uri uri) {
@@ -138,5 +143,15 @@ public class EpisodeHelper {
 		} else {
 			return false;
 		}
+	}
+
+	public static void flattr(ContentResolver resolver, Uri uri) {
+		resolver.update(uri, FLATTR_VALUES, EPISODE_FLATTRABLE, null);
+	}
+
+	public static void flattr(ContentResolver resolver, long id) {
+		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
+				FLATTR_VALUES, EPISODE_FLATTRABLE + " AND " + Episode._ID
+						+ " = ?", new String[] { String.valueOf(id) });
 	}
 }
