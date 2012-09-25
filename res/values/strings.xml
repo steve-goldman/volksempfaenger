@@ -141,4 +141,6 @@
         <item>Finished episodes</item>
     </string-array>
 
+    <string name="button_flattr">Flattr</string>
+
 </resources>
