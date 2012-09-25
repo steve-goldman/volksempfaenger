@@ -434,7 +434,7 @@ public class ViewEpisodeActivity extends Activity implements
 		if (episodeCursor == null)
 			return;
 
-		setTitle(episodeCursor.getPodcastTitle());
+		setTitle(episodeCursor.getTitle());
 
 		subscriptionId = episodeCursor.getPodcastId();
 
