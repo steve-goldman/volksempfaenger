@@ -8,7 +8,9 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 
 import net.x4a42.volksempfaenger.Constants;
+import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.net.Downloader;
 import android.content.Intent;
@@ -22,7 +24,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Html;
 import android.util.Base64;
-import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +39,6 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 	private ProgressBar progressConnecting;
 	private ListView list;
 	private SharedPreferences prefs;
-
-	private static final String KEY_USERNAME = "flattr_username";
-	private static final String KEY_ACCESS_TOKEN = "flattr_access_token";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 	public void onStart() {
 		super.onStart();
 
-		String username = prefs.getString(KEY_USERNAME, null);
+		String username = prefs.getString(PreferenceKeys.FLATTR_USERNAME, null);
 		if (username == null) {
 			hideHeader();
 		} else {
@@ -216,8 +214,9 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 				progressConnecting.setVisibility(View.INVISIBLE);
 				setConnectedTo(username);
 				Editor editor = prefs.edit();
-				editor.putString(KEY_USERNAME, username);
-				editor.putString(KEY_ACCESS_TOKEN, accessToken);
+				editor.putString(PreferenceKeys.FLATTR_USERNAME, username);
+				editor.putString(PreferenceKeys.FLATTR_ACCESS_TOKEN,
+						accessToken);
 				if (!editor.commit()) {
 					// display error TODO
 				}
@@ -230,34 +229,11 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 		}
 
 		private String getAccessToken(Reader in) {
-			return getJsonStringValue(in, "access_token");
+			return Utils.getJsonStringValue(in, "access_token");
 		}
 
 		private String getUsername(Reader in) {
-			return getJsonStringValue(in, "username");
-		}
-
-		private String getJsonStringValue(Reader in, String key) {
-			JsonReader json = new JsonReader(in);
-			try {
-				try {
-					json.beginObject();
-					while (json.hasNext()) {
-						if (json.nextName().equals(key)) {
-							return json.nextString();
-						} else {
-							json.skipValue();
-						}
-					}
-					json.endObject();
-				} finally {
-					json.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
+			return Utils.getJsonStringValue(in, "username");
 		}
 
 	}

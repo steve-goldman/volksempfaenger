@@ -13,4 +13,6 @@ public final class PreferenceKeys {
 	public static final String ABOUT_BUGTRACKER = "about_bugtracker";
 	public static final String ABOUT_LICENSE = "about_license";
 	public static final String ABOUT_FLATTR = "about_flattr";
+	public static final String FLATTR_USERNAME = "flattr_username";
+	public static final String FLATTR_ACCESS_TOKEN = "flattr_access_token";
 }

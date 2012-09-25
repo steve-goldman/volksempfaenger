@@ -166,6 +166,7 @@
         <service android:name=".service.UpdateService" />
         <service android:name=".service.LegacyUpdateService" />
         <service android:name=".service.PlaybackService" />
+        <service android:name=".service.FlattrService" />
 
         <receiver
             android:name=".receiver.BootCompletedReceiver"

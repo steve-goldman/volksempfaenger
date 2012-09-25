@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.JsonReader;
 
 public class Utils {
 	public static String joinArray(Object[] objects, CharSequence sep) {
@@ -281,6 +282,29 @@ public class Utils {
 		}
 		return written;
 
+	}
+
+	public static String getJsonStringValue(Reader in, String key) {
+		JsonReader json = new JsonReader(in);
+		try {
+			try {
+				json.beginObject();
+				while (json.hasNext()) {
+					if (json.nextName().equals(key)) {
+						return json.nextString();
+					} else {
+						json.skipValue();
+					}
+				}
+				json.endObject();
+			} finally {
+				json.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
