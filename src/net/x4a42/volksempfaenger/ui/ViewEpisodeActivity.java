@@ -59,6 +59,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +78,7 @@ public class ViewEpisodeActivity extends Activity implements
 	private TextView episodeTitle;
 	private TextView episodeMeta;
 	private TextView episodeDescription;
+	private Button flattrButton;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
 	private SpannableStringBuilder descriptionSpanned;
@@ -95,6 +98,7 @@ public class ViewEpisodeActivity extends Activity implements
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeMeta = (TextView) findViewById(R.id.episode_meta);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
+		flattrButton = (Button) findViewById(R.id.button_flattr);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -414,7 +418,8 @@ public class ViewEpisodeActivity extends Activity implements
 				Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,
 				Episode.DOWNLOAD_TOTAL_SIZE_BYTES, Episode.ENCLOSURE_ID,
-				Episode.ENCLOSURE_SIZE };
+				Episode.ENCLOSURE_SIZE, Episode.FLATTR_STATUS,
+				Episode.FLATTR_URL };
 		return new CursorLoader(this, mEpisodeUri, projection, null, null, null);
 	}
 
@@ -498,9 +503,18 @@ public class ViewEpisodeActivity extends Activity implements
 			lastImageLoadTask = new ImageLoadTask()
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
-	}
 
-	public void onClickDownload(View v) {
+		if (episodeCursor.getFlattrStatus() == net.x4a42.volksempfaenger.data.Constants.FLATTR_STATE_NEW) {
+			flattrButton.setVisibility(View.VISIBLE);
+			final String url = episodeCursor.getFlattrUrl();
+			flattrButton.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Log.e(this, url);
+				}
+			});
+		}
 	}
 
 	public void onClickPlay(View v) {

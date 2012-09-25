@@ -32,6 +32,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/padding_medium" />
 
+            <Button
+                android:id="@+id/button_flattr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_flattr"
+                android:visibility="gone" />
+
             <net.x4a42.volksempfaenger.ui.PatchedTextView
                 android:id="@+id/episode_description"
                 android:layout_width="match_parent"

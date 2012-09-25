@@ -11,8 +11,11 @@ public class Constants {
 	public static final int FLATTR_STATE_NONE = 0;
 	// unflattred
 	public static final int FLATTR_STATE_NEW = 1;
-	// user has flattred the episode, but the actual flattr action did not happen yet
-	public static final int FLATTR_STATE_USER_FLATTRED = 10;
+	// user has chosen not to (auto-)flattr this episode
+	public static final int FLATTR_STATE_DONT_FLATTR = 5;
+	// user has flattred the episode, but the actual flattr action did not
+	// happen yet
+	public static final int FLATTR_STATE_PENDING = 10;
 	// the episode got flattred successfuly
-	public static final int FLATTR_STATE_FLATTRED_COMPLETE = 20;
+	public static final int FLATTR_STATE_FLATTRED = 20;
 }
