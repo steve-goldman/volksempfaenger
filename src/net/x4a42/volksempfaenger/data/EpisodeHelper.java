@@ -21,6 +21,7 @@ public class EpisodeHelper {
 	private static final ContentValues MARK_AS_NEW_VALUES = new ContentValues();
 	private static final ContentValues REMOVE_DOWNLOAD_VALUES = new ContentValues();
 	private static final ContentValues FLATTR_VALUES = new ContentValues();
+	private final static ContentValues MARK_FLATTRED_VALUES = new ContentValues();
 
 	static {
 		MARK_AS_LISTENED_VALUES.put(Episode.STATUS,
@@ -33,6 +34,8 @@ public class EpisodeHelper {
 				Constants.EPISODE_STATE_LISTENED);
 		FLATTR_VALUES
 				.put(Episode.FLATTR_STATUS, Constants.FLATTR_STATE_PENDING);
+		MARK_FLATTRED_VALUES.put(Episode.FLATTR_STATUS,
+				Constants.FLATTR_STATE_FLATTRED);
 	}
 
 	public static void markAsListened(ContentResolver resolver, Uri uri) {
@@ -153,5 +156,12 @@ public class EpisodeHelper {
 		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
 				FLATTR_VALUES, EPISODE_FLATTRABLE + " AND " + Episode._ID
 						+ " = ?", new String[] { String.valueOf(id) });
+	}
+
+	public static void markAsFlattred(ContentResolver resolver, long... ids) {
+		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
+				MARK_FLATTRED_VALUES,
+				String.format(EPISODE_WHERE_ID_IN, Utils.joinArray(ids, ",")),
+				null);
 	}
 }
