@@ -15,6 +15,7 @@ import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
+import net.x4a42.volksempfaenger.service.FlattrService;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService;
@@ -593,6 +594,8 @@ public class ViewEpisodeActivity extends Activity implements
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_flattr) {
 			EpisodeHelper.flattr(getContentResolver(), mEpisodeId);
+			Intent intent = new Intent(this, FlattrService.class);
+			startService(intent);
 		}
 	}
 

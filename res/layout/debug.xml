@@ -8,32 +8,38 @@
 
     <Button
         android:id="@+id/button_testfeed"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Test FeedParser" />
 
     <Button
         android:id="@+id/button_testfeeds"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Test FeedParser (multiple feeds)" />
 
     <Button
         android:id="@+id/button_startupdate"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start UpdateService" />
 
     <Button
         android:id="@+id/button_startclean"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start CleanCacheService" />
 
     <Button
         android:id="@+id/button_startdownload"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start DownloadService" />
+
+    <Button
+        android:id="@+id/button_startflattr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start FlattrService" />
 
 </LinearLayout>

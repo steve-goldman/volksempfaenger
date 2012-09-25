@@ -12,6 +12,7 @@ import net.x4a42.volksempfaenger.feedparser.FeedItem;
 import net.x4a42.volksempfaenger.feedparser.FeedParser;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.DownloadService;
+import net.x4a42.volksempfaenger.service.FlattrService;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.Activity;
 import android.content.Intent;
@@ -32,6 +33,8 @@ public class DebugActivity extends Activity implements OnClickListener {
 	private Button buttonTestFeed;
 	private Button buttonTestMultipleFeeds;
 
+	private Button buttonStartFlattr;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,12 +45,14 @@ public class DebugActivity extends Activity implements OnClickListener {
 		buttonStartClean = (Button) findViewById(R.id.button_startclean);
 		buttonTestFeed = (Button) findViewById(R.id.button_testfeed);
 		buttonTestMultipleFeeds = (Button) findViewById(R.id.button_testfeeds);
+		buttonStartFlattr = (Button) findViewById(R.id.button_startflattr);
 
 		buttonStartUpdate.setOnClickListener(this);
 		buttonStartDownload.setOnClickListener(this);
 		buttonStartClean.setOnClickListener(this);
 		buttonTestFeed.setOnClickListener(this);
 		buttonTestMultipleFeeds.setOnClickListener(this);
+		buttonStartFlattr.setOnClickListener(this);
 	}
 
 	@Override
@@ -82,6 +87,11 @@ public class DebugActivity extends Activity implements OnClickListener {
 			return;
 		case R.id.button_testfeeds:
 			testMultipleFeeds();
+			return;
+		case R.id.button_startflattr:
+			intent = new Intent(this, FlattrService.class);
+			startService(intent);
+			return;
 		}
 	}
 
