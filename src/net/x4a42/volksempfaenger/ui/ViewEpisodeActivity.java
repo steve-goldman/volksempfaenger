@@ -9,6 +9,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
+import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
@@ -66,7 +67,7 @@ import android.widget.Toast;
 
 public class ViewEpisodeActivity extends Activity implements
 		LoaderManager.LoaderCallbacks<Cursor>, ServiceConnection,
-		EventListener, OnUpPressedCallback {
+		EventListener, OnUpPressedCallback, OnClickListener {
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -99,6 +100,7 @@ public class ViewEpisodeActivity extends Activity implements
 		episodeMeta = (TextView) findViewById(R.id.episode_meta);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
 		flattrButton = (Button) findViewById(R.id.button_flattr);
+		flattrButton.setOnClickListener(this);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -504,16 +506,27 @@ public class ViewEpisodeActivity extends Activity implements
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 
-		if (episodeCursor.getFlattrStatus() == net.x4a42.volksempfaenger.data.Constants.FLATTR_STATE_NEW) {
+		switch (episodeCursor.getFlattrStatus()) {
+		case Constants.FLATTR_STATE_NONE:
+			flattrButton.setVisibility(View.GONE);
+			flattrButton.setEnabled(false);
+			break;
+		case Constants.FLATTR_STATE_NEW:
 			flattrButton.setVisibility(View.VISIBLE);
-			final String url = episodeCursor.getFlattrUrl();
-			flattrButton.setOnClickListener(new OnClickListener() {
+			flattrButton.setText(R.string.button_flattr);
+			flattrButton.setEnabled(true);
+			break;
+		case Constants.FLATTR_STATE_PENDING:
+			flattrButton.setVisibility(View.VISIBLE);
+			flattrButton.setText(R.string.button_flattr_pending);
+			flattrButton.setEnabled(false);
+			break;
+		case Constants.FLATTR_STATE_FLATTRED:
+			flattrButton.setVisibility(View.VISIBLE);
+			flattrButton.setText(R.string.button_flattr_flattred);
+			flattrButton.setEnabled(false);
+			break;
 
-				@Override
-				public void onClick(View v) {
-					Log.e(this, url);
-				}
-			});
 		}
 	}
 
@@ -574,6 +587,13 @@ public class ViewEpisodeActivity extends Activity implements
 	@Override
 	public void onPlaybackEvent(Event event) {
 		invalidateOptionsMenu();
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.button_flattr) {
+			EpisodeHelper.flattr(getContentResolver(), mEpisodeId);
+		}
 	}
 
 }
