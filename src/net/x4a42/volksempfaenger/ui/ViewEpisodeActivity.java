@@ -19,6 +19,9 @@ import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
 import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
+
+import org.xml.sax.XMLReader;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,7 +45,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
 import android.text.Html;
+import android.text.Html.TagHandler;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -466,7 +471,22 @@ public class ViewEpisodeActivity extends Activity implements
 			lastImageLoadTask.cancel(true);
 		}
 
-		Spanned s = Html.fromHtml(episodeCursor.getDescription());
+		Spanned s = Html.fromHtml(episodeCursor.getDescription(), null,
+				new TagHandler() {
+					@Override
+					public void handleTag(boolean opening, String tag,
+							Editable output, XMLReader xmlReader) {
+						if (!opening) {
+							if (tag.equals("li") || tag.equals("tr")
+									|| tag.equals("table") || tag.equals("ol")
+									|| tag.equals("ul")) {
+								output.append("\n");
+							} else if (tag.equals("td")) {
+								output.append(" ");
+							}
+						}
+					}
+				});
 		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
 				: new SpannableStringBuilder(s);
 		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
