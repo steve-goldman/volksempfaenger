@@ -474,6 +474,12 @@ public class ViewEpisodeActivity extends Activity implements
 			meta.append(getString(R.string.unknown_size));
 		}
 		episodeMeta.setText(meta);
+		if (episodeCursor.getFlattrStatus() != Constants.FLATTR_STATE_NONE) {
+			episodeMeta.setCompoundDrawablesWithIntrinsicBounds(null, null,
+					getResources().getDrawable(R.drawable.flattr_logo), null);
+		} else {
+			episodeMeta.setCompoundDrawables(null, null, null, null);
+		}
 
 		if (lastImageLoadTask != null) {
 			lastImageLoadTask.cancel(true);
