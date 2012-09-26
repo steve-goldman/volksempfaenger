@@ -62,7 +62,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,7 +80,7 @@ public class ViewEpisodeActivity extends Activity implements
 	private TextView episodeTitle;
 	private TextView episodeMeta;
 	private TextView episodeDescription;
-	private Button flattrButton;
+	private ImageButton flattrButton;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
 	private SpannableStringBuilder descriptionSpanned;
@@ -100,7 +100,7 @@ public class ViewEpisodeActivity extends Activity implements
 		episodeTitle = (TextView) findViewById(R.id.episode_title);
 		episodeMeta = (TextView) findViewById(R.id.episode_meta);
 		episodeDescription = (TextView) findViewById(R.id.episode_description);
-		flattrButton = (Button) findViewById(R.id.button_flattr);
+		flattrButton = (ImageButton) findViewById(R.id.button_flattr);
 		flattrButton.setOnClickListener(this);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
@@ -510,22 +510,19 @@ public class ViewEpisodeActivity extends Activity implements
 		switch (episodeCursor.getFlattrStatus()) {
 		case Constants.FLATTR_STATE_NONE:
 			flattrButton.setVisibility(View.GONE);
-			flattrButton.setEnabled(false);
 			break;
 		case Constants.FLATTR_STATE_NEW:
 			flattrButton.setVisibility(View.VISIBLE);
-			flattrButton.setText(R.string.button_flattr);
 			flattrButton.setEnabled(true);
+			flattrButton
+					.setBackgroundResource(R.drawable.flattr_button_background);
 			break;
 		case Constants.FLATTR_STATE_PENDING:
-			flattrButton.setVisibility(View.VISIBLE);
-			flattrButton.setText(R.string.button_flattr_pending);
-			flattrButton.setEnabled(false);
-			break;
 		case Constants.FLATTR_STATE_FLATTRED:
 			flattrButton.setVisibility(View.VISIBLE);
-			flattrButton.setText(R.string.button_flattr_flattred);
 			flattrButton.setEnabled(false);
+			flattrButton
+					.setBackgroundResource(R.drawable.flattr_button_background_flattred);
 			break;
 
 		}

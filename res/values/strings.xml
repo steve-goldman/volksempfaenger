@@ -142,7 +142,5 @@
     </string-array>
 
     <string name="button_flattr">Flattr</string>
-    <string name="button_flattr_pending">Pending Flattr…</string>
-    <string name="button_flattr_flattred">Flattred</string>
 
 </resources>
