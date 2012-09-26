@@ -13,11 +13,8 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/padding_large"
-            android:layout_marginLeft="@dimen/padding_large"
-            android:layout_marginRight="@dimen/padding_large"
-            android:layout_marginTop="@dimen/padding_medium"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="@dimen/padding_medium" >
 
             <TextView
                 android:id="@+id/episode_title"
@@ -28,9 +25,18 @@
             <TextView
                 android:id="@+id/episode_meta"
                 style="@android:style/TextAppearance.Holo.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/padding_medium"
+                android:drawablePadding="@dimen/padding_small" />
+
+            <net.x4a42.volksempfaenger.ui.PatchedTextView
+                android:id="@+id/episode_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/padding_medium" />
+                android:textColor="@color/episode_description_text"
+                android:textColorHighlight="@color/episode_description_text"
+                android:textColorLink="@color/episode_description_link" />
 
             <ImageButton
                 android:id="@+id/button_flattr"
@@ -40,14 +46,6 @@
                 android:contentDescription="@string/button_flattr"
                 android:src="@drawable/flattr_button"
                 android:visibility="gone" />
-
-            <net.x4a42.volksempfaenger.ui.PatchedTextView
-                android:id="@+id/episode_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/episode_description_text"
-                android:textColorHighlight="@color/episode_description_text"
-                android:textColorLink="@color/episode_description_link" />
         </LinearLayout>
     </ScrollView>
 
