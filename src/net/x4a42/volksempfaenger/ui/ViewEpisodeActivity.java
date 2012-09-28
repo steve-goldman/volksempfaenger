@@ -155,12 +155,14 @@ public class ViewEpisodeActivity extends Activity implements
 
 		if (episodeCursor != null && remote != null) {
 
-			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL
+					|| episodeCursor.getEnclosureNumber() == 0) {
 				menu.removeItem(R.id.item_download);
 			}
 
-			if (remote.isPlaying()
-					&& mEpisodeUri.equals(remote.getEpisodeUri())) {
+			if ((remote.isPlaying() && mEpisodeUri.equals(remote
+					.getEpisodeUri()))
+					|| (episodeCursor.getEnclosureNumber() == 0)) {
 				menu.removeItem(R.id.item_play);
 			}
 
@@ -425,7 +427,7 @@ public class ViewEpisodeActivity extends Activity implements
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,
 				Episode.DOWNLOAD_TOTAL_SIZE_BYTES, Episode.ENCLOSURE_ID,
 				Episode.ENCLOSURE_SIZE, Episode.FLATTR_STATUS,
-				Episode.FLATTR_URL };
+				Episode.FLATTR_URL, Episode.ENCLOSURE_NUMBER };
 		return new CursorLoader(this, mEpisodeUri, projection, null, null, null);
 	}
 

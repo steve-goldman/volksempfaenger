@@ -254,6 +254,11 @@ public class Columns {
 		 */
 		public static final String FLATTR_STATUS = "flattr_status";
 
+		/**
+		 * Number of enclosures (type int)
+		 */
+		public static final String ENCLOSURE_NUMBER = "enclosure_number";
+
 	}
 
 	/**
