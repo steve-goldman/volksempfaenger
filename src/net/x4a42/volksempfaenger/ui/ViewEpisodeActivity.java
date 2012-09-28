@@ -520,7 +520,9 @@ public class ViewEpisodeActivity extends Activity implements
 				.getSharedPreferences();
 		String flattrAutoPrefs = prefs.getString(PreferenceKeys.FLATTR_AUTO,
 				null);
-		if (flattrAutoPrefs == null || flattrAutoPrefs.equals("0")) {
+		if (flattrAutoPrefs == null
+				|| flattrAutoPrefs
+						.equals(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_NEVER)) {
 			switch (episodeCursor.getFlattrStatus()) {
 			case Constants.FLATTR_STATE_NONE:
 				flattrButton.setVisibility(View.GONE);

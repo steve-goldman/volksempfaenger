@@ -3,8 +3,10 @@ package net.x4a42.volksempfaenger.service;
 import java.io.File;
 import java.io.IOException;
 
+import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
@@ -24,6 +26,7 @@ import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -257,7 +260,8 @@ public class PlaybackService extends Service implements EventListener {
 						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
 						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_LOCAL_URI,
 						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE,
-						Episode.ENCLOSURE_URL }, null, null, null));
+						Episode.ENCLOSURE_URL, Episode.FLATTR_STATUS }, null,
+				null, null));
 
 		if (!cursor.moveToFirst()) {
 			throw new IllegalArgumentException("Episode not found");
@@ -283,6 +287,7 @@ public class PlaybackService extends Service implements EventListener {
 				.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM,
 						cursor.getPodcastTitle());
 		metadataEditor.apply();
+		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_STARTED);
 	}
 
 	/**
@@ -390,7 +395,6 @@ public class PlaybackService extends Service implements EventListener {
 				pauseIntent);
 		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 		nm.notify(NOTIFICATION_ID, notification);
-
 	}
 
 	private void onPlayerReset() {
@@ -400,6 +404,7 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerEnd() {
 		EpisodeHelper.markAsListened(getContentResolver(), uri);
+		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_FINISHED);
 		savePosition(0);
 		onPlayerStop();
 	}
@@ -502,4 +507,16 @@ public class PlaybackService extends Service implements EventListener {
 
 	}
 
+	private void flattrEpisodeIfAutoPrefIs(String flattrAutoPrefValue) {
+		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
+				.getSharedPreferences();
+		String autoFlattr = prefs.getString(PreferenceKeys.FLATTR_AUTO, null);
+		if (autoFlattr != null
+				&& cursor.getFlattrStatus() == Constants.FLATTR_STATE_NEW
+				&& autoFlattr.equals(flattrAutoPrefValue)) {
+			EpisodeHelper.flattr(getContentResolver(), uri);
+			Intent intent = new Intent(this, FlattrService.class);
+			startService(intent);
+		}
+	}
 }
