@@ -20,7 +20,11 @@ public final class Constants {
 	// other
 	public static final String ERROR_REPORT_PREFIX = "error-report";
 	public static final int LOGO_DISC_CACHE_SIZE = 1024 * 1024 * 20;
-	public static String FLATTR_OAUTH_TOKEN = "xDtH4BthpOi7ZlyWsA6jcNIhsi3pDj61";
-	public static String FLATTR_OAUTH_SECRET = "MpyGRSO7wX4l8t7qU3zWH840gXgJ6cBJr0g9IU75H1gGleX58mSFlMwrzC1wEs6W";
-	public static String FLATTR_REDIRECT_URI = "net.x4a42.volksempfaenger://callback.oauth.flattr";
+	public static final String FLATTR_OAUTH_TOKEN = "xDtH4BthpOi7ZlyWsA6jcNIhsi3pDj61";
+	public static final String FLATTR_OAUTH_SECRET = "MpyGRSO7wX4l8t7qU3zWH840gXgJ6cBJr0g9IU75H1gGleX58mSFlMwrzC1wEs6W";
+	public static final String FLATTR_REDIRECT_URI = "net.x4a42.volksempfaenger://callback.oauth.flattr";
+
+	public static final String PREF_AUTO_FLATTR_NEVER = "0";
+	public static final String PREF_AUTO_FLATTR_STARTED = "1";
+	public static final String PREF_AUTO_FLATTR_FINISHED = "2";
 }

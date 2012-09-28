@@ -136,8 +136,7 @@
 
     <string-array name="settings_flattr_auto_choices">
         <item>Never</item>
-        <item>New episodes</item>
-        <item>Played episodes</item>
+        <item>Started episodes</item>
         <item>Finished episodes</item>
     </string-array>
 
