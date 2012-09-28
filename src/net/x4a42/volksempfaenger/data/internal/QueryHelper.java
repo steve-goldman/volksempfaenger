@@ -114,6 +114,9 @@ public class QueryHelper extends ContentProviderHelper {
 				+ Episode.FLATTR_URL);
 		temp.put(Episode.FLATTR_STATUS, "episode.flattr_status AS "
 				+ Episode.FLATTR_STATUS);
+		temp.put(Episode.ENCLOSURE_NUMBER,
+				"(SELECT COUNT(*) FROM enclosure WHERE episode._id = enclosure.episode_id) AS "
+						+ Episode.ENCLOSURE_NUMBER);
 		episodeColumnMap = Collections.unmodifiableMap(temp);
 
 		// enclosureColumnMap

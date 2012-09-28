@@ -36,6 +36,7 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 	private int COLUMN_HASH;
 	private int COLUMN_FLATTR_URL;
 	private int COLUMN_FLATTR_STATUS;
+	private int COLUMN_ENCLOSURE_NUMBER;
 
 	public EpisodeCursor(Cursor cursor) {
 		super(cursor);
@@ -66,6 +67,7 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 		COLUMN_HASH = getColumnIndex(Episode.HASH);
 		COLUMN_FLATTR_URL = getColumnIndex(Episode.FLATTR_URL);
 		COLUMN_FLATTR_STATUS = getColumnIndex(Episode.FLATTR_STATUS);
+		COLUMN_ENCLOSURE_NUMBER = getColumnIndex(Episode.ENCLOSURE_NUMBER);
 	}
 
 	public long getId() {
@@ -217,6 +219,10 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 
 	public int getFlattrStatus() {
 		return getInt(COLUMN_FLATTR_STATUS);
+	}
+
+	public int getEnclosureNumber() {
+		return getInt(COLUMN_ENCLOSURE_NUMBER);
 	}
 
 }
