@@ -15,3 +15,5 @@ CREATE TABLE DownloadManager.download (
 	local_uri TEXT,                   -- COLUMN_LOCAL_URI
 	reason INTEGER                    -- COLUMN_REASON
 );
+
+CREATE INDEX DownloadManager.index_download_status ON download ("status");
