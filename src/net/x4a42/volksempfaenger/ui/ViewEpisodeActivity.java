@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.Columns.Enclosure;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -38,6 +40,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -513,24 +516,29 @@ public class ViewEpisodeActivity extends Activity implements
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 
-		switch (episodeCursor.getFlattrStatus()) {
-		case Constants.FLATTR_STATE_NONE:
-			flattrButton.setVisibility(View.GONE);
-			break;
-		case Constants.FLATTR_STATE_NEW:
-			flattrButton.setVisibility(View.VISIBLE);
-			flattrButton.setEnabled(true);
-			flattrButton
-					.setBackgroundResource(R.drawable.flattr_button_background);
-			break;
-		case Constants.FLATTR_STATE_PENDING:
-		case Constants.FLATTR_STATE_FLATTRED:
-			flattrButton.setVisibility(View.VISIBLE);
-			flattrButton.setEnabled(false);
-			flattrButton
-					.setBackgroundResource(R.drawable.flattr_button_background_flattred);
-			break;
-
+		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
+				.getSharedPreferences();
+		String flattrAutoPrefs = prefs.getString(PreferenceKeys.FLATTR_AUTO,
+				null);
+		if (flattrAutoPrefs == null || flattrAutoPrefs.equals("0")) {
+			switch (episodeCursor.getFlattrStatus()) {
+			case Constants.FLATTR_STATE_NONE:
+				flattrButton.setVisibility(View.GONE);
+				break;
+			case Constants.FLATTR_STATE_NEW:
+				flattrButton.setVisibility(View.VISIBLE);
+				flattrButton.setEnabled(true);
+				flattrButton
+						.setBackgroundResource(R.drawable.flattr_button_background);
+				break;
+			case Constants.FLATTR_STATE_PENDING:
+			case Constants.FLATTR_STATE_FLATTRED:
+				flattrButton.setVisibility(View.VISIBLE);
+				flattrButton.setEnabled(false);
+				flattrButton
+						.setBackgroundResource(R.drawable.flattr_button_background_flattred);
+				break;
+			}
 		}
 	}
 
