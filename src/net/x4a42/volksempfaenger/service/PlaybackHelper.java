@@ -39,8 +39,6 @@ public class PlaybackHelper implements OnPreparedListener,
 				.getSystemService(Context.AUDIO_SERVICE);
 		context.registerReceiver(audioNoisyReceiver, new IntentFilter(
 				AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-		// TODO see #97: Test if wake lock is necessary
-		// player.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 	}
 
 	public AudioManager getAudioManager() {
