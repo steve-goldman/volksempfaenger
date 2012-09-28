@@ -84,6 +84,8 @@ public class UpdateService extends Service {
 		} else {
 			UpdateState update = new UpdateState(this, intent, startId);
 			update.startUpdate();
+			Intent flattrIntent = new Intent(this, FlattrService.class);
+			startService(flattrIntent);
 		}
 
 		return START_REDELIVER_INTENT;
