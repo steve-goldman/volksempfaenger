@@ -38,3 +38,5 @@ CREATE TABLE "enclosure" (
 	"size" INTEGER,
 	UNIQUE ("episode_id", "url")
 );
+
+CREATE INDEX index_episode_status ON "episode" ("status");
