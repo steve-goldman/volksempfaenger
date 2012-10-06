@@ -64,7 +64,8 @@ public class AddSubscriptionActivity extends Activity implements
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.cacheOnDisc().imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.cacheOnDisc().imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+			.build();
 	private ListView popularList;
 	private AutoCompleteTextView searchEntry;
 	private ImageButton searchButton;

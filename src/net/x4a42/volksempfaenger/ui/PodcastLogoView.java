@@ -22,7 +22,7 @@ public class PodcastLogoView extends ImageView {
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory().cacheOnDisc()
 			.showImageForEmptyUri(R.drawable.default_logo)
-			.imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
 
 	public PodcastLogoView(Context context) {
 		super(context);
