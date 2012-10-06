@@ -28,7 +28,7 @@ public class DiscoverDetailActivity extends Activity implements
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
-			.imageScaleType(ImageScaleType.POWER_OF_2).build();
+			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
 	private ImageLoader imageLoader;
 	private String feedUrl;
 
