@@ -126,17 +126,20 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 		@SuppressWarnings("unchecked")
 		HashMap<String, String> row = (HashMap<String, String>) list
 				.getItemAtPosition(position);
-		Intent intent = new Intent(this, DiscoverDetailActivity.class);
-		intent.putExtra(GpodderJsonReader.KEY_TITLE,
-				row.get(GpodderJsonReader.KEY_TITLE));
-		intent.putExtra(GpodderJsonReader.KEY_DESCRIPTION,
-				row.get(GpodderJsonReader.KEY_DESCRIPTION));
-		intent.putExtra(GpodderJsonReader.KEY_SCALED_LOGO,
-				row.get(GpodderJsonReader.KEY_SCALED_LOGO));
-		intent.putExtra(GpodderJsonReader.KEY_URL,
-				row.get(GpodderJsonReader.KEY_URL));
-		intent.putExtra(GpodderJsonReader.KEY_WEBSITE,
-				row.get(GpodderJsonReader.KEY_WEBSITE));
+		if (row == null) {
+			return;
+		}
+		Intent intent = new Intent(this, DiscoverDetailActivity.class)
+				.putExtra(GpodderJsonReader.KEY_TITLE,
+						row.get(GpodderJsonReader.KEY_TITLE))
+				.putExtra(GpodderJsonReader.KEY_DESCRIPTION,
+						row.get(GpodderJsonReader.KEY_DESCRIPTION))
+				.putExtra(GpodderJsonReader.KEY_SCALED_LOGO,
+						row.get(GpodderJsonReader.KEY_SCALED_LOGO))
+				.putExtra(GpodderJsonReader.KEY_URL,
+						row.get(GpodderJsonReader.KEY_URL))
+				.putExtra(GpodderJsonReader.KEY_WEBSITE,
+						row.get(GpodderJsonReader.KEY_WEBSITE));
 		startActivity(intent);
 	}
 
