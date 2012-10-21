@@ -229,9 +229,7 @@ public class FeedParser {
 						enclosure.title = atts.getValue(ATOM_ATTR_TITLE);
 
 						String length = atts.getValue(ATOM_ATTR_LENGTH);
-						if (length != null && length.length() > 0) {
-							enclosure.size = Long.parseLong(length.trim());
-						}
+						enclosure.size = safeParseLong(length);
 						onEnclosure();
 					}
 					break;
@@ -305,9 +303,7 @@ public class FeedParser {
 					enclosure.mime = atts.getValue(RSS_ATTR_TYPE);
 
 					String length = atts.getValue(RSS_ATTR_LENGTH);
-					if (length != null && length.length() > 0) {
-						enclosure.size = Long.parseLong(length.trim());
-					}
+					enclosure.size = safeParseLong(length);
 					onEnclosure();
 				}
 				break;
@@ -673,6 +669,17 @@ public class FeedParser {
 
 		private void onFeed() {
 			listener.onFeed(feed);
+		}
+
+		private long safeParseLong(String number) {
+			if (number != null) {
+				try {
+					return Long.parseLong(number.trim());
+				} catch (NumberFormatException e) {
+					return 0;
+				}
+			}
+			return 0;
 		}
 	}
 }
