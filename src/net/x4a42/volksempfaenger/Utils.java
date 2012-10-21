@@ -63,7 +63,7 @@ public class Utils {
 	}
 
 	public static long toUnixTimestamp(Date date) {
-		return date.getTime() / 1000L;
+		return date != null ? date.getTime() / 1000L : 0;
 	}
 
 	public static String normalizeString(String string) {
