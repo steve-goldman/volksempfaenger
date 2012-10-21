@@ -47,7 +47,6 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(getString(R.string.title_search_results));
 
 		setContentView(R.layout.search_results);
 
@@ -69,6 +68,7 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 		// Get the intent, verify the action and get the query
 		Intent intent = getIntent();
 		searchQuery = intent.getStringExtra("query");
+		actionBar.setTitle(searchQuery);
 		header.setText(String.format(
 				getString(R.string.title_search_results_for), searchQuery));
 		onSearch();
