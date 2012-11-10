@@ -20,8 +20,7 @@ public class PodcastLogoView extends ImageView {
 	private long podcastId;
 	private VolksempfaengerApplication application;
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.cacheInMemory().cacheOnDisc()
-			.showImageForEmptyUri(R.drawable.default_logo)
+			.cacheInMemory().showImageForEmptyUri(R.drawable.default_logo)
 			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
 
 	public PodcastLogoView(Context context) {
