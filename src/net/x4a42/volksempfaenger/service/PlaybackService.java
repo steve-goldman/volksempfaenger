@@ -381,6 +381,10 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPlay() {
+		if (uri == null || uriTime == null || cursor == null) {
+			return;
+		}
+
 		if (notification == null) {
 			notification = makeNotification();
 			startForeground();
@@ -403,6 +407,9 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerEnd() {
+		if (uri == null || uriTime == null || cursor == null) {
+			return;
+		}
 		EpisodeHelper.markAsListened(getContentResolver(), uri);
 		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_FINISHED);
 		savePosition(0);
@@ -410,6 +417,9 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerStop() {
+		if (uri == null || uriTime == null || cursor == null) {
+			return;
+		}
 		saveHandler.removeCallbacks(savePositionTask);
 		onPlayerReset();
 		remoteControlClient
@@ -425,6 +435,9 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPause() {
+		if (uri == null || uriTime == null || cursor == null) {
+			return;
+		}
 		saveHandler.removeCallbacks(savePositionTask);
 		savePosition();
 		remoteControlClient
