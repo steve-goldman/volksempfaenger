@@ -72,9 +72,11 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		Context context = new ContextThemeWrapper(getActivity(),
 				android.R.style.Theme_Holo);
 		// clone the inflater using the ContextThemeWrapper
-		LayoutInflater completelyDifferentInflater = inflater.cloneInContext(context);
+		LayoutInflater completelyDifferentInflater = inflater
+				.cloneInContext(context);
 
-		View view = completelyDifferentInflater.inflate(R.layout.nowplaying, container, false);
+		View view = completelyDifferentInflater.inflate(R.layout.nowplaying,
+				container, false);
 
 		info = (LinearLayout) view.findViewById(R.id.info);
 		logo = (PodcastLogoView) view.findViewById(R.id.logo);
@@ -314,8 +316,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 			if (event != null && event.equals(PlaybackHelper.Event.PLAY)
 					&& getView() != null) {
-				pause.setImageResource(R.drawable.ic_media_stop);
-				infoPause.setImageResource(R.drawable.ic_media_stop);
+				pause.setImageResource(R.drawable.ic_media_pause);
+				infoPause.setImageResource(R.drawable.ic_media_pause);
 				slideIn();
 			}
 			showFragment();

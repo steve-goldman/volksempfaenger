@@ -62,7 +62,7 @@
             android:id="@+id/info_pause"
             style="@style/NowPlaying.Button"
             android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_stop" />
+            android:src="@drawable/ic_media_pause" />
     </LinearLayout>
 
     <LinearLayout
@@ -131,7 +131,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_stop" >
+            android:src="@drawable/ic_media_pause" >
         </ImageButton>
 
         <ImageButton
