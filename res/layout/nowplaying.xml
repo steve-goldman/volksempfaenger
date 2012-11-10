@@ -4,13 +4,16 @@
     style="@style/NowPlaying.Fragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:divider="?android:attr/dividerHorizontal"
     android:orientation="vertical"
+    android:showDividers="middle"
     tools:ignore="NestedWeights" >
 
     <View style="@style/NowPlaying.Separator" />
 
     <LinearLayout
         android:id="@+id/info"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -62,19 +65,13 @@
             android:src="@drawable/ic_media_stop" />
     </LinearLayout>
 
-    <SeekBar
-        android:id="@+id/seekbar"
-        style="@style/NowPlaying.Seekbar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1" >
-    </SeekBar>
-
     <LinearLayout
-        android:id="@+id/controls"
+        android:id="@+id/progress_display"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_small"
+        android:paddingTop="@dimen/padding_small" >
 
         <TextView
             android:id="@+id/position"
@@ -82,11 +79,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:gravity="center"
+            android:padding="@dimen/padding_small"
             android:text="00:00:00"
             tools:ignore="HardcodedText" >
         </TextView>
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            style="@style/NowPlaying.Seekbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" >
+        </SeekBar>
+
+        <TextView
+            android:id="@+id/duration"
+            style="@style/NowPlaying.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:padding="@dimen/padding_small"
+            android:text="00:00:00"
+            tools:ignore="HardcodedText" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/controls"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <ImageButton
             android:id="@+id/back"
@@ -99,7 +127,9 @@
         <ImageButton
             android:id="@+id/pause"
             style="@style/NowPlaying.Button"
+            android:layout_width="0dp"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:contentDescription="@string/pause"
             android:src="@drawable/ic_media_stop" >
         </ImageButton>
@@ -111,18 +141,6 @@
             android:contentDescription="@string/fast_forward"
             android:src="@drawable/ic_media_ff" >
         </ImageButton>
-
-        <TextView
-            android:id="@+id/duration"
-            style="@style/NowPlaying.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="00:00:00"
-            tools:ignore="HardcodedText" >
-        </TextView>
     </LinearLayout>
 
 </LinearLayout>

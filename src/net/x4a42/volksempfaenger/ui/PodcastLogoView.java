@@ -39,9 +39,14 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	private void init(Context context) {
-		application = (VolksempfaengerApplication) context
-				.getApplicationContext();
-		podcastId = -1;
+		if (isInEditMode()) {
+			setImageResource(R.drawable.default_logo);
+		} else {
+			application = (VolksempfaengerApplication) context
+					.getApplicationContext();
+			podcastId = -1;
+		}
+
 	}
 
 	public void reset() {
