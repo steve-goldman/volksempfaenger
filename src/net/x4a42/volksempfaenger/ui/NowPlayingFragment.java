@@ -13,12 +13,14 @@ import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -65,7 +67,14 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.nowplaying, container, false);
+		// create ContextThemeWrapper from the original Activity Context with
+		// the custom theme
+		Context context = new ContextThemeWrapper(getActivity(),
+				android.R.style.Theme_Holo);
+		// clone the inflater using the ContextThemeWrapper
+		LayoutInflater completelyDifferentInflater = inflater.cloneInContext(context);
+
+		View view = completelyDifferentInflater.inflate(R.layout.nowplaying, container, false);
 
 		info = (LinearLayout) view.findViewById(R.id.info);
 		logo = (PodcastLogoView) view.findViewById(R.id.logo);
@@ -80,7 +89,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		pause = (ImageButton) view.findViewById(R.id.pause);
 		forward = (ImageButton) view.findViewById(R.id.forward);
 		duration = (TextView) view.findViewById(R.id.duration);
-		progressDisplay = (LinearLayout) view.findViewById(R.id.progress_display);
+		progressDisplay = (LinearLayout) view
+				.findViewById(R.id.progress_display);
 
 		episodeInfo.setOnClickListener(this);
 		infoPause.setOnClickListener(this);
