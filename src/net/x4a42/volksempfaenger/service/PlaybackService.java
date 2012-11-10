@@ -117,7 +117,7 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		if (action == ACTION_PLAY) {
-			if (notification == null) {
+			if (uri == null) {
 				try {
 					playEpisode(intent.getData());
 				} catch (IllegalArgumentException e) {
@@ -127,8 +127,19 @@ public class PlaybackService extends Service implements EventListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else {
+			} else if (uri.equals(intent.getData())) {
 				remote.play();
+			} else {
+				remote.stop();
+				try {
+					playEpisode(intent.getData());
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 		} else if (action == ACTION_PAUSE) {
