@@ -211,6 +211,9 @@ public abstract class EpisodeListActivity extends Activity implements
 				if (checked.valueAt(i)) {
 					EpisodeCursor cursor = (EpisodeCursor) mEpisodeListView
 							.getItemAtPosition(checked.keyAt(i));
+					if (cursor == null) {
+						continue;
+					}
 					int status = cursor.getStatus();
 
 					if (EpisodeHelper.canMarkAsNew(status)) {
