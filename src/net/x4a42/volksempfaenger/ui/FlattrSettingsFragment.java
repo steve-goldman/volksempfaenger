@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class FlattrSettingsFragment extends PreferenceFragment implements
 		OnPreferenceClickListener {
@@ -82,7 +81,7 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 					new RetrieveAccessTokenTask().executeOnExecutor(
 							AsyncTask.THREAD_POOL_EXECUTOR, code);
 				} else {
-					// authorization failed TODO
+					displayAuthorizationError();
 				}
 			}
 		}
@@ -131,6 +130,13 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 	private void setConnectedTo(String username) {
 		textConnectedTo.setText(Html.fromHtml(getString(
 				R.string.flattr_connected_to, username)));
+	}
+
+	private void displayAuthorizationError() {
+		ActivityHelper.buildErrorDialog(getActivity(),
+				getString(R.string.title_error_flattr_authorization),
+				getString(R.string.message_error_flattr_authorization), null)
+				.show();
 	}
 
 	private class RetrieveAccessTokenTask extends
@@ -218,12 +224,10 @@ public class FlattrSettingsFragment extends PreferenceFragment implements
 				editor.putString(PreferenceKeys.FLATTR_ACCESS_TOKEN,
 						accessToken);
 				if (!editor.commit()) {
-					// display error TODO
+					displayAuthorizationError();
 				}
 			} else {
-				// display error TODO
-				Toast.makeText(getActivity(), "Connecting failed",
-						Toast.LENGTH_LONG).show();
+				displayAuthorizationError();
 				hideHeader();
 			}
 		}
