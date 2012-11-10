@@ -477,7 +477,7 @@ public class PlaybackService extends Service implements EventListener {
 							podcastLogo,
 							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
 							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
-							false);
+							true);
 		}
 
 		// Build the layout for the notification
