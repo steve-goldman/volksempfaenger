@@ -128,8 +128,6 @@ public class PlaybackService extends Service implements EventListener {
 					e.printStackTrace();
 				}
 			} else if (uri.equals(intent.getData())) {
-				remote.play();
-			} else {
 				remote.stop();
 				try {
 					playEpisode(intent.getData());
@@ -140,6 +138,8 @@ public class PlaybackService extends Service implements EventListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else {
+				remote.play();
 			}
 
 		} else if (action == ACTION_PAUSE) {
@@ -261,6 +261,9 @@ public class PlaybackService extends Service implements EventListener {
 	private void playEpisode(Uri episode) throws IllegalArgumentException,
 			IOException {
 		assert (VolksempfaengerContentProvider.getTypeMime(episode) == VolksempfaengerContentProvider.Mime.EPISODE_ITEM);
+		if (episode == null) {
+			throw new IllegalArgumentException("Episode is null");
+		}
 		uri = episode;
 		uriTime = ContentUris.withAppendedId(
 				VolksempfaengerContentProvider.EPISODETIME_URI,
