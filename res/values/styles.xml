@@ -57,7 +57,6 @@
     </style>
 
     <style name="NowPlaying.Text">
-        <item name="android:textColor">#eee</item>
     </style>
 
     <style name="NowPlaying.Button" parent="@android:attr/buttonBarButtonStyle">
