@@ -291,16 +291,6 @@ public class PlaybackService extends Service implements EventListener {
 		ContentValues values = new ContentValues();
 		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);
-		final MetadataEditor metadataEditor = remoteControlClient
-				.editMetadata(true);
-		metadataEditor
-				.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK,
-						Utils.getPodcastLogoBitmap(this, cursor.getPodcastId()))
-				.putString(MediaMetadataRetriever.METADATA_KEY_TITLE,
-						cursor.getTitle())
-				.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM,
-						cursor.getPodcastTitle());
-		metadataEditor.apply();
 		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_STARTED);
 	}
 
@@ -404,6 +394,17 @@ public class PlaybackService extends Service implements EventListener {
 			startForeground();
 		}
 		saveHandler.post(savePositionTask);
+
+		final MetadataEditor metadataEditor = remoteControlClient
+				.editMetadata(true);
+		metadataEditor
+				.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK,
+						Utils.getPodcastLogoBitmap(this, cursor.getPodcastId()))
+				.putString(MediaMetadataRetriever.METADATA_KEY_TITLE,
+						cursor.getTitle())
+				.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM,
+						cursor.getPodcastTitle());
+		metadataEditor.apply();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
