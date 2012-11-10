@@ -60,7 +60,7 @@
         <item name="android:textColor">#eee</item>
     </style>
 
-    <style name="NowPlaying.Button">
+    <style name="NowPlaying.Button" parent="@android:attr/buttonBarButtonStyle">
         <item name="android:background">@drawable/borderless_button</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>

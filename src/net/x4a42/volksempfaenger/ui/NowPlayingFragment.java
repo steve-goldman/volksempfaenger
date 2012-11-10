@@ -53,6 +53,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	private PlaybackRemote remote;
 	private Handler updateHandler;
+	private LinearLayout progressDisplay;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		pause = (ImageButton) view.findViewById(R.id.pause);
 		forward = (ImageButton) view.findViewById(R.id.forward);
 		duration = (TextView) view.findViewById(R.id.duration);
+		progressDisplay = (LinearLayout) view.findViewById(R.id.progress_display);
 
 		episodeInfo.setOnClickListener(this);
 		infoPause.setOnClickListener(this);
@@ -240,7 +242,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	private void hideExtendedControls() {
-		seekbar.setVisibility(View.GONE);
+		progressDisplay.setVisibility(View.GONE);
 		controls.setVisibility(View.GONE);
 		info.setVisibility(View.VISIBLE);
 	}
@@ -253,7 +255,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		position.setText(Utils.formatTime(cursor.getDurationListened()));
 		duration.setText(Utils.formatTime(cursor.getDurationTotal()));
 		info.setVisibility(View.GONE);
-		seekbar.setVisibility(View.VISIBLE);
+		progressDisplay.setVisibility(View.VISIBLE);
 		controls.setVisibility(View.VISIBLE);
 	}
 
