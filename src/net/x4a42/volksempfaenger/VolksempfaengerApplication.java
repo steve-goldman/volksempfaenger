@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Locale;
 
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
@@ -76,7 +77,8 @@ public class VolksempfaengerApplication extends Application implements
 	}
 
 	public String getVersionString() {
-		return String.format("%s (%d)", getVersionName(), getVersion());
+		return String.format(Locale.getDefault(), "%s (%d)", getVersionName(),
+				getVersion());
 	}
 
 	public void setUpdateAlarm() {

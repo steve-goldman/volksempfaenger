@@ -125,7 +125,7 @@
     <string name="title_tag_all">All</string>
     <string name="button_retry">Retry</string>
     <string name="message_error_loading">Loading failed</string>
-    <string name="unknown_error_occured">An unknown error occured.</string>
+    <string name="unknown_error_occured">An unknown error occurred.</string>
     <string name="settings_summary_flattr">Flattr settings</string>
     <string name="settings_flattr">Flattr</string>
     <string name="button_flattr_auth">Connect to Flattr</string>
