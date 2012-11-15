@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.feedparser;
 
+import android.annotation.SuppressLint;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -514,7 +515,7 @@ public class FeedParser {
 
 		private Date parseAtomDate(String datestring)
 				throws java.text.ParseException, IndexOutOfBoundsException {
-			datestring = datestring.trim().toUpperCase();
+			datestring = datestring.trim().toUpperCase(Locale.getDefault());
 			// dirty version - write a new one TODO
 			// Modified version of http://cokere.com/RFC3339Date.txt
 			/*
@@ -580,10 +581,11 @@ public class FeedParser {
 				new SimpleDateFormat("d MMM yyyy HH:mm z", Locale.US),
 				new SimpleDateFormat("d MMM yyyy HH:mm:ss z", Locale.US),
 
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"),
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"),
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") };
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
+						Locale.US),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US),
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ", Locale.US) };
 
 		static {
 			formats[5].setLenient(true);
