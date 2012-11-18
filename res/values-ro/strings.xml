@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">Volksempfänger</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Adăugare</string>
+  <string name="title_delete_subscription">Ești sigur?</string>
+  <string name="title_settings">Configurare Volksempfänger</string>
+  <string name="title_tab_subscriptions">Listă podcasturi</string>
+  <string name="title_tab_downloads">Descărcări</string>
+  <string name="description_add_subscription">Introdu adresa podcastului la care dorești să te abonezi</string>
+  <string name="menu_add">Adaugă</string>
+  <string name="menu_delete">Șterge</string>
+  <string name="menu_settings">Configurare</string>
+  <string name="menu_download">Descarcă</string>
+  <string name="menu_mark_listened">Marchează ca ascultat</string>
+  <string name="menu_mark_new">Marchează ca nou</string>
+  <string name="menu_update">Reîmprospătare</string>
+  <string name="menu_feedback">Sugestii</string>
+  <string name="menu_play">Redă</string>
+  <string name="context_delete">Șterge</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Da</string>
+  <string name="ok">OK</string>
+  <string name="add">Adaugă</string>
+  <string name="cancel">Anulare</string>
+  <string name="unknown">necunoscut</string>
+  <string name="install">Instalare</string>
+  <string name="dialog_error_title">A apărut o eroare</string>
+  <string name="dialog_choose_download_enclosure">Alege un fișier</string>
+  <string name="dialog_filemanager_missing_message">Nu există niciun manager de fișiere instalat. Dorești să instalezi OpenIntents File Manager?</string>
+  <string name="message_podcast_already_added">Acest podcast există deja în listă</string>
+  <string name="message_podcast_successfully_added">Podcastul a fost adăugat cu succes</string>
+  <string name="message_podcast_confirm_delete">Dorești să ștergi \"%s\"?</string>
+  <string name="message_podcast_successfully_deleted">Podcast șters</string>
+  <string name="message_podcast_feed_download_failed">Podcastul nu a putut fi descărcat</string>
+  <string name="message_podcast_feed_parsing_failed">Nu s-a putut procesa fluxul XML al podcastului</string>
+  <string name="message_podcast_feed_io_exception">Eroare citire/scriere</string>
+  <string name="message_podcast_feed_storage_exception">Eroare stocare</string>
+  <string name="message_podcast_feed_file_not_found_exception">Eroare: fișierul nu a fost găsit</string>
+  <string name="message_no_subscriptions">Nu există podcasturi</string>
+  <string name="message_download_started">Descărcarea a fost inițializată</string>
+  <string name="message_download_already_running">Descărcarea rulează deja</string>
+  <string name="message_download_episode_already_downloaded">Acest episod a fost deja descărcat</string>
+  <string name="message_episode_without_enclosure">Nu există fisiere atașate acestui episod</string>
+  <string name="message_play_store_missing">Magazinul Google Play nu este instalat pe dispozitivul tău. Descarcă fișierul APK de pe pagina web OpenIntents, apoi instalează-l.</string>
+  <string name="settings_download">Descarcă</string>
+  <string name="settings_download_interval">Interval de reîmprospătare</string>
+  <string name="settings_download_auto">Descărcare automată</string>
+  <string name="settings_download_wifi">Doar prin WiFi</string>
+  <string name="settings_download_charging">Doar în timpul încărcării bateriei</string>
+  <string name="settings_download_concurrent">Descărcări simultane</string>
+  <string name="settings_storage">Stocare</string>
+  <string name="settings_storage_location">Director stocare</string>
+  <string name="settings_about">Despre</string>
+  <string name="settings_about_version">Versiune</string>
+  <string name="settings_about_website">Sit web</string>
+  <string name="settings_about_license">Licență</string>
+  <string name="settings_about_authors">Autori</string>
+  <string name="settings_summary_download">Setări descărcare podcast</string>
+  <string name="settings_summary_download_auto">Descărcare automată a episoadelor noi</string>
+  <string name="settings_summary_download_wifi">Descărcare episoade doar prin conexiunea WiFi</string>
+  <string name="settings_summary_download_charging">Descărcare episoade doar când dispozitivul este la încărcat</string>
+  <string name="settings_summary_download_concurrent">Număr maxim de descărcări simultane</string>
+  <string name="settings_summary_storage">Configurare locație de stocare a podcasturilor</string>
+  <string name="settings_summary_about">Informații despre Volksempfänger</string>
+  <string name="settings_summary_about_license">Arată informații despre licențe</string>
+  <string name="menu_import">Import</string>
+  <string name="dialog_choose_opml">Alege un fișier OPML</string>
+  <string name="button_import">Import</string>
+  <string name="dialog_choose_import_feeds">Alege fluxurile care vor fi importate</string>
+  <string name="message_no_downloads">Nu există descărcări</string>
+  <string name="empty_description">fără descriere</string>
+  <string-array name="settings_interval_choices">
+    <item>Manual</item>
+    <item>La o oră</item>
+    <item>La două ore</item>
+    <item>La patru ore</item>
+    <item>La opt ore</item>
+    <item>La douăsprezece ore</item>
+    <item>În fiecare zi</item>
+  </string-array>
+  <string name="episode_name">Numele episodului</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Introdu un mediu de stocare extern pentru a folosi Volksempfänger</string>
+  <string name="unknown_duration">durată necunoscută</string>
+  <string name="unknown_size">dimensiune necunoscută</string>
+  <string name="message_error_file_not_found">Fișierul \"%s\" nu a fost găsit</string>
+  <string name="title_file_not_found">Fișierul nu a fost găsit</string>
+  <string name="title_import_error">Eroare de import</string>
+  <string name="message_error_import">Adăugarea următoarelor podcasturi a eșuat</string>
+  <string name="pause">Pauză</string>
+  <string name="error_download">eroare descărcare</string>
+  <string name="rewind">Reluare</string>
+  <string name="fast_forward">Derulare înainte</string>
+  <string name="message_error_import_unexpected">A survenit o eroare în timpul importului</string>
+  <string name="title_send_error_report">Trimite raport de eroare</string>
+  <string name="report_error">Raport</string>
+  <string name="title_share">Trimite</string>
+  <string name="menu_share">Trimite</string>
+  <string name="menu_website">Website</string>
+  <string name="message_import_started">Import pornit...</string>
+  <string name="settings_about_libraries">Biblioteci</string>
+  <string name="settings_summary_about_flattr">Susține dezvoltarea Volksempfänger</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">restrânge</string>
+  <string name="title_tab_playlists">Liste de redare</string>
+  <string name="title_playlist_new">Noutăți</string>
+  <string name="title_playlist_listening">În ascultare</string>
+  <string name="message_no_episodes">Nu există episoade</string>
+  <string name="title_playlist_downloaded">Descărcate</string>
+  <string name="error_shownotes">Pagina nu poate fi afișată</string>
+  <string name="title_tab_discover">Descoperire podcasturi noi</string>
+  <string name="menu_search">Căutare</string>
+  <string name="search_hint">Introdu termen de căutare sau URL</string>
+  <string name="import_to_volksempfaenger">Import în Volksempfänger</string>
+  <string name="unknown_error">Eroare necunoscută</string>
+  <string name="title_popular">Des căutate</string>
+  <string name="title_search_results">Rezultate căutare</string>
+  <string name="title_search_results_for">Rezultate căutare după \"%s\"</string>
+  <string name="message_subscribing_podcast">Podcastul este adăugat...</string>
+  <string name="title_tag_all">Toate</string>
+  <string name="button_retry">Reîncercare</string>
+  <string name="message_error_loading">Încărcarea a eșuat</string>
+  <string name="unknown_error_occured">S-a produs o eroare</string>
+  <string name="settings_summary_flattr">Setări Flattr</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Conectare la Flattr</string>
+  <string name="settings_summary_flattr_auth">Permite %s pentru episoade flattr</string>
+  <string name="flattr_connected_to">Conectat la &lt;b&gt;%s&lt;/b&gt; pe Flattr</string>
+  <string name="flattr_connecting">Conectare...</string>
+  <string name="settings_flattr_auto">Flattr automat</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Niciodată</item>
+    <item>Episoade începute</item>
+    <item>Episoade ascultate</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+</resources>

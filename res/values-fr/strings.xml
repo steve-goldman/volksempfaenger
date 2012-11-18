@@ -35,6 +35,8 @@
   <string name="message_podcast_feed_download_failed">Impossible de télécharger le podcast</string>
   <string name="message_podcast_feed_parsing_failed">Échec de l\'analyse du flux XML du podcast</string>
   <string name="message_podcast_feed_io_exception">Exception d\'I/O</string>
+  <string name="message_podcast_feed_storage_exception">Exception de stockage</string>
+  <string name="message_podcast_feed_file_not_found_exception">Exception fichier non trouvé</string>
   <string name="message_no_subscriptions">Aucun abonnement</string>
   <string name="message_download_started">Téléchargement débuté</string>
   <string name="message_download_already_running">Le téléchargement est déjà en cours</string>
@@ -107,4 +109,22 @@
   <string name="message_no_episodes">Aucun épisode</string>
   <string name="title_playlist_downloaded">Téléchargé</string>
   <string name="error_shownotes">Impossible d\'afficher les notes de bas de page</string>
+  <string name="title_tab_discover">Découvrir</string>
+  <string name="menu_search">Rechercher</string>
+  <string name="search_hint">Rechercher ou taper une URL</string>
+  <string name="import_to_volksempfaenger">Importer vers Volksempfänger</string>
+  <string name="unknown_error">Erreur inconnue</string>
+  <string name="title_popular">Populaire</string>
+  <string name="title_search_results">Résultats de la recherche</string>
+  <string name="title_search_results_for">Résultats de la recherche pour \"en %\"</string>
+  <string name="message_subscribing_podcast">S\'abonner au podcast...</string>
+  <string name="title_tag_all">Tous</string>
+  <string name="button_retry">Recommencer</string>
+  <string name="message_error_loading">Chargement échoué</string>
+  <string name="unknown_error_occured">Une erreur inconnue s\'est produite</string>
+  <string name="settings_summary_flattr">Paramètres de Flattr</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Connecter à Flattr</string>
+  <string name="settings_flattr_auto">Flattr automatique</string>
+  <string name="button_flattr">Flattr</string>
 </resources>
