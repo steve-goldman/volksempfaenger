@@ -116,7 +116,7 @@
   <string name="unknown_error">Erreur inconnue</string>
   <string name="title_popular">Populaire</string>
   <string name="title_search_results">Résultats de la recherche</string>
-  <string name="title_search_results_for">Résultats de la recherche pour \"en %\"</string>
+  <string name="title_search_results_for">Résultats de la recherche pour “en %s”</string>
   <string name="message_subscribing_podcast">S\'abonner au podcast...</string>
   <string name="title_tag_all">Tous</string>
   <string name="button_retry">Recommencer</string>

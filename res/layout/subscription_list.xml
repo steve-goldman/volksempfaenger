@@ -17,9 +17,24 @@
 
     <include layout="@layout/loading_indicator" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/empty"
         style="@style/EmptyListView"
-        android:text="@string/message_no_subscriptions" />
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/message_no_subscriptions"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subtitle_no_subscriptions"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
 
 </RelativeLayout>
