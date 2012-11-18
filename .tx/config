@@ -5,6 +5,6 @@ host = https://www.transifex.com
 file_filter = res/values-<lang>/strings.xml
 source_file = res/values/strings.xml
 source_lang = en
-lang_map = pt_BR: pt-rBR
+lang_map = pt_BR: pt-rBR, sv_SE: sv-rSE
 type = ANDROID
 
