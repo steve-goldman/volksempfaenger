@@ -68,13 +68,6 @@
                 android:layout_height="wrap_content"
                 android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
                 tools:ignore="HardcodedText" />
-
-            <Button
-                android:id="@+id/acraText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ACRA"
-                tools:ignore="HardcodedText" />
         </LinearLayout>
     </ScrollView>
 

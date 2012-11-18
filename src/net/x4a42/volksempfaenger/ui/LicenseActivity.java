@@ -31,9 +31,7 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		textLicense = (TextView) findViewById(R.id.license);
 		textAuthors = (TextView) findViewById(R.id.authors);
 		TextView uilText = (TextView) findViewById(R.id.universalImageLoaderText);
-		TextView acraText = (TextView) findViewById(R.id.acraText);
 		uilText.setOnClickListener(this);
-		acraText.setOnClickListener(this);
 
 		new LoadAssetTask("LICENSE", textLicense, true)
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -132,10 +130,6 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		case R.id.universalImageLoaderText:
 			new DialogLoadAssetTask("universal_image_loader_license.txt",
 					"Universal Image Loader", true)
-					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			break;
-		case R.id.acraText:
-			new DialogLoadAssetTask("apache_2_license.txt", "ACRA", true)
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		}
