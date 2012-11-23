@@ -6,22 +6,20 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.AttributeSet;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class PodcastLogoView extends ImageView {
 	private long podcastId;
 	private VolksempfaengerApplication application;
 	public final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory().showImageForEmptyUri(R.drawable.default_logo)
-			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+			.displayer(new FadeInBitmapDisplayer(150)).build();
 
 	public PodcastLogoView(Context context) {
 		super(context);
@@ -76,25 +74,7 @@ public class PodcastLogoView extends ImageView {
 			url = podcastLogoFile.toURI().toString();
 		}
 
-		application.imageLoader.displayImage(url, this, options,
-				new SimpleImageLoadingListener() {
-					private long startTime;
-
-					@Override
-					public void onLoadingStarted() {
-						startTime = System.currentTimeMillis();
-					}
-
-					@Override
-					public void onLoadingComplete(Bitmap loadedImage) {
-						if (System.currentTimeMillis() - startTime > 16) {
-							Animation animation = AnimationUtils.loadAnimation(
-									getContext(), android.R.anim.fade_in);
-							setAnimation(animation);
-							animation.start();
-						}
-					}
-				});
+		application.imageLoader.displayImage(url, this, options);
 
 	}
 }
