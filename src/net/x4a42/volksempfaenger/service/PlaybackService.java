@@ -127,7 +127,7 @@ public class PlaybackService extends Service implements EventListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if (uri.equals(intent.getData())) {
+			} else if (!uri.equals(intent.getData())) {
 				remote.stop();
 				try {
 					playEpisode(intent.getData());
