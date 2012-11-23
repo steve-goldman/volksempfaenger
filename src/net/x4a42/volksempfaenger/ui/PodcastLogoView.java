@@ -19,7 +19,7 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 public class PodcastLogoView extends ImageView {
 	private long podcastId;
 	private VolksempfaengerApplication application;
-	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
+	public final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory().showImageForEmptyUri(R.drawable.default_logo)
 			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
 
@@ -54,13 +54,17 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	public void setPodcastId(long id) {
+		setPodcastId(id, options);
+	}
+
+	public void setPodcastId(long id, DisplayImageOptions options) {
 		if (id != podcastId) {
 			podcastId = id;
-			loadImage();
+			loadImage(options);
 		}
 	}
 
-	private void loadImage() {
+	private void loadImage(DisplayImageOptions options) {
 		if (podcastId == -1) {
 			setImageBitmap(null);
 			return;
