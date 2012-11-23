@@ -360,7 +360,7 @@ public class PlaybackService extends Service implements EventListener {
 			break;
 
 		case STOP:
-			onPlayerStop();
+			onPlayerStop(true);
 			break;
 
 		case END:
@@ -428,14 +428,17 @@ public class PlaybackService extends Service implements EventListener {
 		EpisodeHelper.markAsListened(getContentResolver(), uri);
 		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_FINISHED);
 		savePosition(0);
-		onPlayerStop();
+		onPlayerStop(false);
 	}
 
-	private void onPlayerStop() {
+	private void onPlayerStop(boolean savePosition) {
 		if (uri == null || uriTime == null || cursor == null) {
 			return;
 		}
 		saveHandler.removeCallbacks(savePositionTask);
+		if (savePosition) {
+			savePosition();
+		}
 		onPlayerReset();
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
