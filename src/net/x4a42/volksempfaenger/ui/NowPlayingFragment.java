@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
@@ -287,6 +288,15 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 			String[] projection = { Episode.TITLE, Episode.PODCAST_ID,
 					Episode.PODCAST_TITLE, Episode.DURATION_LISTENED,
 					Episode.DURATION_TOTAL };
+			if (getActivity() == null) {
+				Log.e(this, "getActivity() returned null");
+				remote.stop();
+				return;
+			} else if (getActivity().getContentResolver() == null) {
+				Log.e(this, "getActivity().getContentResolver() returned null");
+				remote.stop();
+				return;
+			}
 			cursor = new EpisodeCursor(getActivity().getContentResolver()
 					.query(episodeUri, projection, null, null, null));
 
