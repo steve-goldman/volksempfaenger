@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.util.List;
 
+import com.nostra13.universalimageloader.core.assist.OnScrollSmartOptions;
+
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
@@ -66,6 +68,9 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	private BroadcastReceiver mErrorReceiver = new ErrorReceiver();
 
+	private final OnScrollSmartOptions smartImageOptions = new OnScrollSmartOptions(
+			PodcastLogoView.options);
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,6 +100,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		grid.setOnItemClickListener(this);
 		grid.setOnCreateContextMenuListener(this);
 		grid.setAdapter(adapter);
+		grid.setOnScrollListener(smartImageOptions);
 
 		show(GLE.LOADING);
 
@@ -349,7 +355,8 @@ public class SubscriptionGridFragment extends Fragment implements
 				} else {
 					newEpisodesText.setVisibility(View.INVISIBLE);
 				}
-				podcastLogo.setPodcastId(cursor.getId());
+				podcastLogo.setPodcastId(cursor.getId(),
+						smartImageOptions.getOptions());
 			}
 
 		}
