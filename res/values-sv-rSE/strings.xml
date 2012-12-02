@@ -43,7 +43,7 @@
   <string name="message_download_episode_already_downloaded">Detta avsnitt har redan hämtats</string>
   <string name="message_episode_without_enclosure">Det finns ingen fil bifogad till detta avsnitt</string>
   <string name="message_play_store_missing">Du har inte Google Play Store installerat på telefonen. Vänligen ladda ner APK-filen från OpenIntents hemsida och installera den.</string>
-  <string name="settings_download">Hämta</string>
+  <string name="settings_download">Hämtning</string>
   <string name="settings_download_interval">Uppdateringsintervall</string>
   <string name="settings_download_auto">Hämta automatiskt</string>
   <string name="settings_download_wifi">Endast via WiFi</string>
@@ -135,4 +135,6 @@
     <item>Avslutade avsnitt</item>
   </string-array>
   <string name="button_flattr">Flattra</string>
+  <string name="title_error_flattr_authorization">Åtkomst nekades</string>
+  <string name="message_error_flattr_authorization">Åtkomst till Flattr misslyckades</string>
 </resources>
