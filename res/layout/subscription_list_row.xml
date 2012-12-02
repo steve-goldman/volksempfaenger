@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.x4a42.volksempfaenger.ui.SquareView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <net.x4a42.volksempfaenger.ui.PodcastLogoView
+            android:id="@+id/podcast_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/podcast_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_vertical"
+            android:background="#88000000"
+            android:ellipsize="marquee"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_small"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/new_episodes"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/badge_subscription_new"
+            android:gravity="top|right"
+            android:paddingRight="@dimen/padding_small"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+</net.x4a42.volksempfaenger.ui.SquareView>
