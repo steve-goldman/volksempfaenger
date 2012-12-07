@@ -21,7 +21,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceFragment;
 import android.text.Html;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -31,7 +30,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class FlattrSettingsFragment extends PreferenceFragment implements
+public class FlattrSettingsFragment extends SettingsFragment implements
 		OnPreferenceClickListener {
 	private View groupConnectedTo;
 	private TextView textConnectedTo;
