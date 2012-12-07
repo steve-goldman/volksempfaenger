@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 
@@ -159,9 +160,8 @@ public class FeedParser {
 			if (skipMode) {
 				return;
 			}
-			if (parents.peek() != Tag.UNKNOWN || xhtmlMode) {
-				if (parents.peek() == Tag.RSS_DESCRIPTION
-						&& currentRssItemHasHtml) {
+			if (!safePeek(Tag.UNKNOWN) || xhtmlMode) {
+				if (safePeek(Tag.RSS_DESCRIPTION) && currentRssItemHasHtml) {
 					// we already have an HTML version of this, so just ignore
 					// the plaintext
 					return;
@@ -181,7 +181,12 @@ public class FeedParser {
 				}
 			} else {
 				Namespace ns = getNamespace(uri);
-				Tag tag = parents.pop();
+				Tag tag;
+				try {
+					tag = parents.pop();
+				} catch (EmptyStackException e) {
+					return;
+				}
 
 				if (ns == Namespace.ATOM) {
 					onEndTagAtom(tag);
@@ -221,7 +226,7 @@ public class FeedParser {
 				}
 				switch (rel) {
 				case ENCLOSURE:
-					if (parents.peek() == Tag.ATOM_ENTRY) {
+					if (safePeek(Tag.ATOM_ENTRY)) {
 						enclosure = new Enclosure();
 						enclosure.feedItem = feedItem;
 						enclosure.url = atts.getValue(ATOM_ATTR_HREF);
@@ -240,7 +245,7 @@ public class FeedParser {
 						type = getMime(mimeString);
 						mimeString = null;
 					}
-					if (parents.peek() == Tag.ATOM_ENTRY) {
+					if (safePeek(Tag.ATOM_ENTRY)) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
 							// actually there can be multiple
@@ -250,7 +255,7 @@ public class FeedParser {
 							// the FeedItem
 							feedItem.url = atts.getValue(ATOM_ATTR_HREF);
 						}
-					} else if (parents.peek() == Tag.ATOM_FEED) {
+					} else if (safePeek(Tag.ATOM_FEED)) {
 						if (type == Mime.UNKNOWN || type == Mime.HTML
 								|| type == Mime.XHTML) {
 							// same issue as above with multiple
@@ -260,13 +265,12 @@ public class FeedParser {
 					}
 					break;
 				case SELF:
-					if (parents.peek() == Tag.ATOM_FEED) {
+					if (safePeek(Tag.ATOM_FEED)) {
 						feed.url = atts.getValue(ATOM_ATTR_HREF);
 					}
 					break;
 				case PAYMENT:
-					if (parents.peek() == Tag.ATOM_ENTRY
-							|| parents.peek() == Tag.RSS_ITEM) {
+					if (safePeek(Tag.ATOM_ENTRY) || safePeek(Tag.RSS_ITEM)) {
 						String url = atts.getValue(ATOM_ATTR_HREF);
 						try {
 							if (new URL(url).getHost().equals("flattr.com")) {
@@ -296,7 +300,7 @@ public class FeedParser {
 				currentItemHasITunesSummaryAlternative = false;
 				break;
 			case RSS_ENCLOSURE:
-				if (parents.peek() == Tag.RSS_ITEM) {
+				if (safePeek(Tag.RSS_ITEM)) {
 					enclosure = new Enclosure();
 					enclosure.feedItem = feedItem;
 					enclosure.url = atts.getValue(RSS_ATTR_URL);
@@ -328,7 +332,7 @@ public class FeedParser {
 
 		private void onStartTagITunes(Tag tag, Attributes atts) {
 			if (tag == Tag.ITUNES_IMAGE
-					&& (parents.peek() == Tag.RSS_CHANNEL || parents.peek() == Tag.ATOM_FEED)) {
+					&& (safePeek(Tag.RSS_CHANNEL) || safePeek(Tag.ATOM_FEED))) {
 				feed.image = atts.getValue("href");
 				hasITunesImage = true;
 			}
@@ -337,10 +341,10 @@ public class FeedParser {
 		private void onEndTagAtom(Tag tag) {
 			switch (tag) {
 			case ATOM_TITLE:
-				if (parents.peek() == Tag.ATOM_FEED) {
+				if (safePeek(Tag.ATOM_FEED)) {
 					// feed title
 					feed.title = Utils.trimmedString(buffer);
-				} else if (parents.peek() == Tag.ATOM_ENTRY) {
+				} else if (safePeek(Tag.ATOM_ENTRY)) {
 					// entry title
 					feedItem.title = Utils.trimmedString(buffer);
 				}
@@ -349,13 +353,13 @@ public class FeedParser {
 				if (xhtmlMode) {
 					xhtmlMode = false;
 				}
-				if (parents.peek() == Tag.ATOM_ENTRY) {
+				if (safePeek(Tag.ATOM_ENTRY)) {
 					feedItem.description = Utils.trimmedString(buffer);
 					currentItemHasITunesSummaryAlternative = true;
 				}
 				break;
 			case ATOM_PUBLISHED:
-				if (parents.peek() == Tag.ATOM_ENTRY) {
+				if (safePeek(Tag.ATOM_ENTRY)) {
 					try {
 						feedItem.date = parseAtomDate(buffer.toString());
 						currentAtomItemHasPublished = true;
@@ -369,8 +373,7 @@ public class FeedParser {
 				}
 				break;
 			case ATOM_UPDATED:
-				if (parents.peek() == Tag.ATOM_ENTRY
-						&& !currentAtomItemHasPublished) {
+				if (safePeek(Tag.ATOM_ENTRY) && !currentAtomItemHasPublished) {
 					try {
 						feedItem.date = parseAtomDate(buffer.toString());
 					} catch (IndexOutOfBoundsException e) {
@@ -389,12 +392,12 @@ public class FeedParser {
 				onFeedItem();
 				break;
 			case ATOM_ID:
-				if (parents.peek() == Tag.ATOM_ENTRY) {
+				if (safePeek(Tag.ATOM_ENTRY)) {
 					feedItem.itemId = Utils.trimmedString(buffer);
 				}
 				break;
 			case ATOM_ICON:
-				if (parents.peek() == Tag.ATOM_FEED && !hasITunesImage) {
+				if (safePeek(Tag.ATOM_FEED) && !hasITunesImage) {
 					feed.image = Utils.trimmedString(buffer);
 				}
 				break;
@@ -409,20 +412,14 @@ public class FeedParser {
 		private void onEndTagRss(Tag tag) {
 			switch (tag) {
 			case RSS_TITLE:
-				switch (parents.peek()) {
-				case RSS_CHANNEL:
+				if (safePeek(Tag.RSS_CHANNEL)) {
 					feed.title = Utils.trimmedString(buffer);
-					break;
-
-				case RSS_ITEM:
+				} else if (safePeek(Tag.RSS_ITEM)) {
 					feedItem.title = Utils.trimmedString(buffer);
-					break;
-				default:
-					break;
 				}
 				break;
 			case RSS_PUB_DATE:
-				if (parents.peek() == Tag.RSS_ITEM) {
+				if (safePeek(Tag.RSS_ITEM)) {
 					try {
 						feedItem.date = parseRssDate(buffer.toString());
 					} catch (ParseException e) {
@@ -432,44 +429,29 @@ public class FeedParser {
 				}
 				break;
 			case RSS_LINK:
-				switch (parents.peek()) {
-				case RSS_ITEM:
+				if (safePeek(Tag.RSS_ITEM)) {
 					feedItem.url = Utils.trimmedString(buffer);
-					break;
-				case RSS_CHANNEL:
+				} else if (safePeek(Tag.RSS_CHANNEL)) {
 					feed.website = Utils.trimmedString(buffer);
-					break;
-				default:
-					break;
 				}
 				break;
 			case RSS_DESCRIPTION:
 				if (!currentRssItemHasHtml) {
-					switch (parents.peek()) {
-					case RSS_ITEM:
+					if (safePeek(Tag.RSS_ITEM)) {
 						feedItem.description = Utils.trimmedString(buffer);
 						currentItemHasITunesSummaryAlternative = true;
-						break;
-					case RSS_CHANNEL:
+					} else if (safePeek(Tag.RSS_CHANNEL)) {
 						feed.description = Utils.trimmedString(buffer);
-						break;
-					default:
-						break;
 					}
 				}
 				break;
 			case RSS_CONTENT_ENCODED:
 				currentRssItemHasHtml = true;
-				switch (parents.peek()) {
-				case RSS_ITEM:
+				if (safePeek(Tag.RSS_ITEM)) {
 					feedItem.description = Utils.trimmedString(buffer);
 					currentItemHasITunesSummaryAlternative = true;
-					break;
-				case RSS_CHANNEL:
+				} else if (safePeek(Tag.RSS_CHANNEL)) {
 					feed.description = Utils.trimmedString(buffer);
-					break;
-				default:
-					break;
 				}
 				break;
 			case RSS_ITEM:
@@ -477,14 +459,19 @@ public class FeedParser {
 				currentRssItemHasHtml = false;
 				break;
 			case RSS_GUID:
-				if (parents.peek() == Tag.RSS_ITEM) {
+				if (safePeek(Tag.RSS_ITEM)) {
 					feedItem.itemId = Utils.trimmedString(buffer);
 				}
 				break;
 			case RSS_URL:
-				if (parents.peek() == Tag.RSS_IMAGE && !hasITunesImage) {
-					Tag copy = parents.pop();
-					if (parents.peek() == Tag.RSS_CHANNEL) {
+				if (safePeek(Tag.RSS_IMAGE) && !hasITunesImage) {
+					Tag copy;
+					try {
+						copy = parents.pop();
+					} catch (EmptyStackException e) {
+						return;
+					}
+					if (safePeek(Tag.RSS_CHANNEL)) {
 						feed.image = Utils.trimmedString(buffer);
 					}
 					parents.push(copy);
@@ -506,7 +493,7 @@ public class FeedParser {
 
 		private void onEndTagITunes(Tag tag) {
 			if (tag == Tag.ITUNES_SUMMARY
-					&& (parents.peek() == Tag.ATOM_ENTRY || parents.peek() == Tag.RSS_ITEM)
+					&& (safePeek(Tag.ATOM_ENTRY) || safePeek(Tag.RSS_ITEM))
 					&& !currentItemHasITunesSummaryAlternative) {
 				feedItem.description = Utils.trimmedString(buffer);
 			}
@@ -681,6 +668,19 @@ public class FeedParser {
 				}
 			}
 			return 0;
+		}
+
+		private boolean safePeek(Tag tag) {
+			try {
+				Tag parent = parents.peek();
+				if (tag == parent) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (EmptyStackException e) {
+				return false;
+			}
 		}
 	}
 }
