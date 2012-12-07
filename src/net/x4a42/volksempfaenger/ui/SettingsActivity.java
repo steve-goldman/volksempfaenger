@@ -15,7 +15,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 import android.widget.EditText;
@@ -27,7 +26,7 @@ public class SettingsActivity extends PreferenceActivity {
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
 
-	public static class DownloadFragment extends PreferenceFragment implements
+	public static class DownloadFragment extends SettingsFragment implements
 			OnSharedPreferenceChangeListener {
 
 		private PreferenceScreen prefScreen;
@@ -89,7 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 	}
 
-	public static class StorageFragment extends PreferenceFragment implements
+	public static class StorageFragment extends SettingsFragment implements
 			OnSharedPreferenceChangeListener {
 
 		private PreferenceScreen prefScreen;
@@ -136,7 +135,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 	}
 
-	public static class AboutFragment extends PreferenceFragment {
+	public static class AboutFragment extends SettingsFragment {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
