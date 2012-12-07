@@ -71,8 +71,8 @@ public class DownloadListFragment extends ListFragment implements
 
 			// percentage
 			TextView percentage = (TextView) view.findViewById(R.id.percentage);
-			if (status == DownloadManager.STATUS_RUNNING
-					|| status == DownloadManager.STATUS_PAUSED) {
+			if ((status == DownloadManager.STATUS_RUNNING || status == DownloadManager.STATUS_PAUSED)
+					&& total != 0 && done <= total) {
 				percentage.setVisibility(View.VISIBLE);
 				percentage.setText(String.format("%.0f%%", (double) done
 						/ total * 100));
@@ -86,9 +86,13 @@ public class DownloadListFragment extends ListFragment implements
 			if (status == DownloadManager.STATUS_RUNNING
 					|| status == DownloadManager.STATUS_PAUSED) {
 				progressText.setVisibility(View.VISIBLE);
-				progressText.setText(String.format("%s / %s",
-						Utils.readableFileSize(done),
-						Utils.readableFileSize(total)));
+				if (total != 0 && done <= total) {
+					progressText.setText(String.format("%s / %s",
+							Utils.readableFileSize(done),
+							Utils.readableFileSize(total)));
+				} else {
+					progressText.setText(Utils.readableFileSize(done));
+				}
 			} else if (status == DownloadManager.STATUS_SUCCESSFUL) {
 				progressText.setVisibility(View.VISIBLE);
 				progressText.setText(Utils.readableFileSize(done));
@@ -104,26 +108,25 @@ public class DownloadListFragment extends ListFragment implements
 				progressBar.setVisibility(View.VISIBLE);
 				progressBar.setIndeterminate(true);
 			} else if (status == DownloadManager.STATUS_RUNNING) {
-				int progress;
-				int progressMax;
-
-				if (done > Integer.MAX_VALUE || total > Integer.MAX_VALUE) {
-					if (done > total) {
-						// this shouldn't happen but we are prepared
-						progress = Integer.MAX_VALUE;
-					} else {
-						progress = (int) ((double) done / Long.MAX_VALUE * Integer.MAX_VALUE);
-					}
-					progressMax = Integer.MAX_VALUE;
-				} else {
-					progress = (int) done;
-					progressMax = (int) total;
-				}
-
 				progressBar.setVisibility(View.VISIBLE);
-				progressBar.setIndeterminate(false);
-				progressBar.setMax(progressMax);
-				progressBar.setProgress(progress);
+				if (done > total) {
+					progressBar.setIndeterminate(true);
+				} else {
+					int progress;
+					int progressMax;
+
+					if (total > Integer.MAX_VALUE) {
+						progress = (int) ((double) done / Long.MAX_VALUE * Integer.MAX_VALUE);
+						progressMax = Integer.MAX_VALUE;
+					} else {
+						progress = (int) done;
+						progressMax = (int) total;
+					}
+
+					progressBar.setIndeterminate(false);
+					progressBar.setMax(progressMax);
+					progressBar.setProgress(progress);
+				}
 			} else {
 				progressBar.setVisibility(View.GONE);
 			}
