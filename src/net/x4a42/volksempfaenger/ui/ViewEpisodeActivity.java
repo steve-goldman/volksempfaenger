@@ -50,6 +50,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.TagHandler;
@@ -578,6 +579,9 @@ public class ViewEpisodeActivity extends Activity implements
 		if (subscriptionId != -1) {
 			intent = NavUtils.getParentActivityIntent(this);
 			intent.putExtra("id", subscriptionId);
+			TaskStackBuilder.create(this)
+					.addNextIntent(new Intent(this, MainActivity.class))
+					.addNextIntent(intent).startActivities();
 		} else {
 			intent = new Intent(this, SubscriptionGridFragment.class);
 			intent.putExtra("tag", MainActivity.TAG_SUBSCRIPTIONS);
