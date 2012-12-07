@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.feedparser;
 
-import android.annotation.SuppressLint;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -603,14 +602,14 @@ public class FeedParser {
 			}
 			datestring = datestring.trim();
 
-			if (datestring.charAt(8) == ' ') {
-				if (datestring.charAt(14) == ' ') {
+			if (datestring.length() > 8 && datestring.charAt(8) == ' ') {
+				if (datestring.length() > 16 && datestring.charAt(14) == ' ') {
 					format = formats[0];
 				} else {
 					format = formats[1];
 				}
 			} else {
-				if (datestring.charAt(16) == ' ') {
+				if (datestring.length() > 16 && datestring.charAt(16) == ' ') {
 					format = formats[2];
 				} else {
 					format = formats[3];
