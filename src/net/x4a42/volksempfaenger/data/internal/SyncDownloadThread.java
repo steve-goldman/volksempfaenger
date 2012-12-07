@@ -41,19 +41,20 @@ public class SyncDownloadThread implements Runnable {
 
 	@Override
 	public synchronized void run() {
-		while (true) {
-			Cursor cursor = dlManager.query(new DownloadManager.Query());
-			cursor.registerContentObserver(mContentObserver);
-
-			onCursorUpdated(cursor);
-
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				return;
+		try {
+			while (true) {
+				Cursor cursor = dlManager.query(new DownloadManager.Query());
+				if (cursor == null) {
+					Thread.sleep(1000);
+					continue;
+				}
+				cursor.registerContentObserver(mContentObserver);
+				onCursorUpdated(cursor);
+				wait(120000);
+				cursor.close();
 			}
-
-			cursor.close();
+		} catch (InterruptedException e) {
+			return;
 		}
 	}
 
