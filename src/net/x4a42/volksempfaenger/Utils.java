@@ -130,6 +130,9 @@ public class Utils {
 		}
 
 		public static String hash(String text) {
+			if (text == null) {
+				text = "";
+			}
 			MessageDigest md;
 			try {
 				md = MessageDigest.getInstance("SHA-1");
