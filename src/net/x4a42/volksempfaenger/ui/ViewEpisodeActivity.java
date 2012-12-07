@@ -49,7 +49,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.TagHandler;
@@ -578,6 +580,9 @@ public class ViewEpisodeActivity extends Activity implements
 		if (subscriptionId != -1) {
 			intent = NavUtils.getParentActivityIntent(this);
 			intent.putExtra("id", subscriptionId);
+			TaskStackBuilder.create(this)
+					.addNextIntent(new Intent(this, MainActivity.class))
+					.addNextIntent(intent).startActivities();
 		} else {
 			intent = new Intent(this, SubscriptionGridFragment.class);
 			intent.putExtra("tag", MainActivity.TAG_SUBSCRIPTIONS);
@@ -609,10 +614,42 @@ public class ViewEpisodeActivity extends Activity implements
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.button_flattr) {
-			EpisodeHelper.flattr(getContentResolver(), mEpisodeId);
-			Intent intent = new Intent(this, FlattrService.class);
-			startService(intent);
+			SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
+					.getSharedPreferences();
+			String username = prefs.getString(PreferenceKeys.FLATTR_USERNAME,
+					null);
+			if (username != null) {
+				EpisodeHelper.flattr(getContentResolver(), mEpisodeId);
+				Intent intent = new Intent(this, FlattrService.class);
+				startService(intent);
+			} else {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle(R.string.title_flattr_no_account).setMessage(
+						R.string.message_flattr_no_account);
+				builder.setNegativeButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+				builder.setPositiveButton(R.string.button_flattr_auth,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Intent intent = new Intent(
+										ViewEpisodeActivity.this,
+										SettingsActivity.class);
+								intent.putExtra(
+										PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+										FlattrSettingsFragment.class.getName());
+								startActivity(intent);
+							}
+						});
+				builder.create().show();
+			}
 		}
 	}
-
 }

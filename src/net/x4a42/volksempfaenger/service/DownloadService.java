@@ -265,7 +265,11 @@ public class DownloadService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.v(this, "onStartCommand()");
 
-		long[] extraId = intent.getLongArrayExtra("id");
+		long[] extraId = null;
+		if (intent != null) {
+			extraId = intent.getLongArrayExtra("id");
+		}
+
 		new DownloadTask(extraId)
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
