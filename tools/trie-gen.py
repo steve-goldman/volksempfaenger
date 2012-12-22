@@ -8,8 +8,12 @@ def main():
     print("public class {} {{".format(config['class']))
     for group in config['groups']:
         print("\tpublic static {} lookup{}(String input) {{".format(group['return_type'], group['name']))
-        print("\t\tfinal int length = input.length();")
-        generateTrie(group['pairs']).emitCode(group['default'], 2, 0)
+        print("\t\ttry {");
+        print("\t\t\tfinal int length = input.length();")
+        generateTrie(group['pairs']).emitCode(group['default'], 3, 0)
+        print("\t\t} catch (IndexOutOfBoundsException e) {");
+        print("\t\t\treturn {};".format(group['default']));
+        print("\t\t}");
         print("\t}")
     print("}")
 
