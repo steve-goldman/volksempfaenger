@@ -371,8 +371,13 @@ public class ViewEpisodeActivity extends Activity implements
 			File cache = getImageFile(img);
 			String src = img.getSource();
 			if (cache.isFile()) {
-				Drawable d = new BitmapDrawable(getResources(),
-						cache.getAbsolutePath());
+				Drawable d;
+				try {
+					d = new BitmapDrawable(getResources(),
+							cache.getAbsolutePath());
+				} catch (OutOfMemoryError e) {
+					return;
+				}
 
 				int width, height;
 				int originalWidthScaled = (int) (d.getIntrinsicWidth() * metrics.density);
