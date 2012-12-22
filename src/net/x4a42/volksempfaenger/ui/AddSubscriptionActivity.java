@@ -269,13 +269,11 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
 		switch (actionId) {
 		case EditorInfo.IME_ACTION_SEARCH:
 		case EditorInfo.IME_ACTION_GO:
 			submitSearch();
 			return true;
-
 		default:
 			return false;
 		}
@@ -325,7 +323,6 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private String getPopularForTagUrl(String tag) {
-
 		try {
 			return "http://gpodder.net/api/2/tag/"
 					+ URLEncoder.encode(tag, "UTF-8") + "/100.json?scale_logo="
@@ -337,7 +334,6 @@ public class AddSubscriptionActivity extends Activity implements
 	}
 
 	private class LoadTagsTask extends AsyncTask<Void, String, Void> {
-
 		@Override
 		protected Void doInBackground(Void... params) {
 
@@ -413,12 +409,12 @@ public class AddSubscriptionActivity extends Activity implements
 		if (text.startsWith("http://") || text.startsWith("https://")) {
 			searchButton.setImageResource(R.drawable.add_holo_light);
 			searchEntry.setImeOptions(EditorInfo.IME_ACTION_GO);
-			searchEntry.setInputType(InputType.TYPE_CLASS_TEXT
+			setSearchInputType(InputType.TYPE_CLASS_TEXT
 					| InputType.TYPE_TEXT_VARIATION_URI);
 		} else {
 			searchButton.setImageResource(R.drawable.search_holo_light);
 			searchEntry.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-			searchEntry.setInputType(InputType.TYPE_CLASS_TEXT);
+			setSearchInputType(InputType.TYPE_CLASS_TEXT);
 		}
 	}
 
@@ -429,6 +425,12 @@ public class AddSubscriptionActivity extends Activity implements
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	}
+
+	private void setSearchInputType(int inputType) {
+		if (searchEntry.getInputType() != inputType) {
+			searchEntry.setInputType(inputType);
+		}
 	}
 
 }
