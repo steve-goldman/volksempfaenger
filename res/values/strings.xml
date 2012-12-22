@@ -145,5 +145,6 @@
     <string name="message_error_flattr_authorization">Flattr authorization failed</string>
     <string name="title_flattr_no_account">No Flattr account</string>
     <string name="message_flattr_no_account">You have to add your Flattr account to flattr episodes.</string>
+    <string name="message_no_website">No website</string>
 
 </resources>
