@@ -97,7 +97,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		grid.setOnItemClickListener(this);
 		grid.setOnCreateContextMenuListener(this);
 		grid.setAdapter(adapter);
-		grid.setOnScrollListener(new PauseOnScrollListener(true, true));
+		grid.setOnScrollListener(new PauseOnScrollListener(true, false));
 
 		show(GLE.LOADING);
 
