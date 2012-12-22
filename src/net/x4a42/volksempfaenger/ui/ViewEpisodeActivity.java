@@ -247,8 +247,14 @@ public class ViewEpisodeActivity extends Activity implements
 			return true;
 
 		case R.id.item_website:
-			intent = new Intent(Intent.ACTION_VIEW, episodeCursor.getUrlUri());
-			startActivity(intent);
+			Uri uri = episodeCursor.getUrlUri();
+			if (uri != null) {
+				intent = new Intent(Intent.ACTION_VIEW, uri);
+				startActivity(intent);
+			} else {
+				Toast.makeText(this, R.string.message_no_website,
+						Toast.LENGTH_SHORT).show();
+			}
 			return true;
 
 		case R.id.item_share:
