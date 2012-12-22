@@ -366,7 +366,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		if (data.getCount() == 0) {
+		if (data == null || data.getCount() == 0) {
 			show(GLE.EMPTY);
 			adapter.swapCursor(null);
 		} else {
