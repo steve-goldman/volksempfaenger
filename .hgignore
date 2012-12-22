@@ -1,0 +1,9 @@
+syntax: glob
+
+local.properties
+bin/*
+gen/*
+.settings/*
+*.bak
+*.orig
+*~

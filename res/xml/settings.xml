@@ -1,0 +1,62 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceScreen
+        android:summary="@string/settings_summary_download"
+        android:title="@string/settings_download" >
+        <ListPreference
+            android:defaultValue="@string/settings_default_download_interval"
+            android:entries="@array/settings_interval_choices"
+            android:entryValues="@array/settings_interval_values"
+            android:key="download_interval"
+            android:title="@string/settings_download_interval" />
+
+        <CheckBoxPreference
+            android:defaultValue="@string/settings_default_download_auto"
+            android:key="download_auto"
+            android:summary="@string/settings_summary_download_auto"
+            android:title="@string/settings_download_auto" />
+        <CheckBoxPreference
+            android:defaultValue="@string/settings_default_download_wifi"
+            android:key="download_wifi"
+            android:summary="@string/settings_summary_download_wifi"
+            android:title="@string/settings_download_wifi" />
+        <CheckBoxPreference
+            android:defaultValue="@string/settings_default_download_charging"
+            android:key="download_charging"
+            android:summary="@string/settings_summary_download_charging"
+            android:title="@string/settings_download_charging" />
+
+        <EditTextPreference
+            android:defaultValue="@string/settings_default_download_concurrent"
+            android:key="download_concurrent"
+            android:summary="@string/settings_summary_download_concurrent"
+            android:title="@string/settings_download_concurrent" />
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:summary="@string/settings_summary_storage"
+        android:title="@string/settings_storage" >
+        <EditTextPreference
+            android:key="storage_location"
+            android:title="@string/settings_storage_location" />
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:summary="@string/settings_summary_about"
+        android:title="@string/settings_about" >
+        <Preference
+            android:key="about_version"
+            android:summary="@string/unknown"
+            android:title="@string/settings_about_version" />
+        <Preference
+            android:key="about_website"
+            android:title="@string/settings_about_website" />
+        <Preference
+            android:key="about_license"
+            android:summary="@string/settings_summary_about_license"
+            android:title="@string/settings_about_license" />
+        <Preference
+            android:key="about_flattr"
+            android:summary="@string/settings_summary_about_flattr"
+            android:title="@string/settings_about_flattr" />
+    </PreferenceScreen>
+
+</PreferenceScreen>
