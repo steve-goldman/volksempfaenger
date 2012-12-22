@@ -54,17 +54,13 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	public void setPodcastId(long id) {
-		setPodcastId(id, options);
-	}
-
-	public void setPodcastId(long id, DisplayImageOptions options) {
 		if (id != podcastId) {
 			podcastId = id;
-			loadImage(options);
+			loadImage();
 		}
 	}
 
-	private void loadImage(DisplayImageOptions options) {
+	private void loadImage() {
 		if (podcastId == -1) {
 			setImageBitmap(null);
 			return;

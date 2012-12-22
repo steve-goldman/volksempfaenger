@@ -2,8 +2,6 @@ package net.x4a42.volksempfaenger.ui;
 
 import java.util.List;
 
-import com.nostra13.universalimageloader.core.assist.OnScrollSmartOptions;
-
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
@@ -47,6 +45,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -67,9 +67,6 @@ public class SubscriptionGridFragment extends Fragment implements
 	private UpdateServiceStatusListener updateListener;
 
 	private BroadcastReceiver mErrorReceiver = new ErrorReceiver();
-
-	private final OnScrollSmartOptions smartImageOptions = new OnScrollSmartOptions(
-			PodcastLogoView.options);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,7 +97,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		grid.setOnItemClickListener(this);
 		grid.setOnCreateContextMenuListener(this);
 		grid.setAdapter(adapter);
-		grid.setOnScrollListener(smartImageOptions);
+		grid.setOnScrollListener(new PauseOnScrollListener(true, true));
 
 		show(GLE.LOADING);
 
@@ -355,8 +352,7 @@ public class SubscriptionGridFragment extends Fragment implements
 				} else {
 					newEpisodesText.setVisibility(View.INVISIBLE);
 				}
-				podcastLogo.setPodcastId(cursor.getId(),
-						smartImageOptions.getOptions());
+				podcastLogo.setPodcastId(cursor.getId());
 			}
 
 		}
@@ -373,7 +369,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		if (data.getCount() == 0) {
+		if (data == null || data.getCount() == 0) {
 			show(GLE.EMPTY);
 			adapter.swapCursor(null);
 		} else {

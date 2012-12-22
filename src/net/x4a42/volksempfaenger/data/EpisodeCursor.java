@@ -206,7 +206,11 @@ public class EpisodeCursor extends ExtendedCursorWrapper {
 	}
 
 	public Uri getUrlUri() {
-		return Uri.parse(getUrl());
+		if (isNull(COLUMN_URL)) {
+			return null;
+		} else {
+			return Uri.parse(getUrl());
+		}
 	}
 
 	public String getHash() {
