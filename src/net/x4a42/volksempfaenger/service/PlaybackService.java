@@ -61,7 +61,6 @@ public class PlaybackService extends Service implements EventListener {
 	private RemoteControlClient remoteControlClient;
 	private ComponentName mediaButtonEventReceiver;
 
-	private PendingIntent playIntent;
 	private PendingIntent pauseIntent;
 
 	@Override
@@ -97,11 +96,6 @@ public class PlaybackService extends Service implements EventListener {
 			i.setAction(ACTION_PAUSE);
 			pauseIntent = PendingIntent.getService(this, 0, i, 0);
 		}
-		{
-			Intent i = new Intent(this, PlaybackService.class);
-			i.setAction(ACTION_PLAY);
-			playIntent = PendingIntent.getService(this, 0, i, 0);
-		}
 
 	}
 
@@ -118,6 +112,7 @@ public class PlaybackService extends Service implements EventListener {
 
 		if (action == ACTION_PLAY) {
 			if (uri == null) {
+				// start playing
 				try {
 					playEpisode(intent.getData());
 				} catch (IllegalArgumentException e) {
@@ -128,6 +123,7 @@ public class PlaybackService extends Service implements EventListener {
 					e.printStackTrace();
 				}
 			} else if (!uri.equals(intent.getData())) {
+				// switch episode
 				remote.stop();
 				try {
 					playEpisode(intent.getData());
@@ -139,11 +135,11 @@ public class PlaybackService extends Service implements EventListener {
 					e.printStackTrace();
 				}
 			} else {
+				// resume
 				remote.play();
 			}
 
 		} else if (action == ACTION_PAUSE) {
-
 			remote.pause();
 		} else if (action == ACTION_STOP) {
 			remote.stop();
@@ -463,8 +459,8 @@ public class PlaybackService extends Service implements EventListener {
 
 		notification.contentView.setImageViewResource(R.id.pause,
 				R.drawable.ic_notification_play);
-		notification.contentView
-				.setOnClickPendingIntent(R.id.pause, playIntent);
+		notification.contentView.setOnClickPendingIntent(R.id.pause,
+				getPlayIntent(uri));
 		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 		nm.notify(NOTIFICATION_ID, notification);
 	}
@@ -549,5 +545,12 @@ public class PlaybackService extends Service implements EventListener {
 			Intent intent = new Intent(this, FlattrService.class);
 			startService(intent);
 		}
+	}
+
+	private PendingIntent getPlayIntent(Uri episode) {
+		Intent i = new Intent(this, PlaybackService.class);
+		i.setAction(ACTION_PLAY);
+		i.setData(episode);
+		return PendingIntent.getService(this, 0, i, 0);
 	}
 }

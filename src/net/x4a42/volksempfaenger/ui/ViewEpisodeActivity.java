@@ -247,8 +247,14 @@ public class ViewEpisodeActivity extends Activity implements
 			return true;
 
 		case R.id.item_website:
-			intent = new Intent(Intent.ACTION_VIEW, episodeCursor.getUrlUri());
-			startActivity(intent);
+			Uri uri = episodeCursor.getUrlUri();
+			if (uri != null) {
+				intent = new Intent(Intent.ACTION_VIEW, uri);
+				startActivity(intent);
+			} else {
+				Toast.makeText(this, R.string.message_no_website,
+						Toast.LENGTH_SHORT).show();
+			}
 			return true;
 
 		case R.id.item_share:
@@ -371,8 +377,13 @@ public class ViewEpisodeActivity extends Activity implements
 			File cache = getImageFile(img);
 			String src = img.getSource();
 			if (cache.isFile()) {
-				Drawable d = new BitmapDrawable(getResources(),
-						cache.getAbsolutePath());
+				Drawable d;
+				try {
+					d = new BitmapDrawable(getResources(),
+							cache.getAbsolutePath());
+				} catch (OutOfMemoryError e) {
+					return;
+				}
 
 				int width, height;
 				int originalWidthScaled = (int) (d.getIntrinsicWidth() * metrics.density);
@@ -493,32 +504,36 @@ public class ViewEpisodeActivity extends Activity implements
 			lastImageLoadTask.cancel(true);
 		}
 
-		Spanned s = Html.fromHtml(episodeCursor.getDescription(), null,
-				new TagHandler() {
-					@Override
-					public void handleTag(boolean opening, String tag,
-							Editable output, XMLReader xmlReader) {
-						if (!opening) {
-							if (tag.equals("li") || tag.equals("tr")
-									|| tag.equals("table") || tag.equals("ol")
-									|| tag.equals("ul")) {
-								output.append("\n");
-							} else if (tag.equals("td")) {
-								output.append(" ");
+		if (episodeCursor.getDescription() != null) {
+			Spanned s = Html.fromHtml(episodeCursor.getDescription(), null,
+					new TagHandler() {
+						@Override
+						public void handleTag(boolean opening, String tag,
+								Editable output, XMLReader xmlReader) {
+							if (!opening) {
+								if (tag.equals("li") || tag.equals("tr")
+										|| tag.equals("table")
+										|| tag.equals("ol") || tag.equals("ul")) {
+									output.append("\n");
+								} else if (tag.equals("td")) {
+									output.append(" ");
+								}
 							}
 						}
-					}
-				});
-		descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
-				: new SpannableStringBuilder(s);
-		if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-				CharacterStyle.class).length == 0) {
-			// use the normal text as there is no html
-			episodeDescription.setText(episodeCursor.getDescription());
+					});
+			descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+					: new SpannableStringBuilder(s);
+			if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+					CharacterStyle.class).length == 0) {
+				// use the normal text as there is no html
+				episodeDescription.setText(episodeCursor.getDescription());
+			} else {
+				episodeDescription.setText(descriptionSpanned);
+				lastImageLoadTask = new ImageLoadTask()
+						.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			}
 		} else {
-			episodeDescription.setText(descriptionSpanned);
-			lastImageLoadTask = new ImageLoadTask()
-					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			episodeDescription.setText("");
 		}
 
 		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())

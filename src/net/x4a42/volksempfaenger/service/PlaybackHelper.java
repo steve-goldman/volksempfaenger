@@ -1,8 +1,7 @@
 package net.x4a42.volksempfaenger.service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,7 +20,7 @@ public class PlaybackHelper implements OnPreparedListener,
 	private AudioManager audioManager;
 	private MediaPlayer player = new MediaPlayer();
 	private AudioNoisyReceiver audioNoisyReceiver = new AudioNoisyReceiver();
-	private List<EventListener> eventListeners = new Vector<EventListener>();
+	private ArrayList<EventListener> eventListeners = new ArrayList<EventListener>();
 	private boolean requestedAutoPlay;
 	private boolean audioFocus;
 
@@ -139,7 +138,9 @@ public class PlaybackHelper implements OnPreparedListener,
 	 *            The EventListener to add.
 	 */
 	public void registerEventListener(EventListener listener) {
-		eventListeners.add(listener);
+		synchronized (eventListeners) {
+			eventListeners.add(listener);
+		}
 	}
 
 	/**
@@ -149,7 +150,9 @@ public class PlaybackHelper implements OnPreparedListener,
 	 *            The EventListener to remove.
 	 */
 	public void unregisterEventListener(EventListener listener) {
-		eventListeners.remove(listener);
+		synchronized (eventListeners) {
+			eventListeners.remove(listener);
+		}
 	}
 
 	/**
@@ -159,8 +162,10 @@ public class PlaybackHelper implements OnPreparedListener,
 	 *            The Event to emit.
 	 */
 	private void emitEvent(Event event) {
-		for (EventListener listener : eventListeners) {
-			listener.onPlaybackEvent(event);
+		synchronized (eventListeners) {
+			for (EventListener listener : eventListeners) {
+				listener.onPlaybackEvent(event);
+			}
 		}
 	}
 

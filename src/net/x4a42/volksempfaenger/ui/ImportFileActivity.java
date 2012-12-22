@@ -11,6 +11,8 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.feedparser.OpmlParser;
 import net.x4a42.volksempfaenger.feedparser.SubscriptionTree;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
@@ -96,7 +98,8 @@ public class ImportFileActivity extends Activity implements
 
 	private class LoadFileTask extends
 			AsyncTask<String, Void, SubscriptionTree> {
-		String path;
+		private String path;
+		private String errorTitle, errorMessage;
 
 		@Override
 		protected SubscriptionTree doInBackground(String... params) {
@@ -116,7 +119,14 @@ public class ImportFileActivity extends Activity implements
 								+ node.title + " " + node.url);
 					}
 				}
+			} catch (NullPointerException e) {
+				errorTitle = getString(R.string.title_import_error);
+				errorMessage = getString(R.string.message_error_import_unexpected);
+				return null;
 			} catch (FileNotFoundException e) {
+				errorTitle = getString(R.string.title_file_not_found);
+				errorMessage = String.format(
+						getString(R.string.message_error_file_not_found), path);
 				return null;
 			}
 			return tree;
@@ -125,13 +135,20 @@ public class ImportFileActivity extends Activity implements
 		@Override
 		protected void onPostExecute(SubscriptionTree tree) {
 			if (tree == null) {
-				final String message = String.format(
-						getString(R.string.message_error_file_not_found), path);
-				ActivityHelper
-						.buildErrorDialog(ImportFileActivity.this,
-								getString(R.string.title_file_not_found),
-								message, null).show();
-				finish();
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						ImportFileActivity.this);
+				builder.setTitle(errorTitle).setMessage(errorMessage)
+						.setCancelable(false);
+				builder.setPositiveButton(R.string.ok,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+								finish();
+							}
+						});
+				builder.create().show();
 				return;
 			}
 			items = new ArrayList<SubscriptionTree>();
@@ -160,6 +177,5 @@ public class ImportFileActivity extends Activity implements
 			mListView.setVisibility(View.VISIBLE);
 			mLoadingIndicator.setVisibility(View.GONE);
 		}
-
 	}
 }
