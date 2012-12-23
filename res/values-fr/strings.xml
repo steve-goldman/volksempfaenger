@@ -13,9 +13,9 @@
   <string name="menu_settings">Paramètres</string>
   <string name="menu_download">Télécharger</string>
   <string name="menu_mark_listened">Marquer comme écouté</string>
-  <string name="menu_mark_new">Marquer comme non-écouté</string>
+  <string name="menu_mark_new">Marquer comme nouveau</string>
   <string name="menu_update">Actualiser</string>
-  <string name="menu_feedback">Donnez votre avis</string>
+  <string name="menu_feedback">Envoyer un commentaire</string>
   <string name="menu_play">Lancer</string>
   <string name="context_delete">Supprimer</string>
   <string name="hint_http">http://</string>
@@ -50,7 +50,7 @@
   <string name="settings_download_charging">Uniquement pendant le chargement</string>
   <string name="settings_download_concurrent">Téléchargements parallèles</string>
   <string name="settings_storage">Données</string>
-  <string name="settings_storage_location">Location des données</string>
+  <string name="settings_storage_location">Localisation des données</string>
   <string name="settings_about">À propos</string>
   <string name="settings_about_version">Version</string>
   <string name="settings_about_website">Site web</string>
@@ -94,11 +94,11 @@
   <string name="fast_forward">Avance rapide</string>
   <string name="message_error_import_unexpected">Une erreur inattendue s\'est produite durant l\'import</string>
   <string name="title_send_error_report">Envoyer le rapport d\'erreur</string>
-  <string name="report_error">Rapport</string>
+  <string name="report_error">Rapporter</string>
   <string name="title_share">Partager</string>
   <string name="menu_share">Partager</string>
   <string name="menu_website">Site web</string>
-  <string name="message_import_started">Import commencé...</string>
+  <string name="message_import_started">Import commencé…</string>
   <string name="settings_about_libraries">Bibliothèques</string>
   <string name="settings_summary_about_flattr">Soutenir le développement de Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
@@ -116,8 +116,8 @@
   <string name="unknown_error">Erreur inconnue</string>
   <string name="title_popular">Populaire</string>
   <string name="title_search_results">Résultats de la recherche</string>
-  <string name="title_search_results_for">Résultats de la recherche pour \"en %\"</string>
-  <string name="message_subscribing_podcast">S\'abonner au podcast...</string>
+  <string name="title_search_results_for">Résultats de la recherche pour \"%s\"</string>
+  <string name="message_subscribing_podcast">S\'abonner au podcast…</string>
   <string name="title_tag_all">Tous</string>
   <string name="button_retry">Recommencer</string>
   <string name="message_error_loading">Chargement échoué</string>
@@ -125,6 +125,16 @@
   <string name="settings_summary_flattr">Paramètres de Flattr</string>
   <string name="settings_flattr">Flattr</string>
   <string name="button_flattr_auth">Connecter à Flattr</string>
-  <string name="settings_flattr_auto">Flattr automatique</string>
+  <string name="settings_summary_flattr_auth">Autoriser %s à rémunérer les créateurs avec Flattr </string>
+  <string name="flattr_connected_to">Connecté à &lt;b&gt;%s&lt;/b&gt; sur Flattr</string>
+  <string name="flattr_connecting">Connexion…</string>
+  <string name="settings_flattr_auto">Rémunérer par Flattr automatiquement</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Jamais</item>
+    <item>Épisodes commencés</item>
+    <item>Épisodes finis</item>
+  </string-array>
   <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Erreur d\'authentification</string>
+  <string name="message_error_flattr_authorization">Authentification à Flattr échouée</string>
 </resources>
