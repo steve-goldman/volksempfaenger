@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">Volksempfänger</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Lägg till prenumeration</string>
+  <string name="title_delete_subscription">Är du säker?</string>
+  <string name="title_settings">Inställningar</string>
+  <string name="title_tab_subscriptions">Prenumerationer</string>
+  <string name="title_tab_downloads">Hämtningar</string>
+  <string name="description_add_subscription">Ange webbadressen för podcasten för att prenumerera på den</string>
+  <string name="menu_add">Lägg till</string>
+  <string name="menu_delete">Ta bort</string>
+  <string name="menu_settings">Inställningar</string>
+  <string name="menu_download">Hämta</string>
+  <string name="menu_mark_listened">Markera som lyssnad</string>
+  <string name="menu_mark_new">Markera som ny</string>
+  <string name="menu_update">Uppdatera</string>
+  <string name="menu_feedback">Feedback</string>
+  <string name="menu_play">Spela</string>
+  <string name="context_delete">Ta bort</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Ja</string>
+  <string name="ok">OK</string>
+  <string name="add">Lägg till</string>
+  <string name="cancel">Avbryt</string>
+  <string name="unknown">okänd</string>
+  <string name="install">Installera</string>
+  <string name="dialog_error_title">Ett fel inträffade</string>
+  <string name="dialog_choose_download_enclosure">Välj en fil</string>
+  <string name="dialog_filemanager_missing_message">Du har ingen filhanterare installerad. Vill du installera OI File Manager?</string>
+  <string name="message_podcast_already_added">Du har redan lagt till denna podcast till dina prenumerationer</string>
+  <string name="message_podcast_successfully_added">Du har lagt till denna podcast till dina prenumerationer</string>
+  <string name="message_podcast_confirm_delete">Vill du ta bort “%s”?</string>
+  <string name="message_podcast_successfully_deleted">Podcasten togs bort</string>
+  <string name="message_podcast_feed_download_failed">Det gick inte att hämta podcasten</string>
+  <string name="message_podcast_feed_parsing_failed">Det gick inte att tolka podcastens XML</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_no_subscriptions">Inga prenumerationer</string>
+  <string name="message_download_started">Hämtningen startades</string>
+  <string name="message_download_already_running">Hämtningen har redan startats</string>
+  <string name="message_download_episode_already_downloaded">Detta avsnitt har redan hämtats</string>
+  <string name="message_episode_without_enclosure">Det finns ingen fil bifogad till detta avsnitt</string>
+  <string name="message_play_store_missing">Du har inte Google Play Store installerat på telefonen. Vänligen ladda ner APK-filen från OpenIntents hemsida och installera den.</string>
+  <string name="settings_download">Hämtning</string>
+  <string name="settings_download_interval">Uppdateringsintervall</string>
+  <string name="settings_download_auto">Hämta automatiskt</string>
+  <string name="settings_download_wifi">Endast via WiFi</string>
+  <string name="settings_download_charging">Endast vid laddning</string>
+  <string name="settings_download_concurrent">Samtidiga hämtningar</string>
+  <string name="settings_storage">Lagring</string>
+  <string name="settings_storage_location">Lagringsplats</string>
+  <string name="settings_about">Om</string>
+  <string name="settings_about_version">Version</string>
+  <string name="settings_about_website">Hemsida</string>
+  <string name="settings_about_license">Licens</string>
+  <string name="settings_about_authors">Upphovsmän</string>
+  <string name="settings_summary_download">Inställningar för hämtning av podcaster</string>
+  <string name="settings_summary_download_auto">Hämta nya avsnitt automatiskt</string>
+  <string name="settings_summary_download_wifi">Hämta endast nya avsnitt när det finns en tillgänglig WiFi-anslutning</string>
+  <string name="settings_summary_download_charging">Hämta endast nya avsnitt när laddaren är ansluten</string>
+  <string name="settings_summary_download_concurrent">Maximalt antal hämtningar som körs samtidigt</string>
+  <string name="settings_summary_storage">Inställningar för lokal lagring av podcaster</string>
+  <string name="settings_summary_about">Information om Volksempfänger</string>
+  <string name="settings_summary_about_license">Visa licensinformation</string>
+  <string name="menu_import">Importera</string>
+  <string name="dialog_choose_opml">Välj OPML-fil</string>
+  <string name="button_import">Importera</string>
+  <string name="dialog_choose_import_feeds">Välj flöden att importera</string>
+  <string name="message_no_downloads">Inga hämtningar</string>
+  <string name="empty_description">ingen beskrivning</string>
+  <string-array name="settings_interval_choices">
+    <item>Manuellt</item>
+    <item>Varje timme</item>
+    <item>Varannan timme</item>
+    <item>Var tredje timme</item>
+    <item>Var åttonde timme</item>
+    <item>Var tolfte timme</item>
+    <item>Varje dag</item>
+  </string-array>
+  <string name="episode_name">Avsnitt</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Sätt in ett externt lagringsmedia för att använda Volksempfänger</string>
+  <string name="unknown_duration">okänd längd</string>
+  <string name="unknown_size">okänd storlek</string>
+  <string name="message_error_file_not_found">Filen “%s” kunde inte hittas</string>
+  <string name="title_file_not_found">Filen kunde inte hittas</string>
+  <string name="title_import_error">Importeringsfel</string>
+  <string name="message_error_import">Importeringen av följande podcast misslyckades</string>
+  <string name="pause">Pausa</string>
+  <string name="error_download">hämtningsfel</string>
+  <string name="rewind">Spola tillbaka</string>
+  <string name="fast_forward">Snabbspola</string>
+  <string name="message_error_import_unexpected">Ett oväntat fel inträffade under importering</string>
+  <string name="title_send_error_report">Skicka felrapport</string>
+  <string name="report_error">Rapportera</string>
+  <string name="title_share">Dela</string>
+  <string name="menu_share">Dela</string>
+  <string name="menu_website">Hemsida</string>
+  <string name="message_import_started">Importering startades...</string>
+  <string name="settings_about_libraries">Bibliotek</string>
+  <string name="settings_summary_about_flattr">Stöd utvecklingen av Volksempfänger</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">kollapsa</string>
+  <string name="title_tab_playlists">Spellistor</string>
+  <string name="title_playlist_new">Nya</string>
+  <string name="title_playlist_listening">Lyssnar</string>
+  <string name="message_no_episodes">Inga avsnitt</string>
+  <string name="title_playlist_downloaded">Hämtade</string>
+  <string name="error_shownotes">Kan inte visa avsnittsdetaljer</string>
+  <string name="title_tab_discover">Upptäck</string>
+  <string name="menu_search">Sök</string>
+  <string name="search_hint">Sök eller skriv en URL</string>
+  <string name="import_to_volksempfaenger">Importera till Volksempfänger</string>
+  <string name="unknown_error">Okänt fel</string>
+  <string name="title_popular">Populära</string>
+  <string name="title_search_results">Sökresultat</string>
+  <string name="title_search_results_for">Sökresultat för “%s”</string>
+  <string name="message_subscribing_podcast">Lägger till podcast...</string>
+  <string name="title_tag_all">Alla</string>
+  <string name="button_retry">Försök igen</string>
+  <string name="message_error_loading">Laddning misslyckades</string>
+  <string name="unknown_error_occured">Ett okänt fel inträffade.</string>
+  <string name="settings_summary_flattr">Flattr-inställningar</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Anslut till Flattr</string>
+  <string name="settings_summary_flattr_auth">Tillåt %s att flattra avsnitt</string>
+  <string name="flattr_connected_to">Ansluten till &lt;b&gt;%s&lt;/b&gt; på Flattr</string>
+  <string name="flattr_connecting">Ansluter...</string>
+  <string name="settings_flattr_auto">Flattra automatiskt</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Aldrig</item>
+    <item>Startade avsnitt</item>
+    <item>Avslutade avsnitt</item>
+  </string-array>
+  <string name="button_flattr">Flattra</string>
+  <string name="title_error_flattr_authorization">Åtkomst nekades</string>
+  <string name="message_error_flattr_authorization">Åtkomst till Flattr misslyckades</string>
+</resources>

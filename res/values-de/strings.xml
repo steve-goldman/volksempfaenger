@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">Volksempfänger</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Abonnement hinzufügen</string>
+  <string name="title_delete_subscription">Bist du sicher?</string>
+  <string name="title_settings">Volksempfänger Einstellungen</string>
+  <string name="title_tab_subscriptions">Abonnements</string>
+  <string name="title_tab_downloads">Downloads</string>
+  <string name="description_add_subscription">Gibt die Podcast-URL an, um diesen zu abonnieren</string>
+  <string name="menu_add">Hinzufügen</string>
+  <string name="menu_delete">Löschen</string>
+  <string name="menu_settings">Einstellungen</string>
+  <string name="menu_download">Herunterladen</string>
+  <string name="menu_mark_listened">Als gehört markieren</string>
+  <string name="menu_mark_new">Als neu markieren</string>
+  <string name="menu_update">Aktualisieren</string>
+  <string name="menu_feedback">Feedback</string>
+  <string name="menu_play">Wiedergeben</string>
+  <string name="context_delete">Löschen</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Ja</string>
+  <string name="ok">OK</string>
+  <string name="add">Hinzufügen</string>
+  <string name="cancel">Abbrechen</string>
+  <string name="unknown">unbekannt</string>
+  <string name="install">Installieren</string>
+  <string name="dialog_error_title">Ein Fehler ist aufgetreten</string>
+  <string name="dialog_choose_download_enclosure">Datei wählen</string>
+  <string name="dialog_filemanager_missing_message">Du hast keinen Dateibrowser installiert. Möchtest du den OpenIntents File Manager installieren?</string>
+  <string name="message_podcast_already_added">Du hast diesen Podcast bereits abonniert</string>
+  <string name="message_podcast_successfully_added">Der Podcast wurde zu deinen Abonnements hinzugefügt</string>
+  <string name="message_podcast_confirm_delete">Willst du “%s” wirklich löschen?</string>
+  <string name="message_podcast_successfully_deleted">Podcast wurde entfernt</string>
+  <string name="message_podcast_feed_download_failed">Podcast konnte nicht heruntergeladen werden</string>
+  <string name="message_podcast_feed_parsing_failed">Podcast-XML konnte nicht geparst werden</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_no_subscriptions">Keine Abonnements</string>
+  <string name="message_download_started">Der Download wurde gestartet</string>
+  <string name="message_download_already_running">Der Download läuft bereits</string>
+  <string name="message_download_episode_already_downloaded">Diese Episode wurde bereits heruntergeladen</string>
+  <string name="message_episode_without_enclosure">Dieser Folge wurde keine Datei angehängt</string>
+  <string name="message_play_store_missing">Der Google Play Store ist auf deinem Telefon nicht vorhanden. Bitte lade das APK von der OpenIntents-Website herunter und installiere es.</string>
+  <string name="settings_download">Download</string>
+  <string name="settings_download_interval">Aktualisierungsinterval</string>
+  <string name="settings_download_auto">Automatischer Download</string>
+  <string name="settings_download_wifi">Nur über WLAN</string>
+  <string name="settings_download_charging">Nur beim Laden</string>
+  <string name="settings_download_concurrent">Parallele Downloads</string>
+  <string name="settings_storage">Speicher</string>
+  <string name="settings_storage_location">Speicherort</string>
+  <string name="settings_about">Über</string>
+  <string name="settings_about_version">Version</string>
+  <string name="settings_about_website">Website</string>
+  <string name="settings_about_license">Lizenz</string>
+  <string name="settings_about_authors">Autoren</string>
+  <string name="settings_summary_download">Downloadeinstellungen</string>
+  <string name="settings_summary_download_auto">Neue Folgen automatisch herunterladen</string>
+  <string name="settings_summary_download_wifi">Neue Folgen nur über WLAN herunterladen</string>
+  <string name="settings_summary_download_charging">Neue Folgen nur herunterladen, wenn das Gerät geladen wird</string>
+  <string name="settings_summary_download_concurrent">Maximale Anzahl paralleler Downloads</string>
+  <string name="settings_summary_storage">Einstellungen für lokalen Speicher</string>
+  <string name="settings_summary_about">Informationen über Volksempfänger</string>
+  <string name="settings_summary_about_license">Lizenzinformationen anzeigen</string>
+  <string name="menu_import">Importieren</string>
+  <string name="dialog_choose_opml">Wähle OPML-Datei</string>
+  <string name="button_import">Importieren</string>
+  <string name="dialog_choose_import_feeds">Wähle Feeds zum Importieren</string>
+  <string name="message_no_downloads">Keine Downloads</string>
+  <string name="empty_description">Keine Beschreibung</string>
+  <string-array name="settings_interval_choices">
+    <item>Manuell</item>
+    <item>Stündlich</item>
+    <item>Alle zwei Stunden</item>
+    <item>Alle vier Stunden</item>
+    <item>Alle acht Stunden</item>
+    <item>Alle zwölf Stunden</item>
+    <item>Täglich</item>
+  </string-array>
+  <string name="episode_name">Episodenname</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Lege bitte eine Speicherkarte ein, um Volksempfänger nutzen zu können</string>
+  <string name="unknown_duration">unbekannte Länge</string>
+  <string name="unknown_size">unbekannte Größe</string>
+  <string name="message_error_file_not_found">Die Datei “%s” konnte nicht gefunden werden</string>
+  <string name="title_file_not_found">Datei nicht gefunden</string>
+  <string name="title_import_error">Fehler beim Importieren</string>
+  <string name="message_error_import">Das Importieren der folgenden Podcasts schlug fehl</string>
+  <string name="pause">Pausieren</string>
+  <string name="error_download">Fehler beim Download</string>
+  <string name="rewind">Zurückspulen</string>
+  <string name="fast_forward">Vorspulen</string>
+  <string name="message_error_import_unexpected">Beim Import trat ein unerwarteter Fehler auf</string>
+  <string name="title_send_error_report">Fehlerbericht senden</string>
+  <string name="report_error">Melden</string>
+  <string name="title_share">Teilen</string>
+  <string name="menu_share">Teilen</string>
+  <string name="menu_website">Website</string>
+  <string name="message_import_started">Import gestartet…</string>
+  <string name="settings_about_libraries">Libraries</string>
+  <string name="settings_summary_about_flattr">Unterstütze die Entwicklung von Volksempfänger</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">einklappen</string>
+  <string name="title_tab_playlists">Playlisten</string>
+  <string name="title_playlist_new">Neu</string>
+  <string name="title_playlist_listening">Begonnen</string>
+  <string name="message_no_episodes">Keine Episoden</string>
+  <string name="title_playlist_downloaded">Heruntergeladen</string>
+  <string name="error_shownotes">Shownotes können nicht angezeigt werden</string>
+  <string name="title_tab_discover">Entdecke</string>
+  <string name="menu_search">Suche</string>
+  <string name="search_hint">Suchen oder URL eingeben</string>
+  <string name="import_to_volksempfaenger">In Volksempfänger importieren</string>
+  <string name="unknown_error">Unbekannter Fehler</string>
+  <string name="title_popular">Beliebt</string>
+  <string name="title_search_results">Suchergebnisse</string>
+  <string name="title_search_results_for">Suchergebnisse für \"%s\"</string>
+  <string name="message_subscribing_podcast">Podcast wird abonniert…</string>
+  <string name="title_tag_all">Alle</string>
+  <string name="button_retry">Erneut versuchen</string>
+  <string name="message_error_loading">Laden fehlgeschlagen</string>
+  <string name="unknown_error_occured">Ein unbekannter Fehler ist aufgetreten.</string>
+  <string name="settings_summary_flattr">Flattr Einstellungen</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Mit Flattr verbinden</string>
+  <string name="settings_summary_flattr_auth">%s erlauben Episode zu flattrn</string>
+  <string name="flattr_connected_to">Verbunden mit &lt;b&gt;%s&lt;/b&gt; auf Flattr</string>
+  <string name="flattr_connecting">Verbinde…</string>
+  <string name="settings_flattr_auto">Automatisch flattrn</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Nie</item>
+    <item>Begonnene Episoden</item>
+    <item>Beendete Episoden</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Authorisierungsfehler</string>
+  <string name="message_error_flattr_authorization">Flattr-Authorisierung fehlgeschlagen</string>
+</resources>
