@@ -156,25 +156,39 @@ public class ViewEpisodeActivity extends Activity implements
 		inflater.inflate(R.menu.view_episode, menu);
 
 		if (episodeCursor != null && remote != null) {
+			MenuItem downloadItem = menu.findItem(R.id.item_download);
+			MenuItem playItem = menu.findItem(R.id.item_play);
+			MenuItem markListenedItem = menu.findItem(R.id.item_mark_listened);
+			MenuItem markNewItem = menu.findItem(R.id.item_mark_new);
+
+			int status = episodeCursor.getStatus();
 
 			if ((episodeCursor.getDownloadStatus() != DownloadManager.STATUS_FAILED && episodeCursor
 					.getDownloadStatus() != -1)
 					|| episodeCursor.getEnclosureNumber() == 0) {
-				menu.removeItem(R.id.item_download);
+				downloadItem.setVisible(false);
+			} else {
+				downloadItem.setVisible(true);
 			}
 
 			if ((remote.isPlaying() && mEpisodeUri.equals(remote
 					.getEpisodeUri()))
 					|| (episodeCursor.getEnclosureNumber() == 0)) {
-				menu.removeItem(R.id.item_play);
+				playItem.setVisible(false);
+			} else {
+				playItem.setVisible(true);
 			}
 
-			int status = episodeCursor.getStatus();
 			if (!EpisodeHelper.canMarkAsListened(status)) {
-				menu.removeItem(R.id.item_mark_listened);
+				markListenedItem.setVisible(false);
+			} else {
+				markListenedItem.setVisible(true);
 			}
+
 			if (!EpisodeHelper.canMarkAsNew(status)) {
-				menu.removeItem(R.id.item_mark_new);
+				markNewItem.setVisible(false);
+			} else {
+				markNewItem.setVisible(true);
 			}
 
 		}
