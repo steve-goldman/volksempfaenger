@@ -5,18 +5,22 @@
         android:id="@+id/item_play"
         android:icon="@drawable/ic_action_play"
         android:showAsAction="ifRoom"
-        android:title="@string/menu_play"/>
+        android:title="@string/menu_play"
+        android:visible="false"/>
     <item
         android:id="@+id/item_download"
         android:icon="@drawable/ic_action_download"
         android:showAsAction="ifRoom"
-        android:title="@string/menu_download"/>
+        android:title="@string/menu_download"
+        android:visible="false"/>
     <item
         android:id="@+id/item_mark_listened"
-        android:title="@string/menu_mark_listened"/>
+        android:title="@string/menu_mark_listened"
+        android:visible="false"/>
     <item
         android:id="@+id/item_mark_new"
-        android:title="@string/menu_mark_new"/>
+        android:title="@string/menu_mark_new"
+        android:visible="false"/>
     <item
         android:id="@+id/item_delete"
         android:title="@string/menu_delete"/>
