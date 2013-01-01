@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Volksempfänger</string>
+  <string name="app_name">HoloPod</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Abonnement hinzufügen</string>
   <string name="title_delete_subscription">Bist du sicher?</string>
-  <string name="title_settings">Volksempfänger Einstellungen</string>
+  <string name="title_settings">HoloPod Einstellungen</string>
   <string name="title_tab_subscriptions">Abonnements</string>
   <string name="title_tab_downloads">Downloads</string>
   <string name="description_add_subscription">Gibt die Podcast-URL an, um diesen zu abonnieren</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Neue Folgen nur herunterladen, wenn das Gerät geladen wird</string>
   <string name="settings_summary_download_concurrent">Maximale Anzahl paralleler Downloads</string>
   <string name="settings_summary_storage">Einstellungen für lokalen Speicher</string>
-  <string name="settings_summary_about">Informationen über Volksempfänger</string>
+  <string name="settings_summary_about">Informationen über HoloPod</string>
   <string name="settings_summary_about_license">Lizenzinformationen anzeigen</string>
   <string name="menu_import">Importieren</string>
   <string name="dialog_choose_opml">Wähle OPML-Datei</string>
@@ -81,7 +81,7 @@
   </string-array>
   <string name="episode_name">Episodenname</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Lege bitte eine Speicherkarte ein, um Volksempfänger nutzen zu können</string>
+  <string name="message_insert_sdcard">Lege bitte eine Speicherkarte ein, um HoloPod nutzen zu können</string>
   <string name="unknown_duration">unbekannte Länge</string>
   <string name="unknown_size">unbekannte Größe</string>
   <string name="message_error_file_not_found">Die Datei “%s” konnte nicht gefunden werden</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Website</string>
   <string name="message_import_started">Import gestartet…</string>
   <string name="settings_about_libraries">Libraries</string>
-  <string name="settings_summary_about_flattr">Unterstütze die Entwicklung von Volksempfänger</string>
+  <string name="settings_summary_about_flattr">Unterstütze die Entwicklung von HoloPod</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">einklappen</string>
   <string name="title_tab_playlists">Playlisten</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Entdecke</string>
   <string name="menu_search">Suche</string>
   <string name="search_hint">Suchen oder URL eingeben</string>
-  <string name="import_to_volksempfaenger">In Volksempfänger importieren</string>
+  <string name="import_to_volksempfaenger">In HoloPod importieren</string>
   <string name="unknown_error">Unbekannter Fehler</string>
   <string name="title_popular">Beliebt</string>
   <string name="title_search_results">Suchergebnisse</string>

@@ -45,7 +45,7 @@ public class ActivityHelper {
 			intent.setType("message/rfc822");
 			intent.putExtra(Intent.EXTRA_EMAIL,
 					net.x4a42.volksempfaenger.Constants.FEEDBACK_TO);
-			intent.putExtra(Intent.EXTRA_SUBJECT, "Volksempfänger Feedback");
+			intent.putExtra(Intent.EXTRA_SUBJECT, "HoloPod Feedback");
 			activity.startActivity(Intent.createChooser(intent, null));
 			return true;
 

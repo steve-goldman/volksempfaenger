@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Volksempfänger</string>
+  <string name="app_name">HoloPod</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Adicionar Inscrição</string>
   <string name="title_delete_subscription">Tem certeza?</string>
-  <string name="title_settings">Configurações do Volksempfänger</string>
+  <string name="title_settings">Configurações do HoloPod</string>
   <string name="title_tab_subscriptions">Inscrições</string>
   <string name="title_tab_downloads">Downloads</string>
   <string name="description_add_subscription">Insira a URL do feed do podcast para inscrever nele</string>
@@ -60,7 +60,7 @@
   <string name="settings_summary_download_charging">Fazer download de novos episódios somente quando conectado a uma fonte de energia</string>
   <string name="settings_summary_download_concurrent">Número máximo de downloads sendo feitos ao mesmo tempo</string>
   <string name="settings_summary_storage">Configurações do armazenamento local de podcasts</string>
-  <string name="settings_summary_about">Informações sobre Volksempfänger</string>
+  <string name="settings_summary_about">Informações sobre HoloPod</string>
   <string name="settings_summary_about_license">Detalhes sobre a licença</string>
   <string name="menu_import">Importar</string>
   <string name="dialog_choose_opml">Selecione o arquivo OPML</string>
@@ -79,7 +79,7 @@
   </string-array>
   <string name="episode_name">Nome do Episódio</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Insira um meio de armazenamento externo para poder usar Volksempfänger</string>
+  <string name="message_insert_sdcard">Insira um meio de armazenamento externo para poder usar HoloPod</string>
   <string name="unknown_duration">duração desconhecida</string>
   <string name="unknown_size">tamanho desconhecido</string>
   <string name="message_error_file_not_found">O arquivo “%s” não pôde ser encontrado</string>
@@ -98,7 +98,7 @@
   <string name="menu_website">Página da web</string>
   <string name="message_import_started">Importação iniciada…</string>
   <string name="settings_about_libraries">Bibliotecas</string>
-  <string name="settings_summary_about_flattr">Contribuir com o desenvolvimento de Volksempfänger</string>
+  <string name="settings_summary_about_flattr">Contribuir com o desenvolvimento de HoloPod</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">encolher</string>
   <string name="title_tab_playlists">Listas</string>
@@ -107,5 +107,5 @@
   <string name="message_no_episodes">Não há episódios</string>
   <string name="title_playlist_downloaded">Downloads</string>
   <string name="error_shownotes">Não foi possível exibir a descrição do episódio</string>
-  <string name="import_to_volksempfaenger">Importar para Volksempfänger</string>
+  <string name="import_to_volksempfaenger">Importar para HoloPod</string>
 </resources>
