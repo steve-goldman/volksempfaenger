@@ -38,7 +38,7 @@ public class EnclosureDownloader extends Downloader {
 		File target = Utils.getEnclosureFile(getContext(), id, filename);
 		target.getParentFile().mkdirs();
 		Request request = new Request(Uri.parse(url));
-		request.addRequestHeader("User-Agend", getUserAgent());
+		request.addRequestHeader("User-Agent", getUserAgent());
 		request.setAllowedNetworkTypes(allowedNetworks);
 		request.setTitle(title);
 		request.setDestinationUri(Uri.fromFile(target));
