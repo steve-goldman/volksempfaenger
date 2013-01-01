@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">HoloPod</string>
+  <string name="app_name">holopod</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Lägg till prenumeration</string>
   <string name="title_delete_subscription">Är du säker?</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Hämta endast nya avsnitt när laddaren är ansluten</string>
   <string name="settings_summary_download_concurrent">Maximalt antal hämtningar som körs samtidigt</string>
   <string name="settings_summary_storage">Inställningar för lokal lagring av podcaster</string>
-  <string name="settings_summary_about">Information om HoloPod</string>
+  <string name="settings_summary_about">Information om holopod</string>
   <string name="settings_summary_about_license">Visa licensinformation</string>
   <string name="menu_import">Importera</string>
   <string name="dialog_choose_opml">Välj OPML-fil</string>
@@ -81,7 +81,7 @@
   </string-array>
   <string name="episode_name">Avsnitt</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Sätt in ett externt lagringsmedia för att använda HoloPod</string>
+  <string name="message_insert_sdcard">Sätt in ett externt lagringsmedia för att använda holopod</string>
   <string name="unknown_duration">okänd längd</string>
   <string name="unknown_size">okänd storlek</string>
   <string name="message_error_file_not_found">Filen “%s” kunde inte hittas</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Hemsida</string>
   <string name="message_import_started">Importering startades...</string>
   <string name="settings_about_libraries">Bibliotek</string>
-  <string name="settings_summary_about_flattr">Stöd utvecklingen av HoloPod</string>
+  <string name="settings_summary_about_flattr">Stöd utvecklingen av holopod</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">kollapsa</string>
   <string name="title_tab_playlists">Spellistor</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Upptäck</string>
   <string name="menu_search">Sök</string>
   <string name="search_hint">Sök eller skriv en URL</string>
-  <string name="import_to_volksempfaenger">Importera till HoloPod</string>
+  <string name="import_to_volksempfaenger">Importera till holopod</string>
   <string name="unknown_error">Okänt fel</string>
   <string name="title_popular">Populära</string>
   <string name="title_search_results">Sökresultat</string>
