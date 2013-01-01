@@ -94,7 +94,7 @@ public class PlaylistsFragment extends ListFragment implements
 		row.put("title", getString(titleResource));
 		row.put("type", String.valueOf(type));
 		row.put("icon", String.valueOf(icon));
-		row.put("number", "0");
+		row.put("number", "");
 		data.add(row);
 	}
 }
