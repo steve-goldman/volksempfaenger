@@ -267,8 +267,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		seekbar.setMax(cursor.getDurationTotal());
 		seekbar.setProgress(cursor.getDurationListened());
 		seekbar.setMax(remote.getDuration());
-		position.setText(Utils.formatTime(cursor.getDurationListened()));
-		duration.setText(Utils.formatTime(cursor.getDurationTotal()));
+		setTextViewTime(position, cursor.getDurationListened());
+		setTextViewTime(duration, cursor.getDurationTotal());
 		info.setVisibility(View.GONE);
 		progressDisplay.setVisibility(View.VISIBLE);
 		controls.setVisibility(View.VISIBLE);
@@ -356,7 +356,12 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	private void updateTime() {
-		position.setText(Utils.formatTime(remote.getPosition()));
+		setTextViewTime(position, remote.getPosition());
+		setTextViewTime(duration, remote.getDuration());
+	}
+
+	private static void setTextViewTime(TextView textView, int milliseconds) {
+		textView.setText(Utils.formatTime(milliseconds));
 	}
 
 }
