@@ -37,16 +37,18 @@ public class DownloadService extends Service {
 
 	private VolksempfaengerApplication app;
 
-	private class DownloadTask extends AsyncTask<Void, Integer, Void> {
+	private class DownloadTask extends AsyncTask<Void, Integer, Integer> {
 
 		private long[] extraIds;
+
+		private static final int ABORT_MOBILE_NETWORK = 1;
 
 		public DownloadTask(long[] extraIds) {
 			this.extraIds = extraIds;
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Integer doInBackground(Void... params) {
 			Log.v(this, "doInBackground()");
 
 			SharedPreferences prefs = app.getSharedPreferences();
@@ -93,23 +95,7 @@ public class DownloadService extends Service {
 					return null;
 				}
 
-				int networkType = 0;
-
-				// get network state
-				ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-				NetworkInfo netInfo = cm.getActiveNetworkInfo();
-				if (netInfo != null
-						&& netInfo.getState() == NetworkInfo.State.CONNECTED) {
-					switch (netInfo.getType()) {
-					case ConnectivityManager.TYPE_WIFI:
-						networkType = NETWORK_WIFI;
-						break;
-					case ConnectivityManager.TYPE_MOBILE:
-						networkType = NETWORK_MOBILE;
-						break;
-					}
-				}
+				int networkType = getNetworkType();
 
 				if ((networkType & networkAllowed) == 0) {
 					// no allowed network connection
@@ -117,6 +103,11 @@ public class DownloadService extends Service {
 					return null;
 				}
 
+			}
+
+			if ((networkAllowed & getNetworkType()) == 0) {
+				// download over mobile network is disabled
+				return ABORT_MOBILE_NETWORK;
 			}
 
 			// here we can finally start the downloads
@@ -249,7 +240,16 @@ public class DownloadService extends Service {
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Integer result) {
+			if (result != null) {
+				switch (result) {
+				case ABORT_MOBILE_NETWORK:
+					Toast.makeText(DownloadService.this,
+							R.string.error_download_mobile_disabled,
+							Toast.LENGTH_LONG).show();
+					break;
+				}
+			}
 			stopSelf();
 		}
 
@@ -279,6 +279,24 @@ public class DownloadService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
+	}
+
+	private int getNetworkType() {
+		int networkType = 0;
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		for (NetworkInfo netInfo : cm.getAllNetworkInfo()) {
+			if (netInfo != null && netInfo.isConnected()) {
+				switch (netInfo.getType()) {
+				case ConnectivityManager.TYPE_WIFI:
+					networkType |= NETWORK_WIFI;
+					break;
+				case ConnectivityManager.TYPE_MOBILE:
+					networkType |= NETWORK_MOBILE;
+					break;
+				}
+			}
+		}
+		return networkType;
 	}
 
 }
