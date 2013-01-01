@@ -194,22 +194,29 @@ public class PlaybackHelper implements OnPreparedListener,
 		}
 	}
 
+	private boolean transientLoss = false;
+
 	@Override
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
 		case AudioManager.AUDIOFOCUS_GAIN:
 			player.setVolume(1.0f, 1.0f);
+			if (transientLoss) {
+				play();
+				transientLoss = false;
+			}
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS:
 			if (isPlaying()) {
-				stop();
+				pause();
 			}
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			if (isPlaying()) {
 				pause();
+				transientLoss = true;
 			}
 			break;
 
