@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">Volksempfänger</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Lisää tilaus</string>
+  <string name="title_delete_subscription">Oletko varma?</string>
+  <string name="title_settings">Asetukset</string>
+  <string name="title_tab_subscriptions">Tilaukset</string>
+  <string name="title_tab_downloads">Lataukset</string>
+  <string name="description_add_subscription">Syötä podcastin URL-osoite tilataksesi sen</string>
+  <string name="menu_add">Lisää</string>
+  <string name="menu_delete">Poista</string>
+  <string name="menu_settings">Asetukset</string>
+  <string name="menu_download">Lataa</string>
+  <string name="menu_mark_listened">Merkitse kuunnelluksi</string>
+  <string name="menu_mark_new">Merkitse uudeksi</string>
+  <string name="menu_update">Päivitä</string>
+  <string name="menu_feedback">Palaute</string>
+  <string name="menu_play">Toista</string>
+  <string name="context_delete">Poista</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Kyllä</string>
+  <string name="ok">Ok</string>
+  <string name="add">Lisää</string>
+  <string name="cancel">Peruuta</string>
+  <string name="unknown">tuntematon</string>
+  <string name="install">Asenna</string>
+  <string name="dialog_error_title">Tapahtui virhe</string>
+  <string name="dialog_choose_download_enclosure">Valitse tiedosto</string>
+  <string name="dialog_filemanager_missing_message">Tiedostoselainta ei ole asennettuna. Haluatko asentaa OpenIntents tiedostoselaimen?</string>
+  <string name="message_podcast_already_added">Olet jo lisännyt tämän podcastin tilauksiisi</string>
+  <string name="message_podcast_successfully_added">Olet onnistuneesti tilannut tämän podcastin</string>
+  <string name="message_podcast_confirm_delete">Haluatko poistaa \"%s\"?</string>
+  <string name="message_podcast_successfully_deleted">Podcast poistettiin onnistuneesti</string>
+  <string name="message_podcast_feed_download_failed">Podcastia ei voida ladata</string>
+  <string name="message_podcast_feed_parsing_failed">Podcastin XML-syötettä ei voida jäsentää</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_no_subscriptions">Ei tilauksia</string>
+  <string name="message_download_started">Lataus aloitettu</string>
+  <string name="message_download_already_running">Lataus on jo käynnissä</string>
+  <string name="message_download_episode_already_downloaded">Tämä jakso on jo ladattu</string>
+  <string name="message_episode_without_enclosure">Tähän jaksoon ei sisälly liitettä</string>
+  <string name="message_play_store_missing">Google Play -kauppaa ei ole asennettuna laitteessasi. Lataa ja asenna APK-paketti OpenIntents-ohjelman verkkosivuilta.</string>
+  <string name="settings_download">Lataa</string>
+  <string name="settings_download_interval">Päivitysväli</string>
+  <string name="settings_download_auto">Automaattinen lataus</string>
+  <string name="settings_download_wifi">Vain WiFi-verkossa</string>
+  <string name="settings_download_charging">Vain ladattaessa</string>
+  <string name="settings_download_concurrent">Samanaikaiset lataukset</string>
+  <string name="settings_storage">Tallennustila</string>
+  <string name="settings_storage_location">Tallennustilan sijainti</string>
+  <string name="settings_about">Tiedot</string>
+  <string name="settings_about_version">Versio</string>
+  <string name="settings_about_website">Verkkosivu</string>
+  <string name="settings_about_license">Lisenssi</string>
+  <string name="settings_about_authors">Tekijät</string>
+  <string name="settings_summary_download">Latausasetukset</string>
+  <string name="settings_summary_download_auto">Lataa automaattisesti uudet jaksot</string>
+  <string name="settings_summary_download_wifi">Lataa uudet jaksot vain WiFi-verkossa oltaessa</string>
+  <string name="settings_summary_download_charging">Lataa uudet jaksot vain laitteen ollessa latauksessa</string>
+  <string name="settings_summary_download_concurrent">Enintään sallittujen samanaikaisten latausten määrä</string>
+  <string name="settings_summary_storage">Paikalliset podcastien tallennusasetukset</string>
+  <string name="settings_summary_about">Tietoa Volksempfängeristä</string>
+  <string name="settings_summary_about_license">Näytä lisenssitiedot</string>
+  <string name="menu_import">Tuo</string>
+  <string name="dialog_choose_opml">Valitse OPML-tiedosto</string>
+  <string name="button_import">Tuo</string>
+  <string name="dialog_choose_import_feeds">Valitse tuotavat syötteet</string>
+  <string name="message_no_downloads">Ei latauksia</string>
+  <string name="empty_description">ei kuvausta</string>
+  <string-array name="settings_interval_choices">
+    <item>Käsin</item>
+    <item>Joka tunti</item>
+    <item>Joka toinen tunti</item>
+    <item>Joka neljäs tunti</item>
+    <item>Joka kahdeksas tunti</item>
+    <item>Joka kahdestoista tunti</item>
+    <item>Joka päivä</item>
+  </string-array>
+  <string name="episode_name">Jakson nimi</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Syötä ulkoinen tallennusväline käyttääksesi Volksempfängeriä</string>
+  <string name="unknown_duration">tuntematon kesto</string>
+  <string name="unknown_size">tuntematon koko</string>
+  <string name="message_error_file_not_found">Tiedostoa \"%s\" ei löydy</string>
+  <string name="title_file_not_found">Tiedostoa ei löydy</string>
+  <string name="title_import_error">Tuontivirhe</string>
+  <string name="message_error_import">Seuraavien podcastien tuonti epäonnistui</string>
+  <string name="pause">tallennustilan</string>
+  <string name="error_download">latausvirhe</string>
+  <string name="rewind">Taaksepäin</string>
+  <string name="fast_forward">Pikakelaus</string>
+  <string name="message_error_import_unexpected">Odottamaton virhe tapahtui tuotaessa</string>
+  <string name="title_send_error_report">Lähetä virheraportti</string>
+  <string name="report_error">Raportoi</string>
+  <string name="title_share">Jaa</string>
+  <string name="menu_share">Jaa</string>
+  <string name="menu_website">Verkkosivu</string>
+  <string name="message_import_started">Tuonti aloitettiin…</string>
+  <string name="settings_about_libraries">Kirjastot</string>
+  <string name="settings_summary_about_flattr">Tue Volksempfängerin kehitystä</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">pienennä</string>
+  <string name="title_tab_playlists">Soittolistat</string>
+  <string name="title_playlist_new">Uusi</string>
+  <string name="title_playlist_listening">Kuunnellaan</string>
+  <string name="message_no_episodes">Ei jaksoja</string>
+  <string name="title_playlist_downloaded">Ladatut</string>
+  <string name="error_shownotes">Jakson kuvausta ei voida näyttää</string>
+  <string name="title_tab_discover">Tutustu</string>
+  <string name="menu_search">Hae</string>
+  <string name="search_hint">Hae tai syötä URL-osoite</string>
+  <string name="import_to_volksempfaenger">Tuo Volksempfängeriin</string>
+  <string name="unknown_error">Tuntematon virhe</string>
+  <string name="title_popular">Suositut</string>
+  <string name="title_search_results">Hakutulokset</string>
+  <string name="title_search_results_for">Haun \"%s\" tulokset</string>
+  <string name="message_subscribing_podcast">Tilataan podcastia…</string>
+  <string name="title_tag_all">Kaikki</string>
+  <string name="button_retry">Yritä uudelleen</string>
+  <string name="message_error_loading">Lataus epäonnistui</string>
+  <string name="unknown_error_occured">tapahtui tuntematon virhe</string>
+  <string name="settings_summary_flattr">Flattr-asetukset</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Yhdistä Flattr-palveluun</string>
+  <string name="settings_summary_flattr_auth">Salli %s jaksosen tukemiseen Flattr-palvelussa</string>
+  <string name="flattr_connected_to">Yhdistetty &lt;b&gt;%s&lt;/b&gt; Flattr-palvelussa</string>
+  <string name="flattr_connecting">Yhdistetään…</string>
+  <string name="settings_flattr_auto">Tue automaattisesti Flattr-palvelussa</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Ei koskaan</item>
+    <item>Aloitetut jaksot</item>
+    <item>Loppuun toistetut jaksot</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Valtuutusvirhe</string>
+  <string name="message_error_flattr_authorization">Flattr-valtuutus epäonnistui</string>
+  <string name="title_flattr_no_account">Ei Flattr-tiliä</string>
+  <string name="message_flattr_no_account">Flattr-tili täytyy lisätä, pystyäksesi tukemaan jaksoja.</string>
+  <string name="message_no_website">Ei verkkosivua</string>
+</resources>
