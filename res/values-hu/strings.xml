@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">holopod</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Új csatorna</string>
+  <string name="title_delete_subscription">Biztos benne?</string>
+  <string name="title_settings">holopod Beállítások</string>
+  <string name="title_tab_subscriptions">Csatornák</string>
+  <string name="title_tab_downloads">Letöltések</string>
+  <string name="description_add_subscription">Feliratkozáshoz adja meg a podcast csatorna URL-címét</string>
+  <string name="menu_add">Hozzáadás</string>
+  <string name="menu_delete">Törlés</string>
+  <string name="menu_settings">Beállítások</string>
+  <string name="menu_download">Letöltés</string>
+  <string name="menu_mark_listened">Meghallgatottnak jelöl</string>
+  <string name="menu_mark_new">Újként megjelöl</string>
+  <string name="menu_update">Frissít</string>
+  <string name="menu_feedback">Visszajelzés</string>
+  <string name="menu_play">Lejátszás</string>
+  <string name="context_delete">Törlés</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Igen</string>
+  <string name="ok">OK</string>
+  <string name="add">Hozzáad</string>
+  <string name="cancel">Mégsem</string>
+  <string name="unknown">ismeretlen</string>
+  <string name="install">Telepítés</string>
+  <string name="dialog_error_title">Hiba történt</string>
+  <string name="dialog_choose_download_enclosure">Válasszon fájlt</string>
+  <string name="dialog_filemanager_missing_message">Nem található fájlkezelő alkalmazás. Telepíti az Opentintents File Managert?</string>
+  <string name="message_podcast_already_added">Már feliratkozott erre a podcastra</string>
+  <string name="message_podcast_successfully_added">Sikeresen feliratkozott a podcastra</string>
+  <string name="message_podcast_confirm_delete">Tényleg törli? “%s”</string>
+  <string name="message_podcast_successfully_deleted">Podcast sikeresen törölve.</string>
+  <string name="message_podcast_feed_download_failed">A podcast letöltése sikertelen</string>
+  <string name="message_podcast_feed_parsing_failed">A podcast XML-feedjének feldolgozása sikertelen</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_no_subscriptions">Nincsenek feliratkozások</string>
+  <string name="message_download_started">A letöltés megkezdődött</string>
+  <string name="message_download_already_running">Már zajlik a letöltés</string>
+  <string name="message_download_episode_already_downloaded">Ez az epizódot már letöltötte</string>
+  <string name="message_episode_without_enclosure">Ehhez az epizódhoz nem tartozik fájl</string>
+  <string name="message_play_store_missing">A készüléken nem található a Google Play Store alkalmazása. Kérem, töltse le az APK-fájlt az OpenIntents weboldaláról, és telepítse.</string>
+  <string name="settings_download">Letöltés</string>
+  <string name="settings_download_interval">Frissítési időköz</string>
+  <string name="settings_download_auto">Automatikus letöltés</string>
+  <string name="settings_download_wifi">Csak wi-fin</string>
+  <string name="settings_download_charging">Csak töltéskor</string>
+  <string name="settings_download_concurrent">Egyidejű letöltések</string>
+  <string name="settings_storage">Tárhely</string>
+  <string name="settings_storage_location">Tárolás helye</string>
+  <string name="settings_about">Névjegy</string>
+  <string name="settings_about_version">Verzió</string>
+  <string name="settings_about_website">Weboldal</string>
+  <string name="settings_about_license">Licenc</string>
+  <string name="settings_about_authors">Alkotók</string>
+  <string name="settings_summary_download">Podcast letöltési beállítások</string>
+  <string name="settings_summary_download_auto">Új epizódok automatikus letöltése</string>
+  <string name="settings_summary_download_wifi">Új epizódok letöltése csak wi-fi kapcsolat esetén</string>
+  <string name="settings_summary_download_charging">Új epizódok letöltése csak az akkumulátor töltése közben</string>
+  <string name="settings_summary_download_concurrent">Az egyidőben zajló letöltések száma</string>
+  <string name="settings_summary_storage">Helyi podcast-tárolási beállítások</string>
+  <string name="settings_summary_about">Information a holopodról</string>
+  <string name="settings_summary_about_license">Licenc információk</string>
+  <string name="menu_import">Importálás</string>
+  <string name="dialog_choose_opml">OPML fájl kiválasztása</string>
+  <string name="button_import">Import</string>
+  <string name="dialog_choose_import_feeds">Válassza ki az importálni kívánt csatornákat</string>
+  <string name="message_no_downloads">Nincsenek letöltések</string>
+  <string name="empty_description">nincs leírás</string>
+  <string-array name="settings_interval_choices">
+    <item>Kézzel</item>
+    <item>1 óránként</item>
+    <item>2 óránként</item>
+    <item>4 óránként</item>
+    <item>8 óránként</item>
+    <item>12 óránként</item>
+    <item>Naponta</item>
+  </string-array>
+  <string name="episode_name">Epizód címe</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">A holopod használatához kérem, helyezzen be egy külső tárolóeszközt</string>
+  <string name="unknown_duration">ismeretlen hossz</string>
+  <string name="unknown_size">ismeretlen méret</string>
+  <string name="message_error_file_not_found">Nem található a fájl: “%s”</string>
+  <string name="title_file_not_found">Fájl nem található</string>
+  <string name="title_import_error">Hiba importálás közben</string>
+  <string name="message_error_import">Az alábbi podcastok importálása nem sikerült</string>
+  <string name="pause">Szünet</string>
+  <string name="error_download">letöltési hiba</string>
+  <string name="rewind">Visszateker</string>
+  <string name="fast_forward">Előreteker</string>
+  <string name="message_error_import_unexpected">Váratlan hiba történt az import során</string>
+  <string name="title_send_error_report">Hibajelentls küldése</string>
+  <string name="report_error">Jelentés</string>
+  <string name="title_share">Megosztás</string>
+  <string name="menu_share">Megosztás</string>
+  <string name="menu_website">Weboldal</string>
+  <string name="message_import_started">Importálás…</string>
+  <string name="settings_about_libraries">Könyvtárak</string>
+  <string name="settings_summary_about_flattr">Támogassa a holopod fejlesztését</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">összecsuk</string>
+  <string name="title_tab_playlists">Listák</string>
+  <string name="title_playlist_new">Új</string>
+  <string name="title_playlist_listening">Hallgatás</string>
+  <string name="message_no_episodes">Nincsenek epizódok</string>
+  <string name="title_playlist_downloaded">Letöltve</string>
+  <string name="error_shownotes">Epizódinformációk megjelenítése sikertelen</string>
+  <string name="title_tab_discover">Felfedezés</string>
+  <string name="menu_search">Keresés</string>
+  <string name="search_hint">Keresés vagy URL megadása</string>
+  <string name="import_to_volksempfaenger">Importálás a holopodba</string>
+  <string name="unknown_error">Ismeretlen hiba</string>
+  <string name="title_popular">Népszerű</string>
+  <string name="title_search_results">Keresési eredmények</string>
+  <string name="title_search_results_for">Keresési eredmények: “%s”</string>
+  <string name="message_subscribing_podcast">Feliratkozás a csatornára…</string>
+  <string name="title_tag_all">Mind</string>
+  <string name="button_retry">Ismét</string>
+  <string name="message_error_loading">Betöltés sikertelen</string>
+  <string name="unknown_error_occured">ismeretlen hiba történt.</string>
+  <string name="settings_summary_flattr">Flattr beállítások</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Flattr bejelentkezés</string>
+  <string name="flattr_connecting">Kapcsolódás…</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Soha</item>
+    <item>Megkezdett epizódok</item>
+    <item>Befejezett epizódok</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Azonosítási hiba</string>
+  <string name="message_error_flattr_authorization">Flattr bejelentkezés sikertelen</string>
+  <string name="title_flattr_no_account">Nincs Flattr fiókja</string>
+  <string name="message_no_website">Nincs weboldal</string>
+  <string name="error_download_mobile_disabled">Nem engedélyezte a letöltést mobilhálózaton keresztül</string>
+</resources>
