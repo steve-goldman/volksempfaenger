@@ -644,10 +644,13 @@ public class FeedParser {
 
 		private void onFeedItem() {
 			if (feedItem.itemId == null) {
-				if (feedItem.url == null) {
+				if (feedItem.url != null) {
+					feedItem.itemId = feedItem.url;
+				} else if (feedItem.title != null) {
+					feedItem.itemId = feedItem.title;
+				} else {
 					return;
 				}
-				feedItem.itemId = feedItem.url;
 			}
 			if (feedItem.date == null) {
 				return;
