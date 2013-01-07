@@ -148,10 +148,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
-		if (remote != null) {
-			remote.unregisterEventListener(this);
-			remote = null;
-		}
+		remote = null;
 
 		Intent intent = new Intent(getActivity(), PlaybackService.class);
 		getActivity().startService(intent);
