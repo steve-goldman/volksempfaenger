@@ -140,4 +140,5 @@
   <string name="title_flattr_no_account">Ei Flattr-tiliä</string>
   <string name="message_flattr_no_account">Flattr-tili täytyy lisätä, pystyäksesi tukemaan jaksoja.</string>
   <string name="message_no_website">Ei verkkosivua</string>
+  <string name="error_download_mobile_disabled">Lataaminen mobiiliverkossa on poissa käytöstä</string>
 </resources>
