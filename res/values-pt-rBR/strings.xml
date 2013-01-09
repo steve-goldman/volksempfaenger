@@ -7,7 +7,7 @@
   <string name="title_settings">Configurações do Volksempfänger</string>
   <string name="title_tab_subscriptions">Inscrições</string>
   <string name="title_tab_downloads">Downloads</string>
-  <string name="description_add_subscription">Insira a URL do feed do podcast para inscrever nele</string>
+  <string name="description_add_subscription">Insira a URL do feed do podcast para inscrever-se nele</string>
   <string name="menu_add">Adicionar</string>
   <string name="menu_delete">Excluir</string>
   <string name="menu_settings">Configurações</string>
@@ -15,7 +15,7 @@
   <string name="menu_mark_listened">Marcar como ouvido</string>
   <string name="menu_mark_new">Marcar como novo</string>
   <string name="menu_update">Atualizar</string>
-  <string name="menu_feedback">Enviar comentário</string>
+  <string name="menu_feedback">Enviar feedback</string>
   <string name="menu_play">Reproduzir</string>
   <string name="context_delete">Excluir</string>
   <string name="hint_http">http://</string>
@@ -35,6 +35,8 @@
   <string name="message_podcast_feed_download_failed">Não foi possível fazer o download do podcast</string>
   <string name="message_podcast_feed_parsing_failed">Não foi possível analisar o feed XML do podcast</string>
   <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
   <string name="message_no_subscriptions">Não há inscrições</string>
   <string name="message_download_started">O download foi iniciado</string>
   <string name="message_download_already_running">O download já está sendo feito</string>
@@ -45,7 +47,7 @@
   <string name="settings_download_interval">Intervalo de atualização</string>
   <string name="settings_download_auto">Download automático</string>
   <string name="settings_download_wifi">Somente pela WiFi</string>
-  <string name="settings_download_charging">Somente enquanto estiver carregando</string>
+  <string name="settings_download_charging">Enquanto estiver carregando</string>
   <string name="settings_download_concurrent">Downloads simultâneos</string>
   <string name="settings_storage">Armazenamento</string>
   <string name="settings_storage_location">Local de armazenamento</string>
@@ -58,7 +60,7 @@
   <string name="settings_summary_download_auto">Fazer download de novos episódios automaticamente</string>
   <string name="settings_summary_download_wifi">Fazer download de novos episódios somente quando conectado a uma rede WiFi</string>
   <string name="settings_summary_download_charging">Fazer download de novos episódios somente quando conectado a uma fonte de energia</string>
-  <string name="settings_summary_download_concurrent">Número máximo de downloads sendo feitos ao mesmo tempo</string>
+  <string name="settings_summary_download_concurrent">Número máximo de downloads que podem ser feitos ao mesmo tempo</string>
   <string name="settings_summary_storage">Configurações do armazenamento local de podcasts</string>
   <string name="settings_summary_about">Informações sobre Volksempfänger</string>
   <string name="settings_summary_about_license">Detalhes sobre a licença</string>
@@ -67,7 +69,7 @@
   <string name="button_import">Importar</string>
   <string name="dialog_choose_import_feeds">Selecione os feeds que serão importados</string>
   <string name="message_no_downloads">Não há downloads</string>
-  <string name="empty_description">não há descrição</string>
+  <string name="empty_description">Não há descrição</string>
   <string-array name="settings_interval_choices">
     <item>Manualmente</item>
     <item>A cada hora</item>
@@ -105,7 +107,38 @@
   <string name="title_playlist_new">Novos</string>
   <string name="title_playlist_listening">Ouvindo</string>
   <string name="message_no_episodes">Não há episódios</string>
-  <string name="title_playlist_downloaded">Downloads</string>
+  <string name="title_playlist_downloaded">Transferidos</string>
   <string name="error_shownotes">Não foi possível exibir a descrição do episódio</string>
+  <string name="title_tab_discover">Descobrir</string>
+  <string name="menu_search">Pesquisar</string>
+  <string name="search_hint">Pesquisar ou digitar URL</string>
   <string name="import_to_volksempfaenger">Importar para Volksempfänger</string>
+  <string name="unknown_error">Erro desconhecido</string>
+  <string name="title_popular">Popular</string>
+  <string name="title_search_results">Resultados da pesquisa</string>
+  <string name="title_search_results_for">Resultados da pesquisa por “%s”</string>
+  <string name="message_subscribing_podcast">Inscrevendo-se no podcast...</string>
+  <string name="title_tag_all">Todos</string>
+  <string name="button_retry">Tentar novamente</string>
+  <string name="message_error_loading">Falha ao carregar</string>
+  <string name="unknown_error_occured">Ocorreu um erro.</string>
+  <string name="settings_summary_flattr">Configurações do Flattr</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Conectar ao Flattr</string>
+  <string name="settings_summary_flattr_auth">Permitir que %s marque episódios no Flattr</string>
+  <string name="flattr_connected_to">Conectado a &lt;b&gt;%s&lt;/b&gt; no Flattr</string>
+  <string name="flattr_connecting">Conectando...</string>
+  <string name="settings_flattr_auto">Marcar automaticamente no Flattr</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Nunca</item>
+    <item>Episódios iniciados</item>
+    <item>Episódios finalizados</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Erro de Autorização</string>
+  <string name="message_error_flattr_authorization">Falha na autorização do Flattr</string>
+  <string name="title_flattr_no_account">Não há uma conta Flattr </string>
+  <string name="message_flattr_no_account">Para marcar episódios no Flattr é necessário que uma conta esteja conectada.</string>
+  <string name="message_no_website">Não há página da web</string>
+  <string name="error_download_mobile_disabled">O download pela rede móvel está desabilitado</string>
 </resources>
