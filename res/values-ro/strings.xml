@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">Volksempfänger</string>
+  <string name="app_name">holopod</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Adăugare</string>
   <string name="title_delete_subscription">Ești sigur?</string>
-  <string name="title_settings">Configurare Volksempfänger</string>
+  <string name="title_settings">Configurare holopod</string>
   <string name="title_tab_subscriptions">Listă podcasturi</string>
   <string name="title_tab_downloads">Descărcări</string>
   <string name="description_add_subscription">Introdu adresa podcastului la care dorești să te abonezi</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Descărcare episoade doar când dispozitivul este la încărcat</string>
   <string name="settings_summary_download_concurrent">Număr maxim de descărcări simultane</string>
   <string name="settings_summary_storage">Configurare locație de stocare a podcasturilor</string>
-  <string name="settings_summary_about">Informații despre Volksempfänger</string>
+  <string name="settings_summary_about">Informații despre holopod</string>
   <string name="settings_summary_about_license">Arată informații despre licențe</string>
   <string name="menu_import">Import</string>
   <string name="dialog_choose_opml">Alege un fișier OPML</string>
@@ -81,7 +81,7 @@
   </string-array>
   <string name="episode_name">Numele episodului</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Introdu un mediu de stocare extern pentru a folosi Volksempfänger</string>
+  <string name="message_insert_sdcard">Introdu un mediu de stocare extern pentru a folosi holopod</string>
   <string name="unknown_duration">durată necunoscută</string>
   <string name="unknown_size">dimensiune necunoscută</string>
   <string name="message_error_file_not_found">Fișierul \"%s\" nu a fost găsit</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Website</string>
   <string name="message_import_started">Import pornit...</string>
   <string name="settings_about_libraries">Biblioteci</string>
-  <string name="settings_summary_about_flattr">Susține dezvoltarea Volksempfänger</string>
+  <string name="settings_summary_about_flattr">Susține dezvoltarea holopod</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">restrânge</string>
   <string name="title_tab_playlists">Liste de redare</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Descoperire podcasturi noi</string>
   <string name="menu_search">Căutare</string>
   <string name="search_hint">Introdu termen de căutare sau URL</string>
-  <string name="import_to_volksempfaenger">Import în Volksempfänger</string>
+  <string name="import_to_volksempfaenger">Import în holopod</string>
   <string name="unknown_error">Eroare necunoscută</string>
   <string name="title_popular">Des căutate</string>
   <string name="title_search_results">Rezultate căutare</string>

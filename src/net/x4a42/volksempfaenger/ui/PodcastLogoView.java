@@ -22,6 +22,7 @@ public class PodcastLogoView extends ImageView {
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory().showImageForEmptyUri(R.drawable.default_logo)
 			.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+	private Animation fadeInAnimation;
 
 	public PodcastLogoView(Context context) {
 		super(context);
@@ -39,6 +40,8 @@ public class PodcastLogoView extends ImageView {
 	}
 
 	private void init(Context context) {
+		fadeInAnimation = AnimationUtils.loadAnimation(getContext(),
+				android.R.anim.fade_in);
 		if (isInEditMode()) {
 			setImageResource(R.drawable.default_logo);
 		} else {
@@ -84,10 +87,8 @@ public class PodcastLogoView extends ImageView {
 					@Override
 					public void onLoadingComplete(Bitmap loadedImage) {
 						if (System.currentTimeMillis() - startTime > 16) {
-							Animation animation = AnimationUtils.loadAnimation(
-									getContext(), android.R.anim.fade_in);
-							setAnimation(animation);
-							animation.start();
+							setAnimation(fadeInAnimation);
+							fadeInAnimation.start();
 						}
 					}
 				});
