@@ -45,6 +45,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -95,6 +97,7 @@ public class SubscriptionGridFragment extends Fragment implements
 		grid.setOnItemClickListener(this);
 		grid.setOnCreateContextMenuListener(this);
 		grid.setAdapter(adapter);
+		grid.setOnScrollListener(new PauseOnScrollListener(true, false));
 
 		show(GLE.LOADING);
 
