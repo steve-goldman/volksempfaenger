@@ -29,6 +29,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -41,7 +42,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	private LinearLayout info;
 	private PodcastLogoView logo;
-	private LinearLayout episodeInfo;
+	private RelativeLayout episodeInfo;
 	private TextView episode;
 	private TextView podcast;
 	private ImageButton infoPause;
@@ -80,7 +81,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 		info = (LinearLayout) view.findViewById(R.id.info);
 		logo = (PodcastLogoView) view.findViewById(R.id.logo);
-		episodeInfo = (LinearLayout) view.findViewById(R.id.episode_info);
+		episodeInfo = (RelativeLayout) view.findViewById(R.id.episode_info);
 		episode = (TextView) view.findViewById(R.id.episode);
 		podcast = (TextView) view.findViewById(R.id.podcast);
 		infoPause = (ImageButton) view.findViewById(R.id.info_pause);

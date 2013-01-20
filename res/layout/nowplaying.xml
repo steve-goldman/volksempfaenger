@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="vertical"
-    android:showDividers="middle"
-    tools:ignore="NestedWeights" >
+    android:showDividers="middle" >
 
     <View style="@style/NowPlaying.Separator" />
 
@@ -22,10 +21,11 @@
             android:id="@+id/logo"
             style="@style/NowPlaying.Logo" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/episode_info"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@drawable/borderless_button"
             android:clickable="true"
@@ -39,9 +39,8 @@
                 style="@style/NowPlaying.Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentTop="true"
                 android:ellipsize="marquee"
-                android:gravity="bottom"
                 android:singleLine="true"
                 android:text="@string/episode_name"
                 android:textStyle="bold" />
@@ -51,12 +50,11 @@
                 style="@style/NowPlaying.Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_below="@id/episode"
                 android:ellipsize="marquee"
-                android:gravity="top"
                 android:singleLine="true"
                 android:text="@string/podcast" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <ImageButton
             android:id="@+id/info_pause"
