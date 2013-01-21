@@ -16,6 +16,7 @@
 
     <TextView
         android:id="@+id/episode_title"
+        style="@android:style/TextAppearance.Holo.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -24,9 +25,9 @@
         android:layout_marginTop="@dimen/padding_small"
         android:layout_toRightOf="@id/podcast_logo"
         android:ellipsize="marquee"
+        android:fontFamily="sans-serif-condensed"
         android:scrollHorizontally="true"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:singleLine="true" />
 
     <TextView
         android:id="@+id/episode_date"

@@ -14,26 +14,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/padding_medium" >
+            android:padding="@dimen/padding_large" >
 
             <TextView
                 android:id="@+id/episode_title"
                 style="@android:style/TextAppearance.Holo.Large"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed" />
 
             <TextView
                 android:id="@+id/episode_meta"
-                style="@android:style/TextAppearance.Holo.Small"
+                style="@android:style/TextAppearance.Holo.Small.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/padding_medium"
-                android:drawablePadding="@dimen/padding_small" />
+                android:drawablePadding="@dimen/padding_medium" />
 
             <net.x4a42.volksempfaenger.ui.PatchedTextView
                 android:id="@+id/episode_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.1"
                 android:textColor="@color/episode_description_text"
                 android:textColorHighlight="@color/episode_description_text"
                 android:textColorLink="@color/episode_description_link" />

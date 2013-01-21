@@ -18,21 +18,21 @@
 
     <TextView
         android:id="@+id/playlistName"
+        style="@android:style/TextAppearance.Holo.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/playlistIcon"
         android:ellipsize="end"
-        android:text="TextView"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/playlistNumber"
+        style="@android:style/TextAppearance.Holo.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="0" />
 
 </RelativeLayout>

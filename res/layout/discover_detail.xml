@@ -14,14 +14,15 @@
 
     <TextView
         android:id="@+id/podcast_title"
+        style="@android:style/TextAppearance.Holo.Large"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
         android:layout_marginLeft="@dimen/padding_medium"
         android:layout_toRightOf="@+id/podcast_logo"
         android:ellipsize="end"
+        android:fontFamily="sans-serif-condensed"
         android:gravity="center_vertical"
-        android:text="Title"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Title" />
 
     <TextView
         android:id="@+id/podcast_description"
@@ -29,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/podcast_logo"
         android:layout_marginTop="@dimen/padding_medium"
+        android:lineSpacingMultiplier="1.1"
         android:text="Description" />
 
     <Button

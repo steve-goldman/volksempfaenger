@@ -495,7 +495,7 @@ public class ViewEpisodeActivity extends Activity implements
 		} else {
 			meta.append(getString(R.string.unknown_duration));
 		}
-		meta.append(" / ");
+		meta.append("  ");
 		long size = episodeCursor.getDownloadTotal();
 		if (size <= 0) {
 			size = episodeCursor.getEnclosureSize();
