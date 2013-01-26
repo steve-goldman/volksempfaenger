@@ -85,6 +85,7 @@ public class ViewEpisodeActivity extends Activity implements
 	private TextView episodeTitle;
 	private TextView episodeMeta;
 	private TextView episodeDescription;
+	private int descriptionHash;
 	private ImageButton flattrButton;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
@@ -518,36 +519,40 @@ public class ViewEpisodeActivity extends Activity implements
 			lastImageLoadTask.cancel(true);
 		}
 
-		if (episodeCursor.getDescription() != null) {
-			Spanned s = Html.fromHtml(episodeCursor.getDescription(), null,
-					new TagHandler() {
-						@Override
-						public void handleTag(boolean opening, String tag,
-								Editable output, XMLReader xmlReader) {
-							if (!opening) {
-								if (tag.equals("li") || tag.equals("tr")
-										|| tag.equals("table")
-										|| tag.equals("ol") || tag.equals("ul")) {
-									output.append("\n");
-								} else if (tag.equals("td")) {
-									output.append(" ");
-								}
+		String description = episodeCursor.getDescription();
+		if (description != null) {
+			if (description.hashCode() != descriptionHash) {
+				descriptionHash = description.hashCode();
+				Spanned s = Html.fromHtml(description, null, new TagHandler() {
+					@Override
+					public void handleTag(boolean opening, String tag,
+							Editable output, XMLReader xmlReader) {
+						if (!opening) {
+							if (tag.equals("li") || tag.equals("tr")
+									|| tag.equals("table") || tag.equals("ol")
+									|| tag.equals("ul")) {
+								output.append("\n");
+							} else if (tag.equals("td")) {
+								output.append(" ");
 							}
 						}
-					});
-			descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
-					: new SpannableStringBuilder(s);
-			if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
-					CharacterStyle.class).length == 0) {
-				// use the normal text as there is no html
-				episodeDescription.setText(episodeCursor.getDescription());
-			} else {
-				episodeDescription.setText(descriptionSpanned);
-				lastImageLoadTask = new ImageLoadTask()
-						.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+					}
+				});
+				descriptionSpanned = s instanceof SpannableStringBuilder ? (SpannableStringBuilder) s
+						: new SpannableStringBuilder(s);
+				if (descriptionSpanned.getSpans(0, descriptionSpanned.length(),
+						CharacterStyle.class).length == 0) {
+					// use the normal text as there is no html
+					episodeDescription.setText(episodeCursor.getDescription());
+				} else {
+					episodeDescription.setText(descriptionSpanned);
+					lastImageLoadTask = new ImageLoadTask()
+							.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				}
 			}
 		} else {
 			episodeDescription.setText("");
+			descriptionHash = "".hashCode();
 		}
 
 		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
