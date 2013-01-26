@@ -54,6 +54,12 @@ public class EpisodeHelper {
 				null);
 	}
 
+	public static void markPodcastAsListened(ContentResolver resolver, long id) {
+		resolver.update(VolksempfaengerContentProvider.EPISODE_URI,
+				MARK_AS_LISTENED_VALUES, Episode.PODCAST_ID + " = ?",
+				new String[] { String.valueOf(id) });
+	}
+
 	public static void markAsNew(ContentResolver resolver, Uri uri) {
 		resolver.update(uri, MARK_AS_NEW_VALUES, null, null);
 	}

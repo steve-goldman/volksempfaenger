@@ -7,6 +7,7 @@ import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
+import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.BackgroundErrorReceiver;
@@ -52,6 +53,7 @@ public class SubscriptionGridFragment extends Fragment implements
 
 	// private static final int CONTEXT_EDIT = 0;
 	private static final int CONTEXT_DELETE = 1;
+	private static final int CONTEXT_MARK_LISTENED = 2;
 
 	private static final int PICK_FILE_REQUEST = 0;
 
@@ -228,7 +230,9 @@ public class SubscriptionGridFragment extends Fragment implements
 		String title = podcastTitle.getText().toString();
 		menu.setHeaderTitle(title);
 
-		menu.add(0, CONTEXT_DELETE, 0, R.string.context_delete);
+		menu.add(Menu.NONE, CONTEXT_MARK_LISTENED, Menu.NONE,
+				R.string.menu_mark_listened);
+		menu.add(Menu.NONE, CONTEXT_DELETE, Menu.NONE, R.string.context_delete);
 
 	}
 
@@ -242,6 +246,10 @@ public class SubscriptionGridFragment extends Fragment implements
 			intent = new Intent(getActivity(), DeleteSubscriptionActivity.class);
 			intent.putExtra("id", currentMenuInfo.id);
 			startActivity(intent);
+			return true;
+		case CONTEXT_MARK_LISTENED:
+			EpisodeHelper.markPodcastAsListened(getActivity()
+					.getContentResolver(), currentMenuInfo.id);
 			return true;
 		}
 		return false;
