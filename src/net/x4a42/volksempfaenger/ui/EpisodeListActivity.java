@@ -274,6 +274,12 @@ public abstract class EpisodeListActivity extends Activity implements
 				mode.finish();
 				return true;
 
+			case R.id.item_select_all:
+				for (int i = 0; i < mEpisodeListView.getCount(); i++) {
+					mEpisodeListView.setItemChecked(i, true);
+				}
+				return true;
+
 			default:
 				return false;
 			}

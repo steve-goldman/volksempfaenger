@@ -147,5 +147,6 @@
     <string name="message_flattr_no_account">You have to add your Flattr account to flattr episodes.</string>
     <string name="message_no_website">No website</string>
     <string name="error_download_mobile_disabled">Downloading over mobile networks is disabled</string>
+    <string name="menu_select_all">Select all</string>
 
 </resources>
