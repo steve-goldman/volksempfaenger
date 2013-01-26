@@ -29,7 +29,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -42,7 +41,6 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	private LinearLayout info;
 	private PodcastLogoView logo;
-	private RelativeLayout episodeInfo;
 	private TextView episode;
 	private TextView podcast;
 	private ImageButton infoPause;
@@ -81,7 +79,6 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 		info = (LinearLayout) view.findViewById(R.id.info);
 		logo = (PodcastLogoView) view.findViewById(R.id.logo);
-		episodeInfo = (RelativeLayout) view.findViewById(R.id.episode_info);
 		episode = (TextView) view.findViewById(R.id.episode);
 		podcast = (TextView) view.findViewById(R.id.podcast);
 		infoPause = (ImageButton) view.findViewById(R.id.info_pause);
@@ -95,7 +92,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 		progressDisplay = (LinearLayout) view
 				.findViewById(R.id.progress_display);
 
-		episodeInfo.setOnClickListener(this);
+		info.setOnClickListener(this);
 		infoPause.setOnClickListener(this);
 		seekbar.setEnabled(true);
 		seekbar.setOnSeekBarChangeListener(this);
@@ -159,7 +156,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.episode_info:
+		case R.id.info:
 			onClickInfo(v);
 			break;
 		case R.id.info_pause:
