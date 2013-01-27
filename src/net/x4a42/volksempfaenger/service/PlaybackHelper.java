@@ -86,6 +86,7 @@ public class PlaybackHelper implements OnPreparedListener,
 		player.stop();
 		abandonAudioFocus();
 		emitEvent(Event.STOP);
+		reset();
 	}
 
 	private void abandonAudioFocus() {
@@ -184,6 +185,7 @@ public class PlaybackHelper implements OnPreparedListener,
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		emitEvent(Event.END);
+		reset();
 	}
 
 	@Override
