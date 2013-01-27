@@ -69,7 +69,6 @@ public class PlaybackService extends Service implements EventListener {
 		// create and register the remote control client
 		remoteControlClient = new RemoteControlClient(mediaPendingIntent);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-
 			// Required for Jelly Bean to show lockscreen controls
 			// displays a 'previous' button on ICS because of a bug
 			// https://code.google.com/p/android/issues/detail?id=29920&q=remotecontrolclient&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
@@ -83,7 +82,6 @@ public class PlaybackService extends Service implements EventListener {
 		intent = new Intent(this, PlaybackService.class);
 		intent.setAction(ACTION_STOP);
 		stopIntent = PendingIntent.getService(this, 0, intent, 0);
-
 	}
 
 	@Override
@@ -131,10 +129,8 @@ public class PlaybackService extends Service implements EventListener {
 		} else if (action == ACTION_STOP) {
 			remote.stop();
 		} else if (action == Intent.ACTION_MEDIA_BUTTON) {
-
 			KeyEvent event = (KeyEvent) intent
 					.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-
 			if (event != null) {
 				switch (event.getKeyCode()) {
 				case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -248,8 +244,12 @@ public class PlaybackService extends Service implements EventListener {
 	private void playEpisode(Uri episode) throws IllegalArgumentException,
 			IOException {
 		assert (VolksempfaengerContentProvider.getTypeMime(episode) == VolksempfaengerContentProvider.Mime.EPISODE_ITEM);
-		playbackItem = new PlaybackItem(this, episode, pauseIntent, stopIntent);
+		PlaybackItem playbackItem = new PlaybackItem(this, episode,
+				pauseIntent, stopIntent);
+		// resets this.playbackItem
 		helper.open(playbackItem.getPath());
+		// assign here to prevent inadvertent reset
+		this.playbackItem = playbackItem;
 		ContentValues values = new ContentValues();
 		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);
@@ -356,6 +356,11 @@ public class PlaybackService extends Service implements EventListener {
 
 	private void onPlayerReset() {
 		stopForeground(true);
+		playbackItem = null;
+
+		AudioManager am = helper.getAudioManager();
+		am.unregisterRemoteControlClient(remoteControlClient);
+		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 	}
 
 	private void onPlayerEnd() {
@@ -366,8 +371,8 @@ public class PlaybackService extends Service implements EventListener {
 		EpisodeHelper.markAsListened(getContentResolver(),
 				playbackItem.getUri());
 		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_FINISHED);
-		savePosition(0);
 		onPlayerStop(false);
+		savePosition(0);
 	}
 
 	private void onPlayerStop(boolean savePosition) {
@@ -379,14 +384,8 @@ public class PlaybackService extends Service implements EventListener {
 		if (savePosition) {
 			savePosition();
 		}
-		onPlayerReset();
-		playbackItem = null;
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-
-		AudioManager am = helper.getAudioManager();
-		am.unregisterRemoteControlClient(remoteControlClient);
-		am.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
 	}
 
 	private void onPlayerPause() {
