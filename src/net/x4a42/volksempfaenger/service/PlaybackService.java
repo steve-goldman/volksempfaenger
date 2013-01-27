@@ -1,46 +1,35 @@
 package net.x4a42.volksempfaenger.service;
 
-import java.io.File;
 import java.io.IOException;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.receiver.MediaButtonEventReceiver;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
 import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
-import net.x4a42.volksempfaenger.ui.MainActivity;
-import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
-import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
+import net.x4a42.volksempfaenger.service.internal.PlaybackItem;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
-import android.media.RemoteControlClient.MetadataEditor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.TaskStackBuilder;
 import android.view.KeyEvent;
-import android.widget.RemoteViews;
 
 public class PlaybackService extends Service implements EventListener {
 
@@ -50,10 +39,7 @@ public class PlaybackService extends Service implements EventListener {
 
 	private static final int NOTIFICATION_ID = 0x59d54313;
 
-	private Uri uri;
-	private Uri uriTime;
-	private Notification notification;
-	private EpisodeCursor cursor;
+	private PlaybackItem playbackItem;
 	private Handler saveHandler;
 	private PlaybackBinder binder;
 	private PlaybackRemote remote;
@@ -61,7 +47,7 @@ public class PlaybackService extends Service implements EventListener {
 	private RemoteControlClient remoteControlClient;
 	private ComponentName mediaButtonEventReceiver;
 
-	private PendingIntent pauseIntent;
+	private PendingIntent pauseIntent, stopIntent;
 
 	@Override
 	public void onCreate() {
@@ -91,11 +77,12 @@ public class PlaybackService extends Service implements EventListener {
 					.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
 		}
 
-		{
-			Intent i = new Intent(this, PlaybackService.class);
-			i.setAction(ACTION_PAUSE);
-			pauseIntent = PendingIntent.getService(this, 0, i, 0);
-		}
+		Intent intent = new Intent(this, PlaybackService.class);
+		intent.setAction(ACTION_PAUSE);
+		pauseIntent = PendingIntent.getService(this, 0, intent, 0);
+		intent = new Intent(this, PlaybackService.class);
+		intent.setAction(ACTION_STOP);
+		stopIntent = PendingIntent.getService(this, 0, intent, 0);
 
 	}
 
@@ -111,7 +98,7 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		if (action == ACTION_PLAY) {
-			if (uri == null) {
+			if (playbackItem == null) {
 				// start playing
 				try {
 					playEpisode(intent.getData());
@@ -122,7 +109,7 @@ public class PlaybackService extends Service implements EventListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else if (!uri.equals(intent.getData())) {
+			} else if (!playbackItem.getUri().equals(intent.getData())) {
 				// switch episode
 				remote.stop();
 				try {
@@ -192,7 +179,11 @@ public class PlaybackService extends Service implements EventListener {
 		}
 
 		public Uri getEpisodeUri() {
-			return uri;
+			if (playbackItem == null) {
+				return null;
+			} else {
+				return playbackItem.getUri();
+			}
 		}
 
 		public boolean isPlaying() {
@@ -257,33 +248,8 @@ public class PlaybackService extends Service implements EventListener {
 	private void playEpisode(Uri episode) throws IllegalArgumentException,
 			IOException {
 		assert (VolksempfaengerContentProvider.getTypeMime(episode) == VolksempfaengerContentProvider.Mime.EPISODE_ITEM);
-		if (episode == null) {
-			throw new IllegalArgumentException("Episode is null");
-		}
-		uri = episode;
-		uriTime = ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.EPISODETIME_URI,
-				ContentUris.parseId(episode));
-		cursor = new EpisodeCursor(getContentResolver().query(
-				episode,
-				new String[] { Episode._ID, Episode.TITLE, Episode.STATUS,
-						Episode.PODCAST_ID, Episode.ENCLOSURE_ID,
-						Episode.DOWNLOAD_ID, Episode.DOWNLOAD_LOCAL_URI,
-						Episode.DURATION_LISTENED, Episode.PODCAST_TITLE,
-						Episode.ENCLOSURE_URL, Episode.FLATTR_STATUS }, null,
-				null, null));
-
-		if (!cursor.moveToFirst()) {
-			throw new IllegalArgumentException("Episode not found");
-		}
-		File enclosureFile = cursor.getDownloadFile();
-		String path;
-		if (enclosureFile == null || !enclosureFile.isFile()) {
-			path = cursor.getEnclosureUrl();
-		} else {
-			path = enclosureFile.getAbsolutePath();
-		}
-		helper.open(path);
+		playbackItem = new PlaybackItem(this, episode, pauseIntent, stopIntent);
+		helper.open(playbackItem.getPath());
 		ContentValues values = new ContentValues();
 		values.put(Episode.STATUS, Constants.EPISODE_STATE_LISTENING);
 		updateEpisode(values);
@@ -297,24 +263,10 @@ public class PlaybackService extends Service implements EventListener {
 	 *            Values to update.
 	 */
 	private void updateEpisode(ContentValues values) {
-		if (uri != null) {
-			getContentResolver().update(uri, values, null, null);
+		if (playbackItem != null) {
+			getContentResolver().update(playbackItem.getUri(), values, null,
+					null);
 		}
-	}
-
-	public Uri getCurrentEpisode() {
-		return uri;
-	}
-
-	private void startForeground() {
-		if (notification == null) {
-			return;
-		}
-		startForeground(NOTIFICATION_ID, notification);
-	}
-
-	private void stopForeground() {
-		stopForeground(true);
 	}
 
 	private void savePosition() {
@@ -322,10 +274,11 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void savePosition(int position) {
-		if (uriTime != null) {
+		if (playbackItem != null) {
 			ContentValues values = new ContentValues();
 			values.put(Episode.DURATION_LISTENED, position);
-			getContentResolver().update(uriTime, values, null, null);
+			getContentResolver().update(playbackItem.getUriTime(), values,
+					null, null);
 		}
 	}
 
@@ -335,10 +288,6 @@ public class PlaybackService extends Service implements EventListener {
 			saveHandler.postDelayed(this, 10000);
 		}
 	};
-
-	private int getDurationListened() {
-		return cursor.getInt(cursor.getColumnIndex(Episode.DURATION_LISTENED));
-	}
 
 	@Override
 	public void onPlaybackEvent(Event event) {
@@ -372,7 +321,11 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPrepared() {
-		helper.seekTo(getDurationListened());
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in onPlayerPrepared()");
+			return;
+		}
+		helper.seekTo(playbackItem.getDurationListenedAtStart());
 		helper.play();
 
 		AudioManager am = helper.getAudioManager();
@@ -381,29 +334,18 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPlay() {
-		if (uri == null || uriTime == null || cursor == null) {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in onPlayerPlay()");
 			return;
 		}
-
-		if (notification == null) {
-			notification = makeNotification();
-			startForeground();
-		}
+		startForeground(NOTIFICATION_ID, playbackItem.getNotification());
 		saveHandler.post(savePositionTask);
 
-		final MetadataEditor metadataEditor = remoteControlClient
-				.editMetadata(true);
-		metadataEditor
-				.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK,
-						Utils.getPodcastLogoBitmap(this, cursor.getPodcastId()))
-				.putString(MediaMetadataRetriever.METADATA_KEY_TITLE,
-						cursor.getTitle())
-				.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM,
-						cursor.getPodcastTitle());
-		metadataEditor.apply();
+		playbackItem.editMetadata(remoteControlClient);
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
+		Notification notification = playbackItem.getNotification();
 		notification.contentView.setImageViewResource(R.id.pause,
 				R.drawable.ic_notification_pause);
 		notification.contentView.setOnClickPendingIntent(R.id.pause,
@@ -413,22 +355,24 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerReset() {
-		stopForeground();
-		notification = null;
+		stopForeground(true);
 	}
 
 	private void onPlayerEnd() {
-		if (uri == null || uriTime == null || cursor == null) {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in onPlayerEnd()");
 			return;
 		}
-		EpisodeHelper.markAsListened(getContentResolver(), uri);
+		EpisodeHelper.markAsListened(getContentResolver(),
+				playbackItem.getUri());
 		flattrEpisodeIfAutoPrefIs(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_FINISHED);
 		savePosition(0);
 		onPlayerStop(false);
 	}
 
 	private void onPlayerStop(boolean savePosition) {
-		if (uri == null || uriTime == null || cursor == null) {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in onPlayerStop()");
 			return;
 		}
 		saveHandler.removeCallbacks(savePositionTask);
@@ -436,12 +380,9 @@ public class PlaybackService extends Service implements EventListener {
 			savePosition();
 		}
 		onPlayerReset();
+		playbackItem = null;
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-
-		cursor = null;
-		uri = null;
-		uriTime = null;
 
 		AudioManager am = helper.getAudioManager();
 		am.unregisterRemoteControlClient(remoteControlClient);
@@ -449,7 +390,8 @@ public class PlaybackService extends Service implements EventListener {
 	}
 
 	private void onPlayerPause() {
-		if (uri == null || uriTime == null || cursor == null) {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in onPlayerPause()");
 			return;
 		}
 		saveHandler.removeCallbacks(savePositionTask);
@@ -457,100 +399,40 @@ public class PlaybackService extends Service implements EventListener {
 		remoteControlClient
 				.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 
+		Notification notification = playbackItem.getNotification();
 		notification.contentView.setImageViewResource(R.id.pause,
 				R.drawable.ic_notification_play);
 		notification.contentView.setOnClickPendingIntent(R.id.pause,
-				getPlayIntent(uri));
+				getPlayIntent());
 		NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 		nm.notify(NOTIFICATION_ID, notification);
 	}
 
-	/**
-	 * Helper method to create a new notification for the currently playing
-	 * episode.
-	 * 
-	 * @return The newly created Notification.
-	 */
-	private Notification makeNotification() {
-
-		// Build back stack as proposed in
-		// "Google I/O 2012 - Navigation in Android", see
-		// http://www.youtube.com/watch?v=XwGHJJYBs0Q
-		Intent intent;
-		TaskStackBuilder taskBuilder = TaskStackBuilder.create(this);
-
-		// MainActivity
-		intent = new Intent(this, MainActivity.class);
-		taskBuilder.addNextIntent(intent);
-
-		// ViewSubscriptionActivity
-		intent = new Intent(this, ViewSubscriptionActivity.class);
-		intent.setData(cursor.getPodcastUri());
-		taskBuilder.addNextIntent(intent);
-
-		// ViewEpisodeActivity
-		intent = new Intent(this, ViewEpisodeActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		intent.setData(uri);
-		taskBuilder.addNextIntent(intent);
-
-		// Get the podcast logo and scale it
-		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(this,
-				cursor.getPodcastId());
-		if (podcastLogo != null) {
-			Resources res = getResources();
-			podcastLogo = Bitmap
-					.createScaledBitmap(
-							podcastLogo,
-							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
-							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
-							true);
-		}
-
-		// Build the layout for the notification
-		RemoteViews content = new RemoteViews(getPackageName(),
-				R.layout.notification_playing);
-		if (podcastLogo != null) {
-			content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
-		}
-		content.setTextViewText(R.id.episode_title, cursor.getTitle());
-		content.setTextViewText(R.id.podcast_title, cursor.getPodcastTitle());
-		content.setOnClickPendingIntent(R.id.pause, pauseIntent);
-		{
-			PendingIntent stopIntent;
-			Intent i = new Intent(this, PlaybackService.class);
-			i.setAction(ACTION_STOP);
-			stopIntent = PendingIntent.getService(this, 0, i, 0);
-			content.setOnClickPendingIntent(R.id.collapse, stopIntent);
-		}
-
-		// Build the notification and return it
-		return Utils.notificationFromBuilder(new Notification.Builder(this)
-				.setContent(content).setSmallIcon(R.drawable.notification)
-				.setContentTitle(cursor.getTitle())
-				.setContentText(cursor.getPodcastTitle())
-				.setContentIntent(taskBuilder.getPendingIntent(0, 0))
-				.setOngoing(true).setWhen(0));
-
-	}
-
 	private void flattrEpisodeIfAutoPrefIs(String flattrAutoPrefValue) {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in flattrEpisodeIfAutoPrefIs()");
+			return;
+		}
 		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
 				.getSharedPreferences();
 		String autoFlattr = prefs.getString(PreferenceKeys.FLATTR_AUTO, null);
 		if (autoFlattr != null
-				&& cursor.getFlattrStatus() == Constants.FLATTR_STATE_NEW
+				&& playbackItem.getFlattrStatus() == Constants.FLATTR_STATE_NEW
 				&& autoFlattr.equals(flattrAutoPrefValue)) {
-			EpisodeHelper.flattr(getContentResolver(), uri);
+			EpisodeHelper.flattr(getContentResolver(), playbackItem.getUri());
 			Intent intent = new Intent(this, FlattrService.class);
 			startService(intent);
 		}
 	}
 
-	private PendingIntent getPlayIntent(Uri episode) {
+	private PendingIntent getPlayIntent() {
+		if (playbackItem == null) {
+			Log.e(this, "playbackItem is null in getPlayIntent()");
+			return null;
+		}
 		Intent i = new Intent(this, PlaybackService.class);
 		i.setAction(ACTION_PLAY);
-		i.setData(episode);
+		i.setData(playbackItem.getUri());
 		return PendingIntent.getService(this, 0, i, 0);
 	}
 }
