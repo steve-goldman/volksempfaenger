@@ -1,8 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.PreferenceKeys;
@@ -42,7 +40,6 @@ import android.content.Loader;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -80,7 +77,6 @@ public class ViewEpisodeActivity extends Activity implements
 	private Uri mEpisodeUri;
 	private long mEpisodeId;
 	private EpisodeCursor episodeCursor;
-	private Bitmap podcastLogoBitmap;
 
 	private TextView episodeTitle;
 	private TextView episodeMeta;
@@ -145,9 +141,6 @@ public class ViewEpisodeActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (podcastLogoBitmap != null) {
-			podcastLogoBitmap.recycle();
-		}
 		unbindService(this);
 	}
 
@@ -198,8 +191,6 @@ public class ViewEpisodeActivity extends Activity implements
 		return true;
 	}
 
-	List<EnclosureSimple> enclosures;
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -216,8 +207,8 @@ public class ViewEpisodeActivity extends Activity implements
 				// there is an preferred enclosure
 				downloadEnclosure();
 			} else {
-				enclosures = getEnclosures();
-				switch (enclosures.size()) {
+				final EnclosureSimple[] enclosures = getEnclosures();
+				switch (enclosures.length) {
 				case 0:
 					// no enclosures
 					Toast.makeText(this,
@@ -226,7 +217,7 @@ public class ViewEpisodeActivity extends Activity implements
 					break;
 				case 1:
 					// exactly one enclosure
-					downloadEnclosure(enclosures.get(0).id);
+					downloadEnclosure(enclosures[0].id);
 					break;
 				default:
 					// multiple enclosures (they suck)
@@ -235,7 +226,7 @@ public class ViewEpisodeActivity extends Activity implements
 							enclosures, new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int which) {
-									downloadEnclosure(enclosures.get(which).id);
+									downloadEnclosure(enclosures[which].id);
 								}
 							});
 					dialog.show();
@@ -303,12 +294,12 @@ public class ViewEpisodeActivity extends Activity implements
 		// the service will send a Toast as user feedback
 	}
 
-	private class EnclosureSimple {
+	private static class EnclosureSimple {
 		public long id;
 		public String url;
 	}
 
-	private List<EnclosureSimple> getEnclosures() {
+	private EnclosureSimple[] getEnclosures() {
 		Cursor cursor;
 		{
 			String[] projection = { Enclosure._ID, Enclosure.URL };
@@ -317,26 +308,28 @@ public class ViewEpisodeActivity extends Activity implements
 					WHERE_EPISODE_ID,
 					new String[] { String.valueOf(mEpisodeId) }, null);
 		}
-		List<EnclosureSimple> enclosures = new ArrayList<EnclosureSimple>();
+		EnclosureSimple[] enclosures = new EnclosureSimple[cursor.getCount()];
+		int i = 0;
 		while (cursor.moveToNext()) {
 			EnclosureSimple enclosure = new EnclosureSimple();
 			enclosure.id = cursor.getLong(cursor.getColumnIndex(Enclosure._ID));
 			enclosure.url = cursor.getString(cursor
 					.getColumnIndex(Enclosure.URL));
-			enclosures.add(enclosure);
+			enclosures[i] = enclosure;
+			i++;
 		}
 		cursor.close();
 		return enclosures;
 	}
 
 	private AlertDialog getEnclosureChooserDialog(String title,
-			List<EnclosureSimple> enclosures,
+			EnclosureSimple[] enclosures,
 			DialogInterface.OnClickListener listener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(title);
-		CharSequence items[] = new String[enclosures.size()];
-		for (int i = 0; i < enclosures.size(); i++) {
-			items[i] = enclosures.get(i).url;
+		CharSequence items[] = new String[enclosures.length];
+		for (int i = 0; i < enclosures.length; i++) {
+			items[i] = enclosures[i].url;
 		}
 		builder.setItems(items, listener);
 		return builder.create();
@@ -583,29 +576,8 @@ public class ViewEpisodeActivity extends Activity implements
 		}
 	}
 
-	public void onClickPlay(View v) {
-		Intent intent = new Intent(this, PlaybackService.class);
-		intent.setAction(PlaybackService.ACTION_PLAY);
-		intent.setData(mEpisodeUri);
-		startService(intent);
-	}
-
-	public void onClickPause(View v) {
-		remote.pause();
-	}
-
-	public void onClickDelete(View v) {
-	}
-
-	public void onClickMarkListened(View v) {
-	}
-
 	public Uri getUri() {
 		return mEpisodeUri;
-	}
-
-	public Uri getPodcastUri() {
-		return episodeCursor == null ? null : episodeCursor.getPodcastUri();
 	}
 
 	@Override
