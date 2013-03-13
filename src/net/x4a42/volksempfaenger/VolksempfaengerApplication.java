@@ -169,15 +169,17 @@ public class VolksempfaengerApplication extends Application implements
 				throws IOException {
 			URLConnection connection = new URL(imageUri).openConnection();
 			if (connection instanceof HttpURLConnection) {
-				HttpURLConnection conn = (HttpURLConnection) connection;
-				if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
-						|| conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+				HttpURLConnection httpConnection = (HttpURLConnection) connection;
+				connection = null; // invalidate to prevent unintentional use
+				if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+						|| httpConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
 
-					conn = (HttpURLConnection) new URL(
-							conn.getHeaderField("Location")).openConnection();
+					httpConnection = (HttpURLConnection) new URL(
+							httpConnection.getHeaderField("Location"))
+							.openConnection();
 				}
 				return new FlushedInputStream(new BufferedInputStream(
-						connection.getInputStream()));
+						httpConnection.getInputStream()));
 			} else {
 				return new BufferedInputStream(connection.getInputStream());
 			}
