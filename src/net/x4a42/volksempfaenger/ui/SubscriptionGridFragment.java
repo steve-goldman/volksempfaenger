@@ -6,7 +6,6 @@ import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
@@ -46,8 +45,6 @@ import android.widget.GridView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class SubscriptionGridFragment extends Fragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -100,9 +97,6 @@ public class SubscriptionGridFragment extends Fragment implements
 		grid.setOnItemClickListener(this);
 		grid.setOnCreateContextMenuListener(this);
 		grid.setAdapter(adapter);
-		grid.setOnScrollListener(new PauseOnScrollListener(
-				((VolksempfaengerApplication) getActivity().getApplication()).imageLoader,
-				true, false));
 
 		show(GLE.LOADING);
 
