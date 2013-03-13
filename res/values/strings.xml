@@ -148,5 +148,6 @@
     <string name="message_no_website">No website</string>
     <string name="error_download_mobile_disabled">Downloading over mobile networks is disabled</string>
     <string name="menu_select_all">Select all</string>
+    <string name="menu_n_selected">%d selected</string>
 
 </resources>
