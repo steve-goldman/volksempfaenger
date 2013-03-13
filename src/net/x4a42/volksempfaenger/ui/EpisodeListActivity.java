@@ -25,9 +25,12 @@ import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public abstract class EpisodeListActivity extends Activity implements
@@ -234,6 +237,35 @@ public abstract class EpisodeListActivity extends Activity implements
 				menu.removeItem(R.id.item_mark_listened);
 			}
 
+			Spinner selectionSpinner = (Spinner) menu.findItem(
+					R.id.item_selection_spinner).getActionView();
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+					EpisodeListActivity.this,
+					R.layout.spinner_dropdown_item_actionbar);
+			int selectedCount = 0;
+			for (int i = 0; i < checked.size(); i++) {
+				selectedCount += checked.valueAt(i) ? 1 : 0;
+			}
+			selectionSpinner.setAdapter(adapter);
+			adapter.addAll(getString(R.string.menu_n_selected, selectedCount),
+					getString(R.string.menu_select_all));
+			selectionSpinner
+					.setOnItemSelectedListener(new OnItemSelectedListener() {
+						@Override
+						public void onItemSelected(AdapterView<?> parent,
+								View view, int position, long id) {
+							if (position == 1) {
+								for (int i = 0; i < mEpisodeListView.getCount(); i++) {
+									mEpisodeListView.setItemChecked(i, true);
+								}
+							}
+						}
+
+						@Override
+						public void onNothingSelected(AdapterView<?> parent) {
+						}
+					});
+
 			return true;
 		}
 
@@ -272,12 +304,6 @@ public abstract class EpisodeListActivity extends Activity implements
 								(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
 								mEpisodeListView.getCheckedItemIds());
 				mode.finish();
-				return true;
-
-			case R.id.item_select_all:
-				for (int i = 0; i < mEpisodeListView.getCount(); i++) {
-					mEpisodeListView.setItemChecked(i, true);
-				}
 				return true;
 
 			default:
