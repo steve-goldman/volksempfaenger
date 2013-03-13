@@ -4,8 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Locale;
 
 import net.x4a42.volksempfaenger.service.CleanCacheService;
@@ -162,23 +162,25 @@ public class VolksempfaengerApplication extends Application implements
 		imageLoader.init(config);
 	}
 
-	private class HttpURLConnctionImageDownloader extends ImageDownloader {
+	private class HttpURLConnctionImageDownloader implements ImageDownloader {
 
 		@Override
-		protected InputStream getStreamFromNetwork(URI imageUri)
+		public InputStream getStream(String imageUri, Object extra)
 				throws IOException {
-			HttpURLConnection conn = (HttpURLConnection) imageUri.toURL()
-					.openConnection();
-			if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
-					|| conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+			URLConnection connection = new URL(imageUri).openConnection();
+			if (connection instanceof HttpURLConnection) {
+				HttpURLConnection conn = (HttpURLConnection) connection;
+				if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+						|| conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
 
-				conn = (HttpURLConnection) new URL(
-						conn.getHeaderField("Location")).openConnection();
+					conn = (HttpURLConnection) new URL(
+							conn.getHeaderField("Location")).openConnection();
+				}
+				return new FlushedInputStream(new BufferedInputStream(
+						connection.getInputStream()));
+			} else {
+				return new BufferedInputStream(connection.getInputStream());
 			}
-
-			return new FlushedInputStream(new BufferedInputStream(
-					conn.getInputStream()));
 		}
-
 	}
 }

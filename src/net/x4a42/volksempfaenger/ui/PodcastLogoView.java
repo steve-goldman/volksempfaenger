@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -80,12 +81,13 @@ public class PodcastLogoView extends ImageView {
 					private long startTime;
 
 					@Override
-					public void onLoadingStarted() {
+					public void onLoadingStarted(String imageUri, View view) {
 						startTime = System.currentTimeMillis();
 					}
 
 					@Override
-					public void onLoadingComplete(Bitmap loadedImage) {
+					public void onLoadingComplete(String imageUri, View view,
+							Bitmap loadedImage) {
 						if (System.currentTimeMillis() - startTime > 16) {
 							setAnimation(fadeInAnimation);
 							fadeInAnimation.start();
