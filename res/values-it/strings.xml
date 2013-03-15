@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">holopod</string>
+  <string name="app_name_ascii">Volksempfaenger</string>
+  <string name="title_add_subscription">Aggiungi Iscrizione</string>
+  <string name="title_delete_subscription">Sei sicuro?</string>
+  <string name="title_settings">Impostazioni di holopod</string>
+  <string name="title_tab_subscriptions">Iscrizioni</string>
+  <string name="title_tab_downloads">Scaricati</string>
+  <string name="description_add_subscription">Inserisci l\'URL del podcast per iscriverti</string>
+  <string name="menu_add">Aggiungi</string>
+  <string name="menu_delete">Cancella</string>
+  <string name="menu_settings">Impostazioni</string>
+  <string name="menu_download">Scarica</string>
+  <string name="menu_mark_listened">Segna come ascoltato</string>
+  <string name="menu_mark_new">Segna come nuovo</string>
+  <string name="menu_update">Aggiorna</string>
+  <string name="menu_feedback">Feedback</string>
+  <string name="menu_play">Play</string>
+  <string name="context_delete">Cancella</string>
+  <string name="hint_http">http://</string>
+  <string name="yes">Sì</string>
+  <string name="ok">OK</string>
+  <string name="add">Aggiungi</string>
+  <string name="cancel">Cancella</string>
+  <string name="unknown">sconosciuto</string>
+  <string name="install">Installa</string>
+  <string name="dialog_error_title">È occorso un errore</string>
+  <string name="dialog_choose_download_enclosure">Scegli un file</string>
+  <string name="dialog_filemanager_missing_message">Nessun file manager installato. Vuoi installare OpenIntents File Manager?</string>
+  <string name="message_podcast_already_added">Hai già aggiunto questo podcast alle tue iscrizioni</string>
+  <string name="message_podcast_successfully_added">Ti sei iscritto correttamente al podcast</string>
+  <string name="message_podcast_confirm_delete">Vuoi cancellare “%s”?</string>
+  <string name="message_podcast_successfully_deleted">Podcast cancellato correttamente</string>
+  <string name="message_podcast_feed_download_failed">Impossibile scaricare il podcast</string>
+  <string name="message_podcast_feed_parsing_failed">Impossibile importare il feed XML del podcast</string>
+  <string name="message_podcast_feed_io_exception">IOException</string>
+  <string name="message_podcast_feed_storage_exception">StorageException</string>
+  <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
+  <string name="message_no_subscriptions">Nessuna iscrizione</string>
+  <string name="message_download_started">Il download è iniziato</string>
+  <string name="message_download_already_running">Il download è già in corso</string>
+  <string name="message_download_episode_already_downloaded">Questo episodio è già stato scaricato</string>
+  <string name="message_episode_without_enclosure">Non c\'è nessun file legato a questo episodio</string>
+  <string name="message_play_store_missing">Google Play Store non presente sul tuo telefono. Per favore scarica l\'APK dal sito di OpenIntents e installalo.</string>
+  <string name="settings_download">Download</string>
+  <string name="settings_download_interval">Intervallo di aggiornamento</string>
+  <string name="settings_download_auto">Auto Download</string>
+  <string name="settings_download_wifi">Solo su WiFi</string>
+  <string name="settings_download_charging">Solo durante la carica</string>
+  <string name="settings_download_concurrent">Download contemporanei</string>
+  <string name="settings_storage">Memoria di archiviazione</string>
+  <string name="settings_storage_location">Cartella di archiviazione</string>
+  <string name="settings_about">Info</string>
+  <string name="settings_about_version">Versione</string>
+  <string name="settings_about_website">Sito web</string>
+  <string name="settings_about_license">Licenza</string>
+  <string name="settings_about_authors">Autori</string>
+  <string name="settings_summary_download">Impostazioni per il download dei podcast</string>
+  <string name="settings_summary_download_auto">Scarica automaticamente i nuovi episodi</string>
+  <string name="settings_summary_download_wifi">Scarica i nuovi episodi solo se connesso ad una rete WiFi</string>
+  <string name="settings_summary_download_charging">Scarica i nuovi episodi solo se connesso all\'alimentazione elettrica</string>
+  <string name="settings_summary_download_concurrent">Massimo numero di download contemporanei</string>
+  <string name="settings_summary_storage">Impostazioni per l\'archiviazione locale dei podcast</string>
+  <string name="settings_summary_about">Informazioni su holopod</string>
+  <string name="settings_summary_about_license">Mostra le informazioni sulla licenza</string>
+  <string name="menu_import">Importa</string>
+  <string name="dialog_choose_opml">Scegli un file OPML</string>
+  <string name="button_import">Importa</string>
+  <string name="dialog_choose_import_feeds">Scegli le iscrizioni da importare</string>
+  <string name="message_no_downloads">Nessun download</string>
+  <string name="empty_description">nessuna descrizione</string>
+  <string-array name="settings_interval_choices">
+    <item>Manualmente</item>
+    <item>Ogni ora</item>
+    <item>Ogni due ore</item>
+    <item>Ogni quattro ore</item>
+    <item>Ogni otto ore</item>
+    <item>Ogni dodici ore</item>
+    <item>Ogni giorno</item>
+  </string-array>
+  <string name="episode_name">Nome della puntata</string>
+  <string name="podcast">Podcast</string>
+  <string name="message_insert_sdcard">Per favore inserisci una memoria esterna per usare holopod</string>
+  <string name="unknown_duration">durata sconosciuta</string>
+  <string name="unknown_size">dimensione sconosciuta</string>
+  <string name="message_error_file_not_found">Impossibile trovare il file “%s”</string>
+  <string name="title_file_not_found">File non trovato</string>
+  <string name="title_import_error">Errore di importazione</string>
+  <string name="message_error_import">L\'importazione dei seguenti podcast non è andata a buon fine</string>
+  <string name="pause">Pause</string>
+  <string name="error_download">errore durante il download</string>
+  <string name="rewind">Indietro</string>
+  <string name="fast_forward">Avanti</string>
+  <string name="message_error_import_unexpected">Un errore inaspettato è occorso durante l\'importazione</string>
+  <string name="title_send_error_report">Manda un report dell\'errore</string>
+  <string name="report_error">Report</string>
+  <string name="title_share">Condividi</string>
+  <string name="menu_share">Condividi</string>
+  <string name="menu_website">Sito web</string>
+  <string name="message_import_started">Importazione iniziata...</string>
+  <string name="settings_about_libraries">Librerie</string>
+  <string name="settings_summary_about_flattr">Supporta lo sviluppo di holopod</string>
+  <string name="settings_about_flattr">Flattr</string>
+  <string name="notification_collapse">riduci</string>
+  <string name="title_tab_playlists">Liste di riproduzione</string>
+  <string name="title_playlist_new">Nuovo</string>
+  <string name="title_playlist_listening">In ascolto</string>
+  <string name="message_no_episodes">Nessuna puntata</string>
+  <string name="title_playlist_downloaded">Scaricati</string>
+  <string name="error_shownotes">Impossibile visualizzare le note del podcast</string>
+  <string name="title_tab_discover">Scopri</string>
+  <string name="menu_search">Cerca</string>
+  <string name="search_hint">Cerca o digita l\'URL</string>
+  <string name="import_to_volksempfaenger">Importa a holopod</string>
+  <string name="unknown_error">Errore sconosciuto</string>
+  <string name="title_popular">Popolari</string>
+  <string name="title_search_results">Risultati della ricerca</string>
+  <string name="title_search_results_for">Risultati della ricerca per “%s”</string>
+  <string name="message_subscribing_podcast">Iscrizione in corso al podcast...</string>
+  <string name="title_tag_all">Tutti</string>
+  <string name="button_retry">Indietro</string>
+  <string name="message_error_loading">Caricamento fallito</string>
+  <string name="unknown_error_occured">È occorso un errore sconosciuto.</string>
+  <string name="settings_summary_flattr">Impostazioni di Flattr</string>
+  <string name="settings_flattr">Flattr</string>
+  <string name="button_flattr_auth">Connetti a Flattr</string>
+  <string name="settings_summary_flattr_auth">Permetti %s alle puntate di flattr</string>
+  <string name="flattr_connected_to">Connesso a &lt;b&gt;%s&lt;/b&gt; su Flattr</string>
+  <string name="flattr_connecting">In connessione...</string>
+  <string name="settings_flattr_auto">Flattr automaticamente</string>
+  <string-array name="settings_flattr_auto_choices">
+    <item>Mai</item>
+    <item>Puntate in corso</item>
+    <item>Puntate terminate</item>
+  </string-array>
+  <string name="button_flattr">Flattr</string>
+  <string name="title_error_flattr_authorization">Errore di autorizzazione</string>
+  <string name="message_error_flattr_authorization">Autenticazione a Flattr fallita</string>
+  <string name="title_flattr_no_account">Nessun account Flattr</string>
+  <string name="message_flattr_no_account">Hai aggiunto il tuo account Flattr alle puntate flattr</string>
+  <string name="message_no_website">Nessun sito web</string>
+  <string name="error_download_mobile_disabled">Il download su rete mobile è disabilitato</string>
+</resources>
