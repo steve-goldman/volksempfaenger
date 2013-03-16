@@ -16,11 +16,6 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.FlattrService;
-import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
-import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
-import net.x4a42.volksempfaenger.service.PlaybackService;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
 
 import org.xml.sax.XMLReader;
 
@@ -29,7 +24,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.LoaderManager;
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -37,7 +31,6 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
@@ -45,7 +38,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -69,8 +61,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ViewEpisodeActivity extends Activity implements
-		LoaderManager.LoaderCallbacks<Cursor>, ServiceConnection,
-		EventListener, OnUpPressedCallback, OnClickListener {
+		LoaderManager.LoaderCallbacks<Cursor>, OnUpPressedCallback,
+		OnClickListener /* , EventListener, ServiceConnection */{
 
 	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
@@ -89,7 +81,7 @@ public class ViewEpisodeActivity extends Activity implements
 
 	private long subscriptionId = -1;
 
-	private PlaybackRemote remote;
+	// private PlaybackRemote remote;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -107,8 +99,8 @@ public class ViewEpisodeActivity extends Activity implements
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
-		bindService(new Intent(this, PlaybackService.class), this,
-				Activity.BIND_AUTO_CREATE);
+		// bindService(new Intent(this, PlaybackService.class), this,
+		// Activity.BIND_AUTO_CREATE);
 
 		mEpisodeUri = getIntent().getData();
 
@@ -141,7 +133,7 @@ public class ViewEpisodeActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unbindService(this);
+		// unbindService(this);
 	}
 
 	@Override
@@ -149,43 +141,44 @@ public class ViewEpisodeActivity extends Activity implements
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_episode, menu);
 
-		if (episodeCursor != null && remote != null) {
-			MenuItem downloadItem = menu.findItem(R.id.item_download);
-			MenuItem playItem = menu.findItem(R.id.item_play);
-			MenuItem markListenedItem = menu.findItem(R.id.item_mark_listened);
-			MenuItem markNewItem = menu.findItem(R.id.item_mark_new);
-
-			int status = episodeCursor.getStatus();
-
-			if ((episodeCursor.getDownloadStatus() != DownloadManager.STATUS_FAILED && episodeCursor
-					.getDownloadStatus() != -1)
-					|| episodeCursor.getEnclosureNumber() == 0) {
-				downloadItem.setVisible(false);
-			} else {
-				downloadItem.setVisible(true);
-			}
-
-			if ((remote.isPlaying() && mEpisodeUri.equals(remote
-					.getEpisodeUri()))
-					|| (episodeCursor.getEnclosureNumber() == 0)) {
-				playItem.setVisible(false);
-			} else {
-				playItem.setVisible(true);
-			}
-
-			if (!EpisodeHelper.canMarkAsListened(status)) {
-				markListenedItem.setVisible(false);
-			} else {
-				markListenedItem.setVisible(true);
-			}
-
-			if (!EpisodeHelper.canMarkAsNew(status)) {
-				markNewItem.setVisible(false);
-			} else {
-				markNewItem.setVisible(true);
-			}
-
-		}
+		// if (episodeCursor != null && remote != null) {
+		// MenuItem downloadItem = menu.findItem(R.id.item_download);
+		// MenuItem playItem = menu.findItem(R.id.item_play);
+		// MenuItem markListenedItem = menu.findItem(R.id.item_mark_listened);
+		// MenuItem markNewItem = menu.findItem(R.id.item_mark_new);
+		//
+		// int status = episodeCursor.getStatus();
+		//
+		// if ((episodeCursor.getDownloadStatus() !=
+		// DownloadManager.STATUS_FAILED && episodeCursor
+		// .getDownloadStatus() != -1)
+		// || episodeCursor.getEnclosureNumber() == 0) {
+		// downloadItem.setVisible(false);
+		// } else {
+		// downloadItem.setVisible(true);
+		// }
+		//
+		// if ((remote.isPlaying() && mEpisodeUri.equals(remote
+		// .getEpisodeUri()))
+		// || (episodeCursor.getEnclosureNumber() == 0)) {
+		// playItem.setVisible(false);
+		// } else {
+		// playItem.setVisible(true);
+		// }
+		//
+		// if (!EpisodeHelper.canMarkAsListened(status)) {
+		// markListenedItem.setVisible(false);
+		// } else {
+		// markListenedItem.setVisible(true);
+		// }
+		//
+		// if (!EpisodeHelper.canMarkAsNew(status)) {
+		// markNewItem.setVisible(false);
+		// } else {
+		// markNewItem.setVisible(true);
+		// }
+		//
+		// }
 
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
@@ -193,13 +186,14 @@ public class ViewEpisodeActivity extends Activity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 
 		case R.id.item_play:
-			Intent intent = new Intent(this, PlaybackService.class);
-			intent.setAction(PlaybackService.ACTION_PLAY);
-			intent.setData(mEpisodeUri);
-			startService(intent);
+			// intent = new Intent(this, PlaybackService.class);
+			// intent.setAction(PlaybackService.ACTION_PLAY);
+			// intent.setData(mEpisodeUri);
+			// startService(intent);
 			return true;
 
 		case R.id.item_download:
@@ -596,26 +590,26 @@ public class ViewEpisodeActivity extends Activity implements
 		NavUtils.navigateUpTo(this, intent);
 	}
 
-	@Override
-	public void onServiceConnected(ComponentName name, IBinder binder) {
-		remote = ((PlaybackBinder) binder).getRemote();
-		remote.registerEventListener(this);
-		invalidateOptionsMenu();
-	}
+	// @Override
+	// public void onServiceConnected(ComponentName name, IBinder binder) {
+	// remote = ((PlaybackBinder) binder).getRemote();
+	// remote.registerEventListener(this);
+	// invalidateOptionsMenu();
+	// }
 
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		remote = null;
+	// @Override
+	// public void onServiceDisconnected(ComponentName name) {
+	// remote = null;
+	//
+	// Intent intent = new Intent(this, PlaybackService.class);
+	// startService(intent);
+	// bindService(intent, this, Activity.BIND_AUTO_CREATE);
+	// }
 
-		Intent intent = new Intent(this, PlaybackService.class);
-		startService(intent);
-		bindService(intent, this, Activity.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onPlaybackEvent(Event event) {
-		invalidateOptionsMenu();
-	}
+	// @Override
+	// public void onPlaybackEvent(Event event) {
+	// invalidateOptionsMenu();
+	// }
 
 	@Override
 	public void onClick(View v) {
