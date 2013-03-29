@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -27,11 +28,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.example.android.pinprogress.PinProgressButton;
 
 public abstract class EpisodeListActivity extends Activity implements
 		OnUpPressedCallback {
@@ -43,7 +45,10 @@ public abstract class EpisodeListActivity extends Activity implements
 	private Adapter mAdapter;
 	protected static final String[] EPISODE_PROJECTION = new String[] {
 			Episode._ID, Episode.TITLE, Episode.DATE, Episode.STATUS,
-			Episode.DOWNLOAD_STATUS, Episode.PODCAST_ID, Episode.PODCAST_TITLE };
+			Episode.DOWNLOAD_STATUS, Episode.PODCAST_ID, Episode.PODCAST_TITLE,
+			Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR,
+			Episode.DOWNLOAD_TOTAL_SIZE_BYTES, Episode.DURATION_LISTENED,
+			Episode.DURATION_TOTAL };
 	protected static final String EPISODE_SORT = Episode.DATE + " DESC, "
 			+ Episode._ID + " DESC";
 
@@ -142,12 +147,10 @@ public abstract class EpisodeListActivity extends Activity implements
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
 			EpisodeCursor episodeCursor = (EpisodeCursor) cursor;
-			int episodeStatus = episodeCursor.getStatus();
 			TextView episodeTitle = (TextView) row
 					.findViewById(R.id.episode_title);
 			TextView episodeDate = (TextView) row
 					.findViewById(R.id.episode_date);
-			ImageView badge = (ImageView) row.findViewById(R.id.badge);
 			PodcastLogoView podcastLogo = (PodcastLogoView) row
 					.findViewById(R.id.podcast_logo);
 
@@ -169,22 +172,48 @@ public abstract class EpisodeListActivity extends Activity implements
 			episodeTitle.setTextColor(color);
 			episodeDate.setTextColor(color);
 
-			switch (episodeStatus) {
+			PinProgressButton pinProgress = (PinProgressButton) row
+					.findViewById(R.id.pin_progress);
+			double progress = 0.0;
+			colorId = android.R.color.background_light;
+			switch (episodeCursor.getStatus()) {
 			case Constants.EPISODE_STATE_NEW:
+				colorId = R.color.state_new;
+				progress = 1.0;
+				break;
 			case Constants.EPISODE_STATE_DOWNLOADING:
+				colorId = R.color.state_downloading;
+				long total = episodeCursor.getDownloadTotal();
+				if (total <= 0) {
+					progress = 0.0;
+				} else {
+					progress = (double) episodeCursor.getDownloadDone() / total;
+				}
+				break;
 			case Constants.EPISODE_STATE_READY:
-				badge.setVisibility(View.VISIBLE);
-				badge.setImageResource(R.drawable.badge_episode_new);
+				colorId = R.color.state_downloading;
+				progress = 1.0;
 				break;
-
 			case Constants.EPISODE_STATE_LISTENING:
-				badge.setVisibility(View.VISIBLE);
-				badge.setImageResource(R.drawable.badge_episode_listening);
+				colorId = R.color.state_listening;
+				int max = episodeCursor.getDurationTotal();
+				int duration = episodeCursor.getDurationListened();
+				if (max <= 0) {
+					progress = 0.0;
+				} else {
+					progress = (double) duration / max;
+				}
 				break;
-
+			case Constants.EPISODE_STATE_LISTENED:
+				colorId = R.color.state_listening;
+				progress = 1.0;
+				break;
 			default:
-				badge.setVisibility(View.GONE);
+				pinProgress.setVisibility(View.GONE);
+				break;
 			}
+			pinProgress.setProgressColor(getResources().getColor(colorId));
+			pinProgress.setProgress((int) (progress * 100));
 
 		}
 	}
