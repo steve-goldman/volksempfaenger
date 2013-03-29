@@ -32,6 +32,8 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		textAuthors = (TextView) findViewById(R.id.authors);
 		TextView uilText = (TextView) findViewById(R.id.universalImageLoaderText);
 		uilText.setOnClickListener(this);
+		TextView pinProgText = (TextView) findViewById(R.id.pinProgressText);
+		pinProgText.setOnClickListener(this);
 
 		new LoadAssetTask("LICENSE", textLicense, true)
 				.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -130,6 +132,11 @@ public class LicenseActivity extends Activity implements OnClickListener {
 		case R.id.universalImageLoaderText:
 			new DialogLoadAssetTask("universal_image_loader_license.txt",
 					"Universal Image Loader", true)
+					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			break;
+		case R.id.pinProgressText:
+			new DialogLoadAssetTask("apache_2_license.txt",
+					"PinProgressButton", true)
 					.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		}
