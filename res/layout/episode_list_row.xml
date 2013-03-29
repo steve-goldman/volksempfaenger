@@ -31,6 +31,7 @@
 
     <TextView
         android:id="@+id/episode_date"
+        style="@android:style/TextAppearance.Holo.Small.Inverse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/episode_title"
@@ -38,8 +39,7 @@
         android:layout_toLeftOf="@+id/pin_progress"
         android:layout_toRightOf="@id/podcast_logo"
         android:paddingBottom="@dimen/padding_small"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:singleLine="true" />
 
     <com.example.android.pinprogress.PinProgressButton
         android:id="@+id/pin_progress"
