@@ -28,7 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.widget.CompoundButton;
+import android.widget.Button;
 
 /**
  * A two-state button that indicates whether some related content is pinned (the
@@ -40,7 +40,7 @@ import android.widget.CompoundButton;
  * >Android Design: Progress &amp; Activity</a> for more details on this custom
  * indicator.
  */
-public class PinProgressButton extends CompoundButton {
+public class PinProgressButton extends Button {
 	private int mMax;
 	private int mProgress;
 

@@ -212,7 +212,6 @@ public abstract class EpisodeListActivity extends Activity implements
 			pinProgress.setProgressColor(getResources().getColor(colorId));
 			pinProgress.setProgress((int) (progress * 100));
 			pinProgress.setDrawable(iconId);
-
 		}
 	}
 
