@@ -21,8 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/padding_medium"
-        android:layout_marginRight="@dimen/padding_large"
         android:layout_marginTop="@dimen/padding_small"
+        android:layout_toLeftOf="@+id/pin_progress"
         android:layout_toRightOf="@id/podcast_logo"
         android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
@@ -35,17 +35,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/episode_title"
         android:layout_marginLeft="@dimen/padding_medium"
-        android:layout_marginRight="@dimen/padding_medium"
+        android:layout_toLeftOf="@+id/pin_progress"
         android:layout_toRightOf="@id/podcast_logo"
         android:paddingBottom="@dimen/padding_small"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <ImageView
-        android:id="@+id/badge"
+    <com.example.android.pinprogress.PinProgressButton
+        android:id="@+id/pin_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
