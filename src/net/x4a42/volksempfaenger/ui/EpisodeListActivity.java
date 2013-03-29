@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
@@ -147,8 +146,6 @@ public abstract class EpisodeListActivity extends Activity implements
 		public void bindView(View row, Context context, Cursor cursor) {
 			super.bindView(row, context, cursor);
 			EpisodeCursor episodeCursor = (EpisodeCursor) cursor;
-			TextView episodeTitle = (TextView) row
-					.findViewById(R.id.episode_title);
 			TextView episodeDate = (TextView) row
 					.findViewById(R.id.episode_date);
 			PodcastLogoView podcastLogo = (PodcastLogoView) row
@@ -162,26 +159,19 @@ public abstract class EpisodeListActivity extends Activity implements
 
 			episodeDate.setText(getSubtitle(episodeCursor));
 
-			int colorId;
-			if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
-				colorId = android.R.color.primary_text_light;
-			} else {
-				colorId = android.R.color.darker_gray;
-			}
-			int color = getResources().getColor(colorId);
-			episodeTitle.setTextColor(color);
-			episodeDate.setTextColor(color);
-
 			PinProgressButton pinProgress = (PinProgressButton) row
 					.findViewById(R.id.pin_progress);
 			double progress = 0.0;
-			colorId = android.R.color.background_light;
+			int colorId = android.R.color.background_light;
+			int iconId;
 			switch (episodeCursor.getStatus()) {
 			case Constants.EPISODE_STATE_NEW:
+				iconId = R.drawable.progress_downloading;
 				colorId = R.color.state_new;
 				progress = 1.0;
 				break;
 			case Constants.EPISODE_STATE_DOWNLOADING:
+				iconId = R.drawable.progress_downloading;
 				colorId = R.color.state_downloading;
 				long total = episodeCursor.getDownloadTotal();
 				if (total <= 0) {
@@ -191,10 +181,12 @@ public abstract class EpisodeListActivity extends Activity implements
 				}
 				break;
 			case Constants.EPISODE_STATE_READY:
+				iconId = R.drawable.progress_play;
 				colorId = R.color.state_downloading;
 				progress = 1.0;
 				break;
 			case Constants.EPISODE_STATE_LISTENING:
+				iconId = R.drawable.progress_listening;
 				colorId = R.color.state_listening;
 				int max = episodeCursor.getDurationTotal();
 				int duration = episodeCursor.getDurationListened();
@@ -205,15 +197,21 @@ public abstract class EpisodeListActivity extends Activity implements
 				}
 				break;
 			case Constants.EPISODE_STATE_LISTENED:
-				colorId = R.color.state_listening;
-				progress = 1.0;
+				if (episodeCursor.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+					iconId = R.drawable.progress_play;
+				} else {
+					iconId = R.drawable.progress_downloading;
+				}
+				progress = 0.0;
 				break;
 			default:
+				iconId = R.drawable.progress_downloading;
 				pinProgress.setVisibility(View.GONE);
 				break;
 			}
 			pinProgress.setProgressColor(getResources().getColor(colorId));
 			pinProgress.setProgress((int) (progress * 100));
+			pinProgress.setDrawable(iconId);
 
 		}
 	}

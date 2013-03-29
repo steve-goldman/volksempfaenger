@@ -45,8 +45,7 @@ public class PinProgressButton extends CompoundButton {
 	private int mProgress;
 
 	private Drawable mShadowDrawable;
-	private Drawable mUnpinnedDrawable;
-	private Drawable mPinnedDrawable;
+	private Drawable mDrawable;
 
 	private Paint mCirclePaint;
 	private Paint mProgressPaint;
@@ -81,10 +80,6 @@ public class PinProgressButton extends CompoundButton {
 				.getColor(R.color.pin_progress_default_progress_color));
 
 		// Other initialization
-		mPinnedDrawable = res.getDrawable(R.drawable.pin_progress_pinned);
-		mPinnedDrawable.setCallback(this);
-		mUnpinnedDrawable = res.getDrawable(R.drawable.pin_progress_unpinned);
-		mUnpinnedDrawable.setCallback(this);
 		mShadowDrawable = res.getDrawable(R.drawable.pin_progress_shadow);
 		mShadowDrawable.setCallback(this);
 
@@ -134,11 +129,8 @@ public class PinProgressButton extends CompoundButton {
 	@Override
 	protected void drawableStateChanged() {
 		super.drawableStateChanged();
-		if (mPinnedDrawable.isStateful()) {
-			mPinnedDrawable.setState(getDrawableState());
-		}
-		if (mUnpinnedDrawable.isStateful()) {
-			mUnpinnedDrawable.setState(getDrawableState());
+		if (mDrawable.isStateful()) {
+			mDrawable.setState(getDrawableState());
 		}
 		if (mShadowDrawable.isStateful()) {
 			mShadowDrawable.setState(getDrawableState());
@@ -161,10 +153,8 @@ public class PinProgressButton extends CompoundButton {
 		canvas.drawArc(mTempRectF, -90, 360 * mProgress / mMax, true,
 				mProgressPaint);
 
-		Drawable iconDrawable = isChecked() ? mPinnedDrawable
-				: mUnpinnedDrawable;
-		iconDrawable.setBounds(mTempRect);
-		iconDrawable.draw(canvas);
+		mDrawable.setBounds(mTempRect);
+		mDrawable.draw(canvas);
 
 		mShadowDrawable.setBounds(mTempRect);
 		mShadowDrawable.draw(canvas);
@@ -244,5 +234,10 @@ public class PinProgressButton extends CompoundButton {
 		mProgressPaint = new Paint();
 		mProgressPaint.setColor(color);
 		mProgressPaint.setAntiAlias(true);
+	}
+
+	public void setDrawable(int id) {
+		mDrawable = getResources().getDrawable(id);
+		mDrawable.setCallback(this);
 	}
 }
