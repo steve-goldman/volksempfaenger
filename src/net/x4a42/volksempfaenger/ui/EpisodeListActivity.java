@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.borrowed.PinProgressButton;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
@@ -31,8 +32,6 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.example.android.pinprogress.PinProgressButton;
 
 public abstract class EpisodeListActivity extends Activity implements
 		OnUpPressedCallback {
