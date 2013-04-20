@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.example.android.pinprogress;
+package net.x4a42.volksempfaenger.borrowed;
 
 import net.x4a42.volksempfaenger.R;
 import android.content.Context;
