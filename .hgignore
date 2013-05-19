@@ -1,6 +1,7 @@
 syntax: glob
 
 local.properties
+.idea/*
 bin/*
 gen/*
 out/*
