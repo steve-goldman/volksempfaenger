@@ -21,8 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_large"
         android:layout_marginTop="@dimen/padding_small"
-        android:layout_toLeftOf="@+id/pin_progress"
         android:layout_toRightOf="@id/podcast_logo"
         android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
@@ -36,18 +36,16 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/episode_title"
         android:layout_marginLeft="@dimen/padding_medium"
-        android:layout_toLeftOf="@+id/pin_progress"
+        android:layout_marginRight="@dimen/padding_medium"
         android:layout_toRightOf="@id/podcast_logo"
         android:paddingBottom="@dimen/padding_small"
         android:singleLine="true" />
 
-    <net.x4a42.volksempfaenger.borrowed.PinProgressButton
-        android:id="@+id/pin_progress"
-        style="?android:attr/borderlessButtonStyle"
+    <ImageView
+        android:id="@+id/badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:focusable="false" />
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
