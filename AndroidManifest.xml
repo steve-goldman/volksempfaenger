@@ -61,6 +61,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+                <data android:scheme="pcast" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="http" />
                 <data android:mimeType="text/xml" />
                 <data android:mimeType="application/rss+xml" />
