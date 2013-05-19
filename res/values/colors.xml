@@ -10,10 +10,5 @@
     <color name="flattr_button">#FF8CB55B</color>
     <color name="flattr_button_focused">#FF8CB55B</color>
     <color name="flattr_button_pressed">#FFED8F24</color>
-    <color name="pin_progress_default_circle_color">#80ffffff</color>
-    <color name="pin_progress_default_progress_color">#33b5e5</color>
-    <color name="state_new">#ff7979</color>
-    <color name="state_downloading">#c5e26d</color>
-    <color name="state_listening">#8ad5f0</color>
 
 </resources>
