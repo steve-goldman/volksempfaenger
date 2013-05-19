@@ -68,13 +68,6 @@
                 android:layout_height="wrap_content"
                 android:text="Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"
                 tools:ignore="HardcodedText" />
-
-            <Button
-                android:id="@+id/pinProgressText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PinProgressButton, Copyright 2012 Roman Nurik"
-                tools:ignore="HardcodedText" />
         </LinearLayout>
     </ScrollView>
 
