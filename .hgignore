@@ -1,0 +1,11 @@
+syntax: glob
+
+local.properties
+.idea/*
+bin/*
+gen/*
+out/*
+.settings/*
+*.bak
+*.orig
+*~
