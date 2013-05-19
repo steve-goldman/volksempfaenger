@@ -3,6 +3,7 @@ syntax: glob
 local.properties
 bin/*
 gen/*
+out/*
 .settings/*
 *.bak
 *.orig
