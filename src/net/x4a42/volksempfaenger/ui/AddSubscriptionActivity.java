@@ -126,7 +126,11 @@ public class AddSubscriptionActivity extends Activity implements
 		Uri data = getIntent().getData();
 
 		if (data != null) {
+			if("pcast".equals(data.getScheme()))
+				data = data.buildUpon().scheme("http").build();
 			searchEntry.setText(data.toString());
+			//if there is a uri show the button
+			showButton();
 		} else {
 			ClipboardManager cm = (ClipboardManager) getSystemService(Activity.CLIPBOARD_SERVICE);
 			ClipData clip = cm.getPrimaryClip();
