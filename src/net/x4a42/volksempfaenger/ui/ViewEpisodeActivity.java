@@ -13,6 +13,7 @@ import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.misc.NetworkHelper;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.FlattrService;
@@ -288,13 +289,45 @@ public class ViewEpisodeActivity extends Activity implements
 							VolksempfaengerContentProvider.EPISODE_URI,
 							episodeCursor.getId()), values, null, null);
 		}
-		Intent intent = new Intent(this, DownloadService.class);
-		intent.putExtra("id", new long[] { episodeCursor.getId() });
-		startService(intent);
-		// the service will send a Toast as user feedback
+
+
+        SharedPreferences prefs = ((VolksempfaengerApplication)getApplication()).getSharedPreferences();
+        if (prefs
+                .getBoolean(
+                        PreferenceKeys.DOWNLOAD_WIFI,
+                        Utils.stringBoolean(getString(R.string.settings_default_download_wifi)))) {
+            // downloading is restricted to WiFi let's ask the user if it's ok to download on mobile
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.dialog_download_mobile).setTitle(R.string.menu_download);
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    download();
+                }
+            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    //noop
+                }
+            });
+                    builder.create().show();
+        }
+        else
+        {
+            download();
+        }
 	}
 
-	private static class EnclosureSimple {
+    private void download() {
+        Intent intent = new Intent(this, DownloadService.class);
+        intent.putExtra("id", new long[] { episodeCursor.getId() });
+        intent.putExtra("forceDownload", true);
+        // the service will send a Toast as user feedback
+        startService(intent);
+    }
+
+    private static class EnclosureSimple {
 		public long id;
 		public String url;
 	}

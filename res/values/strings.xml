@@ -149,5 +149,8 @@
     <string name="error_download_mobile_disabled">Downloading over mobile networks is disabled</string>
     <string name="menu_select_all">Select all</string>
     <string name="menu_n_selected">%d selected</string>
+    <string name="dialog_download_mobile">Wifi is not connected, do you want download via mobile network? (This might
+        cause additional costs.)
+    </string>
 
 </resources>
