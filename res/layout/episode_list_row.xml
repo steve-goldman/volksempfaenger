@@ -41,7 +41,7 @@
         android:paddingBottom="@dimen/padding_small"
         android:singleLine="true" />
 
-    <com.example.android.pinprogress.PinProgressButton
+    <net.x4a42.volksempfaenger.borrowed.PinProgressButton
         android:id="@+id/pin_progress"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
