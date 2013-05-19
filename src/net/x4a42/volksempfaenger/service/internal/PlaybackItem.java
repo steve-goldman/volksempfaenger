@@ -145,16 +145,11 @@ public class PlaybackItem {
 		taskBuilder.addNextIntent(intent);
 
 		// Get the podcast logo and scale it
-		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(context, podcastId);
-		if (podcastLogo != null) {
-			Resources res = context.getResources();
-			podcastLogo = Bitmap
-					.createScaledBitmap(
-							podcastLogo,
-							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
-							res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
-							true);
-		}
+		Resources res = context.getResources();
+		Bitmap podcastLogo = Utils.getPodcastLogoBitmap(context, podcastId,
+				res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+				res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height) );
+
 
 		// Build the layout for the notification
 		RemoteViews content = new RemoteViews(context.getPackageName(),

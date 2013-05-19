@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.borrowed.PinProgressButton;
 import net.x4a42.volksempfaenger.data.Columns.Episode;
@@ -237,8 +238,20 @@ public abstract class EpisodeListActivity extends Activity implements
 			for (int i = 0; i < checked.size(); i++) {
 
 				if (checked.valueAt(i)) {
-					EpisodeCursor cursor = (EpisodeCursor) mEpisodeListView
-							.getItemAtPosition(checked.keyAt(i));
+					EpisodeCursor cursor = null;
+					try {
+						cursor = (EpisodeCursor) mEpisodeListView
+								.getItemAtPosition(checked.keyAt(i));
+					} catch (IndexOutOfBoundsException e) {
+						// Obviously mEpisodeListView.getCheckedItemPositions()
+						// returned a position that doesn't even exist. This
+						// shouldn't actually happen but it has happened at
+						// least once.
+						Log.w(this,
+								"mEpisodeListView.getCheckedItemPositions() returned non-existent position");
+						continue;
+					}
+
 					if (cursor == null) {
 						continue;
 					}
