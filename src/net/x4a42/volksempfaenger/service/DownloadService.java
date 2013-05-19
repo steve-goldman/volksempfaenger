@@ -38,23 +38,22 @@ public class DownloadService extends Service {
 
 	private VolksempfaengerApplication app;
 
-    private enum EpisodeCheckResult {
-        CONTINUE,
-        NEXT
-    }
+	private enum EpisodeCheckResult {
+		CONTINUE,
+		NEXT
+	}
 
 	private class DownloadTask extends AsyncTask<Void, Integer, Integer> {
 
 		private long[] extraIds;
-        private boolean forceDownload;
+		private boolean forceDownload;
 
 		private static final int ABORT_MOBILE_NETWORK = 1;
 
-        public DownloadTask(long[] extraIds, boolean forceDownload)
-        {
-            this.extraIds = extraIds;
-            this.forceDownload = forceDownload;
-        }
+		public DownloadTask(long[] extraIds, boolean forceDownload) {
+			this.extraIds = extraIds;
+			this.forceDownload = forceDownload;
+		}
 
 		@Override
 		protected Integer doInBackground(Void... params) {
@@ -78,8 +77,8 @@ public class DownloadService extends Service {
 			if (!forceDownload) {
 				// check if automatic downloads are allowed
 
-                if (checkIfDownloadForbidden(prefs, networkAllowed, batteryIntent)) return null;
-            }
+				if (checkIfDownloadForbidden(prefs, networkAllowed, batteryIntent)) return null;
+			}
 
 			// here we can finally start the downloads
 
@@ -98,9 +97,9 @@ public class DownloadService extends Service {
 
 			Cursor cursor;
 			{
-				String[] projection = { Episode._ID, Episode.TITLE,
+				String[] projection = {Episode._ID, Episode.TITLE,
 						Episode.ENCLOSURE_ID, Episode.ENCLOSURE_URL,
-						Episode.DOWNLOAD_ID };
+						Episode.DOWNLOAD_ID};
 				cursor = getContentResolver().query(
 						VolksempfaengerContentProvider.EPISODE_URI, projection,
 						selection, null, orderBy);
@@ -108,7 +107,7 @@ public class DownloadService extends Service {
 
 			EnclosureDownloader ed = new EnclosureDownloader(
 					DownloadService.this, forceDownload || networkAllowed.contains(NetworkHelper.NetworkType.NETWORK_WIFI),
-                    forceDownload || networkAllowed.contains(NetworkHelper.NetworkType.NETWORK_MOBILE));
+					forceDownload || networkAllowed.contains(NetworkHelper.NetworkType.NETWORK_MOBILE));
 			DownloadManager dm = ed.getDownloadManager();
 
 			int freeSlots = extraIds == null ? ed.getFreeDownloadSlots()
@@ -130,17 +129,16 @@ public class DownloadService extends Service {
 					if (dmCursor.moveToFirst()) {
 						EpisodeCheckResult result = checkEpisode(downloadId, dmCursor, dm);
 
-                        if(result == EpisodeCheckResult.NEXT)
-                        {
-                            freeSlots++;
-                            continue;
-                        }
+						if (result == EpisodeCheckResult.NEXT) {
+							freeSlots++;
+							continue;
+						}
 					}
 				}
 
-                downloadAndUpdateState(cursor, ed, values);
+				downloadAndUpdateState(cursor, ed, values);
 
-                if (extraIds != null) {
+				if (extraIds != null) {
 					publishProgress(R.string.message_download_started);
 				}
 			}
@@ -148,118 +146,115 @@ public class DownloadService extends Service {
 			return null;
 		}
 
-        private void downloadAndUpdateState(Cursor cursor, EnclosureDownloader ed, ContentValues values) {
-            // get necessary information and enqueue download
-            long enclosureId = cursor.getLong(cursor
-                    .getColumnIndex(Episode.ENCLOSURE_ID));
-            long episodeId = cursor.getLong(cursor
-                    .getColumnIndex(Episode._ID));
-            String title = cursor.getString(cursor
-                    .getColumnIndex(Episode.TITLE));
-            String url = cursor.getString(cursor
-                    .getColumnIndex(Episode.ENCLOSURE_URL));
-            long downloadId = ed.downloadEnclosure(enclosureId, url, title);
+		private void downloadAndUpdateState(Cursor cursor, EnclosureDownloader ed, ContentValues values) {
+			// get necessary information and enqueue download
+			long enclosureId = cursor.getLong(cursor
+					.getColumnIndex(Episode.ENCLOSURE_ID));
+			long episodeId = cursor.getLong(cursor
+					.getColumnIndex(Episode._ID));
+			String title = cursor.getString(cursor
+					.getColumnIndex(Episode.TITLE));
+			String url = cursor.getString(cursor
+					.getColumnIndex(Episode.ENCLOSURE_URL));
+			long downloadId = ed.downloadEnclosure(enclosureId, url, title);
 
-            // Update episode
-            values.clear();
-            values.put(Episode.DOWNLOAD_ID, downloadId);
-            values.put(Episode.STATUS, Constants.EPISODE_STATE_DOWNLOADING);
-            getContentResolver().update(
-                    ContentUris.withAppendedId(
-                            VolksempfaengerContentProvider.EPISODE_URI,
-                            episodeId), values, null, null);
-        }
+			// Update episode
+			values.clear();
+			values.put(Episode.DOWNLOAD_ID, downloadId);
+			values.put(Episode.STATUS, Constants.EPISODE_STATE_DOWNLOADING);
+			getContentResolver().update(
+					ContentUris.withAppendedId(
+							VolksempfaengerContentProvider.EPISODE_URI,
+							episodeId), values, null, null);
+		}
 
 
-        private EpisodeCheckResult checkEpisode(long downloadId, Cursor dmCursor, DownloadManager dm)
-        {
-            // The Download of this episode was already started
-            int status = dmCursor.getInt(dmCursor
-                    .getColumnIndex(DownloadManager.COLUMN_STATUS));
-            switch (status) {
-                case DownloadManager.STATUS_SUCCESSFUL:
-                    try {
-                        URI localUri = new URI(
-                                dmCursor.getString(dmCursor
-                                        .getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
-                        if (new File(localUri).isFile()) {
-                            // the file was successfully downloaded and
-                            // does
-                            // still exist
-                            if (extraIds != null) {
-                                publishProgress(R.string.message_download_episode_already_downloaded);
-                            }
-                            return EpisodeCheckResult.NEXT;
-                        } else {
-                            // the file was deleted, we'll restart the
-                            // download
-                            break;
-                        }
-                    } catch (URISyntaxException e) {
-                        // this should never ever happen but just in
-                        // case
-                        // we'll handle it like a failed download (next
-                        // case)
-                    }
-                case DownloadManager.STATUS_FAILED:
-                    // remove the download so that we can start a new
-                    // one
-                    dm.remove(downloadId);
-                    break;
+		private EpisodeCheckResult checkEpisode(long downloadId, Cursor dmCursor, DownloadManager dm) {
+			// The Download of this episode was already started
+			int status = dmCursor.getInt(dmCursor
+					.getColumnIndex(DownloadManager.COLUMN_STATUS));
+			switch (status) {
+				case DownloadManager.STATUS_SUCCESSFUL:
+					try {
+						URI localUri = new URI(
+								dmCursor.getString(dmCursor
+										.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
+						if (new File(localUri).isFile()) {
+							// the file was successfully downloaded and
+							// does
+							// still exist
+							if (extraIds != null) {
+								publishProgress(R.string.message_download_episode_already_downloaded);
+							}
+							return EpisodeCheckResult.NEXT;
+						} else {
+							// the file was deleted, we'll restart the
+							// download
+							break;
+						}
+					} catch (URISyntaxException e) {
+						// this should never ever happen but just in
+						// case
+						// we'll handle it like a failed download (next
+						// case)
+					}
+				case DownloadManager.STATUS_FAILED:
+					// remove the download so that we can start a new
+					// one
+					dm.remove(downloadId);
+					break;
 
-                case DownloadManager.STATUS_PENDING:
-                case DownloadManager.STATUS_RUNNING:
-                case DownloadManager.STATUS_PAUSED:
-                    // the download is already running
-                    if (extraIds != null) {
-                        publishProgress(R.string.message_download_already_running);
-                    }
-                    return EpisodeCheckResult.NEXT;
-            }
+				case DownloadManager.STATUS_PENDING:
+				case DownloadManager.STATUS_RUNNING:
+				case DownloadManager.STATUS_PAUSED:
+					// the download is already running
+					if (extraIds != null) {
+						publishProgress(R.string.message_download_already_running);
+					}
+					return EpisodeCheckResult.NEXT;
+			}
 
-            return EpisodeCheckResult.CONTINUE;
-        }
+			return EpisodeCheckResult.CONTINUE;
+		}
 
-        private boolean checkIfDownloadForbidden(SharedPreferences prefs,  Set<NetworkHelper.NetworkType> networkAllowed, Intent batteryIntent) {
-            if (!prefs
-                    .getBoolean(
-                            PreferenceKeys.DOWNLOAD_AUTO,
-                            Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
-                // automatic downloading is disabled
-                Log.v(this, "automatic downloading is disabled");
-                return true;
-            }
+		private boolean checkIfDownloadForbidden(SharedPreferences prefs, Set<NetworkHelper.NetworkType> networkAllowed, Intent batteryIntent) {
+			if (!prefs
+					.getBoolean(
+							PreferenceKeys.DOWNLOAD_AUTO,
+							Utils.stringBoolean(getString(R.string.settings_default_download_auto)))) {
+				// automatic downloading is disabled
+				Log.v(this, "automatic downloading is disabled");
+				return true;
+			}
 
-            int phonePlugged = batteryIntent.getIntExtra(
-                    BatteryManager.EXTRA_PLUGGED, -1);
+			int phonePlugged = batteryIntent.getIntExtra(
+					BatteryManager.EXTRA_PLUGGED, -1);
 
-            if (phonePlugged == 0
-                    && prefs.getBoolean(
-                            PreferenceKeys.DOWNLOAD_CHARGING,
-                            Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
-                // downloading is only allowed while charging but phone is
-                // not plugged in
-                Log.v(this, "phone is not plugged in");
-                return true;
-            }
+			if (phonePlugged == 0
+					&& prefs.getBoolean(
+					PreferenceKeys.DOWNLOAD_CHARGING,
+					Utils.stringBoolean(getString(R.string.settings_default_download_charging)))) {
+				// downloading is only allowed while charging but phone is
+				// not plugged in
+				Log.v(this, "phone is not plugged in");
+				return true;
+			}
 
-            Set<NetworkHelper.NetworkType> networkType = NetworkHelper.getNetworkType(app);
+			Set<NetworkHelper.NetworkType> networkType = NetworkHelper.getNetworkType(app);
 
-            for (NetworkHelper.NetworkType type : networkType)
-            {
-                if(networkAllowed.contains(type))
-                {
-                    return false;
-                }
-            }
+			for (NetworkHelper.NetworkType type : networkType) {
+				if (networkAllowed.contains(type)) {
+					return false;
+				}
+			}
 
-            // no allowed network connection
-            Log.v(this, "network type is not allowed");
-            return true;
+			// no allowed network connection
+			Log.v(this, "network type is not allowed");
+			return true;
 
-        }
+		}
 
-        @Override
+		@Override
 		protected void onProgressUpdate(Integer... values) {
 			Toast.makeText(DownloadService.this, values[0], Toast.LENGTH_SHORT)
 					.show();
@@ -269,11 +264,11 @@ public class DownloadService extends Service {
 		protected void onPostExecute(Integer result) {
 			if (result != null) {
 				switch (result) {
-				case ABORT_MOBILE_NETWORK:
-					Toast.makeText(DownloadService.this,
-							R.string.error_download_mobile_disabled,
-							Toast.LENGTH_LONG).show();
-					break;
+					case ABORT_MOBILE_NETWORK:
+						Toast.makeText(DownloadService.this,
+								R.string.error_download_mobile_disabled,
+								Toast.LENGTH_LONG).show();
+						break;
 				}
 			}
 			stopSelf();
@@ -292,10 +287,10 @@ public class DownloadService extends Service {
 		Log.v(this, "onStartCommand()");
 
 		long[] extraId = null;
-        boolean forceDownload = false;
+		boolean forceDownload = false;
 		if (intent != null) {
 			extraId = intent.getLongArrayExtra("id");
-            forceDownload = intent.getBooleanExtra("forceDownload", false);
+			forceDownload = intent.getBooleanExtra("forceDownload", false);
 		}
 
 		new DownloadTask(extraId, forceDownload)
@@ -308,7 +303,6 @@ public class DownloadService extends Service {
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-
 
 
 }
