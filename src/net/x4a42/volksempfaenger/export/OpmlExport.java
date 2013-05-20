@@ -7,9 +7,9 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.*;
 
 
-public class OpmlExport {
+public final class OpmlExport {
 
-	public void export(PodcastCursor cursor, File destination) throws IOException {
+	public static void export(PodcastCursor cursor, File destination) throws IOException {
 		XmlSerializer serializer = Xml.newSerializer();
 		FileOutputStream fos = new FileOutputStream(destination);
 		serializer.setOutput(fos, "UTF-8");
