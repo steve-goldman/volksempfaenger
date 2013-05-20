@@ -1,11 +1,16 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.io.File;
 import java.util.List;
 
+import android.content.*;
+import android.os.AsyncTask;
+import android.os.Environment;
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.Columns;
 import net.x4a42.volksempfaenger.data.Columns.Podcast;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
 import net.x4a42.volksempfaenger.data.PodcastCursor;
@@ -19,14 +24,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -184,6 +181,9 @@ public class SubscriptionGridFragment extends Fragment implements
 			}
 
 			return true;
+		case R.id.export_items:
+			new ExportTask(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
 		default:
 			return false;
 		}

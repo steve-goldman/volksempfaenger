@@ -152,5 +152,8 @@
     <string name="dialog_download_mobile">Wifi is not connected, do you want download via mobile network? (This might
         cause additional costs.)
     </string>
+    <string name="menu_export">Export</string>
+    <string name="message_export_ok">Successfully exported your podcasts to %1$s</string>
+    <string name="message_export_failed">Failed to export your podcasts!</string>
 
 </resources>
