@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.receiver;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.service.PlaybackService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,10 +25,8 @@ public class MediaButtonEventReceiver extends BroadcastReceiver {
 
 		if (event.getAction() == KeyEvent.ACTION_UP) {
 			switch (event.getKeyCode()) {
-			case KeyEvent.KEYCODE_MEDIA_PLAY:
-				break;
-			case KeyEvent.KEYCODE_MEDIA_PAUSE:
-				break;
+			// case KeyEvent.KEYCODE_MEDIA_PLAY:
+			// case KeyEvent.KEYCODE_MEDIA_PAUSE:
 			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
 				Intent keyIntent = new Intent(context, PlaybackService.class);
 				keyIntent.setAction(Intent.ACTION_MEDIA_BUTTON);
@@ -35,7 +34,8 @@ public class MediaButtonEventReceiver extends BroadcastReceiver {
 				context.startService(keyIntent);
 				break;
 			default:
-				return;
+				Log.i(this, "Ignoring KeyEvent " + event.getKeyCode());
+				break;
 			}
 		}
 
