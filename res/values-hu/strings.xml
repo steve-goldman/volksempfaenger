@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">holopod</string>
+  <string name="app_name">Volksempfänger</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Új csatorna</string>
   <string name="title_delete_subscription">Biztos benne?</string>
-  <string name="title_settings">holopod Beállítások</string>
+  <string name="title_settings">Volksempfänger Beállítások</string>
   <string name="title_tab_subscriptions">Csatornák</string>
   <string name="title_tab_downloads">Letöltések</string>
   <string name="description_add_subscription">Feliratkozáshoz adja meg a podcast csatorna URL-címét</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Új epizódok letöltése csak az akkumulátor töltése közben</string>
   <string name="settings_summary_download_concurrent">Az egyidőben zajló letöltések száma</string>
   <string name="settings_summary_storage">Helyi podcast-tárolási beállítások</string>
-  <string name="settings_summary_about">Information a holopodról</string>
+  <string name="settings_summary_about">Information a Volksempfängerról</string>
   <string name="settings_summary_about_license">Licenc információk</string>
   <string name="menu_import">Importálás</string>
   <string name="dialog_choose_opml">OPML fájl kiválasztása</string>
@@ -81,7 +81,7 @@
   </string-array>
   <string name="episode_name">Epizód címe</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">A holopod használatához kérem, helyezzen be egy külső tárolóeszközt</string>
+  <string name="message_insert_sdcard">A Volksempfänger használatához kérem, helyezzen be egy külső tárolóeszközt</string>
   <string name="unknown_duration">ismeretlen hossz</string>
   <string name="unknown_size">ismeretlen méret</string>
   <string name="message_error_file_not_found">Nem található a fájl: “%s”</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Weboldal</string>
   <string name="message_import_started">Importálás…</string>
   <string name="settings_about_libraries">Könyvtárak</string>
-  <string name="settings_summary_about_flattr">Támogassa a holopod fejlesztését</string>
+  <string name="settings_summary_about_flattr">Támogassa a Volksempfänger fejlesztését</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">összecsuk</string>
   <string name="title_tab_playlists">Listák</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Felfedezés</string>
   <string name="menu_search">Keresés</string>
   <string name="search_hint">Keresés vagy URL megadása</string>
-  <string name="import_to_volksempfaenger">Importálás a holopodba</string>
+  <string name="import_to_volksempfaenger">Importálás a Volksempfängerba</string>
   <string name="unknown_error">Ismeretlen hiba</string>
   <string name="title_popular">Népszerű</string>
   <string name="title_search_results">Keresési eredmények</string>

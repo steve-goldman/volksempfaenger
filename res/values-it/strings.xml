@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">holopod</string>
+  <string name="app_name">Volksempfänger</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Aggiungi Iscrizione</string>
   <string name="title_delete_subscription">Sei sicuro?</string>
-  <string name="title_settings">Impostazioni di holopod</string>
+  <string name="title_settings">Impostazioni di Volksempfänger</string>
   <string name="title_tab_subscriptions">Iscrizioni</string>
   <string name="title_tab_downloads">Scaricati</string>
   <string name="description_add_subscription">Inserisci l\'URL del podcast per iscriverti</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Scarica i nuovi episodi solo se connesso all\'alimentazione elettrica</string>
   <string name="settings_summary_download_concurrent">Massimo numero di download contemporanei</string>
   <string name="settings_summary_storage">Impostazioni per l\'archiviazione locale dei podcast</string>
-  <string name="settings_summary_about">Informazioni su holopod</string>
+  <string name="settings_summary_about">Informazioni su Volksempfänger</string>
   <string name="settings_summary_about_license">Mostra le informazioni sulla licenza</string>
   <string name="menu_import">Importa</string>
   <string name="dialog_choose_opml">Scegli un file OPML</string>
@@ -81,7 +81,7 @@
   </string-array>
   <string name="episode_name">Nome della puntata</string>
   <string name="podcast">Podcast</string>
-  <string name="message_insert_sdcard">Per favore inserisci una memoria esterna per usare holopod</string>
+  <string name="message_insert_sdcard">Per favore inserisci una memoria esterna per usare Volksempfänger</string>
   <string name="unknown_duration">durata sconosciuta</string>
   <string name="unknown_size">dimensione sconosciuta</string>
   <string name="message_error_file_not_found">Impossibile trovare il file “%s”</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Sito web</string>
   <string name="message_import_started">Importazione iniziata...</string>
   <string name="settings_about_libraries">Librerie</string>
-  <string name="settings_summary_about_flattr">Supporta lo sviluppo di holopod</string>
+  <string name="settings_summary_about_flattr">Supporta lo sviluppo di Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">riduci</string>
   <string name="title_tab_playlists">Liste di riproduzione</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Scopri</string>
   <string name="menu_search">Cerca</string>
   <string name="search_hint">Cerca o digita l\'URL</string>
-  <string name="import_to_volksempfaenger">Importa a holopod</string>
+  <string name="import_to_volksempfaenger">Importa a Volksempfänger</string>
   <string name="unknown_error">Errore sconosciuto</string>
   <string name="title_popular">Popolari</string>
   <string name="title_search_results">Risultati della ricerca</string>

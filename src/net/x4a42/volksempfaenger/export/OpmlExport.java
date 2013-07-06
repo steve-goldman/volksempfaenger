@@ -23,7 +23,7 @@ public final class OpmlExport {
 		// write head
 		serializer.startTag(null, OpmlConstants.HEAD);
 		serializer.startTag(null, OpmlConstants.TITLE);
-		serializer.text("holopod subscription export");
+		serializer.text("Volksempfänger subscription export");
 		serializer.endTag(null, OpmlConstants.TITLE);
 		serializer.endTag(null, OpmlConstants.HEAD);
 
