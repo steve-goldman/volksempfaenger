@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">holopod</string>
+  <string name="app_name">Volksempfänger</string>
   <string name="app_name_ascii">Volksempfaenger</string>
   <string name="title_add_subscription">Agregar Suscripción</string>
   <string name="title_delete_subscription">¿Estas seguro?</string>
-  <string name="title_settings">Configuraciones de holopod</string>
+  <string name="title_settings">Configuraciones de Volksempfänger</string>
   <string name="title_tab_subscriptions">Suscripciones</string>
   <string name="title_tab_downloads">Descargas</string>
   <string name="description_add_subscription">Escriba el URL del podcast para subscribirse a el</string>
@@ -62,7 +62,7 @@
   <string name="settings_summary_download_charging">Solo descarga nuevos episodios mientras esta conectado a una fuente de poder</string>
   <string name="settings_summary_download_concurrent">Numero máximo de descargas corriendo al mismo tiempo</string>
   <string name="settings_summary_storage">Configuración de almacenamiento local de podcast</string>
-  <string name="settings_summary_about">Información acerca de holopod</string>
+  <string name="settings_summary_about">Información acerca de Volksempfänger</string>
   <string name="settings_summary_about_license">Mostrar información de licencia</string>
   <string name="menu_import">Importar</string>
   <string name="dialog_choose_opml">Escoger archivo OPML</string>
@@ -100,7 +100,7 @@
   <string name="menu_website">Sitio Web</string>
   <string name="message_import_started">Importación iniciada...</string>
   <string name="settings_about_libraries">Librerias</string>
-  <string name="settings_summary_about_flattr">Ayudar en el desarrollo de holopod</string>
+  <string name="settings_summary_about_flattr">Ayudar en el desarrollo de Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">contraer</string>
   <string name="title_tab_playlists">Listas de reproducción</string>
@@ -112,7 +112,7 @@
   <string name="title_tab_discover">Descburir</string>
   <string name="menu_search">Buscar</string>
   <string name="search_hint">Buscar o escribir URL</string>
-  <string name="import_to_volksempfaenger">Importar a holopod</string>
+  <string name="import_to_volksempfaenger">Importar a Volksempfänger</string>
   <string name="unknown_error">Error desconocido</string>
   <string name="title_popular">Popular</string>
   <string name="title_search_results">Resultados de búsqueda</string>

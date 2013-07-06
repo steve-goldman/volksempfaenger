@@ -2,11 +2,11 @@
 <!-- strings to be translated -->
 <resources>
 
-    <string name="app_name">holopod</string>
+    <string name="app_name">Volksempfänger</string>
     <string name="app_name_ascii">Volksempfaenger</string>
     <string name="title_add_subscription">Add Subscription</string>
     <string name="title_delete_subscription">Are you sure?</string>
-    <string name="title_settings">holopod Settings</string>
+    <string name="title_settings">Volksempfänger Settings</string>
     <string name="title_tab_subscriptions">Subscriptions</string>
     <string name="title_tab_downloads">Downloads</string>
     <string name="description_add_subscription">Enter the URL of the podcast feed in order to subscribe to it</string>
@@ -64,7 +64,7 @@
     <string name="settings_summary_download_charging">Only download new episodes while connected to a power source</string>
     <string name="settings_summary_download_concurrent">Maximum number of downloads running at the same time</string>
     <string name="settings_summary_storage">Local podcast storage settings</string>
-    <string name="settings_summary_about">Information about holopod</string>
+    <string name="settings_summary_about">Information about Volksempfänger</string>
     <string name="settings_summary_about_license">Show license information</string>
     <string name="menu_import">Import</string>
     <string name="dialog_choose_opml">Choose OPML file</string>
@@ -85,7 +85,7 @@
 
     <string name="episode_name">Episode Name</string>
     <string name="podcast">Podcast</string>
-    <string name="message_insert_sdcard">Please insert an external storage medium in order to use holopod</string>
+    <string name="message_insert_sdcard">Please insert an external storage medium in order to use Volksempfänger</string>
     <string name="unknown_duration">unknown duration</string>
     <string name="unknown_size">unknown size</string>
     <string name="message_error_file_not_found">The file “%s” could not be found</string>
@@ -104,7 +104,7 @@
     <string name="menu_website">Website</string>
     <string name="message_import_started">Import started…</string>
     <string name="settings_about_libraries">Libraries</string>
-    <string name="settings_summary_about_flattr">Support the development of holopod</string>
+    <string name="settings_summary_about_flattr">Support the development of Volksempfänger</string>
     <string name="settings_about_flattr">Flattr</string>
     <string name="notification_collapse">collapse</string>
     <string name="title_tab_playlists">Playlists</string>
@@ -116,7 +116,7 @@
     <string name="title_tab_discover">Discover</string>
     <string name="menu_search">Search</string>
     <string name="search_hint">Search or type URL</string>
-    <string name="import_to_volksempfaenger">Import to holopod</string>
+    <string name="import_to_volksempfaenger">Import to Volksempfänger</string>
     <string name="unknown_error">Unknown error</string>
     <string name="title_popular">Popular</string>
     <string name="title_search_results">Search results</string>
