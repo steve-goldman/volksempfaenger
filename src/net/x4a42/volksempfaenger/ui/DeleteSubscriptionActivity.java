@@ -98,23 +98,22 @@ public class DeleteSubscriptionActivity extends Activity implements
 
 		ContentResolver resolver = this.getContentResolver();
 		Cursor cursor = resolver.query(
-				VolksempfaengerContentProvider.EPISODE_URI,
-				new String[] {Columns.Episode._ID, Columns.Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR }, Columns.Episode.PODCAST_ID + "=" + String.valueOf(id), null, null);
+				VolksempfaengerContentProvider.EPISODE_URI, new String[] {
+						Columns.Episode._ID,
+						Columns.Episode.DOWNLOAD_BYTES_DOWNLOADED_SO_FAR },
+				Columns.Episode.PODCAST_ID + "=" + String.valueOf(id), null,
+				null);
 
 		EpisodeCursor episodeCursor = new EpisodeCursor(cursor);
 
-		if(episodeCursor.moveToFirst())
-		{
-			do{
-				if(episodeCursor.getDownloadDone() > 0)
-				{
-					EpisodeHelper
-							.deleteDownload(getContentResolver(),
-									(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
-									episodeCursor.getId()
-									);
-				}
-			} while (episodeCursor.moveToNext());
+		while (episodeCursor.moveToNext()) {
+			if (episodeCursor.getDownloadDone() > 0) {
+				EpisodeHelper
+						.deleteDownload(
+								getContentResolver(),
+								(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+								episodeCursor.getId());
+			}
 		}
 
 		episodeCursor.close();

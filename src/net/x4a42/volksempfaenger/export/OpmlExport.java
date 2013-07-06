@@ -6,10 +6,10 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.*;
 
-
 public final class OpmlExport {
 
-	public static void export(PodcastCursor cursor, File destination) throws IOException {
+	public static void export(PodcastCursor cursor, File destination)
+			throws IOException {
 		XmlSerializer serializer = Xml.newSerializer();
 		FileOutputStream fos = new FileOutputStream(destination);
 		serializer.setOutput(fos, "UTF-8");
@@ -20,7 +20,7 @@ public final class OpmlExport {
 
 		serializer.attribute(null, OpmlConstants.VERSION, "2.0");
 
-		//write head
+		// write head
 		serializer.startTag(null, OpmlConstants.HEAD);
 		serializer.startTag(null, OpmlConstants.TITLE);
 		serializer.text("holopod subscription export");
@@ -29,17 +29,17 @@ public final class OpmlExport {
 
 		serializer.startTag(null, OpmlConstants.BODY);
 
-		if (cursor.moveToFirst()) {
-			do {
-				serializer.startTag(null, OpmlConstants.OUTLINE);
+		while (cursor.moveToNext()) {
+			serializer.startTag(null, OpmlConstants.OUTLINE);
 
-				serializer.attribute(null, OpmlConstants.TITLE, cursor.getTitle());
-				serializer.attribute(null, OpmlConstants.TEXT, cursor.getDescription());
-				serializer.attribute(null, OpmlConstants.HTMLURL, cursor.getWebsite());
-				serializer.attribute(null, OpmlConstants.XMLURL, cursor.getFeed());
+			serializer.attribute(null, OpmlConstants.TITLE, cursor.getTitle());
+			serializer.attribute(null, OpmlConstants.TEXT,
+					cursor.getDescription());
+			serializer.attribute(null, OpmlConstants.HTMLURL,
+					cursor.getWebsite());
+			serializer.attribute(null, OpmlConstants.XMLURL, cursor.getFeed());
 
-				serializer.endTag(null, OpmlConstants.OUTLINE);
-			} while (cursor.moveToNext());
+			serializer.endTag(null, OpmlConstants.OUTLINE);
 		}
 
 		serializer.endTag(null, OpmlConstants.BODY);
