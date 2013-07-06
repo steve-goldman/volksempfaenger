@@ -196,91 +196,91 @@ public class ViewEpisodeActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 
-			case R.id.item_play:
-				Intent intent = new Intent(this, PlaybackService.class);
-				intent.setAction(PlaybackService.ACTION_PLAY);
-				intent.setData(mEpisodeUri);
-				startService(intent);
-				return true;
+		case R.id.item_play:
+			Intent intent = new Intent(this, PlaybackService.class);
+			intent.setAction(PlaybackService.ACTION_PLAY);
+			intent.setData(mEpisodeUri);
+			startService(intent);
+			return true;
 
-			case R.id.item_download:
-				if (episodeCursor.getEnclosureId() != 0) {
-					// there is an preferred enclosure
-					downloadEnclosure();
-				} else {
-					final EnclosureSimple[] enclosures = getEnclosures();
-					switch (enclosures.length) {
-						case 0:
-							// no enclosures
-							Toast.makeText(this,
-									R.string.message_episode_without_enclosure,
-									Toast.LENGTH_SHORT).show();
-							break;
-						case 1:
-							// exactly one enclosure
-							downloadEnclosure(enclosures[0].id);
-							break;
-						default:
-							// multiple enclosures (they suck)
-							AlertDialog dialog = getEnclosureChooserDialog(
-									getString(R.string.dialog_choose_download_enclosure),
-									enclosures, new DialogInterface.OnClickListener() {
+		case R.id.item_download:
+			if (episodeCursor.getEnclosureId() != 0) {
+				// there is an preferred enclosure
+				downloadEnclosure();
+			} else {
+				final EnclosureSimple[] enclosures = getEnclosures();
+				switch (enclosures.length) {
+				case 0:
+					// no enclosures
+					Toast.makeText(this,
+							R.string.message_episode_without_enclosure,
+							Toast.LENGTH_SHORT).show();
+					break;
+				case 1:
+					// exactly one enclosure
+					downloadEnclosure(enclosures[0].id);
+					break;
+				default:
+					// multiple enclosures (they suck)
+					AlertDialog dialog = getEnclosureChooserDialog(
+							getString(R.string.dialog_choose_download_enclosure),
+							enclosures, new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
-													int which) {
+										int which) {
 									downloadEnclosure(enclosures[which].id);
 								}
 							});
-							dialog.show();
-							break;
-					}
+					dialog.show();
+					break;
 				}
-				return true;
+			}
+			return true;
 
-			case R.id.item_mark_listened:
-				EpisodeHelper.markAsListened(getContentResolver(), mEpisodeUri);
-				return true;
+		case R.id.item_mark_listened:
+			EpisodeHelper.markAsListened(getContentResolver(), mEpisodeUri);
+			return true;
 
-			case R.id.item_mark_new:
-				EpisodeHelper.markAsNew(getContentResolver(), mEpisodeUri);
-				return true;
+		case R.id.item_mark_new:
+			EpisodeHelper.markAsNew(getContentResolver(), mEpisodeUri);
+			return true;
 
-			case R.id.item_delete:
-				// TODO: confirmation dialog, AsyncTask
-				EpisodeHelper
-						.deleteDownload(
-								getContentResolver(),
-								(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
-								mEpisodeUri);
-				return true;
+		case R.id.item_delete:
+			// TODO: confirmation dialog, AsyncTask
+			EpisodeHelper
+					.deleteDownload(
+							getContentResolver(),
+							(DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE),
+							mEpisodeUri);
+			return true;
 
-			case R.id.item_website:
-				Uri uri = episodeCursor.getUrlUri();
-				if (uri != null) {
-					intent = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(intent);
-				} else {
-					Toast.makeText(this, R.string.message_no_website,
-							Toast.LENGTH_SHORT).show();
-				}
-				return true;
+		case R.id.item_website:
+			Uri uri = episodeCursor.getUrlUri();
+			if (uri != null) {
+				intent = new Intent(Intent.ACTION_VIEW, uri);
+				startActivity(intent);
+			} else {
+				Toast.makeText(this, R.string.message_no_website,
+						Toast.LENGTH_SHORT).show();
+			}
+			return true;
 
-			case R.id.item_share:
-				intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_TEXT, episodeCursor.getUrl());
-				startActivity(Intent.createChooser(intent,
-						getString(R.string.title_share)));
-				return true;
+		case R.id.item_share:
+			intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, episodeCursor.getUrl());
+			startActivity(Intent.createChooser(intent,
+					getString(R.string.title_share)));
+			return true;
 
-			default:
-				return ActivityHelper.handleGlobalMenu(this, item);
+		default:
+			return ActivityHelper.handleGlobalMenu(this, item);
 
 		}
 	}
 
 	private void downloadEnclosure(long... v) {
 		if (v == null || v.length == 0) {
-			v = new long[]{episodeCursor.getEnclosureId()};
+			v = new long[] { episodeCursor.getEnclosureId() };
 		} else if (v.length == 1) {
 			ContentValues values = new ContentValues();
 			values.put(Episode.ENCLOSURE_ID, v[0]);
@@ -290,27 +290,35 @@ public class ViewEpisodeActivity extends Activity implements
 							episodeCursor.getId()), values, null, null);
 		}
 
-
-		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication()).getSharedPreferences();
+		SharedPreferences prefs = ((VolksempfaengerApplication) getApplication())
+				.getSharedPreferences();
 		if (prefs
 				.getBoolean(
 						PreferenceKeys.DOWNLOAD_WIFI,
-						Utils.stringBoolean(getString(R.string.settings_default_download_wifi)))) {
-			// downloading is restricted to WiFi let's ask the user if it's ok to download on mobile
+						Utils.stringBoolean(getString(R.string.settings_default_download_wifi)))
+				&& !NetworkHelper.getNetworkType(this).contains(
+						NetworkHelper.NetworkType.NETWORK_WIFI)) {
+			// downloading is restricted to WiFi let's ask the user if it's ok
+			// to download on mobile
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.dialog_download_mobile).setTitle(R.string.menu_download);
-			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					download();
-				}
-			}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					//noop
-				}
-			});
+			builder.setMessage(R.string.dialog_download_mobile).setTitle(
+					R.string.menu_download);
+			builder.setPositiveButton(R.string.ok,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface,
+								int i) {
+							download();
+						}
+					}).setNegativeButton(R.string.cancel,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface,
+								int i) {
+							// noop
+						}
+					});
 			builder.create().show();
 		} else {
 			download();
@@ -319,7 +327,7 @@ public class ViewEpisodeActivity extends Activity implements
 
 	private void download() {
 		Intent intent = new Intent(this, DownloadService.class);
-		intent.putExtra("id", new long[]{episodeCursor.getId()});
+		intent.putExtra("id", new long[] { episodeCursor.getId() });
 		intent.putExtra("forceDownload", true);
 		// the service will send a Toast as user feedback
 		startService(intent);
@@ -333,11 +341,11 @@ public class ViewEpisodeActivity extends Activity implements
 	private EnclosureSimple[] getEnclosures() {
 		Cursor cursor;
 		{
-			String[] projection = {Enclosure._ID, Enclosure.URL};
+			String[] projection = { Enclosure._ID, Enclosure.URL };
 			cursor = getContentResolver().query(
 					VolksempfaengerContentProvider.ENCLOSURE_URI, projection,
 					WHERE_EPISODE_ID,
-					new String[]{String.valueOf(mEpisodeId)}, null);
+					new String[] { String.valueOf(mEpisodeId) }, null);
 		}
 		EnclosureSimple[] enclosures = new EnclosureSimple[cursor.getCount()];
 		int i = 0;
@@ -354,8 +362,8 @@ public class ViewEpisodeActivity extends Activity implements
 	}
 
 	private AlertDialog getEnclosureChooserDialog(String title,
-												  EnclosureSimple[] enclosures,
-												  DialogInterface.OnClickListener listener) {
+			EnclosureSimple[] enclosures,
+			DialogInterface.OnClickListener listener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(title);
 		CharSequence items[] = new String[enclosures.length];
@@ -472,7 +480,7 @@ public class ViewEpisodeActivity extends Activity implements
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		String[] projection = {Episode._ID, Episode.TITLE,
+		String[] projection = { Episode._ID, Episode.TITLE,
 				Episode.DESCRIPTION, Episode.STATUS, Episode.DATE,
 				Episode.DURATION_TOTAL, Episode.DURATION_LISTENED, Episode.URL,
 				Episode.PODCAST_ID, Episode.PODCAST_TITLE, Episode.DOWNLOAD_ID,
@@ -480,7 +488,7 @@ public class ViewEpisodeActivity extends Activity implements
 				Episode.DOWNLOAD_LOCAL_URI, Episode.DOWNLOAD_STATUS,
 				Episode.DOWNLOAD_TOTAL_SIZE_BYTES, Episode.ENCLOSURE_ID,
 				Episode.ENCLOSURE_SIZE, Episode.FLATTR_STATUS,
-				Episode.FLATTR_URL, Episode.ENCLOSURE_NUMBER};
+				Episode.FLATTR_URL, Episode.ENCLOSURE_NUMBER };
 		return new CursorLoader(this, mEpisodeUri, projection, null, null, null);
 	}
 
@@ -550,7 +558,7 @@ public class ViewEpisodeActivity extends Activity implements
 				Spanned s = Html.fromHtml(description, null, new TagHandler() {
 					@Override
 					public void handleTag(boolean opening, String tag,
-										  Editable output, XMLReader xmlReader) {
+							Editable output, XMLReader xmlReader) {
 						if (!opening) {
 							if (tag.equals("li") || tag.equals("tr")
 									|| tag.equals("table") || tag.equals("ol")
@@ -585,24 +593,24 @@ public class ViewEpisodeActivity extends Activity implements
 				null);
 		if (flattrAutoPrefs == null
 				|| flattrAutoPrefs
-				.equals(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_NEVER)) {
+						.equals(net.x4a42.volksempfaenger.Constants.PREF_AUTO_FLATTR_NEVER)) {
 			switch (episodeCursor.getFlattrStatus()) {
-				case Constants.FLATTR_STATE_NONE:
-					flattrButton.setVisibility(View.GONE);
-					break;
-				case Constants.FLATTR_STATE_NEW:
-					flattrButton.setVisibility(View.VISIBLE);
-					flattrButton.setEnabled(true);
-					flattrButton
-							.setBackgroundResource(R.drawable.flattr_button_background);
-					break;
-				case Constants.FLATTR_STATE_PENDING:
-				case Constants.FLATTR_STATE_FLATTRED:
-					flattrButton.setVisibility(View.VISIBLE);
-					flattrButton.setEnabled(false);
-					flattrButton
-							.setBackgroundResource(R.drawable.flattr_button_background_flattred);
-					break;
+			case Constants.FLATTR_STATE_NONE:
+				flattrButton.setVisibility(View.GONE);
+				break;
+			case Constants.FLATTR_STATE_NEW:
+				flattrButton.setVisibility(View.VISIBLE);
+				flattrButton.setEnabled(true);
+				flattrButton
+						.setBackgroundResource(R.drawable.flattr_button_background);
+				break;
+			case Constants.FLATTR_STATE_PENDING:
+			case Constants.FLATTR_STATE_FLATTRED:
+				flattrButton.setVisibility(View.VISIBLE);
+				flattrButton.setEnabled(false);
+				flattrButton
+						.setBackgroundResource(R.drawable.flattr_button_background_flattred);
+				break;
 			}
 		}
 	}
@@ -667,7 +675,7 @@ public class ViewEpisodeActivity extends Activity implements
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
-												int which) {
+									int which) {
 								dialog.dismiss();
 							}
 						});
@@ -675,7 +683,7 @@ public class ViewEpisodeActivity extends Activity implements
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
-												int which) {
+									int which) {
 								Intent intent = new Intent(
 										ViewEpisodeActivity.this,
 										SettingsActivity.class);
