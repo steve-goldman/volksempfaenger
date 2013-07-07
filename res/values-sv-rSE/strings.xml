@@ -137,4 +137,11 @@
   <string name="button_flattr">Flattra</string>
   <string name="title_error_flattr_authorization">Åtkomst nekades</string>
   <string name="message_error_flattr_authorization">Åtkomst till Flattr misslyckades</string>
+  <string name="title_flattr_no_account">Inget Flattr-konto</string>
+  <string name="message_flattr_no_account">Du måste lägga till ditt  Flattr-konto för att Flattra avsnitt.</string>
+  <string name="message_no_website">Ingen hemsida</string>
+  <string name="error_download_mobile_disabled">Hämtning via mobila nätverk är inaktiverat</string>
+  <string name="menu_select_all">Välj alla</string>
+  <string name="menu_n_selected">%d valda</string>
+  <string name="dialog_download_mobile">Wifi är inte ansluten, vill du ladda ner via det mobila nätverket? (Detta kan leda till ytterligare kostnader.)</string>
 </resources>

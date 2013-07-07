@@ -142,4 +142,6 @@
   <string name="message_no_website">Não há página da web</string>
   <string name="error_download_mobile_disabled">O download pela rede móvel está desabilitado</string>
   <string name="menu_select_all">Selecionar todos</string>
+  <string name="menu_n_selected">%d selecionado(s)</string>
+  <string name="dialog_download_mobile">Não há conexão Wifi, deseja fazer o download pela rede móvel? (Isso pode gerar custos adicionais.)</string>
 </resources>
