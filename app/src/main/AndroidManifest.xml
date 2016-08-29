@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="net.x4a42.volksempfaenger"
-    android:versionCode="18"
-    android:versionName="0.7.0-alpha1" >
+    package="net.x4a42.volksempfaenger">
 
     <uses-sdk
         android:minSdkVersion="14"
