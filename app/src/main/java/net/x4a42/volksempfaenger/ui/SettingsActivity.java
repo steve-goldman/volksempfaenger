@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.ui;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.PreferenceKeys;
@@ -19,11 +21,30 @@ import android.preference.PreferenceScreen;
 import android.text.InputType;
 import android.widget.EditText;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity
+{
+	private static final Collection<String> validFragments = new HashSet<>();
 
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.preference_headers, target);
+
+		for (Header header : target)
+		{
+			validFragments.add(header.fragment);
+		}
+	}
+
+	@Override
+	public void invalidateHeaders()
+	{
+		validFragments.clear();
+	}
+
+	@Override
+	protected boolean isValidFragment(String fragmentName)
+	{
+		return validFragments.contains(fragmentName);
 	}
 
 	public static class DownloadFragment extends SettingsFragment implements
