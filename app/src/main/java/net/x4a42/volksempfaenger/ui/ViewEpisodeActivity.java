@@ -17,11 +17,13 @@ import net.x4a42.volksempfaenger.misc.NetworkHelper;
 import net.x4a42.volksempfaenger.net.DescriptionImageDownloader;
 import net.x4a42.volksempfaenger.service.DownloadService;
 import net.x4a42.volksempfaenger.service.FlattrService;
-import net.x4a42.volksempfaenger.service.PlaybackHelper.Event;
-import net.x4a42.volksempfaenger.service.PlaybackHelper.EventListener;
-import net.x4a42.volksempfaenger.service.PlaybackService;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackBinder;
-import net.x4a42.volksempfaenger.service.PlaybackService.PlaybackRemote;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
+import net.x4a42.volksempfaenger.service.playback.PlaybackService;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceBinder;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 
 import org.xml.sax.XMLReader;
 
@@ -71,26 +73,27 @@ import android.widget.Toast;
 
 public class ViewEpisodeActivity extends Activity implements
 		LoaderManager.LoaderCallbacks<Cursor>, ServiceConnection,
-		EventListener, OnUpPressedCallback, OnClickListener {
+		PlaybackEventListener, OnUpPressedCallback, OnClickListener {
 
-	private static final String WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
+	private static final String              WHERE_EPISODE_ID = Enclosure.EPISODE_ID + "=?";
 
-	private Uri mEpisodeUri;
-	private long mEpisodeId;
-	private EpisodeCursor episodeCursor;
+	private Uri                              mEpisodeUri;
+	private long                             mEpisodeId;
+	private EpisodeCursor                    episodeCursor;
 
-	private TextView episodeTitle;
-	private TextView episodeMeta;
-	private TextView episodeDescription;
-	private int descriptionHash;
-	private ImageButton flattrButton;
+	private TextView                         episodeTitle;
+	private TextView                         episodeMeta;
+	private TextView                         episodeDescription;
+	private int                              descriptionHash;
+	private ImageButton                      flattrButton;
 
 	private AsyncTask<Void, ImageSpan, Void> lastImageLoadTask;
-	private SpannableStringBuilder descriptionSpanned;
+	private SpannableStringBuilder           descriptionSpanned;
 
-	private long subscriptionId = -1;
+	private long                             subscriptionId   = -1;
 
-	private PlaybackRemote remote;
+	private PlaybackServiceFacade            facade;
+	private PlaybackEventReceiver            playbackEventReceiver;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,10 +103,12 @@ public class ViewEpisodeActivity extends Activity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		episodeTitle = (TextView) findViewById(R.id.episode_title);
-		episodeMeta = (TextView) findViewById(R.id.episode_meta);
-		episodeDescription = (TextView) findViewById(R.id.episode_description);
-		flattrButton = (ImageButton) findViewById(R.id.button_flattr);
+		playbackEventReceiver = new PlaybackEventReceiverBuilder().build(this).setListener(this);
+
+		episodeTitle          = (TextView) findViewById(R.id.episode_title);
+		episodeMeta           = (TextView) findViewById(R.id.episode_meta);
+		episodeDescription    = (TextView) findViewById(R.id.episode_description);
+		flattrButton          = (ImageButton) findViewById(R.id.button_flattr);
 		flattrButton.setOnClickListener(this);
 
 		episodeDescription.setMovementMethod(LinkMovementMethod.getInstance());
@@ -134,9 +139,18 @@ public class ViewEpisodeActivity extends Activity implements
 	}
 
 	@Override
-	public void onResume() {
+	public void onResume()
+	{
 		super.onResume();
+		playbackEventReceiver.subscribe();
 		ExternalStorageHelper.assertExternalStorageWritable(this);
+	}
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		playbackEventReceiver.unsubscribe();
 	}
 
 	@Override
@@ -150,7 +164,7 @@ public class ViewEpisodeActivity extends Activity implements
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.view_episode, menu);
 
-		if (episodeCursor != null && remote != null) {
+		if (episodeCursor != null && facade != null) {
 			MenuItem downloadItem = menu.findItem(R.id.item_download);
 			MenuItem playItem = menu.findItem(R.id.item_play);
 			MenuItem markListenedItem = menu.findItem(R.id.item_mark_listened);
@@ -166,7 +180,7 @@ public class ViewEpisodeActivity extends Activity implements
 				downloadItem.setVisible(true);
 			}
 
-			if ((remote.isPlaying() && mEpisodeUri.equals(remote
+			if ((facade.isPlaying() && mEpisodeUri.equals(facade
 					.getEpisodeUri()))
 					|| (episodeCursor.getEnclosureNumber() == 0)) {
 				playItem.setVisible(false);
@@ -198,7 +212,7 @@ public class ViewEpisodeActivity extends Activity implements
 
 		case R.id.item_play:
 			Intent intent = new Intent(this, PlaybackService.class);
-			intent.setAction(PlaybackService.ACTION_PLAY);
+			intent.setAction(PlaybackService.ActionPlay);
 			intent.setData(mEpisodeUri);
 			startService(intent);
 			return true;
@@ -637,14 +651,13 @@ public class ViewEpisodeActivity extends Activity implements
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder binder) {
-		remote = ((PlaybackBinder) binder).getRemote();
-		remote.registerEventListener(this);
+		facade = ((PlaybackServiceBinder) binder).getFacade();
 		invalidateOptionsMenu();
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
-		remote = null;
+		facade = null;
 
 		Intent intent = new Intent(this, PlaybackService.class);
 		startService(intent);
@@ -652,7 +665,7 @@ public class ViewEpisodeActivity extends Activity implements
 	}
 
 	@Override
-	public void onPlaybackEvent(Event event) {
+	public void onPlaybackEvent(PlaybackEvent event) {
 		invalidateOptionsMenu();
 	}
 
