@@ -13,6 +13,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceBinder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
+import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivity;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -188,23 +189,30 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	public void onClickPause(View v) {
-		if (facade != null) {
+		if (facade != null)
+		{
 			if (facade.isPlaying()) {
 				getActivity().startService(intentProvider.getPauseIntent());
-			} else {
+			}
+			else
+			{
 				getActivity().startService(intentProvider.getPlayIntent(null));
 			}
 		}
 	}
 
-	public void onClickBack(View v) {
-		if (facade != null) {
+	public void onClickBack(View v)
+	{
+		if (facade != null)
+		{
 			getActivity().startService(intentProvider.getMoveIntent(-30000));
 		}
 	}
 
-	public void onClickForward(View v) {
-		if (facade != null) {
+	public void onClickForward(View v)
+	{
+		if (facade != null)
+		{
 			getActivity().startService(intentProvider.getMoveIntent(30000));
 		}
 	}
@@ -212,7 +220,8 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		if (fromUser && facade != null) {
+		if (fromUser && facade != null)
+		{
 			stopUpdater();
 			getActivity().startService(intentProvider.getSeekIntent(progress));
 			updateTime();
@@ -306,7 +315,7 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 			if (getActivity() instanceof ViewEpisodeActivity) {
 				ViewEpisodeActivity activity = (ViewEpisodeActivity) getActivity();
-				Uri activityUri = activity.getUri();
+				Uri activityUri = activity.getProxy().getEpisodeUri();
 				Uri remoteUri = facade.getEpisodeUri();
 				if (activityUri != null && remoteUri != null
 						&& remoteUri.equals(activityUri)) {
@@ -341,7 +350,6 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 	private Runnable updateSliderTask = new Runnable() {
 		public void run() {
-			seekbar.setProgress(facade.getPosition());
 			updateHandler.postDelayed(this, 500);
 			updateTime();
 		}
@@ -357,6 +365,11 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 	}
 
 	private void updateTime() {
+		if (!facade.isOpen())
+		{
+			return;
+		}
+		seekbar.setProgress(facade.getPosition());
 		setTextViewTime(position, facade.getPosition());
 		setTextViewTime(duration, facade.getDuration());
 	}

@@ -19,6 +19,7 @@ public class PlaybackServiceIntentProviderTest
     public void setUp() throws Exception
     {
         intentProvider = new PlaybackServiceIntentProvider(intentFactory);
+        Mockito.when(intentFactory.create()).thenReturn(createdIntent);
         Mockito.when(intentFactory.create(Mockito.anyString())).thenReturn(createdIntent);
         Mockito.when(createdIntent.setData(Mockito.any(Uri.class))).thenReturn(createdIntent);
         Mockito.when(createdIntent.putExtra(Mockito.anyString(), Mockito.anyInt())).thenReturn(createdIntent);
@@ -81,6 +82,15 @@ public class PlaybackServiceIntentProviderTest
 
         Mockito.verify(intentFactory).create(PlaybackService.ActionMove);
         Mockito.verify(createdIntent).putExtra("offset", offset);
+        assertEquals(createdIntent, intent);
+    }
+
+    @Test
+    public void getBindIntent() throws Exception
+    {
+        Intent intent   = intentProvider.getBindIntent();
+
+        Mockito.verify(intentFactory).create();
         assertEquals(createdIntent, intent);
     }
 

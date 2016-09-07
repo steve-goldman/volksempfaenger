@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 
 import java.io.IOException;
 

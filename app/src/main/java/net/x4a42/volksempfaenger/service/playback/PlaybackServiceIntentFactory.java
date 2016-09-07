@@ -12,8 +12,13 @@ public class PlaybackServiceIntentFactory
         this.context = context;
     }
 
+    public Intent create()
+    {
+        return new Intent(context, PlaybackService.class);
+    }
+
     public Intent create(String action)
     {
-        return new Intent(context, PlaybackService.class).setAction(action);
+        return create().setAction(action);
     }
 }

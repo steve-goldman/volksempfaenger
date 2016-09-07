@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 
-import net.x4a42.volksempfaenger.misc.EpisodeDataHelper;
+import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 public class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceIntentParser.Listener
 {
@@ -14,7 +14,7 @@ public class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServ
     private final PlaybackController                 controller;
     private final PlaybackItemBuilder                playbackItemBuilder;
     private final PlaybackServiceIntentParser        intentParser;
-    private final EpisodeDataHelper                  episodeDataHelper;
+    private final EpisodeDataHelper episodeDataHelper;
     private final PlaybackMediaButtonReceiver        mediaButtonReceiver;
     private final MediaSessionManager                mediaSessionManager;
     private final PlaybackNotificationManagerBuilder notificationManagerBuilder;
@@ -164,7 +164,7 @@ public class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServ
         notificationManager = notificationManagerBuilder.build(playbackService, controller.getPlaybackItem());
         notificationManager.updateForPlay();
         positionSaver.start(controller.getPlaybackItem(), controller);
-        episodeDataHelper.markAsListened(controller.getPlaybackItem().getEpisodeUri());
+        episodeDataHelper.markListening(controller.getPlaybackItem().getEpisodeUri());
     }
 
     private void handlePaused()

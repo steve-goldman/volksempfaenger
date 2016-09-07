@@ -48,4 +48,9 @@ public class PlaybackServiceIntentProvider
     {
         return intentFactory.create(PlaybackService.ActionMove).putExtra(OffsetKey, offset);
     }
+
+    public Intent getBindIntent()
+    {
+        return intentFactory.create();
+    }
 }

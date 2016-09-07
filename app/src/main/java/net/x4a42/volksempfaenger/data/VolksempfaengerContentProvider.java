@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.data;
 import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.data.enclosure.EnclosureMetadata;
 import net.x4a42.volksempfaenger.data.internal.DeleteHelper;
 import net.x4a42.volksempfaenger.data.internal.InsertHelper;
 import net.x4a42.volksempfaenger.data.internal.QueryHelper;
@@ -25,8 +26,9 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 			+ "/episode");
 	public static final Uri EPISODETIME_URI = Uri.parse("content://"
 			+ AUTHORITY + "/episodetime");
-	public static final Uri ENCLOSURE_URI = Uri.parse("content://" + AUTHORITY
-			+ "/enclosure");
+	// moved to EnclosureMetadata class
+	//public static final Uri ENCLOSURE_URI = Uri.parse("content://" + AUTHORITY
+	//		+ "/enclosure");
 
 	public static final String MIME_PODCAST_DIR = "vnd.android.cursor.dir/vnd.volksempfaenger.podcast";
 	public static final String MIME_PODCAST_ITEM = "vnd.android.cursor.item/vnd.volksempfaenger.podcast";
@@ -52,7 +54,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		contentResolver = getContext().getContentResolver();
 		dbHelper = DatabaseHelper.getInstance(getContext());
 		queryHelper = new QueryHelper(dbHelper);
-		insertHelper = new InsertHelper(dbHelper);
+		insertHelper = new InsertHelper(dbHelper, new EnclosureMetadata());
 		updateHelper = new UpdateHelper(dbHelper);
 		deleteHelper = new DeleteHelper(dbHelper);
 
