@@ -163,8 +163,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceInte
     {
         notificationManager = notificationManagerBuilder.build(playbackService, controller.getPlaybackItem());
         notificationManager.updateForPlay();
-        positionSaver.start(controller.getPlaybackItem().getEpisodeUri(), controller);
-        episodeDataHelper.markListening(controller.getPlaybackItem().getEpisodeUri());
+        positionSaver.start(getEpisodeUri(), controller);
+        episodeDataHelper.markListening(getEpisodeUri());
     }
 
     private void handlePaused()
@@ -177,6 +177,12 @@ class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceInte
     {
         notificationManager.remove();
         positionSaver.stop();
+        episodeDataHelper.setDurationListened(getEpisodeUri(), 0);
+    }
+
+    private Uri getEpisodeUri()
+    {
+        return getEpisodeUri(null);
     }
 
     private Uri getEpisodeUri(Uri episodeUri)
