@@ -1,25 +1,28 @@
 package net.x4a42.volksempfaenger.service.playback;
 
+import android.net.Uri;
 import android.os.Handler;
+
+import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 class PlaybackBackgroundPositionSaver implements Runnable
 {
-    static final int                    Interval = 3000;
-    private final PlaybackPositionSaver saver;
-    private final Handler               handler;
-    private PlaybackItem                playbackItem;
-    private PlaybackPositionProvider    positionProvider;
+    static final int                 Interval = 3000;
+    private final EpisodeDataHelper  episodeDataHelper;
+    private final Handler            handler;
+    private Uri                      episodeUri;
+    private PlaybackPositionProvider positionProvider;
 
-    public PlaybackBackgroundPositionSaver(PlaybackPositionSaver saver,
-                                           Handler               handler)
+    public PlaybackBackgroundPositionSaver(EpisodeDataHelper episodeDataHelper,
+                                           Handler           handler)
     {
-        this.saver   = saver;
-        this.handler = handler;
+        this.episodeDataHelper = episodeDataHelper;
+        this.handler           = handler;
     }
 
-    public void start(PlaybackItem playbackItem, PlaybackPositionProvider positionProvider)
+    public void start(Uri episodeUri, PlaybackPositionProvider positionProvider)
     {
-        this.playbackItem     = playbackItem;
+        this.episodeUri       = episodeUri;
         this.positionProvider = positionProvider;
 
         handler.post(this);
@@ -27,14 +30,19 @@ class PlaybackBackgroundPositionSaver implements Runnable
 
     public void stop()
     {
-        saver.save(playbackItem, positionProvider.getPosition());
+        save();
         handler.removeCallbacks(this);
     }
 
     @Override
     public void run()
     {
-        saver.save(playbackItem, positionProvider.getPosition());
+        save();
         handler.postDelayed(this, Interval);
+    }
+
+    private void save()
+    {
+        episodeDataHelper.setDurationListened(episodeUri, positionProvider.getPosition());
     }
 }

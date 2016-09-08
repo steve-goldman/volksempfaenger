@@ -56,6 +56,13 @@ public class EpisodeDataHelper
         contentResolver.update(episodeUri, values, null, null);
     }
 
+    public void setDurationListened(Uri episodeUri, int position)
+    {
+        ContentValues values = contentValuesFactory.create();
+        values.put(Columns.Episode.DURATION_LISTENED, position);
+        contentResolver.update(episodeUri, values, null, null);
+    }
+
     private void updateStatus(Uri episodeUri, int status)
     {
         ContentValues values = contentValuesFactory.create();

@@ -22,6 +22,7 @@ public class EpisodeDataHelperTest
     Uri                  episodeUri           = Mockito.mock(Uri.class);
     long                 episodeId            = 10;
     long                 enclosureId          = 20;
+    int                  duration             = 300;
     EpisodeDataHelper    episodeDataHelper;
 
     @Before
@@ -73,11 +74,20 @@ public class EpisodeDataHelperTest
     }
 
     @Test
-    public void associateEnclosure() throws Exception
+    public void setEnclosure() throws Exception
     {
         episodeDataHelper.setEnclosure(episodeUri, enclosureId);
 
         Mockito.verify(contentValues).put(Columns.Episode.ENCLOSURE_ID, enclosureId);
+        Mockito.verify(contentResolver).update(episodeUri, contentValues, null, null);
+    }
+
+    @Test
+    public void setDurationListened() throws Exception
+    {
+        episodeDataHelper.setDurationListened(episodeUri, duration);
+
+        Mockito.verify(contentValues).put(Columns.Episode.DURATION_LISTENED, duration);
         Mockito.verify(contentResolver).update(episodeUri, contentValues, null, null);
     }
 }
