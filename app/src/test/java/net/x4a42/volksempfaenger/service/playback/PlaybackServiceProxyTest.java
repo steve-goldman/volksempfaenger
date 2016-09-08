@@ -234,7 +234,7 @@ public class PlaybackServiceProxyTest
 
         Mockito.verify(notificationManagerBuilder).build(playbackService, playbackItem);
         Mockito.verify(notificationManager).updateForPlay();
-        Mockito.verify(positionSaver).start(playbackItem, controller);
+        Mockito.verify(positionSaver).start(episodeUri, controller);
         Mockito.verify(episodeDataHelper).markListening(episodeUri);
     }
 
@@ -260,5 +260,6 @@ public class PlaybackServiceProxyTest
 
         Mockito.verify(notificationManager).remove();
         Mockito.verify(positionSaver).stop();
+        Mockito.verify(episodeDataHelper).setDurationListened(episodeUri, 0);
     }
 }

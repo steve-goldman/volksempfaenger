@@ -69,12 +69,24 @@ public class PlaybackControllerTest
     }
 
     @Test
-    public void stop() throws Exception
+    public void stopPreparedPrepared() throws Exception
     {
+        playbackController.open(playbackItem);
+        playbackController.onPrepared(mediaPlayer);
         playbackController.stop();
 
         InOrder inOrder = Mockito.inOrder(audioFocusManager, mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(mediaPlayer).stop();
+        inOrder.verify(audioFocusManager).abandonFocus();
+        inOrder.verify(mediaPlayer).reset();
+    }
+
+    @Test
+    public void stopNotPrepared() throws Exception
+    {
+        playbackController.stop();
+
+        InOrder inOrder = Mockito.inOrder(audioFocusManager, mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(audioFocusManager).abandonFocus();
         inOrder.verify(mediaPlayer).reset();
     }

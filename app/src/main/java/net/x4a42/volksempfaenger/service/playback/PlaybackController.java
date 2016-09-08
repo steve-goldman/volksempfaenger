@@ -26,6 +26,7 @@ class PlaybackController implements MediaPlayer.OnPreparedListener,
     private PlaybackEventListener           playbackEventListener;
     private PlaybackItem                    playbackItem;
     private boolean                         inTransientLoss;
+    private boolean                         isPrepared;
 
     public PlaybackController(PlaybackEventBroadcaster  playbackEventBroadcaster,
                               MediaPlayer               mediaPlayer,
@@ -116,7 +117,11 @@ class PlaybackController implements MediaPlayer.OnPreparedListener,
 
     public void stop()
     {
-        mediaPlayer.stop();
+        if (isPrepared)
+        {
+            mediaPlayer.stop();
+            isPrepared = false;
+        }
         audioFocusManager.abandonFocus();
         mediaPlayer.reset();
         playbackItem = null;
@@ -148,6 +153,7 @@ class PlaybackController implements MediaPlayer.OnPreparedListener,
     @Override
     public void onPrepared(MediaPlayer mediaPlayer)
     {
+        isPrepared = true;
         seekTo(playbackItem.getDurationListenedAtStart());
         play();
     }
