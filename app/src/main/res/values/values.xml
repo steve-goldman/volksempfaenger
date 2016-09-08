@@ -34,4 +34,7 @@
     <string name="url_volksempfaenger_website">http://volksempfaenger.0x4a42.net/</string>
     <string name="url_volksempfaenger_flattr">http://flattr.com/thing/735145/Volksempfanger</string>
 
+    <integer name="seekbar_delay_millis">500</integer>
+    <integer name="move_offset">30000</integer>
+
 </resources>

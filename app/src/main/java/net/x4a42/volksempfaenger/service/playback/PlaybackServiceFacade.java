@@ -36,4 +36,22 @@ public class PlaybackServiceFacade
     {
         return controller.getPosition();
     }
+
+    public String getTitle()
+    {
+        PlaybackItem playbackItem = controller.getPlaybackItem();
+        return playbackItem != null ? playbackItem.getTitle() : "";
+    }
+
+    public String getPodcastTitle()
+    {
+        PlaybackItem playbackItem = controller.getPlaybackItem();
+        return playbackItem != null ? playbackItem.getPodcastTitle() : "";
+    }
+
+    public long getPodcastId()
+    {
+        PlaybackItem playbackItem = controller.getPlaybackItem();
+        return playbackItem != null ? playbackItem.getPodcastId() : -1;
+    }
 }

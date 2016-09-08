@@ -56,7 +56,9 @@
         <item name="android:background">#333</item>
     </style>
 
-    <style name="NowPlaying.Text"></style>
+    <style name="NowPlaying.Text">
+        <item name="android:textColor">#ddd</item>
+    </style>
 
     <style name="NowPlaying.Button" parent="@android:attr/buttonBarButtonStyle">
         <item name="android:background">@drawable/borderless_button</item>

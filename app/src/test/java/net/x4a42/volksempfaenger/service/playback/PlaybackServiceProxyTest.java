@@ -19,7 +19,6 @@ public class PlaybackServiceProxyTest
     Controller                         controller                 = Mockito.mock(Controller.class);
     PlaybackItemBuilder                playbackItemBuilder        = Mockito.mock(PlaybackItemBuilder.class);
     IntentParser                       intentParser               = Mockito.mock(IntentParser.class);
-    EpisodeDataHelper                  episodeDataHelper          = Mockito.mock(EpisodeDataHelper.class);
     MediaButtonReceiver                mediaButtonReceiver        = Mockito.mock(MediaButtonReceiver.class);
     MediaSessionManager                mediaSessionManager        = Mockito.mock(MediaSessionManager.class);
     PlaybackNotificationManagerBuilder notificationManagerBuilder = Mockito.mock(PlaybackNotificationManagerBuilder.class);
@@ -40,7 +39,6 @@ public class PlaybackServiceProxyTest
                                          controller,
                                          playbackItemBuilder,
                                          intentParser,
-                                         episodeDataHelper,
                                          mediaButtonReceiver,
                                          mediaSessionManager,
                                          notificationManagerBuilder));
@@ -184,10 +182,10 @@ public class PlaybackServiceProxyTest
     }
 
     @Test
-    public void onSeekPlaying() throws Exception
+    public void onSeekOpen() throws Exception
     {
         int position = 10;
-        Mockito.when(controller.isPlaying()).thenReturn(true);
+        Mockito.when(controller.isOpen()).thenReturn(true);
 
         proxy.onSeek(position);
 
@@ -205,10 +203,10 @@ public class PlaybackServiceProxyTest
     }
 
     @Test
-    public void onMovePlaying() throws Exception
+    public void onMoveOpen() throws Exception
     {
         int offset = 15;
-        Mockito.when(controller.isPlaying()).thenReturn(true);
+        Mockito.when(controller.isOpen()).thenReturn(true);
 
         proxy.onMove(offset);
 
@@ -235,7 +233,6 @@ public class PlaybackServiceProxyTest
         Mockito.verify(notificationManagerBuilder).build(playbackService, playbackItem);
         Mockito.verify(notificationManager).updateForPlay();
         Mockito.verify(positionSaver).start(episodeUri, controller);
-        Mockito.verify(episodeDataHelper).markListening(episodeUri);
     }
 
     @Test
@@ -247,7 +244,7 @@ public class PlaybackServiceProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.PAUSED);
 
         Mockito.verify(notificationManager).updateForPause(playbackItem);
-        Mockito.verify(positionSaver).stop();
+        Mockito.verify(positionSaver).stop(false);
     }
 
     @Test
@@ -259,7 +256,6 @@ public class PlaybackServiceProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.ENDED);
 
         Mockito.verify(notificationManager).remove();
-        Mockito.verify(positionSaver).stop();
-        Mockito.verify(episodeDataHelper).setDurationListened(episodeUri, 0);
+        Mockito.verify(positionSaver).stop(true);
     }
 }

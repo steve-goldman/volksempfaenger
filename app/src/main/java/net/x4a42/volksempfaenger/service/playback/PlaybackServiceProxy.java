@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
-
 class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
 {
     private final PlaybackService                    playbackService;
@@ -14,7 +12,6 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private final Controller                         controller;
     private final PlaybackItemBuilder                playbackItemBuilder;
     private final IntentParser                       intentParser;
-    private final EpisodeDataHelper                  episodeDataHelper;
     private final MediaButtonReceiver                mediaButtonReceiver;
     private final MediaSessionManager                mediaSessionManager;
     private final PlaybackNotificationManagerBuilder notificationManagerBuilder;
@@ -25,7 +22,6 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
                                 Controller                         controller,
                                 PlaybackItemBuilder                playbackItemBuilder,
                                 IntentParser                       intentParser,
-                                EpisodeDataHelper                  episodeDataHelper,
                                 MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
                                 PlaybackNotificationManagerBuilder notificationManagerBuilder)
@@ -35,7 +31,6 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         this.controller                 = controller;
         this.playbackItemBuilder        = playbackItemBuilder;
         this.intentParser               = intentParser;
-        this.episodeDataHelper          = episodeDataHelper;
         this.mediaButtonReceiver        = mediaButtonReceiver;
         this.mediaSessionManager        = mediaSessionManager;
         this.notificationManagerBuilder = notificationManagerBuilder;
@@ -144,7 +139,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     @Override
     public void onSeek(int position)
     {
-        if (controller.isPlaying())
+        if (controller.isOpen())
         {
             controller.seekTo(position);
         }
@@ -153,7 +148,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     @Override
     public void onMove(int offset)
     {
-        if (controller.isPlaying())
+        if (controller.isOpen())
         {
             controller.movePosition(offset);
         }
@@ -164,20 +159,18 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         notificationManager = notificationManagerBuilder.build(playbackService, controller.getPlaybackItem());
         notificationManager.updateForPlay();
         positionSaver.start(getEpisodeUri(), controller);
-        episodeDataHelper.markListening(getEpisodeUri());
     }
 
     private void handlePaused()
     {
         notificationManager.updateForPause(controller.getPlaybackItem());
-        positionSaver.stop();
+        positionSaver.stop(false);
     }
 
     private void handleEnded()
     {
         notificationManager.remove();
-        positionSaver.stop();
-        episodeDataHelper.setDurationListened(getEpisodeUri(), 0);
+        positionSaver.stop(true);
     }
 
     private Uri getEpisodeUri()

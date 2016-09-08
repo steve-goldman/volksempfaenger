@@ -1,22 +1,18 @@
 package net.x4a42.volksempfaenger.service.playback;
 
-import android.content.Context;
-import android.content.Intent;
+import org.greenrobot.eventbus.EventBus;
 
 class PlaybackEventBroadcaster
 {
-    private final Context                   context;
-    private final PlaybackEventActionMapper playbackEventActionMapper;
+    private final EventBus eventBus;
 
-    public PlaybackEventBroadcaster(Context context, PlaybackEventActionMapper playbackEventActionMapper)
+    public PlaybackEventBroadcaster(EventBus eventBus)
     {
-        this.context                   = context;
-        this.playbackEventActionMapper = playbackEventActionMapper;
+        this.eventBus = eventBus;
     }
 
     public void broadcast(PlaybackEvent playbackEvent)
     {
-        Intent intent = new Intent(playbackEventActionMapper.getAction(playbackEvent));
-        context.sendBroadcast(intent);
+        eventBus.post(playbackEvent);
     }
 }

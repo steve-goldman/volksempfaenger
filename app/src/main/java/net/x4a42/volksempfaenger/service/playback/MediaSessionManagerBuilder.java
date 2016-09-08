@@ -13,7 +13,8 @@ class MediaSessionManagerBuilder
             mediaSession = new MediaSession(context, getClass().getName());
         }
 
-        PlaybackEventReceiver eventReceiver = new PlaybackEventReceiverBuilder().build(context);
+        PlaybackEventReceiver eventReceiver = new PlaybackEventReceiverBuilder().build();
+
         MediaSessionManager   mediaSessionManager
                 = new MediaSessionManager(mediaSession, eventReceiver);
 

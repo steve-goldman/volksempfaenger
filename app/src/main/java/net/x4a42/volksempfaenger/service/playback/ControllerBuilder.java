@@ -8,8 +8,7 @@ class ControllerBuilder
 {
     public Controller build(Context context)
     {
-        PlaybackEventActionMapper playbackEventActionMapper  = new PlaybackEventActionMapper();
-        PlaybackEventBroadcaster  playbackEventBroadcaster   = new PlaybackEventBroadcaster(context, playbackEventActionMapper);
+        PlaybackEventBroadcaster  playbackEventBroadcaster   = new PlaybackEventBroadcasterBuilder().build();
         MediaPlayer               mediaPlayer                = new MediaPlayer();
         AudioManager              audioManager               = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         AudioFocusManager         audioFocusManager          = new AudioFocusManager(audioManager);
