@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.PendingIntentBuilder;
+
 class PlaybackNotificationManagerBuilder
 {
     public PlaybackNotificationManager build(Service service, PlaybackItem playbackItem)
@@ -18,9 +20,12 @@ class PlaybackNotificationManagerBuilder
         NotificationManager           notificationManager
                 = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        PendingIntentBuilder          pendingIntentBuilder = new PendingIntentBuilder();
+
         return new PlaybackNotificationManager(service,
                                                notification,
                                                intentProvider,
-                                               notificationManager);
+                                               notificationManager,
+                                               pendingIntentBuilder);
     }
 }
