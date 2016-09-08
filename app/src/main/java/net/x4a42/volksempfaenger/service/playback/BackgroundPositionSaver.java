@@ -5,7 +5,7 @@ import android.os.Handler;
 
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
-class PlaybackBackgroundPositionSaver implements Runnable
+class BackgroundPositionSaver implements Runnable
 {
     static final int                 Interval = 3000;
     private final EpisodeDataHelper  episodeDataHelper;
@@ -13,8 +13,8 @@ class PlaybackBackgroundPositionSaver implements Runnable
     private Uri                      episodeUri;
     private PlaybackPositionProvider positionProvider;
 
-    public PlaybackBackgroundPositionSaver(EpisodeDataHelper episodeDataHelper,
-                                           Handler           handler)
+    public BackgroundPositionSaver(EpisodeDataHelper episodeDataHelper,
+                                   Handler handler)
     {
         this.episodeDataHelper = episodeDataHelper;
         this.handler           = handler;

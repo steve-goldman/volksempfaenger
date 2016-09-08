@@ -15,12 +15,12 @@ import static org.junit.Assert.assertEquals;
 public class PlaybackServiceProxyTest
 {
     PlaybackService                    playbackService            = Mockito.mock(PlaybackService.class);
-    PlaybackBackgroundPositionSaver    positionSaver              = Mockito.mock(PlaybackBackgroundPositionSaver.class);
-    PlaybackController                 controller                 = Mockito.mock(PlaybackController.class);
+    BackgroundPositionSaver            positionSaver              = Mockito.mock(BackgroundPositionSaver.class);
+    Controller                         controller                 = Mockito.mock(Controller.class);
     PlaybackItemBuilder                playbackItemBuilder        = Mockito.mock(PlaybackItemBuilder.class);
-    PlaybackServiceIntentParser        intentParser               = Mockito.mock(PlaybackServiceIntentParser.class);
+    IntentParser                       intentParser               = Mockito.mock(IntentParser.class);
     EpisodeDataHelper                  episodeDataHelper          = Mockito.mock(EpisodeDataHelper.class);
-    PlaybackMediaButtonReceiver        mediaButtonReceiver        = Mockito.mock(PlaybackMediaButtonReceiver.class);
+    MediaButtonReceiver                mediaButtonReceiver        = Mockito.mock(MediaButtonReceiver.class);
     MediaSessionManager                mediaSessionManager        = Mockito.mock(MediaSessionManager.class);
     PlaybackNotificationManagerBuilder notificationManagerBuilder = Mockito.mock(PlaybackNotificationManagerBuilder.class);
     PlaybackNotificationManager        notificationManager        = Mockito.mock(PlaybackNotificationManager.class);

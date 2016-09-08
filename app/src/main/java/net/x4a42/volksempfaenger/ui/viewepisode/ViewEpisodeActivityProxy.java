@@ -25,7 +25,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.SettingsActivity;
 
-class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener,
+class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
                                                  EpisodeCursorProvider,
                                                  PlaybackServiceFacadeProvider,
                                                  PlaybackEventListener,
@@ -34,10 +34,10 @@ class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener
 {
     private final ViewEpisodeActivity           activity;
     private final Uri                           episodeUri;
-    private final ViewEpisodeOptionsMenuManager optionsMenuManager;
+    private final OptionsMenuManager            optionsMenuManager;
     private final PlaybackEventReceiver         playbackEventReceiver;
     private final EpisodeCursorLoader           episodeCursorLoader;
-    private final ViewEpisodePresenter          presenter;
+    private final Presenter                     presenter;
     private final PlaybackServiceIntentProvider intentProvider;
     private final EpisodeDataHelper             episodeDataHelper;
     private final ToastMaker                    toastMaker;
@@ -50,10 +50,10 @@ class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener
 
     public ViewEpisodeActivityProxy(ViewEpisodeActivity           activity,
                                     Uri                           episodeUri,
-                                    ViewEpisodeOptionsMenuManager optionsMenuManager,
+                                    OptionsMenuManager            optionsMenuManager,
                                     PlaybackEventReceiver         playbackEventReceiver,
                                     EpisodeCursorLoader           episodeCursorLoader,
-                                    ViewEpisodePresenter          presenter,
+                                    Presenter                     presenter,
                                     PlaybackServiceIntentProvider intentProvider,
                                     EpisodeDataHelper             episodeDataHelper,
                                     ToastMaker                    toastMaker,
@@ -110,7 +110,7 @@ class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener
     }
 
     //
-    // ViewEpisodeOptionsMenuManager.Listener
+    // OptionsMenuManager.Listener
     //
 
     @Override

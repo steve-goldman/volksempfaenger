@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ViewEpisodePresenterTest
+public class PresenterTest
 {
     Activity             activity       = Mockito.mock(Activity.class);
     HtmlConverter        converter      = Mockito.mock(HtmlConverter.class);
@@ -23,7 +23,7 @@ public class ViewEpisodePresenterTest
     String               titleStr       = "this-is-my-title";
     String               descriptionStr = "this-is-my-description";
     Spanned              spanned        = Mockito.mock(Spanned.class);
-    ViewEpisodePresenter presenter;
+    Presenter presenter;
 
     @Before
     public void setUp() throws Exception
@@ -37,7 +37,7 @@ public class ViewEpisodePresenterTest
 
         Mockito.when(converter.toSpanned(descriptionStr)).thenReturn(spanned);
 
-        presenter = new ViewEpisodePresenter(activity, converter);
+        presenter = new Presenter(activity, converter);
     }
 
     @Test

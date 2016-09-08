@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-class PlaybackMediaButtonReceiverBuilder
+class MediaButtonReceiverBuilder
 {
-    public PlaybackMediaButtonReceiver build(Context context)
+    public MediaButtonReceiver build(Context context)
     {
         PlaybackServiceIntentProvider intentProvider
                 = new PlaybackServiceIntentProviderBuilder().build(context);
 
-        PlaybackMediaButtonReceiver mediaButtonReceiver =
-                new PlaybackMediaButtonReceiver(context, intentProvider);
+        MediaButtonReceiver mediaButtonReceiver =
+                new MediaButtonReceiver(context, intentProvider);
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
         context.registerReceiver(mediaButtonReceiver, intentFilter);

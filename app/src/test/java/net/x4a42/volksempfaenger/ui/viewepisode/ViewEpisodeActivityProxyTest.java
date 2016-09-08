@@ -27,12 +27,12 @@ public class ViewEpisodeActivityProxyTest
 {
     ViewEpisodeActivity           activity              = Mockito.mock(ViewEpisodeActivity.class);
     Uri                           episodeUri            = Mockito.mock(Uri.class);
-    ViewEpisodeOptionsMenuManager optionsMenuManager    = Mockito.mock(ViewEpisodeOptionsMenuManager.class);
+    OptionsMenuManager            optionsMenuManager    = Mockito.mock(OptionsMenuManager.class);
     PlaybackEventReceiver         playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
     EpisodeCursorLoader           episodeCursorLoader   = Mockito.mock(EpisodeCursorLoader.class);
     EpisodeCursor                 episodeCursor         = Mockito.mock(EpisodeCursor.class);
     long                          episodeId             = 10;
-    ViewEpisodePresenter          presenter             = Mockito.mock(ViewEpisodePresenter.class);
+    Presenter                     presenter             = Mockito.mock(Presenter.class);
     PlaybackServiceIntentProvider intentProvider        = Mockito.mock(PlaybackServiceIntentProvider.class);
     Intent                        bindIntent            = Mockito.mock(Intent.class);
     Intent                        playIntent            = Mockito.mock(Intent.class);
@@ -128,7 +128,7 @@ public class ViewEpisodeActivityProxyTest
     }
 
     //
-    // ViewEpisodeOptionsMenuManager.Listener
+    // OptionsMenuManager.Listener
     //
 
     @Test

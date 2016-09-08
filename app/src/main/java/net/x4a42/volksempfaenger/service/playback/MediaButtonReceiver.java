@@ -5,12 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
 
-class PlaybackMediaButtonReceiver extends BroadcastReceiver
+class MediaButtonReceiver extends BroadcastReceiver
 {
     private final Context                       context;
     private final PlaybackServiceIntentProvider intentProvider;
 
-    public PlaybackMediaButtonReceiver(Context context, PlaybackServiceIntentProvider intentProvider)
+    public MediaButtonReceiver(Context context, PlaybackServiceIntentProvider intentProvider)
     {
         this.context        = context;
         this.intentProvider = intentProvider;

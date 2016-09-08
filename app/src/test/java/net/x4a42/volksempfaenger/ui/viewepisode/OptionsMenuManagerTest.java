@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ViewEpisodeOptionsMenuManagerTest
+public class OptionsMenuManagerTest
 {
     Uri                           episodeUri            = Mockito.mock(Uri.class);
     Uri                           otherEpisodeUri       = Mockito.mock(Uri.class);
@@ -34,11 +34,11 @@ public class ViewEpisodeOptionsMenuManagerTest
     MenuItem                      markListenedItem      = Mockito.mock(MenuItem.class);
     MenuItem                      markNewItem           = Mockito.mock(MenuItem.class);
     MenuItem                      websiteItem           = Mockito.mock(MenuItem.class);
-    ViewEpisodeOptionsMenuManager.Listener listener
-            = Mockito.mock(ViewEpisodeOptionsMenuManager.Listener.class);
+    OptionsMenuManager.Listener listener
+            = Mockito.mock(OptionsMenuManager.Listener.class);
 
-    ViewEpisodeOptionsMenuManager optionsMenuManager
-            = new ViewEpisodeOptionsMenuManager(episodeUri,
+    OptionsMenuManager optionsMenuManager
+            = new OptionsMenuManager(episodeUri,
                                                 inflater)
             .setCursorProvider(cursorProvider)
             .setFacadeProvider(facadeProvider)
