@@ -315,7 +315,9 @@ public class NowPlayingFragment extends Fragment implements ServiceConnection,
 
 			if (getActivity() instanceof ViewEpisodeActivity) {
 				ViewEpisodeActivity activity = (ViewEpisodeActivity) getActivity();
-				Uri activityUri = activity.getProxy().getEpisodeUri();
+				// TODO
+				//Uri activityUri = activity.getProxy().getEpisodeUri();
+				Uri activityUri = facade.getEpisodeUri();
 				Uri remoteUri = facade.getEpisodeUri();
 				if (activityUri != null && remoteUri != null
 						&& remoteUri.equals(activityUri)) {

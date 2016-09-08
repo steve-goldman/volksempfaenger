@@ -25,7 +25,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.SettingsActivity;
 
-public class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener,
+class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.Listener,
                                                  EpisodeCursorProvider,
                                                  PlaybackServiceFacadeProvider,
                                                  PlaybackEventListener,
@@ -39,7 +39,7 @@ public class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.L
     private final EpisodeCursorLoader           episodeCursorLoader;
     private final ViewEpisodePresenter          presenter;
     private final PlaybackServiceIntentProvider intentProvider;
-    private final EpisodeDataHelper episodeDataHelper;
+    private final EpisodeDataHelper             episodeDataHelper;
     private final ToastMaker                    toastMaker;
     private final NavUtilsWrapper               navUtilsWrapper;
     private final EpisodeSharer                 sharer;
@@ -75,11 +75,6 @@ public class ViewEpisodeActivityProxy implements ViewEpisodeOptionsMenuManager.L
         this.sharer                = sharer;
         this.intentBuilder         = intentBuilder;
         this.downloadHelper        = downloadHelper;
-    }
-
-    public Uri getEpisodeUri()
-    {
-        return episodeUri;
     }
 
     public void onCreate()

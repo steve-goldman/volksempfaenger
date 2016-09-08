@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 
-public class ViewEpisodeIntentWrapper
+class ViewEpisodeIntentWrapper
 {
     private final Intent intent;
 

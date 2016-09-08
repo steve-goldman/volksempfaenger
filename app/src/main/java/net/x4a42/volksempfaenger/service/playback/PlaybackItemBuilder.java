@@ -10,7 +10,7 @@ import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
 
 import java.io.File;
 
-public class PlaybackItemBuilder
+class PlaybackItemBuilder
 {
     private static final String[] EpisodeFields = new String[]
             {

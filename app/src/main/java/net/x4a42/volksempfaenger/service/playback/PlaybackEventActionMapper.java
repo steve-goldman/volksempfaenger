@@ -7,7 +7,7 @@ import android.content.IntentFilter;
     deserialize PlaybackEvents to and from broadcasts.
  */
 
-public class PlaybackEventActionMapper
+class PlaybackEventActionMapper
 {
     private static final String ActionPrefix = PlaybackEventActionMapper.class.getPackage().getName();
     private IntentFilter        intentFilter;

@@ -13,7 +13,7 @@ import net.x4a42.volksempfaenger.data.episode.EpisodeCursorProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 
-public class ViewEpisodeOptionsMenuManager
+class ViewEpisodeOptionsMenuManager
 {
     public interface Listener
     {

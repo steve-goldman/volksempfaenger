@@ -3,7 +3,7 @@ package net.x4a42.volksempfaenger.service.playback;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
 
-public class PlaybackServiceProxyBuilder
+class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
     {

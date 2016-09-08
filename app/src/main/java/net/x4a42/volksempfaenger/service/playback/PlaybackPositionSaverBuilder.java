@@ -4,7 +4,7 @@ import android.content.Context;
 
 import net.x4a42.volksempfaenger.misc.ContentValuesFactory;
 
-public class PlaybackPositionSaverBuilder
+class PlaybackPositionSaverBuilder
 {
     public PlaybackPositionSaver build(Context context)
     {

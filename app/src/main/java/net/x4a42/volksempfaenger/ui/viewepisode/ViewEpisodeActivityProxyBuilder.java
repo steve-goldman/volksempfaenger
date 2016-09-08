@@ -15,7 +15,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
 
-public class ViewEpisodeActivityProxyBuilder
+class ViewEpisodeActivityProxyBuilder
 {
     public ViewEpisodeActivityProxy build(ViewEpisodeActivity activity)
     {

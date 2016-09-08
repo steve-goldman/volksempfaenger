@@ -15,7 +15,7 @@ import net.x4a42.volksempfaenger.misc.AlertDialogBuilderFactory;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.service.download.DownloadServiceIntentProvider;
 
-public class DownloadHelper implements DialogInterface.OnClickListener
+class DownloadHelper implements DialogInterface.OnClickListener
 {
     private final Context                       context;
     private final Uri                           episodeUri;

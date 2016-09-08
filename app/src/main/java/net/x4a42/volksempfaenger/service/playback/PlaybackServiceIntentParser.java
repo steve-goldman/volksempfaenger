@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import net.x4a42.volksempfaenger.Log;
 
-public class PlaybackServiceIntentParser
+class PlaybackServiceIntentParser
 {
     public interface Listener
     {

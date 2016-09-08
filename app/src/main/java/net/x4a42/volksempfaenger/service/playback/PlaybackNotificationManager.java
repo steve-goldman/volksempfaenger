@@ -8,7 +8,7 @@ import android.net.Uri;
 
 import net.x4a42.volksempfaenger.R;
 
-public class PlaybackNotificationManager
+class PlaybackNotificationManager
 {
     private static final int                    NOTIFICATION_ID = 0x59d54313;
 

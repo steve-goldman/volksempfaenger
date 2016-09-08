@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-public class PlaybackControllerBuilder
+class PlaybackControllerBuilder
 {
     public PlaybackController build(Context context)
     {

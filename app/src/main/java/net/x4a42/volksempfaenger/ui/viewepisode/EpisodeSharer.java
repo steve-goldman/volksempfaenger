@@ -7,7 +7,7 @@ import net.x4a42.volksempfaenger.HtmlConverter;
 import net.x4a42.volksempfaenger.IntentBuilder;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 
-public class EpisodeSharer
+class EpisodeSharer
 {
     private final Activity      activity;
     private final IntentBuilder intentBuilder;

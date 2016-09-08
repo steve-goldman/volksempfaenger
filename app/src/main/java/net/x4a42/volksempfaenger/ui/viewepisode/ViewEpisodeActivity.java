@@ -9,11 +9,6 @@ public class ViewEpisodeActivity extends Activity
 {
     private ViewEpisodeActivityProxy proxy;
 
-    public ViewEpisodeActivityProxy getProxy()
-    {
-        return proxy;
-    }
-
     @Override
     public void onCreate(Bundle savedInstance)
     {

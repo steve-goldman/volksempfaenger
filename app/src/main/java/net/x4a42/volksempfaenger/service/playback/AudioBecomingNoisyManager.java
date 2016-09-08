@@ -8,7 +8,7 @@ import android.media.AudioManager;
 
 import net.x4a42.volksempfaenger.Log;
 
-public class AudioBecomingNoisyManager extends BroadcastReceiver
+class AudioBecomingNoisyManager extends BroadcastReceiver
 {
     public interface Listener
     {

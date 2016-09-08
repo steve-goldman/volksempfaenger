@@ -7,7 +7,7 @@ import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
-public class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceIntentParser.Listener
+class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceIntentParser.Listener
 {
     private final PlaybackService                    playbackService;
     private final PlaybackBackgroundPositionSaver    positionSaver;

@@ -9,7 +9,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 
-public class ViewEpisodePresenter
+class ViewEpisodePresenter
 {
     private static final long   MegaByte = 1024 * 1024;
     private final Activity      activity;

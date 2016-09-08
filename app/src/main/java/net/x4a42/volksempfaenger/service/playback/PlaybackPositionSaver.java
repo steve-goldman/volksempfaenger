@@ -6,7 +6,7 @@ import android.content.ContentValues;
 import net.x4a42.volksempfaenger.data.Columns;
 import net.x4a42.volksempfaenger.misc.ContentValuesFactory;
 
-public class PlaybackPositionSaver
+class PlaybackPositionSaver
 {
     private final ContentResolver      contentResolver;
     private final ContentValuesFactory contentValuesFactory;

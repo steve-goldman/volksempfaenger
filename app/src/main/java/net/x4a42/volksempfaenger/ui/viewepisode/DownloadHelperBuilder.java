@@ -15,7 +15,7 @@ import net.x4a42.volksempfaenger.misc.AlertDialogBuilderFactory;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.service.download.DownloadServiceIntentProvider;
 
-public class DownloadHelperBuilder
+class DownloadHelperBuilder
 {
     public DownloadHelper build(Context context,
                                 Uri     episodeUri)
