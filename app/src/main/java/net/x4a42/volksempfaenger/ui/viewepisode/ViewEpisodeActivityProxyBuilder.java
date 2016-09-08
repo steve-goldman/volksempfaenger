@@ -20,10 +20,10 @@ class ViewEpisodeActivityProxyBuilder
     public ViewEpisodeActivityProxy build(ViewEpisodeActivity activity)
     {
         Uri episodeUri
-                = new ViewEpisodeIntentWrapper(activity.getIntent()).getEpisodeUri();
+                = new IntentWrapper(activity.getIntent()).getEpisodeUri();
 
-        ViewEpisodeOptionsMenuManager optionsMenuManager
-                = new ViewEpisodeOptionsMenuManager(episodeUri, activity.getMenuInflater());
+        OptionsMenuManager optionsMenuManager
+                = new OptionsMenuManager(episodeUri, activity.getMenuInflater());
 
         PlaybackEventReceiver playbackEventReceiver
                 = new PlaybackEventReceiverBuilder().build(activity);
@@ -33,8 +33,8 @@ class ViewEpisodeActivityProxyBuilder
 
         HtmlConverter converter         = new HtmlConverter();
 
-        ViewEpisodePresenter presenter
-                = new ViewEpisodePresenter(activity, converter);
+        Presenter presenter
+                = new Presenter(activity, converter);
 
         PlaybackServiceIntentProvider intentProvider
                 = new PlaybackServiceIntentProviderBuilder().build(activity);

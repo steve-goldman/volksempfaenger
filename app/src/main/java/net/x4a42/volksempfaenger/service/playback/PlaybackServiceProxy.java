@@ -7,26 +7,26 @@ import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
-class PlaybackServiceProxy implements PlaybackEventListener, PlaybackServiceIntentParser.Listener
+class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
 {
     private final PlaybackService                    playbackService;
-    private final PlaybackBackgroundPositionSaver    positionSaver;
-    private final PlaybackController                 controller;
+    private final BackgroundPositionSaver            positionSaver;
+    private final Controller                         controller;
     private final PlaybackItemBuilder                playbackItemBuilder;
-    private final PlaybackServiceIntentParser        intentParser;
-    private final EpisodeDataHelper episodeDataHelper;
-    private final PlaybackMediaButtonReceiver        mediaButtonReceiver;
+    private final IntentParser                       intentParser;
+    private final EpisodeDataHelper                  episodeDataHelper;
+    private final MediaButtonReceiver                mediaButtonReceiver;
     private final MediaSessionManager                mediaSessionManager;
     private final PlaybackNotificationManagerBuilder notificationManagerBuilder;
     private PlaybackNotificationManager              notificationManager;
 
     public PlaybackServiceProxy(PlaybackService                    playbackService,
-                                PlaybackBackgroundPositionSaver    positionSaver,
-                                PlaybackController                 controller,
+                                BackgroundPositionSaver            positionSaver,
+                                Controller                         controller,
                                 PlaybackItemBuilder                playbackItemBuilder,
-                                PlaybackServiceIntentParser        intentParser,
+                                IntentParser                       intentParser,
                                 EpisodeDataHelper                  episodeDataHelper,
-                                PlaybackMediaButtonReceiver        mediaButtonReceiver,
+                                MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
                                 PlaybackNotificationManagerBuilder notificationManagerBuilder)
     {

@@ -6,12 +6,12 @@ import android.os.Handler;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
 
-class PlaybackBackgroundPositionSaverBuilder
+class BackgroundPositionSaverBuilder
 {
-    public PlaybackBackgroundPositionSaver build(Context context)
+    public BackgroundPositionSaver build(Context context)
     {
         EpisodeDataHelper episodeDataHelper = new EpisodeDataHelperBuilder().build(context);
 
-        return new PlaybackBackgroundPositionSaver(episodeDataHelper, new Handler());
+        return new BackgroundPositionSaver(episodeDataHelper, new Handler());
     }
 }

@@ -7,21 +7,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
-
-public class PlaybackServiceIntentParserTest
+public class IntentParserTest
 {
-    PlaybackServiceIntentParser.Listener listener = Mockito.mock(PlaybackServiceIntentParser.Listener.class);
+    IntentParser.Listener listener = Mockito.mock(IntentParser.Listener.class);
     Intent intent = Mockito.mock(Intent.class);
     Uri episodeUri = Mockito.mock(Uri.class);
     int position = 10;
     int offset = -15;
-    PlaybackServiceIntentParser parser;
+    IntentParser parser;
 
     @Before
     public void setUp() throws Exception
     {
-        parser = new PlaybackServiceIntentParser().setListener(listener);
+        parser = new IntentParser().setListener(listener);
         Mockito.when(intent.getData()).thenReturn(episodeUri);
     }
 

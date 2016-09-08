@@ -4,9 +4,9 @@ import android.net.Uri;
 
 public class PlaybackServiceFacade
 {
-    private PlaybackController controller;
+    private Controller controller;
 
-    public PlaybackServiceFacade(PlaybackController controller)
+    public PlaybackServiceFacade(Controller controller)
     {
         this.controller = controller;
     }

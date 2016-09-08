@@ -13,7 +13,7 @@ import net.x4a42.volksempfaenger.data.episode.EpisodeCursorProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 
-class ViewEpisodeOptionsMenuManager
+class OptionsMenuManager
 {
     public interface Listener
     {
@@ -35,26 +35,26 @@ class ViewEpisodeOptionsMenuManager
     private EpisodeCursorProvider cursorProvider;
     private PlaybackServiceFacadeProvider facadeProvider;
 
-    public ViewEpisodeOptionsMenuManager(Uri          episodeUri,
-                                         MenuInflater inflater)
+    public OptionsMenuManager(Uri episodeUri,
+                              MenuInflater inflater)
     {
         this.episodeUri = episodeUri;
         this.inflater   = inflater;
     }
 
-    public ViewEpisodeOptionsMenuManager setListener(Listener listener)
+    public OptionsMenuManager setListener(Listener listener)
     {
         this.listener = listener;
         return this;
     }
 
-    public ViewEpisodeOptionsMenuManager setCursorProvider(EpisodeCursorProvider cursorProvider)
+    public OptionsMenuManager setCursorProvider(EpisodeCursorProvider cursorProvider)
     {
         this.cursorProvider = cursorProvider;
         return this;
     }
 
-    public ViewEpisodeOptionsMenuManager setFacadeProvider(PlaybackServiceFacadeProvider facadeProvider)
+    public OptionsMenuManager setFacadeProvider(PlaybackServiceFacadeProvider facadeProvider)
     {
         this.facadeProvider = facadeProvider;
         return this;

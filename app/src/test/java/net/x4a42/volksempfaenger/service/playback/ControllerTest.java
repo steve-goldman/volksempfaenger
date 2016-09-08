@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-public class PlaybackControllerTest
+public class ControllerTest
 {
     PlaybackEventBroadcaster  playbackEventBroadcaster  = Mockito.mock(PlaybackEventBroadcaster.class);
     MediaPlayer               mediaPlayer               = Mockito.mock(MediaPlayer.class);
@@ -17,12 +17,12 @@ public class PlaybackControllerTest
     PlaybackEventListener     playbackEventListener     = Mockito.mock(PlaybackEventListener.class);
     String                    file                      = "this-is-my-file";
     int                       seekToPosition            = 123;
-    PlaybackController        playbackController;
+    Controller controller;
 
     @Before
     public void setUp() throws Exception
     {
-        playbackController = Mockito.spy(new PlaybackController(playbackEventBroadcaster,
+        controller = Mockito.spy(new Controller(playbackEventBroadcaster,
                                                                 mediaPlayer,
                                                                 audioFocusManager,
                                                                 audioBecomingNoisyManager)
@@ -39,7 +39,7 @@ public class PlaybackControllerTest
     {
         InOrder inOrder = Mockito.inOrder(playbackEventListener, playbackEventBroadcaster, mediaPlayer);
 
-        playbackController.open(playbackItem);
+        controller.open(playbackItem);
 
         inOrder.verify(mediaPlayer).setDataSource(file);
         inOrder.verify(mediaPlayer).prepareAsync();
@@ -48,7 +48,7 @@ public class PlaybackControllerTest
     @Test
     public void play() throws Exception
     {
-        playbackController.play();
+        controller.play();
 
         InOrder inOrder = Mockito.inOrder(audioFocusManager, mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(audioFocusManager).requestFocus();
@@ -60,7 +60,7 @@ public class PlaybackControllerTest
     @Test
     public void pause() throws Exception
     {
-        playbackController.pause();
+        controller.pause();
 
         InOrder inOrder = Mockito.inOrder(mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(mediaPlayer).pause();
@@ -71,9 +71,9 @@ public class PlaybackControllerTest
     @Test
     public void stopPreparedPrepared() throws Exception
     {
-        playbackController.open(playbackItem);
-        playbackController.onPrepared(mediaPlayer);
-        playbackController.stop();
+        controller.open(playbackItem);
+        controller.onPrepared(mediaPlayer);
+        controller.stop();
 
         InOrder inOrder = Mockito.inOrder(audioFocusManager, mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(mediaPlayer).stop();
@@ -84,7 +84,7 @@ public class PlaybackControllerTest
     @Test
     public void stopNotPrepared() throws Exception
     {
-        playbackController.stop();
+        controller.stop();
 
         InOrder inOrder = Mockito.inOrder(audioFocusManager, mediaPlayer, playbackEventListener, playbackEventBroadcaster);
         inOrder.verify(audioFocusManager).abandonFocus();
@@ -94,7 +94,7 @@ public class PlaybackControllerTest
     @Test
     public void seekTo() throws Exception
     {
-        playbackController.seekTo(seekToPosition);
+        controller.seekTo(seekToPosition);
 
         Mockito.verify(mediaPlayer).seekTo(seekToPosition);
     }
@@ -105,7 +105,7 @@ public class PlaybackControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
-        playbackController.movePosition(5);
+        controller.movePosition(5);
 
         Mockito.verify(mediaPlayer).seekTo(15);
     }
@@ -116,7 +116,7 @@ public class PlaybackControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
-        playbackController.movePosition(-15);
+        controller.movePosition(-15);
 
         Mockito.verify(mediaPlayer).seekTo(0);
     }
@@ -127,7 +127,7 @@ public class PlaybackControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
-        playbackController.movePosition(15);
+        controller.movePosition(15);
 
         Mockito.verify(mediaPlayer).seekTo(20);
     }
@@ -135,7 +135,7 @@ public class PlaybackControllerTest
     @Test
     public void destroy()
     {
-        playbackController.destroy();
+        controller.destroy();
 
         InOrder inOrder = Mockito.inOrder(playbackEventListener, playbackEventBroadcaster, audioBecomingNoisyManager, mediaPlayer);
         inOrder.verify(audioBecomingNoisyManager).stop();
@@ -152,11 +152,11 @@ public class PlaybackControllerTest
         int duration = 10;
         Mockito.when(playbackItem.getDurationListenedAtStart()).thenReturn(duration);
 
-        playbackController.open(playbackItem);
-        playbackController.onPrepared(mediaPlayer);
+        controller.open(playbackItem);
+        controller.onPrepared(mediaPlayer);
 
         Mockito.verify(playbackItem).getDurationListenedAtStart();
-        Mockito.verify(playbackController).play();
+        Mockito.verify(controller).play();
     }
 
     //
@@ -168,7 +168,7 @@ public class PlaybackControllerTest
     {
         InOrder inOrder = Mockito.inOrder(playbackEventListener, playbackEventBroadcaster, mediaPlayer);
 
-        playbackController.onCompletion(mediaPlayer);
+        controller.onCompletion(mediaPlayer);
 
         inOrder.verify(playbackEventListener).onPlaybackEvent(PlaybackEvent.ENDED);
         inOrder.verify(playbackEventBroadcaster).broadcast(PlaybackEvent.ENDED);
@@ -182,10 +182,10 @@ public class PlaybackControllerTest
     @Test
     public void onAudioFocusGained() throws Exception
     {
-        playbackController.onAudioFocusGained();
+        controller.onAudioFocusGained();
 
-        Mockito.verify(mediaPlayer).setVolume(PlaybackController.FullVolume, PlaybackController.FullVolume);
-        Mockito.verify(playbackController, Mockito.never()).play();
+        Mockito.verify(mediaPlayer).setVolume(Controller.FullVolume, Controller.FullVolume);
+        Mockito.verify(controller, Mockito.never()).play();
     }
 
     @Test
@@ -193,12 +193,12 @@ public class PlaybackControllerTest
     {
         Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
 
-        playbackController.onAudioFocusLostTransiently();
-        playbackController.onAudioFocusGained();
+        controller.onAudioFocusLostTransiently();
+        controller.onAudioFocusGained();
 
-        InOrder inOrder = Mockito.inOrder(mediaPlayer, playbackController);
-        inOrder.verify(playbackController).pause();
-        inOrder.verify(playbackController).play();
+        InOrder inOrder = Mockito.inOrder(mediaPlayer, controller);
+        inOrder.verify(controller).pause();
+        inOrder.verify(controller).play();
     }
 
     @Test
@@ -206,17 +206,17 @@ public class PlaybackControllerTest
     {
         Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
 
-        playbackController.onAudioFocusLost();
+        controller.onAudioFocusLost();
 
-        Mockito.verify(playbackController).pause();
+        Mockito.verify(controller).pause();
     }
 
     @Test
     public void onAudioFocusLostNotPlaying() throws Exception
     {
-        playbackController.onAudioFocusLost();
+        controller.onAudioFocusLost();
 
-        Mockito.verify(playbackController, Mockito.never()).pause();
+        Mockito.verify(controller, Mockito.never()).pause();
     }
 
     @Test
@@ -224,17 +224,17 @@ public class PlaybackControllerTest
     {
         Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
 
-        playbackController.onAudioFocusLostTransiently();
+        controller.onAudioFocusLostTransiently();
 
-        Mockito.verify(playbackController).pause();
+        Mockito.verify(controller).pause();
     }
 
     @Test
     public void onAudioFocusTransientlyLostNotPlaying() throws Exception
     {
-        playbackController.onAudioFocusLostTransiently();
+        controller.onAudioFocusLostTransiently();
 
-        Mockito.verify(playbackController, Mockito.never()).pause();
+        Mockito.verify(controller, Mockito.never()).pause();
     }
 
     @Test
@@ -242,18 +242,18 @@ public class PlaybackControllerTest
     {
         Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
 
-        playbackController.onAudioFocusLostTransientlyCanDuck();
+        controller.onAudioFocusLostTransientlyCanDuck();
 
-        Mockito.verify(mediaPlayer).setVolume(PlaybackController.DuckedVolume, PlaybackController.DuckedVolume);
+        Mockito.verify(mediaPlayer).setVolume(Controller.DuckedVolume, Controller.DuckedVolume);
     }
 
     @Test
     public void onAudioFocusTransientlyLostCanDuckNotPlaying() throws Exception
     {
-        playbackController.onAudioFocusLostTransientlyCanDuck();
+        controller.onAudioFocusLostTransientlyCanDuck();
 
-        Mockito.verify(mediaPlayer, Mockito.never()).setVolume(PlaybackController.DuckedVolume,
-                                                               PlaybackController.DuckedVolume);
+        Mockito.verify(mediaPlayer, Mockito.never()).setVolume(Controller.DuckedVolume,
+                                                               Controller.DuckedVolume);
     }
 
     //
@@ -265,16 +265,16 @@ public class PlaybackControllerTest
     {
         Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
 
-        playbackController.onAudioBecomingNoisy();
+        controller.onAudioBecomingNoisy();
 
-        Mockito.verify(playbackController).pause();
+        Mockito.verify(controller).pause();
     }
 
     @Test
     public void onAudioBecomingNoisyNotPlaying()
     {
-        playbackController.onAudioBecomingNoisy();
+        controller.onAudioBecomingNoisy();
 
-        Mockito.verify(playbackController, Mockito.never()).pause();
+        Mockito.verify(controller, Mockito.never()).pause();
     }
 }

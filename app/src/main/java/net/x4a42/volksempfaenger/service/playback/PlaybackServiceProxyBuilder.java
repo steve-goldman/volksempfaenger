@@ -7,31 +7,31 @@ class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
     {
-        PlaybackBackgroundPositionSaver positionSaver
-                = new PlaybackBackgroundPositionSaverBuilder().build(service);
+        BackgroundPositionSaver positionSaver
+                = new BackgroundPositionSaverBuilder().build(service);
 
-        PlaybackController controller
-                = new PlaybackControllerBuilder().build(service);
+        Controller controller
+                = new ControllerBuilder().build(service);
 
-        PlaybackServiceIntentParser     intentParser        = new PlaybackServiceIntentParser();
+        IntentParser      intentParser      = new IntentParser();
+        EpisodeDataHelper episodeDataHelper = new EpisodeDataHelperBuilder().build(service);
 
-        EpisodeDataHelper episodeDataHelper   = new EpisodeDataHelperBuilder().build(service);
+        MediaButtonReceiver mediaButtonReceiver
+                = new MediaButtonReceiverBuilder().build(service);
 
-        PlaybackMediaButtonReceiver     mediaButtonReceiver
-                = new PlaybackMediaButtonReceiverBuilder().build(service);
-
-        MediaSessionManager             mediaSessionManager
+        MediaSessionManager mediaSessionManager
                 = new MediaSessionManagerBuilder().build(service);
 
-        PlaybackServiceProxy proxy = new PlaybackServiceProxy(service,
-                                                              positionSaver,
-                                                              controller,
-                                                              new PlaybackItemBuilder(),
-                                                              intentParser,
-                                                              episodeDataHelper,
-                                                              mediaButtonReceiver,
-                                                              mediaSessionManager,
-                                                              new PlaybackNotificationManagerBuilder());
+        PlaybackServiceProxy proxy
+                = new PlaybackServiceProxy(service,
+                                           positionSaver,
+                                           controller,
+                                           new PlaybackItemBuilder(),
+                                           intentParser,
+                                           episodeDataHelper,
+                                           mediaButtonReceiver,
+                                           mediaSessionManager,
+                                           new PlaybackNotificationManagerBuilder());
 
         controller.setListener(proxy);
         intentParser.setListener(proxy);

@@ -4,9 +4,9 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-class PlaybackControllerBuilder
+class ControllerBuilder
 {
-    public PlaybackController build(Context context)
+    public Controller build(Context context)
     {
         PlaybackEventActionMapper playbackEventActionMapper  = new PlaybackEventActionMapper();
         PlaybackEventBroadcaster  playbackEventBroadcaster   = new PlaybackEventBroadcaster(context, playbackEventActionMapper);
@@ -15,17 +15,18 @@ class PlaybackControllerBuilder
         AudioFocusManager         audioFocusManager          = new AudioFocusManager(audioManager);
         AudioBecomingNoisyManager audioBecomingNoisyManager  = new AudioBecomingNoisyManager(context);
 
-        PlaybackController playbackController = new PlaybackController(playbackEventBroadcaster,
-                                                                       mediaPlayer,
-                                                                       audioFocusManager,
-                                                                       audioBecomingNoisyManager);
+        Controller controller
+                = new Controller(playbackEventBroadcaster,
+                                 mediaPlayer,
+                                 audioFocusManager,
+                                 audioBecomingNoisyManager);
 
-        mediaPlayer.setOnPreparedListener(playbackController);
-        mediaPlayer.setOnCompletionListener(playbackController);
-        audioFocusManager.setListener(playbackController);
-        audioBecomingNoisyManager.setListener(playbackController);
+        mediaPlayer.setOnPreparedListener(controller);
+        mediaPlayer.setOnCompletionListener(controller);
+        audioFocusManager.setListener(controller);
+        audioBecomingNoisyManager.setListener(controller);
         audioBecomingNoisyManager.start();
 
-        return playbackController;
+        return controller;
     }
 }

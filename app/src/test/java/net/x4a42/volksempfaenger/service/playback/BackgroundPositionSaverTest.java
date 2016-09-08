@@ -9,19 +9,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class PlaybackBackgroundPositionSaverTest
+public class BackgroundPositionSaverTest
 {
     EpisodeDataHelper               episodeDataHelper = Mockito.mock(EpisodeDataHelper.class);
     Handler                         handler           = Mockito.mock(Handler.class);
     Uri                             episodeUri        = Mockito.mock(Uri.class);
     PlaybackPositionProvider        positionProvider  = Mockito.mock(PlaybackPositionProvider.class);
     int                             position          = 10;
-    PlaybackBackgroundPositionSaver backgroundSaver;
+    BackgroundPositionSaver backgroundSaver;
 
     @Before
     public void setUp() throws Exception
     {
-        backgroundSaver = new PlaybackBackgroundPositionSaver(episodeDataHelper, handler);
+        backgroundSaver = new BackgroundPositionSaver(episodeDataHelper, handler);
         Mockito.when(positionProvider.getPosition()).thenReturn(position);
     }
 
@@ -51,6 +51,6 @@ public class PlaybackBackgroundPositionSaverTest
         backgroundSaver.run();
 
         Mockito.verify(episodeDataHelper).setDurationListened(episodeUri, position);
-        Mockito.verify(handler).postDelayed(backgroundSaver, PlaybackBackgroundPositionSaver.Interval);
+        Mockito.verify(handler).postDelayed(backgroundSaver, BackgroundPositionSaver.Interval);
     }
 }

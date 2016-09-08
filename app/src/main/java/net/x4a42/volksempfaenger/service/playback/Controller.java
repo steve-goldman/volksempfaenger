@@ -10,7 +10,7 @@ import java.io.IOException;
     inline.  Others may subscribe to broadcasts via PlaybackEventReceiver.
  */
 
-class PlaybackController implements MediaPlayer.OnPreparedListener,
+class Controller implements MediaPlayer.OnPreparedListener,
                                            MediaPlayer.OnCompletionListener,
                                            AudioFocusManager.Listener,
                                            AudioBecomingNoisyManager.Listener,
@@ -28,10 +28,10 @@ class PlaybackController implements MediaPlayer.OnPreparedListener,
     private boolean                         inTransientLoss;
     private boolean                         isPrepared;
 
-    public PlaybackController(PlaybackEventBroadcaster  playbackEventBroadcaster,
-                              MediaPlayer               mediaPlayer,
-                              AudioFocusManager         audioFocusManager,
-                              AudioBecomingNoisyManager audioBecomingNoisyManager)
+    public Controller(PlaybackEventBroadcaster playbackEventBroadcaster,
+                      MediaPlayer mediaPlayer,
+                      AudioFocusManager audioFocusManager,
+                      AudioBecomingNoisyManager audioBecomingNoisyManager)
     {
         this.playbackEventBroadcaster  = playbackEventBroadcaster;
         this.mediaPlayer               = mediaPlayer;
@@ -39,7 +39,7 @@ class PlaybackController implements MediaPlayer.OnPreparedListener,
         this.audioBecomingNoisyManager = audioBecomingNoisyManager;
     }
 
-    public PlaybackController setListener(PlaybackEventListener playbackEventListener)
+    public Controller setListener(PlaybackEventListener playbackEventListener)
     {
         this.playbackEventListener = playbackEventListener;
         return this;

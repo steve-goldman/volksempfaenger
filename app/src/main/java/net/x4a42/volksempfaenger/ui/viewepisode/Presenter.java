@@ -9,7 +9,7 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 
-class ViewEpisodePresenter
+class Presenter
 {
     private static final long   MegaByte = 1024 * 1024;
     private final Activity      activity;
@@ -18,8 +18,8 @@ class ViewEpisodePresenter
     private TextView            meta;
     private TextView            description;
 
-    public ViewEpisodePresenter(Activity      activity,
-                                HtmlConverter converter)
+    public Presenter(Activity activity,
+                     HtmlConverter converter)
     {
         this.activity  = activity;
         this.converter = converter;
