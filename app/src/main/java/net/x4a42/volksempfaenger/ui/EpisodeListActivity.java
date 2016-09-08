@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.data.Columns.Episode;
 import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.EpisodeHelper;
+import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DownloadManager;

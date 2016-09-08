@@ -12,10 +12,10 @@ import android.widget.RemoteViews;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.ui.MainActivity;
-import net.x4a42.volksempfaenger.ui.ViewEpisodeActivity;
+import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivity;
 import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
 
-public class PlaybackNotificationBuilder
+class PlaybackNotificationBuilder
 {
     public Notification build(Context context, PlaybackItem playbackItem)
     {

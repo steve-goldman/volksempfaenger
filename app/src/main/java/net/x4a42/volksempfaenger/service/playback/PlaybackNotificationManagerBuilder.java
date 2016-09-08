@@ -5,7 +5,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 
-public class PlaybackNotificationManagerBuilder
+class PlaybackNotificationManagerBuilder
 {
     public PlaybackNotificationManager build(Service service, PlaybackItem playbackItem)
     {

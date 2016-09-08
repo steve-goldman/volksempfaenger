@@ -1,9 +1,9 @@
 package net.x4a42.volksempfaenger.service.playback;
 
-import net.x4a42.volksempfaenger.misc.EpisodeDataHelper;
-import net.x4a42.volksempfaenger.misc.EpisodeDataHelperBuilder;
+import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
+import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
 
-public class PlaybackServiceProxyBuilder
+class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
     {
@@ -15,7 +15,7 @@ public class PlaybackServiceProxyBuilder
 
         PlaybackServiceIntentParser     intentParser        = new PlaybackServiceIntentParser();
 
-        EpisodeDataHelper               episodeDataHelper   = new EpisodeDataHelperBuilder().build(service);
+        EpisodeDataHelper episodeDataHelper   = new EpisodeDataHelperBuilder().build(service);
 
         PlaybackMediaButtonReceiver     mediaButtonReceiver
                 = new PlaybackMediaButtonReceiverBuilder().build(service);

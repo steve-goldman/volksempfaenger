@@ -10,7 +10,7 @@ import java.io.IOException;
     inline.  Others may subscribe to broadcasts via PlaybackEventReceiver.
  */
 
-public class PlaybackController implements MediaPlayer.OnPreparedListener,
+class PlaybackController implements MediaPlayer.OnPreparedListener,
                                            MediaPlayer.OnCompletionListener,
                                            AudioFocusManager.Listener,
                                            AudioBecomingNoisyManager.Listener,

@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.net.Uri;
 
-public class PlaybackItem
+class PlaybackItem
 {
     private final Uri    episodeUri;
     private final Uri    uriTime;

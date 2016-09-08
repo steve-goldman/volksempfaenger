@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public class PlaybackMediaButtonReceiverBuilder
+class PlaybackMediaButtonReceiverBuilder
 {
     public PlaybackMediaButtonReceiver build(Context context)
     {

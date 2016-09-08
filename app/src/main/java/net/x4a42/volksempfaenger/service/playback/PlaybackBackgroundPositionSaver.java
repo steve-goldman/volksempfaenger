@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.os.Handler;
 
-public class PlaybackBackgroundPositionSaver implements Runnable
+class PlaybackBackgroundPositionSaver implements Runnable
 {
     static final int                    Interval = 3000;
     private final PlaybackPositionSaver saver;

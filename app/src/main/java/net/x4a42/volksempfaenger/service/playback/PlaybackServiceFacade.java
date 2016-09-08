@@ -22,6 +22,11 @@ public class PlaybackServiceFacade
         return controller.isPlaying();
     }
 
+    public boolean isOpen()
+    {
+        return controller.isOpen();
+    }
+
     public int getDuration()
     {
         return controller.getDuration();

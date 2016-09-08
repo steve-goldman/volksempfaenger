@@ -4,7 +4,7 @@ import android.media.AudioManager;
 
 import net.x4a42.volksempfaenger.Log;
 
-public class AudioFocusManager implements AudioManager.OnAudioFocusChangeListener
+class AudioFocusManager implements AudioManager.OnAudioFocusChangeListener
 {
     public interface Listener
     {

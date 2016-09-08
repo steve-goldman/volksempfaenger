@@ -40,15 +40,6 @@ public class ActivityHelper {
 			activity.startActivity(intent);
 			return true;
 
-		case R.id.item_feedback:
-			intent = new Intent(Intent.ACTION_SEND);
-			intent.setType("message/rfc822");
-			intent.putExtra(Intent.EXTRA_EMAIL,
-					net.x4a42.volksempfaenger.Constants.FEEDBACK_TO);
-			intent.putExtra(Intent.EXTRA_SUBJECT, "Volksempfänger Feedback");
-			activity.startActivity(Intent.createChooser(intent, null));
-			return true;
-
 		case android.R.id.home:
 			if (activity instanceof OnUpPressedCallback) {
 				((OnUpPressedCallback) activity).onUpPressed();

@@ -3,6 +3,8 @@ package net.x4a42.volksempfaenger.data.internal;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.Error;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.data.enclosure.EnclosureMetadata;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.SQLException;
@@ -11,8 +13,13 @@ import android.net.Uri;
 
 public class InsertHelper extends ContentProviderHelper {
 
-	public InsertHelper(DatabaseHelper dbHelper) {
+	private final EnclosureMetadata enclosureMetadata;
+
+	public InsertHelper(DatabaseHelper dbHelper,
+						EnclosureMetadata enclosureMetadata)
+	{
 		super(dbHelper);
+		this.enclosureMetadata = enclosureMetadata;
 	}
 
 	private long insert(String table, ContentValues values) {
@@ -47,7 +54,7 @@ public class InsertHelper extends ContentProviderHelper {
 	public Uri insertEnclosure(Uri uri, ContentValues values) {
 		long id = insert(ENCLOSURE_TABLE, values);
 		return ContentUris.withAppendedId(
-				VolksempfaengerContentProvider.ENCLOSURE_URI, id);
+				enclosureMetadata.getEnclosureUri(), id);
 	}
 
 }

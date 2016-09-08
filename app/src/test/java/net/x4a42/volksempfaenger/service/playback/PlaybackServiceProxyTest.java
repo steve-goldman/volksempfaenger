@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 
-import net.x4a42.volksempfaenger.misc.EpisodeDataHelper;
+import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -235,7 +235,7 @@ public class PlaybackServiceProxyTest
         Mockito.verify(notificationManagerBuilder).build(playbackService, playbackItem);
         Mockito.verify(notificationManager).updateForPlay();
         Mockito.verify(positionSaver).start(playbackItem, controller);
-        Mockito.verify(episodeDataHelper).markAsListened(episodeUri);
+        Mockito.verify(episodeDataHelper).markListening(episodeUri);
     }
 
     @Test

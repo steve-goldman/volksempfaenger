@@ -4,7 +4,7 @@ import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
 
-public class MediaSessionManager implements PlaybackEventListener
+class MediaSessionManager implements PlaybackEventListener
 {
     private final MediaSession          mediaSession;
     private final PlaybackEventReceiver eventReceiver;

@@ -3,7 +3,7 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.content.Context;
 import android.media.session.MediaSession;
 
-public class MediaSessionManagerBuilder
+class MediaSessionManagerBuilder
 {
     public MediaSessionManager build(Context context)
     {
