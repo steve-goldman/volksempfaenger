@@ -36,6 +36,7 @@ public class ViewEpisodeActivity extends Activity
     {
         super.onDestroy();
         proxy.onDestroy();
+        proxy = null;
     }
 
     @Override
