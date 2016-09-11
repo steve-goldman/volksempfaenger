@@ -1,22 +1,19 @@
 package net.x4a42.volksempfaenger.service.playback;
 
-import android.content.Context;
-import android.content.Intent;
-
+import org.greenrobot.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class PlaybackEventBroadcasterTest
 {
-    Context                   context                   = Mockito.mock(Context.class);
-    PlaybackEventActionMapper playbackEventActionMapper = Mockito.mock(PlaybackEventActionMapper.class);
+    EventBus                  eventBus = Mockito.mock(EventBus.class);
     PlaybackEventBroadcaster  playbackEventBroadcaster;
 
     @Before
     public void setUp() throws Exception
     {
-        playbackEventBroadcaster = new PlaybackEventBroadcaster(context, playbackEventActionMapper);
+        playbackEventBroadcaster = new PlaybackEventBroadcaster(eventBus);
     }
 
     @Test
@@ -24,7 +21,6 @@ public class PlaybackEventBroadcasterTest
     {
         playbackEventBroadcaster.broadcast(PlaybackEvent.PLAYING);
 
-        Mockito.verify(playbackEventActionMapper).getAction(PlaybackEvent.PLAYING);
-        Mockito.verify(context).sendBroadcast(Mockito.any(Intent.class));
+        Mockito.verify(eventBus).post(PlaybackEvent.PLAYING);
     }
 }

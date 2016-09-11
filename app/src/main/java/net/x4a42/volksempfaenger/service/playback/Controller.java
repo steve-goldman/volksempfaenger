@@ -59,12 +59,12 @@ class Controller implements MediaPlayer.OnPreparedListener,
     @Override
     public int getPosition()
     {
-        return mediaPlayer.getCurrentPosition();
+        return isPrepared ? mediaPlayer.getCurrentPosition() : 0;
     }
 
     public int getDuration()
     {
-        return mediaPlayer.getDuration();
+        return isPrepared ? mediaPlayer.getDuration() : 0;
     }
 
     public boolean isPlaying()
@@ -165,8 +165,8 @@ class Controller implements MediaPlayer.OnPreparedListener,
     @Override
     public void onCompletion(MediaPlayer mp)
     {
-        callListeners(PlaybackEvent.ENDED);
         stop();
+        callListeners(PlaybackEvent.ENDED);
     }
 
     //

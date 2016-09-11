@@ -32,7 +32,7 @@ class OptionsMenuManager
     private final MenuInflater            inflater;
 
     private Listener                      listener;
-    private EpisodeCursorProvider cursorProvider;
+    private EpisodeCursorProvider         cursorProvider;
     private PlaybackServiceFacadeProvider facadeProvider;
 
     public OptionsMenuManager(Uri episodeUri,
@@ -116,7 +116,8 @@ class OptionsMenuManager
     private boolean canPlay()
     {
         PlaybackServiceFacade facade = facadeProvider.getFacade();
-        return !facade.isPlaying() || !episodeUri.equals(facade.getEpisodeUri());
+        return facade != null &&
+                (!facade.isPlaying() || !episodeUri.equals(facade.getEpisodeUri()));
     }
 
     private boolean canDownload(EpisodeCursor cursor)

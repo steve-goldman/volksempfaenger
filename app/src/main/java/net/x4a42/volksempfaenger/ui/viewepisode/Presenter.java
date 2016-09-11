@@ -27,7 +27,6 @@ class Presenter
 
     public void onCreate()
     {
-        activity.setContentView(R.layout.view_episode);
         this.title       = (TextView) activity.findViewById(R.id.episode_title);
         this.meta        = (TextView) activity.findViewById(R.id.episode_meta);
         this.description = (TextView) activity.findViewById(R.id.episode_description);

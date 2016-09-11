@@ -1,23 +1,27 @@
 package net.x4a42.volksempfaenger.ui.viewepisode;
 
-import android.content.ComponentName;
-import android.content.Context;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import junit.framework.Assert;
+
 import net.x4a42.volksempfaenger.IntentBuilder;
 import net.x4a42.volksempfaenger.NavUtilsWrapper;
+import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.ToastMaker;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.episode.EpisodeCursorLoader;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceBinder;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.SettingsActivity;
+import net.x4a42.volksempfaenger.ui.nowplaying.NowPlayingFragment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,35 +29,36 @@ import org.mockito.Mockito;
 
 public class ViewEpisodeActivityProxyTest
 {
-    ViewEpisodeActivity           activity              = Mockito.mock(ViewEpisodeActivity.class);
-    Uri                           episodeUri            = Mockito.mock(Uri.class);
-    OptionsMenuManager            optionsMenuManager    = Mockito.mock(OptionsMenuManager.class);
-    PlaybackEventReceiver         playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
-    EpisodeCursorLoader           episodeCursorLoader   = Mockito.mock(EpisodeCursorLoader.class);
-    EpisodeCursor                 episodeCursor         = Mockito.mock(EpisodeCursor.class);
-    long                          episodeId             = 10;
-    Presenter                     presenter             = Mockito.mock(Presenter.class);
-    PlaybackServiceIntentProvider intentProvider        = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                        bindIntent            = Mockito.mock(Intent.class);
-    Intent                        playIntent            = Mockito.mock(Intent.class);
-    EpisodeDataHelper             episodeDataHelper     = Mockito.mock(EpisodeDataHelper.class);
-    Uri                           episodeUrlUri         = Mockito.mock(Uri.class);
-    ToastMaker                    toastMaker            = Mockito.mock(ToastMaker.class);
-    NavUtilsWrapper               navUtilsWrapper       = Mockito.mock(NavUtilsWrapper.class);
-    EpisodeSharer                 sharer                = Mockito.mock(EpisodeSharer.class);
-    IntentBuilder                 intentBuilder         = Mockito.mock(IntentBuilder.class);
-    Intent                        websiteIntent         = Mockito.mock(Intent.class);
-    Intent                        settingsIntent        = Mockito.mock(Intent.class);
-    DownloadHelper                downloadHelper        = Mockito.mock(DownloadHelper.class);
-    PlaybackServiceBinder         binder                = Mockito.mock(PlaybackServiceBinder.class);
-    Menu                          menu                  = Mockito.mock(Menu.class);
-    MenuItem                      item                  = Mockito.mock(MenuItem.class);
-    ViewEpisodeActivityProxy      proxy;
+    ViewEpisodeActivity              activity              = Mockito.mock(ViewEpisodeActivity.class);
+    FragmentManager                  fragmentManager       = Mockito.mock(FragmentManager.class);
+    NowPlayingFragment               fragment              = Mockito.mock(NowPlayingFragment.class);
+    Uri                              episodeUri            = Mockito.mock(Uri.class);
+    OptionsMenuManager               optionsMenuManager    = Mockito.mock(OptionsMenuManager.class);
+    PlaybackEventReceiver            playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
+    EpisodeCursorLoader              episodeCursorLoader   = Mockito.mock(EpisodeCursorLoader.class);
+    EpisodeCursor                    episodeCursor         = Mockito.mock(EpisodeCursor.class);
+    long                             episodeId             = 10;
+    Presenter                        presenter             = Mockito.mock(Presenter.class);
+    PlaybackServiceIntentProvider    intentProvider        = Mockito.mock(PlaybackServiceIntentProvider.class);
+    Intent                           playIntent            = Mockito.mock(Intent.class);
+    EpisodeDataHelper                episodeDataHelper     = Mockito.mock(EpisodeDataHelper.class);
+    Uri                              episodeUrlUri         = Mockito.mock(Uri.class);
+    ToastMaker                       toastMaker            = Mockito.mock(ToastMaker.class);
+    NavUtilsWrapper                  navUtilsWrapper       = Mockito.mock(NavUtilsWrapper.class);
+    EpisodeSharer                    sharer                = Mockito.mock(EpisodeSharer.class);
+    IntentBuilder                    intentBuilder         = Mockito.mock(IntentBuilder.class);
+    Intent                           websiteIntent         = Mockito.mock(Intent.class);
+    Intent                           settingsIntent        = Mockito.mock(Intent.class);
+    DownloadHelper                   downloadHelper        = Mockito.mock(DownloadHelper.class);
+    PlaybackServiceConnectionManager connectionManager     = Mockito.mock(PlaybackServiceConnectionManager.class);
+    PlaybackServiceFacade            facade                = Mockito.mock(PlaybackServiceFacade.class);
+    Menu                             menu                  = Mockito.mock(Menu.class);
+    MenuItem                         item                  = Mockito.mock(MenuItem.class);
+    ViewEpisodeActivityProxy         proxy;
 
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(intentProvider.getBindIntent()).thenReturn(bindIntent);
         Mockito.when(intentProvider.getPlayIntent(episodeUri)).thenReturn(playIntent);
 
         Mockito.when(episodeCursor.getId()).thenReturn(episodeId);
@@ -62,7 +67,12 @@ public class ViewEpisodeActivityProxyTest
         Mockito.when(intentBuilder.build(Intent.ACTION_VIEW, episodeUrlUri)).thenReturn(websiteIntent);
         Mockito.when(intentBuilder.build(activity, SettingsActivity.class)).thenReturn(settingsIntent);
 
+        Mockito.when(connectionManager.getFacade()).thenReturn(facade);
+
+        Mockito.when(fragmentManager.findFragmentById(R.id.nowplaying)).thenReturn(fragment);
+
         proxy = new ViewEpisodeActivityProxy(activity,
+                                             fragmentManager,
                                              episodeUri,
                                              optionsMenuManager,
                                              playbackEventReceiver,
@@ -74,7 +84,8 @@ public class ViewEpisodeActivityProxyTest
                                              navUtilsWrapper,
                                              sharer,
                                              intentBuilder,
-                                             downloadHelper);
+                                             downloadHelper,
+                                             connectionManager);
     }
 
     @Test
@@ -82,9 +93,11 @@ public class ViewEpisodeActivityProxyTest
     {
         proxy.onCreate();
 
-        Mockito.verify(activity).bindService(bindIntent, proxy, Context.BIND_AUTO_CREATE);
+        Mockito.verify(activity).setContentView(R.layout.view_episode);
+        Mockito.verify(connectionManager).onCreate();
         Mockito.verify(episodeCursorLoader).init();
         Mockito.verify(presenter).onCreate();
+        Mockito.verify(fragment).setEpisodeUri(episodeUri);
     }
 
     @Test
@@ -108,7 +121,7 @@ public class ViewEpisodeActivityProxyTest
     {
         proxy.onDestroy();
 
-        Mockito.verify(activity).unbindService(proxy);
+        Mockito.verify(connectionManager).onDestroy();
     }
 
     @Test
@@ -125,6 +138,12 @@ public class ViewEpisodeActivityProxyTest
         proxy.onOptionsItemSelected(item);
 
         Mockito.verify(optionsMenuManager).onOptionsItemSelected(item);
+    }
+
+    @Test
+    public void onGetFacade() throws Exception
+    {
+        Assert.assertEquals(facade, connectionManager.getFacade());
     }
 
     //
@@ -232,28 +251,6 @@ public class ViewEpisodeActivityProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
 
         Mockito.verify(activity).invalidateOptionsMenu();
-    }
-
-    //
-    // ServiceConnection
-    //
-
-    @Test
-    public void onServiceConnected()
-    {
-        proxy.onServiceConnected(Mockito.mock(ComponentName.class), binder);
-
-        Mockito.verify(binder).getFacade();
-        Mockito.verify(activity).invalidateOptionsMenu();
-    }
-
-    @Test
-    public void onServiceDisconnected()
-    {
-        proxy.onServiceDisconnected(Mockito.mock(ComponentName.class));
-
-        Mockito.verify(activity).invalidateOptionsMenu();
-        Mockito.verify(activity).bindService(bindIntent, proxy, Context.BIND_AUTO_CREATE);
     }
 
     //

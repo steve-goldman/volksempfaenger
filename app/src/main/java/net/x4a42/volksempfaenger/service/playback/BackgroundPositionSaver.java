@@ -25,12 +25,22 @@ class BackgroundPositionSaver implements Runnable
         this.episodeUri       = episodeUri;
         this.positionProvider = positionProvider;
 
+        episodeDataHelper.markListening(episodeUri);
+
         handler.post(this);
     }
 
-    public void stop()
+    public void stop(boolean resetPosition)
     {
-        save();
+        if (resetPosition)
+        {
+            episodeDataHelper.setDurationListened(episodeUri, 0);
+        }
+        else
+        {
+            save();
+        }
+
         handler.removeCallbacks(this);
     }
 

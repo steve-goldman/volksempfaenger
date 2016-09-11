@@ -45,7 +45,6 @@ public class PresenterTest
     {
         presenter.onCreate();
 
-        Mockito.verify(activity).setContentView(R.layout.view_episode);
         Mockito.verify(activity).findViewById(R.id.episode_title);
         Mockito.verify(activity).findViewById(R.id.episode_meta);
         Mockito.verify(activity).findViewById(R.id.episode_description);

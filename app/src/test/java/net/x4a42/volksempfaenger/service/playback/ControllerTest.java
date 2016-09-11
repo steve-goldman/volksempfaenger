@@ -105,6 +105,8 @@ public class ControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
+        controller.open(playbackItem);
+        controller.onPrepared(mediaPlayer);
         controller.movePosition(5);
 
         Mockito.verify(mediaPlayer).seekTo(15);
@@ -127,6 +129,8 @@ public class ControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
+        controller.open(playbackItem);
+        controller.onPrepared(mediaPlayer);
         controller.movePosition(15);
 
         Mockito.verify(mediaPlayer).seekTo(20);
@@ -170,9 +174,9 @@ public class ControllerTest
 
         controller.onCompletion(mediaPlayer);
 
+        inOrder.verify(mediaPlayer).reset();
         inOrder.verify(playbackEventListener).onPlaybackEvent(PlaybackEvent.ENDED);
         inOrder.verify(playbackEventBroadcaster).broadcast(PlaybackEvent.ENDED);
-        inOrder.verify(mediaPlayer).reset();
     }
 
     //
