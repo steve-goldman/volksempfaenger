@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.service.playback;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,6 +9,7 @@ import android.os.IBinder;
 
 class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
 {
+    public static final int                          NotificationId = 0x59d54313;
     private final PlaybackService                    playbackService;
     private final BackgroundPositionSaver            positionSaver;
     private final Controller                         controller;
@@ -14,8 +17,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private final IntentParser                       intentParser;
     private final MediaButtonReceiver                mediaButtonReceiver;
     private final MediaSessionManager                mediaSessionManager;
-    private final PlaybackNotificationManagerBuilder notificationManagerBuilder;
-    private PlaybackNotificationManager              notificationManager;
+    private final NotificationManager                notificationManager;
+    private final PlaybackNotificationBuilder        notificationBuilder;
 
     public PlaybackServiceProxy(PlaybackService                    playbackService,
                                 BackgroundPositionSaver            positionSaver,
@@ -24,7 +27,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
                                 IntentParser                       intentParser,
                                 MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
-                                PlaybackNotificationManagerBuilder notificationManagerBuilder)
+                                NotificationManager                notificationManager,
+                                PlaybackNotificationBuilder        notificationBuilder)
     {
         this.playbackService            = playbackService;
         this.positionSaver              = positionSaver;
@@ -33,7 +37,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         this.intentParser               = intentParser;
         this.mediaButtonReceiver        = mediaButtonReceiver;
         this.mediaSessionManager        = mediaSessionManager;
-        this.notificationManagerBuilder = notificationManagerBuilder;
+        this.notificationManager        = notificationManager;
+        this.notificationBuilder        = notificationBuilder;
     }
 
     public int onStartCommand(Intent intent)
@@ -133,7 +138,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     {
         onPause();
         controller.stop();
-        notificationManager.remove();
+        notificationManager.cancel(NotificationId);
     }
 
     @Override
@@ -156,20 +161,19 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
 
     private void handlePlaying()
     {
-        notificationManager = notificationManagerBuilder.build(playbackService, controller.getPlaybackItem());
-        notificationManager.updateForPlay();
+        updateNotification(true);
         positionSaver.start(getEpisodeUri(), controller);
     }
 
     private void handlePaused()
     {
-        notificationManager.updateForPause(controller.getPlaybackItem());
+        updateNotification(false);
         positionSaver.stop(false);
     }
 
     private void handleEnded()
     {
-        notificationManager.remove();
+        notificationManager.cancel(NotificationId);
         positionSaver.stop(true);
     }
 
@@ -185,5 +189,11 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
             return controller.getPlaybackItem().getEpisodeUri();
         }
         return episodeUri;
+    }
+
+    private void updateNotification(boolean isPlaying)
+    {
+        Notification notification = notificationBuilder.build(controller.getPlaybackItem(), isPlaying);
+        notificationManager.notify(NotificationId, notification);
     }
 }
