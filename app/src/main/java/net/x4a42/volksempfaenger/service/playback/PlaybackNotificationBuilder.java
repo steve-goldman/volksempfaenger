@@ -17,11 +17,18 @@ import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
 
 class PlaybackNotificationBuilder
 {
-    public Notification build(Context context, PlaybackItem playbackItem)
+    private final Context context;
+
+    public PlaybackNotificationBuilder(Context context)
+    {
+        this.context = context;
+    }
+
+    public Notification build(PlaybackItem playbackItem, boolean isPlaying)
     {
         TaskStackBuilder taskStackBuilder = buildTaskStack(context, playbackItem);
         Bitmap           podcastLogo      = buildPodcastLogo(context, playbackItem);
-        RemoteViews      content          = buildContent(context, playbackItem, podcastLogo);
+        RemoteViews      content          = buildContent(context, playbackItem, podcastLogo, isPlaying);
 
         return buildNotification(context, playbackItem, taskStackBuilder, content);
     }
@@ -62,7 +69,7 @@ class PlaybackNotificationBuilder
 
     }
 
-    private RemoteViews buildContent(Context context, PlaybackItem playbackItem, Bitmap podcastLogo)
+    private RemoteViews buildContent(Context context, PlaybackItem playbackItem, Bitmap podcastLogo, boolean isPlaying)
     {
         // Build the layout for the notification
         RemoteViews content = new RemoteViews(context.getPackageName(), R.layout.notification_playing);
@@ -77,8 +84,20 @@ class PlaybackNotificationBuilder
 
         PlaybackServiceIntentProvider intentProvider = new PlaybackServiceIntentProviderBuilder().build(context);
 
-        content.setOnClickPendingIntent(
-                R.id.pause, PendingIntent.getService(context, 0, intentProvider.getPauseIntent(), 0));
+        if (isPlaying)
+        {
+            content.setImageViewResource(R.id.pause, R.drawable.ic_notification_pause);
+            content.setOnClickPendingIntent(
+                    R.id.pause,
+                    PendingIntent.getService(context, 0, intentProvider.getPauseIntent(), 0));
+        }
+        else
+        {
+            content.setImageViewResource(R.id.pause, R.drawable.ic_notification_play);
+            content.setOnClickPendingIntent(
+                    R.id.pause,
+                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(playbackItem.getEpisodeUri()), 0));
+        }
 
         content.setOnClickPendingIntent(
                 R.id.collapse, PendingIntent.getService(context, 0, intentProvider.getStopIntent(), 0));

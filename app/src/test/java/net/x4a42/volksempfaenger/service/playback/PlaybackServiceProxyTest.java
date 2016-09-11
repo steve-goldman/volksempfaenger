@@ -1,10 +1,10 @@
 package net.x4a42.volksempfaenger.service.playback;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
-
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +21,10 @@ public class PlaybackServiceProxyTest
     IntentParser                       intentParser               = Mockito.mock(IntentParser.class);
     MediaButtonReceiver                mediaButtonReceiver        = Mockito.mock(MediaButtonReceiver.class);
     MediaSessionManager                mediaSessionManager        = Mockito.mock(MediaSessionManager.class);
-    PlaybackNotificationManagerBuilder notificationManagerBuilder = Mockito.mock(PlaybackNotificationManagerBuilder.class);
-    PlaybackNotificationManager        notificationManager        = Mockito.mock(PlaybackNotificationManager.class);
+    NotificationManager                notificationManager        = Mockito.mock(NotificationManager.class);
+    PlaybackNotificationBuilder        notificationBuilder        = Mockito.mock(PlaybackNotificationBuilder.class);
+    Notification                       notificationPlaying        = Mockito.mock(Notification.class);
+    Notification                       notificationPaused         = Mockito.mock(Notification.class);
     PlaybackItem                       playbackItem               = Mockito.mock(PlaybackItem.class);
     PlaybackItem                       otherPlaybackItem          = Mockito.mock(PlaybackItem.class);
     Intent                             intent                     = Mockito.mock(Intent.class);
@@ -41,13 +43,14 @@ public class PlaybackServiceProxyTest
                                          intentParser,
                                          mediaButtonReceiver,
                                          mediaSessionManager,
-                                         notificationManagerBuilder));
+                                         notificationManager,
+                                         notificationBuilder));
 
         Mockito.when(playbackItemBuilder.build(playbackService, episodeUri)).thenReturn(playbackItem);
         Mockito.when(playbackItem.getEpisodeUri()).thenReturn(episodeUri);
         Mockito.when(otherPlaybackItem.getEpisodeUri()).thenReturn(otherEpisodeUri);
-        Mockito.when(notificationManagerBuilder.build(playbackService, playbackItem)).thenReturn(
-                notificationManager);
+        Mockito.when(notificationBuilder.build(playbackItem, true)).thenReturn(notificationPlaying);
+        Mockito.when(notificationBuilder.build(playbackItem, false)).thenReturn(notificationPaused);
     }
 
     @Test
@@ -168,7 +171,7 @@ public class PlaybackServiceProxyTest
 
         Mockito.verify(proxy).onPause();
         Mockito.verify(controller).stop();
-        Mockito.verify(notificationManager).remove();
+        Mockito.verify(notificationManager).cancel(PlaybackServiceProxy.NotificationId);
     }
 
     @Test
@@ -230,8 +233,7 @@ public class PlaybackServiceProxyTest
 
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
 
-        Mockito.verify(notificationManagerBuilder).build(playbackService, playbackItem);
-        Mockito.verify(notificationManager).updateForPlay();
+        Mockito.verify(notificationManager).notify(PlaybackServiceProxy.NotificationId, notificationPlaying);
         Mockito.verify(positionSaver).start(episodeUri, controller);
     }
 
@@ -243,7 +245,7 @@ public class PlaybackServiceProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onPlaybackEvent(PlaybackEvent.PAUSED);
 
-        Mockito.verify(notificationManager).updateForPause(playbackItem);
+        Mockito.verify(notificationManager).notify(PlaybackServiceProxy.NotificationId, notificationPaused);
         Mockito.verify(positionSaver).stop(false);
     }
 
@@ -255,7 +257,7 @@ public class PlaybackServiceProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onPlaybackEvent(PlaybackEvent.ENDED);
 
-        Mockito.verify(notificationManager).remove();
+        Mockito.verify(notificationManager).cancel(PlaybackServiceProxy.NotificationId);
         Mockito.verify(positionSaver).stop(true);
     }
 }

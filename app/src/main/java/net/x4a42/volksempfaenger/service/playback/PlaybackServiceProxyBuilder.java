@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.service.playback;
 
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
+import android.app.NotificationManager;
+import android.content.Context;
 
 class PlaybackServiceProxyBuilder
 {
@@ -20,6 +21,12 @@ class PlaybackServiceProxyBuilder
         MediaSessionManager mediaSessionManager
                 = new MediaSessionManagerBuilder().build(service);
 
+        NotificationManager notificationManager
+                = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        PlaybackNotificationBuilder playbackNotificationBuilder
+                = new PlaybackNotificationBuilder(service);
+
         PlaybackServiceProxy proxy
                 = new PlaybackServiceProxy(service,
                                            positionSaver,
@@ -28,7 +35,8 @@ class PlaybackServiceProxyBuilder
                                            intentParser,
                                            mediaButtonReceiver,
                                            mediaSessionManager,
-                                           new PlaybackNotificationManagerBuilder());
+                                           notificationManager,
+                                           playbackNotificationBuilder);
 
         controller.setListener(proxy);
         intentParser.setListener(proxy);
