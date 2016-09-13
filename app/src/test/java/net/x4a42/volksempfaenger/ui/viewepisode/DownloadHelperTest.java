@@ -71,7 +71,7 @@ public class DownloadHelperTest
     public void downloadWifiNotPreferred()
     {
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
-        Mockito.when(preferences.isDownloadWifi()).thenReturn(false);
+        Mockito.when(preferences.downloadWifiOnly()).thenReturn(false);
 
         downloadHelper.download(episodeCursor);
 
@@ -82,7 +82,7 @@ public class DownloadHelperTest
     public void downloadWifiPreferredNotConnected()
     {
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
-        Mockito.when(preferences.isDownloadWifi()).thenReturn(true);
+        Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
         downloadHelper.download(episodeCursor);
 
@@ -99,7 +99,7 @@ public class DownloadHelperTest
     public void downloadWifiPreferredConnected()
     {
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(true);
-        Mockito.when(preferences.isDownloadWifi()).thenReturn(true);
+        Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
         downloadHelper.download(episodeCursor);
 
@@ -110,7 +110,7 @@ public class DownloadHelperTest
     public void onClickPositive()
     {
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
-        Mockito.when(preferences.isDownloadWifi()).thenReturn(true);
+        Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
         downloadHelper.download(episodeCursor);
         downloadHelper.onClick(Mockito.mock(DialogInterface.class), DialogInterface.BUTTON_POSITIVE);
@@ -122,7 +122,7 @@ public class DownloadHelperTest
     public void onClickNegative()
     {
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
-        Mockito.when(preferences.isDownloadWifi()).thenReturn(true);
+        Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
         downloadHelper.download(episodeCursor);
         downloadHelper.onClick(Mockito.mock(DialogInterface.class), DialogInterface.BUTTON_NEGATIVE);

@@ -15,7 +15,7 @@ public class Preferences
         this.preferences = preferences;
     }
 
-    public boolean isDownloadWifi()
+    public boolean downloadWifiOnly()
     {
         return getBoolean(PreferenceKeys.DOWNLOAD_WIFI,
                           context.getString(R.string.settings_default_download_wifi));
