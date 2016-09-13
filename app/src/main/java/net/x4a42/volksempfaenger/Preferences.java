@@ -21,6 +21,12 @@ public class Preferences
                           context.getString(R.string.settings_default_download_wifi));
     }
 
+    public boolean downloadChargingOnly()
+    {
+        return getBoolean(PreferenceKeys.DOWNLOAD_CHARGING,
+                          context.getString(R.string.settings_default_download_charging));
+    }
+
     private boolean getBoolean(String key, String defaultValue)
     {
         return getBoolean(key, Boolean.valueOf(defaultValue));
