@@ -6,16 +6,20 @@ import android.view.KeyEvent;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MediaButtonReceiverTest
 {
-    Context                       context        = Mockito.mock(Context.class);
-    PlaybackServiceIntentProvider intentProvider = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                        intent         = Mockito.mock(Intent.class);
-    KeyEvent                      event          = Mockito.mock(KeyEvent.class);
-    Intent                        serviceIntent  = Mockito.mock(Intent.class);
-    MediaButtonReceiver mediaButtonReceiver;
+    @Mock Context                       context;
+    @Mock PlaybackServiceIntentProvider intentProvider;
+    @Mock Intent                        intent;
+    @Mock KeyEvent                      event;
+    @Mock Intent                        serviceIntent;
+    MediaButtonReceiver                 mediaButtonReceiver;
 
     @Before
     public void setUp() throws Exception

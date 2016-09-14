@@ -18,25 +18,29 @@ import net.x4a42.volksempfaenger.service.download.DownloadServiceIntentProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DownloadHelperTest
 {
-    Context                       context              = Mockito.mock(Context.class);
-    Uri                           episodeUri           = Mockito.mock(Uri.class);
-    long                          episodeId            = 10;
-    EpisodeDataHelper             episodeDataHelper    = Mockito.mock(EpisodeDataHelper.class);
-    EnclosureCursor               enclosureCursor      = Mockito.mock(EnclosureCursor.class);
-    long                          enclosureId          = 20;
-    EnclosureDataHelper           enclosureDataHelper  = Mockito.mock(EnclosureDataHelper.class);
-    Preferences                   preferences          = Mockito.mock(Preferences.class);
-    ConnectivityStatus            connectivityStatus   = Mockito.mock(ConnectivityStatus.class);
-    DownloadServiceIntentProvider intentProvider       = Mockito.mock(DownloadServiceIntentProvider.class);
-    Intent                        intent               = Mockito.mock(Intent.class);
-    AlertDialogBuilderFactory     dialogBuilderFactory = Mockito.mock(AlertDialogBuilderFactory.class);
-    AlertDialog.Builder           dialogBuilder        = Mockito.mock(AlertDialog.Builder.class);
-    EpisodeCursor                 episodeCursor        = Mockito.mock(EpisodeCursor.class);
-    DownloadHelper                downloadHelper;
+    @Mock Context                       context;
+    @Mock Uri                           episodeUri;
+    @Mock EpisodeDataHelper             episodeDataHelper;
+    @Mock EnclosureCursor               enclosureCursor;
+    @Mock EnclosureDataHelper           enclosureDataHelper;
+    @Mock Preferences                   preferences;
+    @Mock ConnectivityStatus            connectivityStatus;
+    @Mock DownloadServiceIntentProvider intentProvider;
+    @Mock Intent                        intent;
+    @Mock AlertDialogBuilderFactory     dialogBuilderFactory;
+    @Mock AlertDialog.Builder           dialogBuilder;
+    @Mock EpisodeCursor                 episodeCursor;
+    long                                episodeId            = 10;
+    long                                enclosureId          = 20;
+    DownloadHelper                      downloadHelper;
 
     @Before
     public void setUp() throws Exception

@@ -15,26 +15,30 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ControlButtonsManagerTest
 {
-    Context                          context               = Mockito.mock(Context.class);
-    PlaybackEventReceiver            playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
-    PlaybackServiceIntentProvider    intentProvider        = Mockito.mock(PlaybackServiceIntentProvider.class);
-    int                              offset                = 20;
-    Intent                           playPauseIntent       = Mockito.mock(Intent.class);
-    Intent                           rewindIntent          = Mockito.mock(Intent.class);
-    Intent                           fastForwardIntent     = Mockito.mock(Intent.class);
-    View                             view                  = Mockito.mock(View.class);
-    LinearLayout                     controlsLayout        = Mockito.mock(LinearLayout.class);
-    ImageButton                      rewindButton          = Mockito.mock(ImageButton.class);
-    ImageButton                      playPauseButton       = Mockito.mock(ImageButton.class);
-    ImageButton                      fastForwardButton     = Mockito.mock(ImageButton.class);
-    PlaybackServiceFacadeProvider    facadeProvider        = Mockito.mock(PlaybackServiceFacadeProvider.class);
-    PlaybackServiceFacade            facade                = Mockito.mock(PlaybackServiceFacade.class);
-    ControlButtonsManager            controlButtonsManager;
+    @Mock Context                          context;
+    @Mock PlaybackEventReceiver            playbackEventReceiver;
+    @Mock PlaybackServiceIntentProvider    intentProvider;
+    @Mock Intent                           playPauseIntent;
+    @Mock Intent                           rewindIntent;
+    @Mock Intent                           fastForwardIntent;
+    @Mock View                             view;
+    @Mock LinearLayout                     controlsLayout;
+    @Mock ImageButton                      rewindButton;
+    @Mock ImageButton                      playPauseButton;
+    @Mock ImageButton                      fastForwardButton;
+    @Mock PlaybackServiceFacadeProvider    facadeProvider;
+    @Mock PlaybackServiceFacade            facade;
+    int                                    offset                = 20;
+    ControlButtonsManager                  controlButtonsManager;
 
     @Before
     public void setUp() throws Exception

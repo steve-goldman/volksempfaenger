@@ -7,15 +7,19 @@ import android.media.AudioManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AudioBecomingNoisyManagerTest
 {
-    private Context                            context  = Mockito.mock(Context.class);
-    private AudioBecomingNoisyManager.Listener listener = Mockito.mock(AudioBecomingNoisyManager.Listener.class);
-    private AudioBecomingNoisyManager          audioBecomingNoisyManager;
+    @Mock private Context                            context;
+    @Mock private AudioBecomingNoisyManager.Listener listener;
+    AudioBecomingNoisyManager                        audioBecomingNoisyManager;
 
     @Before
     public void setup() throws Exception

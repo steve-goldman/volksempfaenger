@@ -17,25 +17,29 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SeekBarManagerTest
 {
-    Context                          context                = Mockito.mock(Context.class);
-    RepeatingIntervalTimer           repeatingIntervalTimer = Mockito.mock(RepeatingIntervalTimer.class);
-    int                              position               = 10;
-    int                              duration               = 20;
-    PlaybackServiceIntentProvider    intentProvider         = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                           seekIntent             = Mockito.mock(Intent.class);
-    int                              progress               = 42;
-    View                             view                   = Mockito.mock(View.class);
-    LinearLayout                     seekBarLayout          = Mockito.mock(LinearLayout.class);
-    SeekBar                          seekBar                = Mockito.mock(SeekBar.class);
-    TextView                         positionText           = Mockito.mock(TextView.class);
-    TextView                         durationText           = Mockito.mock(TextView.class);
-    PlaybackServiceFacade            facade                 = Mockito.mock(PlaybackServiceFacade.class);
-    PlaybackServiceFacadeProvider    facadeProvider         = Mockito.mock(PlaybackServiceConnectionManager.class);
-    SeekBarManager                   seekBarManager;
+    @Mock Context                          context;
+    @Mock RepeatingIntervalTimer           repeatingIntervalTimer;
+    @Mock PlaybackServiceIntentProvider    intentProvider;
+    @Mock Intent                           seekIntent;
+    @Mock View                             view;
+    @Mock LinearLayout                     seekBarLayout;
+    @Mock SeekBar                          seekBar;
+    @Mock TextView                         positionText;
+    @Mock TextView                         durationText;
+    @Mock PlaybackServiceFacade            facade;
+    @Mock PlaybackServiceFacadeProvider    facadeProvider;
+    int                                    position               = 10;
+    int                                    duration               = 20;
+    int                                    progress               = 42;
+    SeekBarManager                         seekBarManager;
     
     @Before
     public void setUp() throws Exception

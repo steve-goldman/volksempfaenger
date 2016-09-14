@@ -25,36 +25,40 @@ import net.x4a42.volksempfaenger.ui.nowplaying.NowPlayingFragment;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ViewEpisodeActivityProxyTest
 {
-    ViewEpisodeActivity              activity              = Mockito.mock(ViewEpisodeActivity.class);
-    FragmentManager                  fragmentManager       = Mockito.mock(FragmentManager.class);
-    NowPlayingFragment               fragment              = Mockito.mock(NowPlayingFragment.class);
-    Uri                              episodeUri            = Mockito.mock(Uri.class);
-    OptionsMenuManager               optionsMenuManager    = Mockito.mock(OptionsMenuManager.class);
-    PlaybackEventReceiver            playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
-    EpisodeCursorLoader              episodeCursorLoader   = Mockito.mock(EpisodeCursorLoader.class);
-    EpisodeCursor                    episodeCursor         = Mockito.mock(EpisodeCursor.class);
-    long                             episodeId             = 10;
-    Presenter                        presenter             = Mockito.mock(Presenter.class);
-    PlaybackServiceIntentProvider    intentProvider        = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                           playIntent            = Mockito.mock(Intent.class);
-    EpisodeDataHelper                episodeDataHelper     = Mockito.mock(EpisodeDataHelper.class);
-    Uri                              episodeUrlUri         = Mockito.mock(Uri.class);
-    ToastMaker                       toastMaker            = Mockito.mock(ToastMaker.class);
-    NavUtilsWrapper                  navUtilsWrapper       = Mockito.mock(NavUtilsWrapper.class);
-    EpisodeSharer                    sharer                = Mockito.mock(EpisodeSharer.class);
-    IntentBuilder                    intentBuilder         = Mockito.mock(IntentBuilder.class);
-    Intent                           websiteIntent         = Mockito.mock(Intent.class);
-    Intent                           settingsIntent        = Mockito.mock(Intent.class);
-    DownloadHelper                   downloadHelper        = Mockito.mock(DownloadHelper.class);
-    PlaybackServiceConnectionManager connectionManager     = Mockito.mock(PlaybackServiceConnectionManager.class);
-    PlaybackServiceFacade            facade                = Mockito.mock(PlaybackServiceFacade.class);
-    Menu                             menu                  = Mockito.mock(Menu.class);
-    MenuItem                         item                  = Mockito.mock(MenuItem.class);
-    ViewEpisodeActivityProxy         proxy;
+    @Mock ViewEpisodeActivity              activity;
+    @Mock FragmentManager                  fragmentManager;
+    @Mock NowPlayingFragment               fragment;
+    @Mock Uri                              episodeUri;
+    @Mock OptionsMenuManager               optionsMenuManager;
+    @Mock PlaybackEventReceiver            playbackEventReceiver;
+    @Mock EpisodeCursorLoader              episodeCursorLoader;
+    @Mock EpisodeCursor                    episodeCursor;
+    @Mock Presenter                        presenter;
+    @Mock PlaybackServiceIntentProvider    intentProvider;
+    @Mock Intent                           playIntent;
+    @Mock EpisodeDataHelper                episodeDataHelper;
+    @Mock Uri                              episodeUrlUri;
+    @Mock ToastMaker                       toastMaker;
+    @Mock NavUtilsWrapper                  navUtilsWrapper;
+    @Mock EpisodeSharer                    sharer;
+    @Mock IntentBuilder                    intentBuilder;
+    @Mock Intent                           websiteIntent;
+    @Mock Intent                           settingsIntent;
+    @Mock DownloadHelper                   downloadHelper;
+    @Mock PlaybackServiceConnectionManager connectionManager;
+    @Mock PlaybackServiceFacade            facade;
+    @Mock Menu                             menu;
+    @Mock MenuItem                         item;
+    long                                   episodeId             = 10;
+    ViewEpisodeActivityProxy               proxy;
 
     @Before
     public void setUp() throws Exception

@@ -5,16 +5,20 @@ import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class IntentParserTest
 {
-    IntentParser.Listener listener = Mockito.mock(IntentParser.Listener.class);
-    Intent intent = Mockito.mock(Intent.class);
-    Uri episodeUri = Mockito.mock(Uri.class);
-    int position = 10;
-    int offset = -15;
-    IntentParser parser;
+    @Mock IntentParser.Listener listener;
+    @Mock Intent                intent;
+    @Mock Uri                   episodeUri;
+    int                         position = 10;
+    int                         offset   = -15;
+    IntentParser                parser;
 
     @Before
     public void setUp() throws Exception

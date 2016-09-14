@@ -10,17 +10,21 @@ import net.x4a42.volksempfaenger.data.EnclosureCursorFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EnclosureDataHelperTest
 {
-    ContentResolver        contentResolver   = Mockito.mock(ContentResolver.class);
-    Cursor                 cursor            = Mockito.mock(Cursor.class);
-    EnclosureCursorFactory cursorFactory     = Mockito.mock(EnclosureCursorFactory.class);
-    EnclosureCursor        enclosureCursor   = Mockito.mock(EnclosureCursor.class);
-    EnclosureMetadata      enclosureMetadata = Mockito.mock(EnclosureMetadata.class);
-    long                   episodeId         = 10;
-    EnclosureDataHelper    enclosureDataHelper;
+    @Mock ContentResolver        contentResolver;
+    @Mock Cursor                 cursor;
+    @Mock EnclosureCursorFactory cursorFactory;
+    @Mock EnclosureCursor        enclosureCursor;
+    @Mock EnclosureMetadata      enclosureMetadata;
+    long                         episodeId         = 10;
+    EnclosureDataHelper          enclosureDataHelper;
 
     @Before
     public void setUp() throws Exception

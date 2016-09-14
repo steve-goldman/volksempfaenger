@@ -9,18 +9,22 @@ import net.x4a42.volksempfaenger.data.EpisodeCursor;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EpisodeSharerTest
 {
-    Activity      activity      = Mockito.mock(Activity.class);
-    IntentBuilder intentBuilder = Mockito.mock(IntentBuilder.class);
-    Intent        intent        = Mockito.mock(Intent.class);
-    HtmlConverter converter     = Mockito.mock(HtmlConverter.class);
-    EpisodeCursor cursor        = Mockito.mock(EpisodeCursor.class);
-    EpisodeSharer sharer;
+    @Mock Activity      activity;
+    @Mock IntentBuilder intentBuilder;
+    @Mock Intent        intent;
+    @Mock HtmlConverter converter;
+    @Mock EpisodeCursor cursor;
+    EpisodeSharer       sharer;
 
     @Before
     public void setUp() throws Exception

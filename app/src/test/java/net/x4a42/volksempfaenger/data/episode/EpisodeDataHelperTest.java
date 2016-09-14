@@ -11,19 +11,23 @@ import net.x4a42.volksempfaenger.misc.ContentValuesFactory;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EpisodeDataHelperTest
 {
-    ContentResolver      contentResolver      = Mockito.mock(ContentResolver.class);
-    ContentValuesFactory contentValuesFactory = Mockito.mock(ContentValuesFactory.class);
-    ContentValues        contentValues        = Mockito.mock(ContentValues.class);
-    DownloadManager      downloadManager      = Mockito.mock(DownloadManager.class);
-    Uri                  episodeUri           = Mockito.mock(Uri.class);
-    long                 episodeId            = 10;
-    long                 enclosureId          = 20;
-    int                  duration             = 300;
-    EpisodeDataHelper    episodeDataHelper;
+    @Mock ContentResolver      contentResolver;
+    @Mock ContentValuesFactory contentValuesFactory;
+    @Mock ContentValues        contentValues;
+    @Mock DownloadManager      downloadManager;
+    @Mock Uri                  episodeUri;
+    long                       episodeId            = 10;
+    long                       enclosureId          = 20;
+    int                        duration             = 300;
+    EpisodeDataHelper          episodeDataHelper;
 
     @Before
     public void setUp() throws Exception

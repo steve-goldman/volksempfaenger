@@ -22,37 +22,41 @@ import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvide
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.net.URI;
 
+@RunWith(MockitoJUnitRunner.class)
 public class InfoSectionManagerTest
 {
-    Context                           context                   = Mockito.mock(Context.class);
-    PlaybackEventReceiver             playbackEventReceiver     = Mockito.mock(PlaybackEventReceiver.class);
-    PlaybackServiceFacadeProvider     facadeProvider            = Mockito.mock(PlaybackServiceFacadeProvider.class);
-    PlaybackServiceFacade             facade                    = Mockito.mock(PlaybackServiceFacade.class);
-    Uri                               episodeUri                = Mockito.mock(Uri.class);
-    long                              podcastId                 = 199;
-    String                            title                     = "my-episode-title";
-    String                            podcastTitle              = "my-podcast-title";
-    PlaybackServiceIntentProvider     playbackIntentProvider    = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                            playPauseIntent           = Mockito.mock(Intent.class);
-    ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider = Mockito.mock(ViewEpisodeActivityIntentProvider.class);
-    Intent                            viewEpisodeIntent         = Mockito.mock(Intent.class);
-    View                              view                      = Mockito.mock(View.class);
-    LinearLayout                      infoLayout                = Mockito.mock(LinearLayout.class);
-    ImageView                         podcastLogo               = Mockito.mock(ImageView.class);
-    TextView                          episodeText               = Mockito.mock(TextView.class);
-    TextView                          podcastText               = Mockito.mock(TextView.class);
-    ImageButton                       playPauseButton           = Mockito.mock(ImageButton.class);
-    ImageLoader                       imageLoader               = Mockito.mock(ImageLoader.class);
-    FileBuilder                       fileBuilder               = Mockito.mock(FileBuilder.class);
-    File                              logoFile                  = Mockito.mock(File.class);
-    String                            url                       = "my-url";
-    URI                               uri                       = URI.create(url);
-    InfoSectionManager                infoSectionManager;
+    @Mock Context                           context;
+    @Mock PlaybackEventReceiver             playbackEventReceiver;
+    @Mock PlaybackServiceFacadeProvider     facadeProvider;
+    @Mock PlaybackServiceFacade             facade;
+    @Mock Uri                               episodeUri;
+    @Mock PlaybackServiceIntentProvider     playbackIntentProvider;
+    @Mock Intent                            playPauseIntent;
+    @Mock ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
+    @Mock Intent                            viewEpisodeIntent;
+    @Mock View                              view;
+    @Mock LinearLayout                      infoLayout;
+    @Mock ImageView                         podcastLogo;
+    @Mock TextView                          episodeText;
+    @Mock TextView                          podcastText;
+    @Mock ImageButton                       playPauseButton;
+    @Mock ImageLoader                       imageLoader;
+    @Mock FileBuilder                       fileBuilder;
+    @Mock File                              logoFile;
+    long                                    podcastId                 = 199;
+    String                                  title                     = "my-episode-title";
+    String                                  podcastTitle              = "my-podcast-title";
+    String                                  url                       = "my-url";
+    URI                                     uri                       = URI.create(url);
+    InfoSectionManager                      infoSectionManager;
 
     @Before
     public void setUp() throws Exception
