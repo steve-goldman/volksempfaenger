@@ -10,16 +10,18 @@ import net.x4a42.volksempfaenger.IntentBuilder;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
+@RunWith(MockitoJUnitRunner.class)
 public class ViewEpisodeActivityIntentProviderTest
 {
-    Uri           episodeUri    = Mockito.mock(Uri.class);
-    Context       context       = Mockito.mock(Context.class);
-    IntentBuilder intentBuilder = Mockito.mock(IntentBuilder.class);
-    Intent        intent        = Mockito.mock(Intent.class);
+    @Mock Uri           episodeUri;
+    @Mock Context       context;
+    @Mock IntentBuilder intentBuilder;
+    @Mock Intent        intent;
 
     ViewEpisodeActivityIntentProvider intentProvider;
 

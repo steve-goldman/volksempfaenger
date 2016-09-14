@@ -4,20 +4,24 @@ import android.media.MediaPlayer;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ControllerTest
 {
-    PlaybackEventBroadcaster  playbackEventBroadcaster  = Mockito.mock(PlaybackEventBroadcaster.class);
-    MediaPlayer               mediaPlayer               = Mockito.mock(MediaPlayer.class);
-    AudioFocusManager         audioFocusManager         = Mockito.mock(AudioFocusManager.class);
-    AudioBecomingNoisyManager audioBecomingNoisyManager = Mockito.mock(AudioBecomingNoisyManager.class);
-    PlaybackItem              playbackItem              = Mockito.mock(PlaybackItem.class);
-    PlaybackEventListener     playbackEventListener     = Mockito.mock(PlaybackEventListener.class);
-    String                    file                      = "this-is-my-file";
-    int                       seekToPosition            = 123;
-    Controller controller;
+    @Mock PlaybackEventBroadcaster  playbackEventBroadcaster;
+    @Mock MediaPlayer               mediaPlayer;
+    @Mock AudioFocusManager         audioFocusManager;
+    @Mock AudioBecomingNoisyManager audioBecomingNoisyManager;
+    @Mock PlaybackItem              playbackItem;
+    @Mock PlaybackEventListener     playbackEventListener;
+    String                          file                      = "this-is-my-file";
+    int                             seekToPosition            = 123;
+    Controller                      controller;
 
     @Before
     public void setUp() throws Exception

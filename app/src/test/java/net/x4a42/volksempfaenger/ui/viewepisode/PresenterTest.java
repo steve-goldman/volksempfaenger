@@ -10,19 +10,23 @@ import net.x4a42.volksempfaenger.data.EpisodeCursor;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PresenterTest
 {
-    Activity             activity       = Mockito.mock(Activity.class);
-    HtmlConverter        converter      = Mockito.mock(HtmlConverter.class);
-    EpisodeCursor        cursor         = Mockito.mock(EpisodeCursor.class);
-    TextView             title          = Mockito.mock(TextView.class);
-    TextView             meta           = Mockito.mock(TextView.class);
-    TextView             description    = Mockito.mock(TextView.class);
-    String               titleStr       = "this-is-my-title";
-    String               descriptionStr = "this-is-my-description";
-    Spanned              spanned        = Mockito.mock(Spanned.class);
+    @Mock Activity             activity;
+    @Mock HtmlConverter        converter;
+    @Mock EpisodeCursor        cursor;
+    @Mock TextView             title;
+    @Mock TextView             meta;
+    @Mock TextView             description;
+    @Mock Spanned              spanned;
+    String                     titleStr       = "this-is-my-title";
+    String                     descriptionStr = "this-is-my-description";
     Presenter presenter;
 
     @Before

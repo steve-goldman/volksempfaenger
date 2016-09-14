@@ -3,13 +3,17 @@ package net.x4a42.volksempfaenger.service.playback;
 import org.greenrobot.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PlaybackEventReceiverTest
 {
-    EventBus                  eventBus = Mockito.mock(EventBus.class);
-    PlaybackEventListener     listener = Mockito.mock(PlaybackEventListener.class);
-    PlaybackEventReceiver     receiver;
+    @Mock EventBus                  eventBus;
+    @Mock PlaybackEventListener     listener;
+    PlaybackEventReceiver           receiver;
 
     @Before
     public void setUp() throws Exception

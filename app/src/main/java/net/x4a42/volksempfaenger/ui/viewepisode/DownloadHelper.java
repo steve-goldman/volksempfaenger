@@ -53,7 +53,7 @@ class DownloadHelper implements DialogInterface.OnClickListener
         // set the enclosure id for the download service
         setEnclosureId();
 
-        if (preferences.isDownloadWifi() && !connectivityStatus.isWifiConnected())
+        if (preferences.downloadWifiOnly() && !connectivityStatus.isWifiConnected())
         {
             showWarning();
             return;

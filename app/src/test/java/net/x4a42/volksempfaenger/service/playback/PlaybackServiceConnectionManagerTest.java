@@ -8,23 +8,27 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PlaybackServiceConnectionManagerTest
 {
-    Context                          context        = Mockito.mock(Context.class);
-    PlaybackServiceIntentProvider    intentProvider = Mockito.mock(PlaybackServiceIntentProvider.class);
-    Intent                           intent         = Mockito.mock(Intent.class);
-    PlaybackServiceFacade            facade         = Mockito.mock(PlaybackServiceFacade.class);
-    PlaybackServiceBinder            binder         = Mockito.mock(PlaybackServiceBinder.class);
-    ComponentName                    componentName  = Mockito.mock(ComponentName.class);
+    @Mock Context                          context;
+    @Mock PlaybackServiceIntentProvider    intentProvider;
+    @Mock Intent                           intent;
+    @Mock PlaybackServiceFacade            facade;
+    @Mock PlaybackServiceBinder            binder;
+    @Mock ComponentName                    componentName;
     
     PlaybackServiceConnectionManager.Listener listener
             = Mockito.mock(PlaybackServiceConnectionManager.Listener.class);
     
-    PlaybackServiceConnectionManager connectionManager;
+    PlaybackServiceConnectionManager       connectionManager;
     
     @Before
     public void setUp() throws Exception

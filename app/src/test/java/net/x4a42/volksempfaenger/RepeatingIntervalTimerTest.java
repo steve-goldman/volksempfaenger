@@ -4,17 +4,21 @@ import android.os.Handler;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RepeatingIntervalTimerTest
 {
-    Handler                handler     = Mockito.mock(Handler.class);
-    int                    delayMillis = 1000;
-    Runnable               runnable    = Mockito.mock(Runnable.class);
-    RepeatingIntervalTimer timer;
+    @Mock Handler                handler;
+    @Mock Runnable               runnable;
+    int                          delayMillis = 1000;
+    RepeatingIntervalTimer       timer;
 
     @Before
     public void setUp() throws Exception

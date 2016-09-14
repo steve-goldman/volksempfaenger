@@ -5,15 +5,19 @@ import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PlaybackServiceIntentProviderTest
 {
-    PlaybackServiceIntentFactory  intentFactory = Mockito.mock(PlaybackServiceIntentFactory.class);
-    Intent                        createdIntent = Mockito.mock(Intent.class);
-    PlaybackServiceIntentProvider intentProvider;
+    @Mock PlaybackServiceIntentFactory  intentFactory;
+    @Mock Intent                        createdIntent;
+    PlaybackServiceIntentProvider       intentProvider;
 
     @Before
     public void setUp() throws Exception

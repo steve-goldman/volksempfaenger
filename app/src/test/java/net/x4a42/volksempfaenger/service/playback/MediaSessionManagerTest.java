@@ -6,13 +6,17 @@ import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MediaSessionManagerTest
 {
-    MediaSession          mediaSession  = Mockito.mock(MediaSession.class);
-    PlaybackEventReceiver eventReceiver = Mockito.mock(PlaybackEventReceiver.class);
-    MediaSessionManager   mediaSessionManager;
+    @Mock MediaSession          mediaSession;
+    @Mock PlaybackEventReceiver eventReceiver;
+    MediaSessionManager         mediaSessionManager;
 
     @Before
     public void setUp() throws Exception

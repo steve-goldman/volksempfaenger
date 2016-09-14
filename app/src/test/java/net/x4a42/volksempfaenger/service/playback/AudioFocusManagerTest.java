@@ -4,15 +4,17 @@ import android.media.AudioManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
+@RunWith(MockitoJUnitRunner.class)
 public class AudioFocusManagerTest
 {
-    AudioManager               audioManager = Mockito.mock(AudioManager.class);
-    AudioFocusManager.Listener listener     = Mockito.mock(AudioFocusManager.Listener.class);
-    AudioFocusManager          audioFocusManager;
+    @Mock AudioManager               audioManager;
+    @Mock AudioFocusManager.Listener listener;
+    AudioFocusManager                audioFocusManager;
 
     @Before
     public void setUp() throws Exception

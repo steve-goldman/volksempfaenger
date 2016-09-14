@@ -7,16 +7,20 @@ import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BackgroundPositionSaverTest
 {
-    EpisodeDataHelper               episodeDataHelper = Mockito.mock(EpisodeDataHelper.class);
-    Handler                         handler           = Mockito.mock(Handler.class);
-    Uri                             episodeUri        = Mockito.mock(Uri.class);
-    PlaybackPositionProvider        positionProvider  = Mockito.mock(PlaybackPositionProvider.class);
-    int                             position          = 10;
-    BackgroundPositionSaver backgroundSaver;
+    @Mock EpisodeDataHelper               episodeDataHelper;
+    @Mock Handler                         handler;
+    @Mock Uri                             episodeUri;
+    @Mock PlaybackPositionProvider        positionProvider;
+    int                                   position          = 10;
+    BackgroundPositionSaver               backgroundSaver;
 
     @Before
     public void setUp() throws Exception

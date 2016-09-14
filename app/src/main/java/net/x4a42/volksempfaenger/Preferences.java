@@ -15,10 +15,16 @@ public class Preferences
         this.preferences = preferences;
     }
 
-    public boolean isDownloadWifi()
+    public boolean downloadWifiOnly()
     {
         return getBoolean(PreferenceKeys.DOWNLOAD_WIFI,
                           context.getString(R.string.settings_default_download_wifi));
+    }
+
+    public boolean downloadChargingOnly()
+    {
+        return getBoolean(PreferenceKeys.DOWNLOAD_CHARGING,
+                          context.getString(R.string.settings_default_download_charging));
     }
 
     private boolean getBoolean(String key, String defaultValue)

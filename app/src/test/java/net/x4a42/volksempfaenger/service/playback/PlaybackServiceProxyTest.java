@@ -8,29 +8,33 @@ import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PlaybackServiceProxyTest
 {
-    PlaybackService                    playbackService            = Mockito.mock(PlaybackService.class);
-    BackgroundPositionSaver            positionSaver              = Mockito.mock(BackgroundPositionSaver.class);
-    Controller                         controller                 = Mockito.mock(Controller.class);
-    PlaybackItemBuilder                playbackItemBuilder        = Mockito.mock(PlaybackItemBuilder.class);
-    IntentParser                       intentParser               = Mockito.mock(IntentParser.class);
-    MediaButtonReceiver                mediaButtonReceiver        = Mockito.mock(MediaButtonReceiver.class);
-    MediaSessionManager                mediaSessionManager        = Mockito.mock(MediaSessionManager.class);
-    NotificationManager                notificationManager        = Mockito.mock(NotificationManager.class);
-    PlaybackNotificationBuilder        notificationBuilder        = Mockito.mock(PlaybackNotificationBuilder.class);
-    Notification                       notificationPlaying        = Mockito.mock(Notification.class);
-    Notification                       notificationPaused         = Mockito.mock(Notification.class);
-    PlaybackItem                       playbackItem               = Mockito.mock(PlaybackItem.class);
-    PlaybackItem                       otherPlaybackItem          = Mockito.mock(PlaybackItem.class);
-    Intent                             intent                     = Mockito.mock(Intent.class);
-    Uri                                episodeUri                 = Mockito.mock(Uri.class);
-    Uri                                otherEpisodeUri            = Mockito.mock(Uri.class);
-    PlaybackServiceProxy               proxy;
+    @Mock PlaybackService                    playbackService;
+    @Mock BackgroundPositionSaver            positionSaver;
+    @Mock Controller                         controller;
+    @Mock PlaybackItemBuilder                playbackItemBuilder;
+    @Mock IntentParser                       intentParser;
+    @Mock MediaButtonReceiver                mediaButtonReceiver;
+    @Mock MediaSessionManager                mediaSessionManager;
+    @Mock NotificationManager                notificationManager;
+    @Mock PlaybackNotificationBuilder        notificationBuilder;
+    @Mock Notification                       notificationPlaying;
+    @Mock Notification                       notificationPaused;
+    @Mock PlaybackItem                       playbackItem;
+    @Mock PlaybackItem                       otherPlaybackItem;
+    @Mock Intent                             intent;
+    @Mock Uri                                episodeUri;
+    @Mock Uri                                otherEpisodeUri;
+    PlaybackServiceProxy                     proxy;
 
     @Before
     public void setUp() throws Exception

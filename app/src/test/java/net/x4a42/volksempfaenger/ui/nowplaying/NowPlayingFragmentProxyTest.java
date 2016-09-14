@@ -15,23 +15,27 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class NowPlayingFragmentProxyTest
 {
-    Uri                              episodeUri            = Mockito.mock(Uri.class);
-    Uri                              otherEpisodeUri       = Mockito.mock(Uri.class);
-    PlaybackServiceConnectionManager connectionManager     = Mockito.mock(PlaybackServiceConnectionManager.class);
-    PlaybackServiceFacade            facade                = Mockito.mock(PlaybackServiceFacade.class);
-    PlaybackEventReceiver            playbackEventReceiver = Mockito.mock(PlaybackEventReceiver.class);
-    NowPlayingFragment               fragment              = Mockito.mock(NowPlayingFragment.class);
-    SeekBarManager                   seekBarManager        = Mockito.mock(SeekBarManager.class);
-    ControlButtonsManager            controlButtonsManager = Mockito.mock(ControlButtonsManager.class);
-    InfoSectionManager               infoSectionManager    = Mockito.mock(InfoSectionManager.class);
-    LayoutInflater                   inflater              = Mockito.mock(LayoutInflater.class);
-    View                             view                  = Mockito.mock(View.class);
-    ViewGroup                        containter            = Mockito.mock(ViewGroup.class);
-    NowPlayingFragmentProxy          proxy;
+    @Mock Uri                              episodeUri;
+    @Mock Uri                              otherEpisodeUri;
+    @Mock PlaybackServiceConnectionManager connectionManager;
+    @Mock PlaybackServiceFacade            facade;
+    @Mock PlaybackEventReceiver            playbackEventReceiver;
+    @Mock NowPlayingFragment               fragment;
+    @Mock SeekBarManager                   seekBarManager;
+    @Mock ControlButtonsManager            controlButtonsManager;
+    @Mock InfoSectionManager               infoSectionManager;
+    @Mock LayoutInflater                   inflater;
+    @Mock View                             view;
+    @Mock ViewGroup                        containter;
+    NowPlayingFragmentProxy                proxy;
 
     @Before
     public void setUp() throws Exception

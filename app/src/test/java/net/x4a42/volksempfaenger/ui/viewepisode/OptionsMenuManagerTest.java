@@ -15,34 +15,32 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class OptionsMenuManagerTest
 {
-    Uri                           episodeUri            = Mockito.mock(Uri.class);
-    Uri                           otherEpisodeUri       = Mockito.mock(Uri.class);
-    EpisodeCursorProvider         cursorProvider        = Mockito.mock(EpisodeCursorProvider.class);
-    EpisodeCursor                 cursor                = Mockito.mock(EpisodeCursor.class);
-    PlaybackServiceFacadeProvider facadeProvider        = Mockito.mock(PlaybackServiceFacadeProvider.class);
-    PlaybackServiceFacade         facade                = Mockito.mock(PlaybackServiceFacade.class);
-    MenuInflater                  inflater              = Mockito.mock(MenuInflater.class);
-    Menu                          menu                  = Mockito.mock(Menu.class);
-    MenuItem                      downloadItem          = Mockito.mock(MenuItem.class);
-    MenuItem                      playItem              = Mockito.mock(MenuItem.class);
-    MenuItem                      shareItem             = Mockito.mock(MenuItem.class);
-    MenuItem                      deleteItem            = Mockito.mock(MenuItem.class);
-    MenuItem                      markListenedItem      = Mockito.mock(MenuItem.class);
-    MenuItem                      markNewItem           = Mockito.mock(MenuItem.class);
-    MenuItem                      websiteItem           = Mockito.mock(MenuItem.class);
-    OptionsMenuManager.Listener listener
-            = Mockito.mock(OptionsMenuManager.Listener.class);
+    @Mock Uri                           episodeUri;
+    @Mock Uri                           otherEpisodeUri;
+    @Mock EpisodeCursorProvider         cursorProvider;
+    @Mock EpisodeCursor                 cursor;
+    @Mock PlaybackServiceFacadeProvider facadeProvider;
+    @Mock PlaybackServiceFacade         facade;
+    @Mock MenuInflater                  inflater;
+    @Mock Menu                          menu;
+    @Mock MenuItem                      downloadItem;
+    @Mock MenuItem                      playItem;
+    @Mock MenuItem                      shareItem;
+    @Mock MenuItem                      deleteItem;
+    @Mock MenuItem                      markListenedItem;
+    @Mock MenuItem                      markNewItem;
+    @Mock MenuItem                      websiteItem;
+    @Mock OptionsMenuManager.Listener   listener;
 
-    OptionsMenuManager optionsMenuManager
-            = new OptionsMenuManager(episodeUri,
-                                                inflater)
-            .setCursorProvider(cursorProvider)
-            .setFacadeProvider(facadeProvider)
-            .setListener(listener);
+    OptionsMenuManager                  optionsMenuManager;
 
     @Before
     public void setUp() throws Exception
@@ -56,6 +54,12 @@ public class OptionsMenuManagerTest
         Mockito.when(menu.findItem(R.id.item_mark_listened)).thenReturn(markListenedItem);
         Mockito.when(menu.findItem(R.id.item_mark_new)).thenReturn(markNewItem);
         Mockito.when(menu.findItem(R.id.item_website)).thenReturn(websiteItem);
+
+        optionsMenuManager
+                = new OptionsMenuManager(episodeUri, inflater)
+                .setCursorProvider(cursorProvider)
+                .setFacadeProvider(facadeProvider)
+                .setListener(listener);
     }
 
     @Test
