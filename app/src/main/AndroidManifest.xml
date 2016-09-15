@@ -163,6 +163,7 @@
         <service android:name=".service.UpdateService" />
         <service android:name=".service.playback.PlaybackService" />
         <service android:name=".service.FlattrService" />
+        <service android:name=".service.feedsync.FeedSyncService" />
 
         <receiver
             android:name=".receiver.BootCompletedReceiver"

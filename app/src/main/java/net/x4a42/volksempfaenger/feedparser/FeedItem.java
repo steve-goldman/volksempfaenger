@@ -9,4 +9,14 @@ public class FeedItem {
 	public Feed feed;
 	public Date date;
 	public List<Enclosure> enclosures = new ArrayList<Enclosure>();
+
+	// TODO: this method is hacky
+	public String getUrl()
+	{
+		if (url == null)
+		{
+			return enclosures.get(0).url;
+		}
+		return url;
+	}
 }
