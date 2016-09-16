@@ -39,5 +39,6 @@
     <integer name="seekbar_delay_millis">500</integer>
     <integer name="move_offset">30000</integer>
     <integer name="feed_download_connect_timeout">10000</integer>
+    <integer name="logo_download_connect_timeout">10000</integer>
 
 </resources>

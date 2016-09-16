@@ -10,10 +10,11 @@ class PodcastUpdaterBuilder
 {
     public PodcastUpdater build(Context context)
     {
-        PodcastDaoWrapper podcastDao     = new PodcastDaoBuilder().build(context);
-        NowProvider       nowProvider    = new NowProvider();
-        EpisodeUpdater    episodeUpdater = new EpisodeUpdaterBuilder().build(context);
+        PodcastDaoWrapper     podcastDao            = new PodcastDaoBuilder().build(context);
+        NowProvider           nowProvider           = new NowProvider();
+        EpisodeUpdater        episodeUpdater        = new EpisodeUpdaterBuilder().build(context);
+        LogoDownloaderBuilder logoDownloaderBuilder = new LogoDownloaderBuilder(context);
 
-        return new PodcastUpdater(podcastDao, nowProvider, episodeUpdater);
+        return new PodcastUpdater(podcastDao, nowProvider, episodeUpdater, logoDownloaderBuilder);
     }
 }

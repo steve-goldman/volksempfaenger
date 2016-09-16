@@ -13,31 +13,35 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class PodcastUpdaterTest
 {
-    @Mock PodcastDaoWrapper podcastDao;
-    @Mock NowProvider       nowProvider;
-    @Mock EpisodeUpdater    episodeUpdater;
-    @Mock Podcast           podcast;
-    long                    now       = 100;
-    Feed                    feed      = new Feed();
-    FeedItem                feedItem1 = new FeedItem();
-    FeedItem                feedItem2 = new FeedItem();
-    PodcastUpdater          podcastUpdater;
+    @Mock PodcastDaoWrapper     podcastDao;
+    @Mock NowProvider           nowProvider;
+    @Mock EpisodeUpdater        episodeUpdater;
+    @Mock LogoDownloaderBuilder logoDownloaderBuilder;
+    @Mock LogoDownloader        logoDownloader;
+    @Mock Podcast               podcast;
+    long                        now       = 100;
+    Feed                        feed      = new Feed();
+    FeedItem                    feedItem1 = new FeedItem();
+    FeedItem                    feedItem2 = new FeedItem();
+    PodcastUpdater              podcastUpdater;
 
     @Before
     public void setUp() throws Exception
     {
         Mockito.when(nowProvider.get()).thenReturn(now);
+        Mockito.when(logoDownloaderBuilder.build(podcast, feed)).thenReturn(logoDownloader);
         feed.title       = "my-title";
         feed.description = "my-description";
         feed.website     = "my-website";
         feed.items.add(feedItem1);
         feed.items.add(feedItem2);
-        podcastUpdater   = new PodcastUpdater(podcastDao, nowProvider, episodeUpdater);
+        podcastUpdater   = new PodcastUpdater(podcastDao,
+                                              nowProvider,
+                                              episodeUpdater,
+                                              logoDownloaderBuilder);
     }
 
     @Test
@@ -50,5 +54,6 @@ public class PodcastUpdaterTest
         Mockito.verify(podcast).setLastUpdate(now);
         Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem1);
         Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem2);
+        Mockito.verify(logoDownloader).download();
     }
 }
