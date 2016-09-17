@@ -6,15 +6,19 @@ import java.net.URL;
 
 public class HttpURLConnectionProvider
 {
-    private final URL url;
+    private final HttpResponseCacheWrapper cache;
+    private final URL                      url;
 
-    public HttpURLConnectionProvider(URL url)
+    public HttpURLConnectionProvider(HttpResponseCacheWrapper cache,
+                                     URL                      url)
     {
-        this.url = url;
+        this.cache = cache;
+        this.url   = url;
     }
 
     public HttpURLConnection get() throws IOException
     {
+        cache.init();
         return (HttpURLConnection) url.openConnection();
     }
 }

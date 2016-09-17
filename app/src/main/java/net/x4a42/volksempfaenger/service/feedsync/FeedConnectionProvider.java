@@ -23,21 +23,13 @@ class FeedConnectionProvider
         this.connectTimeout     = connectTimeout;
     }
 
-    public HttpURLConnection get()
+    public HttpURLConnection get() throws IOException
     {
-        try
-        {
-            HttpURLConnection connection = connectionProvider.get();
-            connection.setRequestProperty("User-Agent", USER_AGENT);
-            connection.setInstanceFollowRedirects(true);
-            connection.setConnectTimeout(connectTimeout);
-            connection.setRequestProperty("Accept", ACCEPT);
-            return connection;
-        }
-        catch (IOException e)
-        {
-            // TODO
-            throw new Error(e);
-        }
+        HttpURLConnection connection = connectionProvider.get();
+        connection.setRequestProperty("User-Agent", USER_AGENT);
+        connection.setInstanceFollowRedirects(true);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setRequestProperty("Accept", ACCEPT);
+        return connection;
     }
 }

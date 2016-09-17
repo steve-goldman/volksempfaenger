@@ -17,18 +17,10 @@ class LogoConnectionProvider
         this.connectTimeout     = connectTimeout;
     }
 
-    public HttpURLConnection get()
+    public HttpURLConnection get() throws IOException
     {
-        try
-        {
-            HttpURLConnection connection = connectionProvider.get();
-            connection.setConnectTimeout(connectTimeout);
-            return connection;
-        }
-        catch (IOException e)
-        {
-            // TODO
-            throw new Error(e);
-        }
+        HttpURLConnection connection = connectionProvider.get();
+        connection.setConnectTimeout(connectTimeout);
+        return connection;
     }
 }

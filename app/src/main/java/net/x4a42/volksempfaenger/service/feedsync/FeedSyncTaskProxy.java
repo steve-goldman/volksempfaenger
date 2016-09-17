@@ -31,9 +31,7 @@ public class FeedSyncTaskProxy
         }
         catch (Exception e)
         {
-            // TODO
-            Log.e(this, e.getMessage());
-            throw new RuntimeException(e);
+            Log.e(this, "exception", e);
         }
         finally
         {
