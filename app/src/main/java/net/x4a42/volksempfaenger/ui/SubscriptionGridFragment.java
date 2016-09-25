@@ -158,6 +158,7 @@ public class SubscriptionGridFragment extends Fragment implements
 			getActivity().startService(
 					new Intent(getActivity(), UpdateService.class));
 			return true;
+		/*
 		case R.id.import_items:
 			Intent intent = new Intent(Constants.ACTION_OI_PICK_FILE);
 			intent.putExtra(Constants.EXTRA_OI_TITLE,
@@ -181,9 +182,10 @@ public class SubscriptionGridFragment extends Fragment implements
 			}
 
 			return true;
+
 		case R.id.export_items:
 			new ExportTask(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-
+*/
 		default:
 			return false;
 		}

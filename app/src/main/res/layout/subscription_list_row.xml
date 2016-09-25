@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <net.x4a42.volksempfaenger.ui.PodcastLogoView
+        <ImageView
             android:id="@+id/podcast_logo"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

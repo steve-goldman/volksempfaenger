@@ -11,10 +11,4 @@
         android:icon="@drawable/ic_action_refresh"
         android:showAsAction="ifRoom"
         android:title="@string/menu_update"/>
-    <item
-        android:id="@+id/import_items"
-        android:title="@string/menu_import"/>
-    <item
-         android:id="@+id/export_items"
-         android:title="@string/menu_export"/>
 </menu>

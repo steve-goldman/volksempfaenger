@@ -22,6 +22,11 @@ public class PodcastDaoWrapper extends DaoWrapperBase<Podcast>
         return podcast;
     }
 
+    public List<Podcast> getAll()
+    {
+        return dao.queryBuilder().listLazy();
+    }
+
     public Podcast getById(long podcastId)
     {
         return dao.queryBuilder()
