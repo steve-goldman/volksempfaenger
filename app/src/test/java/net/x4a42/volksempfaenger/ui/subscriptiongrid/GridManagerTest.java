@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 
@@ -24,6 +25,7 @@ public class GridManagerTest
     @Mock ViewGroup      container;
     @Mock View           view;
     @Mock GridView       gridView;
+    @Mock TextView       noSubscriptionsView;
     GridManager          gridManager;
 
     @Before
@@ -32,6 +34,7 @@ public class GridManagerTest
         Mockito.when(inflater.inflate(R.layout.subscription_list, container, false))
                .thenReturn(view);
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
+        Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
         gridManager = new GridManager(gridAdapter);
     }
 
@@ -47,8 +50,23 @@ public class GridManagerTest
     @Test
     public void onResume() throws Exception
     {
+        gridManager.onCreateView(inflater, container);
         gridManager.onResume();
+
         Mockito.verify(gridAdapter).onResume();
+        Mockito.verify(noSubscriptionsView).setVisibility(View.INVISIBLE);
+    }
+
+    @Test
+    public void onResumeEmpty() throws Exception
+    {
+        Mockito.when(gridAdapter.isEmpty()).thenReturn(true);
+
+        gridManager.onCreateView(inflater, container);
+        gridManager.onResume();
+
+        Mockito.verify(gridAdapter).onResume();
+        Mockito.verify(noSubscriptionsView).setVisibility(View.VISIBLE);
     }
 
     @Test

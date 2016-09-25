@@ -5,12 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 
 class GridManager implements AdapterView.OnItemClickListener
 {
     private final GridAdapter gridAdapter;
+    private TextView          noSubscriptionsView;
     private View              view;
 
     public GridManager(GridAdapter gridAdapter)
@@ -26,12 +28,15 @@ class GridManager implements AdapterView.OnItemClickListener
         gridView.setOnItemClickListener(this);
         gridView.setAdapter(gridAdapter);
 
+        noSubscriptionsView = (TextView) view.findViewById(R.id.empty);
+
         return view;
     }
 
     public void onResume()
     {
         gridAdapter.onResume();
+        noSubscriptionsView.setVisibility(gridAdapter.isEmpty() ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void onPause()
