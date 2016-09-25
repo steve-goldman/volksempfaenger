@@ -8,17 +8,19 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 
 class GridViewHolderBuilder
 {
     public GridViewHolder build(View view)
     {
         PodcastPathProvider podcastPathProvider = new PodcastPathProvider(view.getContext());
+        ImageLoader         imageLoader         = new ImageLoaderProvider(view.getContext()).get();
 
         return new GridViewHolder(view,
                                   (TextView) view.findViewById(R.id.podcast_title),
                                   (ImageView) view.findViewById(R.id.podcast_logo),
                                   podcastPathProvider,
-                                  ImageLoader.getInstance());
+                                  imageLoader);
     }
 }

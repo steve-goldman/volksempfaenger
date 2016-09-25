@@ -6,6 +6,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import net.x4a42.volksempfaenger.FileBuilder;
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
@@ -29,7 +30,8 @@ class InfoSectionManagerBuilder
         ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider
                 = new ViewEpisodeActivityIntentProviderBuilder().build(context);
 
-        ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(context));
+        ImageLoader imageLoader
+                = new ImageLoaderProvider(context).get();
 
         // TODO: put "logos" someplace central
         FileBuilder fileBuilder
@@ -39,7 +41,7 @@ class InfoSectionManagerBuilder
                 = new InfoSectionManager(playbackEventReceiver,
                                          playbackIntentProvider,
                                          viewEpisodeIntentProvider,
-                                         ImageLoader.getInstance(),
+                                         imageLoader,
                                          fileBuilder)
                 .setFacadeProvider(connectionManager);
 

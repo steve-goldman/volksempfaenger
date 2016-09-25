@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Locale;
 
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 import net.x4a42.volksempfaenger.service.CleanCacheService;
 import net.x4a42.volksempfaenger.service.UpdateService;
 import android.app.ActivityManager;
@@ -147,6 +148,7 @@ public class VolksempfaengerApplication extends Application implements
 	}
 
 	private void initImageLoader() {
+		/*
 		imageLoader = ImageLoader.getInstance();
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
@@ -160,6 +162,9 @@ public class VolksempfaengerApplication extends Application implements
 				.threadPriority(Thread.MAX_PRIORITY)
 				.imageDownloader(new HttpURLConnctionImageDownloader()).build();
 		imageLoader.init(config);
+		*/
+
+		imageLoader = new ImageLoaderProvider(getApplicationContext()).get();
 	}
 
 	private class HttpURLConnctionImageDownloader implements ImageDownloader {
