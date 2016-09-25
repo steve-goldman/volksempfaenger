@@ -2,8 +2,11 @@ package net.x4a42.volksempfaenger.misc;
 
 import android.content.Context;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import net.x4a42.volksempfaenger.R;
 
 public class ImageLoaderProvider
 {
@@ -28,9 +31,23 @@ public class ImageLoaderProvider
 
     private ImageLoaderConfiguration getConfiguration()
     {
+        int memoryCacheSize = context.getResources().getInteger(R.integer.image_loader_memory_cache_size);
+        int diskCacheSize   = context.getResources().getInteger(R.integer.image_loader_disk_cache_size);
+        int maxPixels       = context.getResources().getDimensionPixelSize(R.dimen.grid_column_width);
+
         return new ImageLoaderConfiguration.Builder(context)
-                .memoryCacheSize(1024 * 1024)
-                .diskCacheSize(12 * 1024 * 1024)
+                .defaultDisplayImageOptions(getDisplayImageOptions())
+                .memoryCacheSize(memoryCacheSize)
+                .diskCacheSize(diskCacheSize)
+                .memoryCacheExtraOptions(maxPixels, maxPixels)
+                .build();
+    }
+
+    private DisplayImageOptions getDisplayImageOptions()
+    {
+        return new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
                 .build();
     }
 }

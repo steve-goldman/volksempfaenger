@@ -33,7 +33,7 @@ class LogoDownloaderBuilder
         PodcastPathProvider podcastPathProvider
                 = new PodcastPathProvider(context);
 
-        File targetFile = podcastPathProvider.getLogo(podcast);
+        File targetFile = podcastPathProvider.getLogoFile(podcast);
 
         OutputStream outputStream
                 = new BufferedOutputStream(new FileOutputStream(targetFile));

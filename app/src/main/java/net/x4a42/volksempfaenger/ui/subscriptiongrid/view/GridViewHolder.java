@@ -9,8 +9,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 
-import java.io.File;
-
 public class GridViewHolder
 {
     private final View                view;
@@ -50,9 +48,7 @@ public class GridViewHolder
 
     private void setLogo(Podcast podcast)
     {
-        File   logoFile = podcastPathProvider.getLogo(podcast);
-        String url      = logoFile.exists() ? logoFile.toURI().toString() : null;
+        String url = podcastPathProvider.getLogoUrl(podcast);
         imageLoader.displayImage(url, logoView);
     }
-
 }

@@ -41,4 +41,7 @@
     <integer name="feed_download_connect_timeout">10000</integer>
     <integer name="logo_download_connect_timeout">10000</integer>
 
+    <integer name="image_loader_memory_cache_size">1048576</integer>
+    <integer name="image_loader_disk_cache_size">20971520</integer>
+
 </resources>

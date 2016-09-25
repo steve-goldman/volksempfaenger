@@ -13,11 +13,16 @@ public class PodcastPathProvider
         this.context = context;
     }
 
-    public File getLogo(Podcast podcast)
+    public File getLogoFile(Podcast podcast)
     {
         return makeDirs(joinPath(context.getExternalFilesDir(null),
                                  "podcastLogos",
                                  String.valueOf(podcast.get_id())));
+    }
+
+    public String getLogoUrl(Podcast podcast)
+    {
+        return makeUrl(getLogoFile(podcast));
     }
 
     private File makeDirs(File file)
@@ -35,5 +40,10 @@ public class PodcastPathProvider
             base = new File(base, child);
         }
         return base;
+    }
+
+    private String makeUrl(File file)
+    {
+        return "file:///" + file.getAbsolutePath();
     }
 }
