@@ -7,6 +7,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +21,14 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GridManagerTest
 {
-    @Mock GridAdapter    gridAdapter;
-    @Mock LayoutInflater inflater;
-    @Mock ViewGroup      container;
-    @Mock View           view;
-    @Mock GridView       gridView;
-    @Mock TextView       noSubscriptionsView;
-    GridManager          gridManager;
+    @Mock GridAdapter     gridAdapter;
+    @Mock LayoutInflater  inflater;
+    @Mock ViewGroup       container;
+    @Mock View            view;
+    @Mock GridView        gridView;
+    @Mock TextView        noSubscriptionsView;
+    @Mock GridViewManager gridViewManager;
+    GridManager           gridManager;
 
     @Before
     public void setUp() throws Exception
@@ -35,7 +37,7 @@ public class GridManagerTest
                .thenReturn(view);
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
-        gridManager = new GridManager(gridAdapter);
+        gridManager = new GridManager(gridAdapter, gridViewManager);
     }
 
     @Test

@@ -22,13 +22,16 @@ public class GridViewManager
     {
         if (convertView == null)
         {
-            View           view       = createView(parent);
-            GridViewHolder viewHolder = builder.build(view);
-            view.setTag(viewHolder);
-            return viewHolder;
+            convertView = createView(parent);
+            convertView.setTag(builder.build(convertView));
         }
 
-        return (GridViewHolder) convertView.getTag();
+        return getViewHolder(convertView);
+    }
+
+    public GridViewHolder getViewHolder(View view)
+    {
+        return (GridViewHolder) view.getTag();
     }
 
     private View createView(ViewGroup parent)

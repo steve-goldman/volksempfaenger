@@ -13,7 +13,7 @@ import java.util.List;
 class GridAdapterProxy
 {
     private final GridAdapter       gridAdapter;
-    private final GridViewManager gridViewManager;
+    private final GridViewManager   gridViewManager;
     private final PodcastDaoWrapper podcastDao;
     private List<Podcast>           list;
 

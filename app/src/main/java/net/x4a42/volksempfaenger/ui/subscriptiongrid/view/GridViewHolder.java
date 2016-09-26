@@ -23,6 +23,7 @@ public class GridViewHolder implements ImageLoadingListener
     private final PodcastPathProvider   podcastPathProvider;
     private final ImageLoader           imageLoader;
     private final ImageViewAwareBuilder imageViewAwareBuilder;
+    private Podcast                     podcast;
 
     public GridViewHolder(View                  view,
                           TextView              titleView,
@@ -46,18 +47,24 @@ public class GridViewHolder implements ImageLoadingListener
         return view;
     }
 
-    public void set(Podcast podcast)
+    public Podcast getPodcast()
     {
-        setTitle(podcast);
-        setLogo(podcast);
+        return podcast;
     }
 
-    private void setTitle(Podcast podcast)
+    public void set(Podcast podcast)
+    {
+        this.podcast = podcast;
+        setTitle();
+        setLogo();
+    }
+
+    private void setTitle()
     {
         titleView.setText(podcast.getTitle());
     }
 
-    private void setLogo(Podcast podcast)
+    private void setLogo()
     {
         String url = podcastPathProvider.getLogoUrl(podcast);
         logoView.setImageResource(android.R.color.transparent);

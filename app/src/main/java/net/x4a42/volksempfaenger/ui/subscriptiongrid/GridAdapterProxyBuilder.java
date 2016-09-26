@@ -9,12 +9,9 @@ import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManagerBuilder
 
 class GridAdapterProxyBuilder
 {
-    public GridAdapterProxy build(GridAdapter gridAdapter)
+    public GridAdapterProxy build(GridAdapter gridAdapter, GridViewManager gridViewManager)
     {
         Context context = gridAdapter.getContext();
-
-        GridViewManager gridViewManager
-                = new GridViewManagerBuilder().build(context);
 
         PodcastDaoWrapper podcastDao
                 = new PodcastDaoBuilder().build(context);
