@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
 
 import org.junit.Before;
@@ -21,14 +23,16 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GridManagerTest
 {
-    @Mock GridAdapter     gridAdapter;
-    @Mock LayoutInflater  inflater;
-    @Mock ViewGroup       container;
-    @Mock View            view;
-    @Mock GridView        gridView;
-    @Mock TextView        noSubscriptionsView;
-    @Mock GridViewManager gridViewManager;
-    GridManager           gridManager;
+    @Mock Context                           context;
+    @Mock GridAdapter                       gridAdapter;
+    @Mock LayoutInflater                    inflater;
+    @Mock ViewGroup                         container;
+    @Mock View                              view;
+    @Mock GridView                          gridView;
+    @Mock TextView                          noSubscriptionsView;
+    @Mock GridViewManager                   gridViewManager;
+    @Mock EpisodeListActivityIntentProvider intentProvider;
+    GridManager                             gridManager;
 
     @Before
     public void setUp() throws Exception
@@ -37,7 +41,7 @@ public class GridManagerTest
                .thenReturn(view);
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
-        gridManager = new GridManager(gridAdapter, gridViewManager);
+        gridManager = new GridManager(context, gridAdapter, gridViewManager, intentProvider);
     }
 
     @Test

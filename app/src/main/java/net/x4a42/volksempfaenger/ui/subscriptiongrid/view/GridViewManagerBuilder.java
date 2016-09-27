@@ -7,7 +7,7 @@ public class GridViewManagerBuilder
 {
     public GridViewManager build(Context context)
     {
-        GridViewHolderBuilder builder = new GridViewHolderBuilder();
+        GridViewHolderBuilder builder  = new GridViewHolderBuilder();
         LayoutInflater        inflater = LayoutInflater.from(context);
         return new GridViewManager(builder, inflater);
     }

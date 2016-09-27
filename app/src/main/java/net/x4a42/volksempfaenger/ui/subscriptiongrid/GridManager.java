@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,19 +11,26 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
 
 class GridManager implements AdapterView.OnItemClickListener
 {
-    private final GridAdapter     gridAdapter;
-    private final GridViewManager gridViewManager;
-    private TextView              noSubscriptionsView;
+    private final Context                           context;
+    private final GridAdapter                       gridAdapter;
+    private final GridViewManager                   gridViewManager;
+    private final EpisodeListActivityIntentProvider intentProvider;
+    private TextView                                noSubscriptionsView;
 
-    public GridManager(GridAdapter     gridAdapter,
-                       GridViewManager gridViewManager)
+    public GridManager(Context                           context,
+                       GridAdapter                       gridAdapter,
+                       GridViewManager                   gridViewManager,
+                       EpisodeListActivityIntentProvider intentProvider)
     {
+        this.context         = context;
         this.gridAdapter     = gridAdapter;
         this.gridViewManager = gridViewManager;
+        this.intentProvider  = intentProvider;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
@@ -52,6 +61,7 @@ class GridManager implements AdapterView.OnItemClickListener
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
         Podcast podcast = gridViewManager.getViewHolder(view).getPodcast();
-        // TODO: start episode list activity
+        Intent  intent  = intentProvider.getIntent(podcast);
+        context.startActivity(intent);
     }
 }

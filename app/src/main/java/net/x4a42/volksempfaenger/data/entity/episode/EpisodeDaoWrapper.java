@@ -24,6 +24,20 @@ public class EpisodeDaoWrapper extends DaoWrapperBase<Episode>
         return episode;
     }
 
+    public List<Episode> getAll(Podcast podcast)
+    {
+        return dao.queryBuilder()
+                .where(EpisodeDao.Properties.PodcastId.eq(podcast.get_id()))
+                .listLazy();
+    }
+
+    public Episode getById(long episodeId)
+    {
+        return dao.queryBuilder()
+                .where(EpisodeDao.Properties._id.eq(episodeId))
+                .list().get(0);
+    }
+
     public Episode getByUrl(String episodeUrl)
     {
         List<Episode> list = dao.queryBuilder()

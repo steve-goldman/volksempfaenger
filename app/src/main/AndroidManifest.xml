@@ -125,6 +125,13 @@
                 android:value=".ui.ViewSubscriptionActivity" />
         </activity>
         <activity
+            android:name=".ui.episodelist.EpisodeListActivity"
+            android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
             android:name=".ui.PlaylistActivity"
             android:parentActivityName=".ui.MainActivity" >
             <meta-data

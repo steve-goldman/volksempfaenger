@@ -33,6 +33,7 @@ public class GridViewManagerTest
                .thenReturn(newView);
         Mockito.when(builder.build(newView)).thenReturn(viewHolder);
         Mockito.when(convertView.getTag()).thenReturn(viewHolder);
+        Mockito.when(newView.getTag()).thenReturn(viewHolder);
 
         gridViewManager = new GridViewManager(builder, inflater);
     }
