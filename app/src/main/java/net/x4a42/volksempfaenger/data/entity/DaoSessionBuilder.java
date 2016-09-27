@@ -24,7 +24,7 @@ public class DaoSessionBuilder
         if (openHelper == null)
         {
             String dbName = context.getResources().getString(R.string.database_name);
-            openHelper    = new DaoMaster.DevOpenHelper(context, dbName);
+            openHelper    = new DevOpenHelper(context, dbName);
         }
 
         return openHelper;
