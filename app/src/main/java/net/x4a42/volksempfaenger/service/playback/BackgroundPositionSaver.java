@@ -3,24 +3,29 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.os.Handler;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
 class BackgroundPositionSaver implements Runnable
 {
-    static final int                       Interval = 3000;
-    private final Handler                  handler;
-    private final PlaybackPositionProvider positionProvider;
-    private Episode                        episode;
+    static final int                        Interval = 3000;
+    private final Handler                   handler;
+    private final PlaybackPositionProvider  positionProvider;
+    private final EpisodePositionDaoWrapper episodePositionDao;
+    private EpisodePosition                 episodePosition;
 
-    public BackgroundPositionSaver(Handler                  handler,
-                                   PlaybackPositionProvider positionProvider)
+    public BackgroundPositionSaver(Handler                   handler,
+                                   PlaybackPositionProvider  positionProvider,
+                                   EpisodePositionDaoWrapper episodePositionDao)
     {
-        this.handler          = handler;
-        this.positionProvider = positionProvider;
+        this.handler            = handler;
+        this.positionProvider   = positionProvider;
+        this.episodePositionDao = episodePositionDao;
     }
 
     public void start(Episode episode)
     {
-        this.episode          = episode;
+        episodePosition = episodePositionDao.getOrCreate(episode);
 
         // TODO: mark listening
 
@@ -31,7 +36,7 @@ class BackgroundPositionSaver implements Runnable
     {
         if (resetPosition)
         {
-            // TODO: reset duration listened
+            episodePositionDao.delete(episodePosition);
         }
         else
         {
@@ -50,7 +55,7 @@ class BackgroundPositionSaver implements Runnable
 
     private void save()
     {
-        // TODO: save duration listened
-        //episodeDataHelper.setDurationListened(episodeUri, positionProvider.getPosition());
+        episodePosition.setPosition(positionProvider.getPosition());
+        episodePositionDao.insertOrReplace(episodePosition);
     }
 }

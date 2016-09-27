@@ -11,7 +11,7 @@ class PlaybackServiceProxyBuilder
                 = new ControllerBuilder().build(service);
 
         BackgroundPositionSaver positionSaver
-                = new BackgroundPositionSaverBuilder().build(controller);
+                = new BackgroundPositionSaverBuilder().build(service, controller);
 
         IntentParser intentParser = new IntentParserBuilder().build(service);
 

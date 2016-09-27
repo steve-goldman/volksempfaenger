@@ -3,6 +3,8 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.os.Handler;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 import org.junit.Before;
@@ -17,7 +19,9 @@ public class BackgroundPositionSaverTest
 {
     @Mock EpisodeDataHelper               episodeDataHelper;
     @Mock Handler                         handler;
-    @Mock Episode episode;
+    @Mock Episode                         episode;
+    @Mock EpisodePositionDaoWrapper       episodePositionDao;
+    @Mock EpisodePosition                 episodePosition;
     @Mock PlaybackPositionProvider        positionProvider;
     int                                   position          = 10;
     BackgroundPositionSaver               backgroundSaver;
@@ -25,8 +29,9 @@ public class BackgroundPositionSaverTest
     @Before
     public void setUp() throws Exception
     {
-        backgroundSaver = new BackgroundPositionSaver(handler, positionProvider);
+        Mockito.when(episodePositionDao.getOrCreate(episode)).thenReturn(episodePosition);
         Mockito.when(positionProvider.getPosition()).thenReturn(position);
+        backgroundSaver = new BackgroundPositionSaver(handler, positionProvider, episodePositionDao);
     }
 
     @Test
@@ -43,6 +48,7 @@ public class BackgroundPositionSaverTest
         backgroundSaver.start(episode);
         backgroundSaver.stop(true);
 
+        Mockito.verify(episodePositionDao).delete(episodePosition);
         Mockito.verify(handler).removeCallbacks(backgroundSaver);
     }
 
@@ -52,6 +58,8 @@ public class BackgroundPositionSaverTest
         backgroundSaver.start(episode);
         backgroundSaver.stop(false);
 
+        Mockito.verify(episodePosition).setPosition(position);
+        Mockito.verify(episodePositionDao).update(episodePosition);
         Mockito.verify(handler).removeCallbacks(backgroundSaver);
     }
 

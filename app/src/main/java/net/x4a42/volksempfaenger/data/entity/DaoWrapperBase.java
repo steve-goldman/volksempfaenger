@@ -20,4 +20,14 @@ public class DaoWrapperBase<T>
     {
         dao.update(entity);
     }
+
+    public void delete(T entity)
+    {
+        dao.delete(entity);
+    }
+
+    public void insertOrReplace(T entity)
+    {
+        dao.insertOrReplace(entity);
+    }
 }

@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.media.MediaPlayer;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
 import java.io.IOException;
 
@@ -25,20 +26,23 @@ class Controller implements MediaPlayer.OnPreparedListener,
     private final MediaPlayer               mediaPlayer;
     private final AudioFocusManager         audioFocusManager;
     private final AudioBecomingNoisyManager audioBecomingNoisyManager;
+    private final EpisodePositionDaoWrapper episodePositionDao;
     private PlaybackEventListener           playbackEventListener;
     private Episode                         playbackEpisode;
     private boolean                         inTransientLoss;
     private boolean                         isPrepared;
 
-    public Controller(PlaybackEventBroadcaster playbackEventBroadcaster,
-                      MediaPlayer mediaPlayer,
-                      AudioFocusManager audioFocusManager,
-                      AudioBecomingNoisyManager audioBecomingNoisyManager)
+    public Controller(PlaybackEventBroadcaster  playbackEventBroadcaster,
+                      MediaPlayer               mediaPlayer,
+                      AudioFocusManager         audioFocusManager,
+                      AudioBecomingNoisyManager audioBecomingNoisyManager,
+                      EpisodePositionDaoWrapper episodePositionDao)
     {
         this.playbackEventBroadcaster  = playbackEventBroadcaster;
         this.mediaPlayer               = mediaPlayer;
         this.audioFocusManager         = audioFocusManager;
         this.audioBecomingNoisyManager = audioBecomingNoisyManager;
+        this.episodePositionDao        = episodePositionDao;
     }
 
     public Controller setListener(PlaybackEventListener playbackEventListener)
@@ -156,8 +160,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
     public void onPrepared(MediaPlayer mediaPlayer)
     {
         isPrepared = true;
-        // TODO: seek to position
-        seekTo(0);
+        seekTo(episodePositionDao.getOrCreate(playbackEpisode).getPosition());
         play();
     }
 

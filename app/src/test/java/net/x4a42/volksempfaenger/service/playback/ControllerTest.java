@@ -4,6 +4,8 @@ import android.media.MediaPlayer;
 
 import net.x4a42.volksempfaenger.data.entity.enclosure.Enclosure;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +25,11 @@ public class ControllerTest
     @Mock AudioFocusManager         audioFocusManager;
     @Mock AudioBecomingNoisyManager audioBecomingNoisyManager;
     @Mock Episode                   playbackEpisode;
+    @Mock EpisodePosition           episodePosition;
     @Mock List<Enclosure>           list;
     @Mock Enclosure                 enclosure;
     @Mock PlaybackEventListener     playbackEventListener;
+    @Mock EpisodePositionDaoWrapper episodePositionDao;
     String                          url                       = "this-is-my-url";
     int                             seekToPosition            = 123;
     Controller                      controller;
@@ -36,14 +40,14 @@ public class ControllerTest
         Mockito.when(playbackEpisode.getEnclosures()).thenReturn(list);
         Mockito.when(list.get(0)).thenReturn(enclosure);
         Mockito.when(enclosure.getUrl()).thenReturn(url);
+        Mockito.when(episodePositionDao.getOrCreate(playbackEpisode)).thenReturn(episodePosition);
+        Mockito.when(episodePosition.getPosition()).thenReturn(seekToPosition);
         controller = Mockito.spy(new Controller(playbackEventBroadcaster,
-                                                                mediaPlayer,
-                                                                audioFocusManager,
-                                                                audioBecomingNoisyManager)
-                                                 .setListener(playbackEventListener));
-
-        // TODO
-        //Mockito.when(playbackEpisode.getPath()).thenReturn(file);
+                                                mediaPlayer,
+                                                audioFocusManager,
+                                                audioBecomingNoisyManager,
+                                                episodePositionDao)
+                                         .setListener(playbackEventListener));
     }
 
     //
@@ -169,15 +173,10 @@ public class ControllerTest
     @Test
     public void onPrepared() throws Exception
     {
-        int duration = 10;
-        // TODO
-        //Mockito.when(playbackEpisode.getDurationListenedAtStart()).thenReturn(duration);
-
         controller.open(playbackEpisode);
         controller.onPrepared(mediaPlayer);
 
-        // TODO
-        //Mockito.verify(playbackEpisode).getDurationListenedAtStart();
+        Mockito.verify(controller).seekTo(seekToPosition);
         Mockito.verify(controller).play();
     }
 
