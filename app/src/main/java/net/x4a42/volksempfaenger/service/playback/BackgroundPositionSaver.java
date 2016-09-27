@@ -34,6 +34,11 @@ class BackgroundPositionSaver implements Runnable
 
     public void stop(boolean resetPosition)
     {
+        if (episodePosition == null)
+        {
+            return;
+        }
+
         if (resetPosition)
         {
             episodePositionDao.delete(episodePosition);
@@ -44,6 +49,7 @@ class BackgroundPositionSaver implements Runnable
         }
 
         handler.removeCallbacks(this);
+        episodePosition = null;
     }
 
     @Override

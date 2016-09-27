@@ -74,6 +74,7 @@ public class PlaybackServiceProxyTest
     {
         proxy.onPlay(episode);
 
+        Mockito.verify(positionSaver).stop(false);
         Mockito.verify(controller).open(episode);
 
         // TODO: check episode status is EPISODE_STATE_LISTENING

@@ -59,7 +59,7 @@ public class BackgroundPositionSaverTest
         backgroundSaver.stop(false);
 
         Mockito.verify(episodePosition).setPosition(position);
-        Mockito.verify(episodePositionDao).update(episodePosition);
+        Mockito.verify(episodePositionDao).insertOrReplace(episodePosition);
         Mockito.verify(handler).removeCallbacks(backgroundSaver);
     }
 

@@ -94,6 +94,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         }
         else
         {
+            positionSaver.stop(false);
             controller.open(episode);
         }
     }
