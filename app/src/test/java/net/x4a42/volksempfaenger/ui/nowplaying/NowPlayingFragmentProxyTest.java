@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.ui.nowplaying;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +7,7 @@ import android.view.ViewGroup;
 import junit.framework.Assert;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
@@ -23,8 +23,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class NowPlayingFragmentProxyTest
 {
-    @Mock Uri                              episodeUri;
-    @Mock Uri                              otherEpisodeUri;
+    @Mock Episode                          episode;
+    long                                   episodeId = 158;
+    @Mock Episode                          otherEpisode;
+    long                                   otherEpisodeId = 148;
     @Mock PlaybackServiceConnectionManager connectionManager;
     @Mock PlaybackServiceFacade            facade;
     @Mock PlaybackEventReceiver            playbackEventReceiver;
@@ -41,14 +43,15 @@ public class NowPlayingFragmentProxyTest
     public void setUp() throws Exception
     {
         Mockito.when(inflater.inflate(R.layout.nowplaying, containter, false)).thenReturn(view);
+        Mockito.when(episode.get_id()).thenReturn(episodeId);
+        Mockito.when(otherEpisode.get_id()).thenReturn(otherEpisodeId);
 
-        proxy = new NowPlayingFragmentProxy(fragment,
-                                            connectionManager,
+        proxy = new NowPlayingFragmentProxy(connectionManager,
                                             playbackEventReceiver,
                                             seekBarManager,
                                             controlButtonsManager,
                                             infoSectionManager);
-        proxy.setEpisodeUri(episodeUri);
+        proxy.setEpisode(episode);
     }
 
     @Test
@@ -125,7 +128,7 @@ public class NowPlayingFragmentProxyTest
     {
         Mockito.when(connectionManager.getFacade()).thenReturn(facade);
         Mockito.when(facade.isOpen()).thenReturn(true);
-        Mockito.when(facade.getEpisodeUri()).thenReturn(episodeUri);
+        Mockito.when(facade.isEpisodeOpen(episode)).thenReturn(true);
 
         proxy.onPlaybackServiceConnected();
 
@@ -141,7 +144,7 @@ public class NowPlayingFragmentProxyTest
     {
         Mockito.when(connectionManager.getFacade()).thenReturn(facade);
         Mockito.when(facade.isOpen()).thenReturn(true);
-        Mockito.when(facade.getEpisodeUri()).thenReturn(otherEpisodeUri);
+        Mockito.when(facade.getEpisode()).thenReturn(otherEpisode);
 
         proxy.onPlaybackServiceConnected();
 

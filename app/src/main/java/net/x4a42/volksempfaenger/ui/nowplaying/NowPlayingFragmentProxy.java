@@ -1,11 +1,11 @@
 package net.x4a42.volksempfaenger.ui.nowplaying;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
@@ -15,22 +15,19 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listener,
                                          PlaybackEventListener
 {
-    private final NowPlayingFragment               fragment;
     private final PlaybackServiceConnectionManager connectionManager;
     private final PlaybackEventReceiver            playbackEventReceiver;
     private final SeekBarManager                   seekBarManager;
     private final ControlButtonsManager            controlButtonsManager;
     private final InfoSectionManager               infoSectionManager;
-    private Uri                                    episodeUri;
+    private Episode                                episode;
 
-    public NowPlayingFragmentProxy(NowPlayingFragment               fragment,
-                                   PlaybackServiceConnectionManager connectionManager,
+    public NowPlayingFragmentProxy(PlaybackServiceConnectionManager connectionManager,
                                    PlaybackEventReceiver            playbackEventReceiver,
                                    SeekBarManager                   seekBarManager,
                                    ControlButtonsManager            controlButtonsManager,
                                    InfoSectionManager               infoSectionManager)
     {
-        this.fragment              = fragment;
         this.connectionManager     = connectionManager;
         this.playbackEventReceiver = playbackEventReceiver;
         this.seekBarManager        = seekBarManager;
@@ -38,9 +35,9 @@ class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listen
         this.infoSectionManager    = infoSectionManager;
     }
 
-    public void setEpisodeUri(Uri episodeUri)
+    public void setEpisode(Episode episode)
     {
-        this.episodeUri = episodeUri;
+        this.episode = episode;
     }
 
     public void onCreate()
@@ -121,7 +118,7 @@ class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listen
             return;
         }
 
-        if (episodeUri != null && facade.getEpisodeUri().equals(episodeUri))
+        if (episode != null && facade.isEpisodeOpen(episode))
         {
             seekBarManager.show();
             controlButtonsManager.show();

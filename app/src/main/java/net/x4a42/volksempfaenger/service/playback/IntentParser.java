@@ -1,15 +1,16 @@
 package net.x4a42.volksempfaenger.service.playback;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import net.x4a42.volksempfaenger.Log;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 
 class IntentParser
 {
     public interface Listener
     {
-        void onPlay(Uri episodeUri);
+        void onPlay(Episode episode);
         void onPause();
         void onPlayPause();
         void onStop();
@@ -17,7 +18,13 @@ class IntentParser
         void onMove(int offset);
     }
 
+    private final EpisodeDaoWrapper episodeDao;
     private Listener listener;
+
+    public IntentParser(EpisodeDaoWrapper episodeDao)
+    {
+        this.episodeDao = episodeDao;
+    }
 
     public IntentParser setListener(Listener listener)
     {
@@ -71,8 +78,9 @@ class IntentParser
 
     private void handlePlay(Intent intent)
     {
-        Uri episodeUri = intent.getData();
-        listener.onPlay(episodeUri);
+        long    episodeId = intent.getLongExtra(PlaybackServiceIntentProvider.EpisodeIdKey, -1);
+        Episode episode   = episodeDao.getById(episodeId);
+        listener.onPlay(episode);
     }
 
     private void handlePause()

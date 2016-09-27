@@ -10,10 +10,7 @@ import net.x4a42.volksempfaenger.IntentBuilder;
 import net.x4a42.volksempfaenger.NavUtilsWrapper;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.ToastMaker;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
-import net.x4a42.volksempfaenger.data.episode.EpisodeCursorLoader;
-import net.x4a42.volksempfaenger.data.episode.EpisodeCursorProvider;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
@@ -23,36 +20,29 @@ import net.x4a42.volksempfaenger.ui.SettingsActivity;
 import net.x4a42.volksempfaenger.ui.nowplaying.NowPlayingFragment;
 
 class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
-                                          EpisodeCursorProvider,
-                                          PlaybackEventListener,
-                                          EpisodeCursorLoader.Listener
+                                          PlaybackEventListener
 {
     private final ViewEpisodeActivity              activity;
+    private final Episode                          episode;
     private final FragmentManager                  fragmentManager;
-    private final Uri                              episodeUri;
     private final OptionsMenuManager               optionsMenuManager;
     private final PlaybackEventReceiver            playbackEventReceiver;
-    private final EpisodeCursorLoader              episodeCursorLoader;
     private final Presenter                        presenter;
     private final PlaybackServiceIntentProvider    intentProvider;
-    private final EpisodeDataHelper                episodeDataHelper;
     private final ToastMaker                       toastMaker;
     private final NavUtilsWrapper                  navUtilsWrapper;
     private final EpisodeSharer                    sharer;
     private final IntentBuilder                    intentBuilder;
     private final DownloadHelper                   downloadHelper;
     private final PlaybackServiceConnectionManager connectionManager;
-    private EpisodeCursor                          episodeCursor;
 
     public ViewEpisodeActivityProxy(ViewEpisodeActivity              activity,
+                                    Episode                          episode,
                                     FragmentManager                  fragmentManager,
-                                    Uri                              episodeUri,
                                     OptionsMenuManager               optionsMenuManager,
                                     PlaybackEventReceiver            playbackEventReceiver,
-                                    EpisodeCursorLoader              episodeCursorLoader,
                                     Presenter                        presenter,
                                     PlaybackServiceIntentProvider    intentProvider,
-                                    EpisodeDataHelper                episodeDataHelper,
                                     ToastMaker                       toastMaker,
                                     NavUtilsWrapper                  navUtilsWrapper,
                                     EpisodeSharer                    sharer,
@@ -61,14 +51,12 @@ class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
                                     PlaybackServiceConnectionManager connectionManager)
     {
         this.activity              = activity;
+        this.episode               = episode;
         this.fragmentManager       = fragmentManager;
-        this.episodeUri            = episodeUri;
         this.optionsMenuManager    = optionsMenuManager;
         this.playbackEventReceiver = playbackEventReceiver;
-        this.episodeCursorLoader   = episodeCursorLoader;
         this.presenter             = presenter;
         this.intentProvider        = intentProvider;
-        this.episodeDataHelper     = episodeDataHelper;
         this.toastMaker            = toastMaker;
         this.navUtilsWrapper       = navUtilsWrapper;
         this.sharer                = sharer;
@@ -81,13 +69,12 @@ class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
     {
         activity.setContentView(R.layout.view_episode);
 
-        episodeCursorLoader.init();
         presenter.onCreate();
         connectionManager.onCreate();
 
         NowPlayingFragment fragment
                 = (NowPlayingFragment) fragmentManager.findFragmentById(R.id.nowplaying);
-        fragment.setEpisodeUri(episodeUri);
+        fragment.setEpisode(episode);
     }
 
     public void onResume()
@@ -122,43 +109,43 @@ class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
     @Override
     public void onPlay()
     {
-        activity.startService(intentProvider.getPlayIntent(episodeUri));
+        activity.startService(intentProvider.getPlayIntent(episode));
     }
 
     @Override
     public void onDownload()
     {
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
     }
 
     @Override
     public void onShare()
     {
-        sharer.share(episodeCursor);
+        sharer.share();
     }
 
     @Override
     public void onDelete()
     {
-        episodeDataHelper.delete(episodeUri, episodeCursor.getId());
+        // TODO: delete the episode
     }
 
     @Override
     public void onMarkListened()
     {
-        episodeDataHelper.markListened(episodeUri);
+        // TODO: mark listened
     }
 
     @Override
     public void onMarkNew()
     {
-        episodeDataHelper.markNew(episodeUri);
+        // TODO: mark new
     }
 
     @Override
     public void onWebsite()
     {
-        Uri uri = episodeCursor.getUrlUri();
+        Uri uri = null; // TODO
         if (uri != null)
         {
             activity.startActivity(intentBuilder.build(Intent.ACTION_VIEW, uri));
@@ -181,41 +168,12 @@ class ViewEpisodeActivityProxy implements OptionsMenuManager.Listener,
     }
 
     //
-    // EpisodeCursorProvider
-    //
-
-    @Override
-    public EpisodeCursor getEpisodeCursor()
-    {
-        return episodeCursor;
-    }
-
-    //
     // PlaybackEventListener
     //
 
     @Override
     public void onPlaybackEvent(PlaybackEvent playbackEvent)
     {
-        activity.invalidateOptionsMenu();
-    }
-
-    //
-    // EpisodeCursorLoader.Listener
-    //
-
-    @Override
-    public void onCursorLoaded(EpisodeCursor episodeCursor)
-    {
-        this.episodeCursor = episodeCursor;
-        activity.invalidateOptionsMenu();
-        presenter.update(episodeCursor);
-    }
-
-    @Override
-    public void onCursorReset()
-    {
-        this.episodeCursor = null;
         activity.invalidateOptionsMenu();
     }
 

@@ -1,6 +1,8 @@
 package net.x4a42.volksempfaenger.service.playback;
 
-import android.net.Uri;
+import android.support.annotation.Nullable;
+
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 public class PlaybackServiceFacade
 {
@@ -11,10 +13,16 @@ public class PlaybackServiceFacade
         this.controller = controller;
     }
 
-    public Uri getEpisodeUri()
+    public boolean isEpisodeOpen(Episode episode)
     {
-        PlaybackItem playbackItem = controller.getPlaybackItem();
-        return playbackItem != null ? playbackItem.getEpisodeUri() : null;
+        Episode playbackEpisode = controller.getPlaybackEpisode();
+        return playbackEpisode != null && playbackEpisode.get_id().equals(episode.get_id());
+    }
+
+    @Nullable
+    public Episode getEpisode()
+    {
+        return controller.getPlaybackEpisode();
     }
 
     public boolean isPlaying()
@@ -37,21 +45,4 @@ public class PlaybackServiceFacade
         return controller.getPosition();
     }
 
-    public String getTitle()
-    {
-        PlaybackItem playbackItem = controller.getPlaybackItem();
-        return playbackItem != null ? playbackItem.getTitle() : "";
-    }
-
-    public String getPodcastTitle()
-    {
-        PlaybackItem playbackItem = controller.getPlaybackItem();
-        return playbackItem != null ? playbackItem.getPodcastTitle() : "";
-    }
-
-    public long getPodcastId()
-    {
-        PlaybackItem playbackItem = controller.getPlaybackItem();
-        return playbackItem != null ? playbackItem.getPodcastId() : -1;
-    }
 }

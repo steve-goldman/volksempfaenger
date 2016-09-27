@@ -4,14 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 
 import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.EnclosureCursor;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
-import net.x4a42.volksempfaenger.data.enclosure.EnclosureDataHelper;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.misc.AlertDialogBuilderFactory;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.service.download.DownloadServiceIntentProvider;
@@ -27,48 +23,31 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class DownloadHelperTest
 {
     @Mock Context                       context;
-    @Mock Uri                           episodeUri;
-    @Mock EpisodeDataHelper             episodeDataHelper;
-    @Mock EnclosureCursor               enclosureCursor;
-    @Mock EnclosureDataHelper           enclosureDataHelper;
+    @Mock Episode                       episode;
     @Mock Preferences                   preferences;
     @Mock ConnectivityStatus            connectivityStatus;
     @Mock DownloadServiceIntentProvider intentProvider;
     @Mock Intent                        intent;
     @Mock AlertDialogBuilderFactory     dialogBuilderFactory;
     @Mock AlertDialog.Builder           dialogBuilder;
-    @Mock EpisodeCursor                 episodeCursor;
     long                                episodeId            = 10;
-    long                                enclosureId          = 20;
     DownloadHelper                      downloadHelper;
 
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(episodeCursor.getId()).thenReturn(episodeId);
-        Mockito.when(enclosureDataHelper.getForEpisode(episodeId)).thenReturn(enclosureCursor);
-        Mockito.when(enclosureCursor.getId()).thenReturn(enclosureId);
+        Mockito.when(episode.get_id()).thenReturn(episodeId);
         Mockito.when(intentProvider.getDownloadIntent(Mockito.eq(new long[]{episodeId}),
                                                       Mockito.eq(true)))
                .thenReturn(intent);
         Mockito.when(dialogBuilderFactory.create()).thenReturn(dialogBuilder);
 
         downloadHelper = new DownloadHelper(context,
-                                            episodeUri,
-                                            episodeDataHelper,
-                                            enclosureDataHelper,
+                                            episode,
                                             preferences,
                                             connectivityStatus,
                                             intentProvider,
                                             dialogBuilderFactory);
-    }
-
-    @Test
-    public void downloadSetsEnclosureId() throws Exception
-    {
-        downloadHelper.download(episodeCursor);
-
-        Mockito.verify(episodeDataHelper).setEnclosure(episodeUri, enclosureId);
     }
 
     @Test
@@ -77,7 +56,7 @@ public class DownloadHelperTest
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
         Mockito.when(preferences.downloadWifiOnly()).thenReturn(false);
 
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
 
         Mockito.verify(context).startService(intent);
     }
@@ -88,7 +67,7 @@ public class DownloadHelperTest
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
         Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
 
         Mockito.verify(context, Mockito.never()).startService(intent);
         Mockito.verify(dialogBuilder).setMessage(R.string.dialog_download_mobile);
@@ -105,7 +84,7 @@ public class DownloadHelperTest
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(true);
         Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
 
         Mockito.verify(context).startService(intent);
     }
@@ -116,7 +95,7 @@ public class DownloadHelperTest
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
         Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
         downloadHelper.onClick(Mockito.mock(DialogInterface.class), DialogInterface.BUTTON_POSITIVE);
 
         Mockito.verify(context).startService(intent);
@@ -128,7 +107,7 @@ public class DownloadHelperTest
         Mockito.when(connectivityStatus.isWifiConnected()).thenReturn(false);
         Mockito.when(preferences.downloadWifiOnly()).thenReturn(true);
 
-        downloadHelper.download(episodeCursor);
+        downloadHelper.download();
         downloadHelper.onClick(Mockito.mock(DialogInterface.class), DialogInterface.BUTTON_NEGATIVE);
 
         Mockito.verify(context, Mockito.never()).startService(intent);

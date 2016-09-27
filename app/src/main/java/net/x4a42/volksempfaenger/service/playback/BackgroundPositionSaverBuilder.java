@@ -3,15 +3,17 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.content.Context;
 import android.os.Handler;
 
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
 class BackgroundPositionSaverBuilder
 {
-    public BackgroundPositionSaver build(Context context)
+    public BackgroundPositionSaver build(Context context,
+                                         PlaybackPositionProvider positionProvider)
     {
-        EpisodeDataHelper episodeDataHelper = new EpisodeDataHelperBuilder().build(context);
+        EpisodePositionDaoWrapper episodePositionDao
+                = new EpisodePositionDaoBuilder().build(context);
 
-        return new BackgroundPositionSaver(episodeDataHelper, new Handler());
+        return new BackgroundPositionSaver(new Handler(), positionProvider, episodePositionDao);
     }
 }

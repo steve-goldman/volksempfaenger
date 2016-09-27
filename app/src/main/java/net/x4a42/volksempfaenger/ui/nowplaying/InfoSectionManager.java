@@ -9,8 +9,10 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import net.x4a42.volksempfaenger.FileBuilder;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
@@ -20,17 +22,15 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
-import java.io.File;
-
 class InfoSectionManager implements PlaybackEventListener,
-                                           View.OnClickListener,
-                                           PlaybackServiceConnectionManager.Listener
+                                    View.OnClickListener,
+                                    PlaybackServiceConnectionManager.Listener
 {
     private final PlaybackEventReceiver             playbackEventReceiver;
     private final PlaybackServiceIntentProvider     playbackIntentProvider;
     private final ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
+    private final PodcastPathProvider               podcastPathProvider;
     private final ImageLoader                       imageLoader;
-    private final FileBuilder                       fileBuilder;
     private PlaybackServiceFacadeProvider           facadeProvider;
     private LinearLayout                            infoLayout;
     private ImageView                               podcastLogo;
@@ -41,13 +41,13 @@ class InfoSectionManager implements PlaybackEventListener,
     public InfoSectionManager(PlaybackEventReceiver             playbackEventReceiver,
                               PlaybackServiceIntentProvider     playbackIntentProvider,
                               ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider,
-                              ImageLoader                       imageLoader,
-                              FileBuilder                       fileBuilder)
+                              PodcastPathProvider               podcastPathProvider,
+                              ImageLoader                       imageLoader)
     {
-        this.fileBuilder               = fileBuilder;
         this.playbackEventReceiver     = playbackEventReceiver;
         this.playbackIntentProvider    = playbackIntentProvider;
         this.viewEpisodeIntentProvider = viewEpisodeIntentProvider;
+        this.podcastPathProvider       = podcastPathProvider;
         this.imageLoader               = imageLoader;
     }
 
@@ -142,7 +142,7 @@ class InfoSectionManager implements PlaybackEventListener,
     private void handleInfoClicked(Context context)
     {
         context.startActivity(viewEpisodeIntentProvider.getIntent(
-                facadeProvider.getFacade().getEpisodeUri()));
+                facadeProvider.getFacade().getEpisode()));
     }
 
     private void handlePlayPauseClicked(Context context)
@@ -152,24 +152,35 @@ class InfoSectionManager implements PlaybackEventListener,
 
     private void update()
     {
-        PlaybackServiceFacade facade = facadeProvider.getFacade();
-        if (facade == null || !facade.isOpen())
+        PlaybackServiceFacade facade  = facadeProvider.getFacade();
+        if (facade == null)
         {
-            episodeText.setText("");
-            podcastText.setText("");
+            updateEmpty();
             return;
         }
 
-        episodeText.setText(facade.getTitle());
-        podcastText.setText(facade.getPodcastTitle());
+        Episode episode = facade.getEpisode();
+        if (episode == null)
+        {
+            updateEmpty();
+            return;
+        }
+
+        Podcast podcast = episode.getPodcast();
+
+        episodeText.setText(episode.getTitle());
+        podcastText.setText(podcast.getTitle());
         playPauseButton.setImageResource(
                 facade.isPlaying() ?
                         R.drawable.ic_media_pause : R.drawable.ic_media_play);
 
-        File   logoFile = fileBuilder.build(String.valueOf(facade.getPodcastId()));
-        String url      = logoFile.exists() ? logoFile.toURI().toString() : null;
-
+        String url = podcastPathProvider.getLogoUrl(podcast);
         imageLoader.displayImage(url, podcastLogo);
     }
 
+    private void updateEmpty()
+    {
+        episodeText.setText("");
+        podcastText.setText("");
+    }
 }

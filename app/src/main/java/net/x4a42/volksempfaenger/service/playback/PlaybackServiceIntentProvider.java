@@ -1,7 +1,8 @@
 package net.x4a42.volksempfaenger.service.playback;
 
 import android.content.Intent;
-import android.net.Uri;
+
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 /*
     Use this class if you want to create an intent to send to the PlaybackService
@@ -10,8 +11,9 @@ import android.net.Uri;
 
 public class PlaybackServiceIntentProvider
 {
-    public static final String                 PositionKey = "position";
-    public static final String                 OffsetKey   = "offset";
+    public static final String                 EpisodeIdKey = "episodeId";
+    public static final String                 PositionKey  = "position";
+    public static final String                 OffsetKey    = "offset";
     private final PlaybackServiceIntentFactory intentFactory;
 
     public PlaybackServiceIntentProvider(PlaybackServiceIntentFactory intentFactory)
@@ -19,9 +21,10 @@ public class PlaybackServiceIntentProvider
         this.intentFactory = intentFactory;
     }
 
-    public Intent getPlayIntent(Uri episodeUri)
+    public Intent getPlayIntent(Episode episode)
     {
-        return intentFactory.create(PlaybackService.ActionPlay).setData(episodeUri);
+        return intentFactory.create(PlaybackService.ActionPlay)
+                            .putExtra(EpisodeIdKey, episode.get_id());
     }
 
     public Intent getPauseIntent()

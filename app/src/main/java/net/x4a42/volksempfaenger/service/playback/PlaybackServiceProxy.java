@@ -4,36 +4,31 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
+
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
 {
     public static final int                          NotificationId = 0x59d54313;
-    private final PlaybackService                    playbackService;
     private final BackgroundPositionSaver            positionSaver;
     private final Controller                         controller;
-    private final PlaybackItemBuilder                playbackItemBuilder;
     private final IntentParser                       intentParser;
     private final MediaButtonReceiver                mediaButtonReceiver;
     private final MediaSessionManager                mediaSessionManager;
     private final NotificationManager                notificationManager;
     private final PlaybackNotificationBuilder        notificationBuilder;
 
-    public PlaybackServiceProxy(PlaybackService                    playbackService,
-                                BackgroundPositionSaver            positionSaver,
+    public PlaybackServiceProxy(BackgroundPositionSaver            positionSaver,
                                 Controller                         controller,
-                                PlaybackItemBuilder                playbackItemBuilder,
                                 IntentParser                       intentParser,
                                 MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
                                 NotificationManager                notificationManager,
                                 PlaybackNotificationBuilder        notificationBuilder)
     {
-        this.playbackService            = playbackService;
         this.positionSaver              = positionSaver;
         this.controller                 = controller;
-        this.playbackItemBuilder        = playbackItemBuilder;
         this.intentParser               = intentParser;
         this.mediaButtonReceiver        = mediaButtonReceiver;
         this.mediaSessionManager        = mediaSessionManager;
@@ -88,12 +83,9 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     }
 
     @Override
-    public void onPlay(Uri episodeUri)
+    public void onPlay(Episode episode)
     {
-        PlaybackItem playbackItem = playbackItemBuilder.build(playbackService,
-                                                              getEpisodeUri(episodeUri));
-
-        if (controller.isPlaybackItemOpen(playbackItem))
+        if (controller.isPlaybackEpisodeOpen(episode))
         {
             if (!controller.isPlaying())
             {
@@ -102,7 +94,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         }
         else
         {
-            controller.open(playbackItem);
+            positionSaver.stop(false);
+            controller.open(episode);
         }
     }
 
@@ -162,7 +155,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private void handlePlaying()
     {
         updateNotification(true);
-        positionSaver.start(getEpisodeUri(), controller);
+        positionSaver.start(controller.getPlaybackEpisode());
     }
 
     private void handlePaused()
@@ -177,23 +170,9 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         positionSaver.stop(true);
     }
 
-    private Uri getEpisodeUri()
-    {
-        return getEpisodeUri(null);
-    }
-
-    private Uri getEpisodeUri(Uri episodeUri)
-    {
-        if (episodeUri == null && controller.getPlaybackItem() != null)
-        {
-            return controller.getPlaybackItem().getEpisodeUri();
-        }
-        return episodeUri;
-    }
-
     private void updateNotification(boolean isPlaying)
     {
-        Notification notification = notificationBuilder.build(controller.getPlaybackItem(), isPlaying);
+        Notification notification = notificationBuilder.build(controller.getPlaybackEpisode(), isPlaying);
         notificationManager.notify(NotificationId, notification);
     }
 }

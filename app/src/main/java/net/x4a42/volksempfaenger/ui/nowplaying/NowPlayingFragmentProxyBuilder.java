@@ -25,8 +25,7 @@ class NowPlayingFragmentProxyBuilder
                 = new InfoSectionManagerBuilder().build(fragment.getActivity(), connectionManager);
 
         NowPlayingFragmentProxy proxy
-                = new NowPlayingFragmentProxy(fragment,
-                                              connectionManager,
+                = new NowPlayingFragmentProxy(connectionManager,
                                               playbackEventReceiver,
                                               seekBarManager,
                                               controlButtonsManager,

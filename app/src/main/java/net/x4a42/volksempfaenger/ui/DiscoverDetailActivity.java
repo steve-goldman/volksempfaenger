@@ -2,12 +2,17 @@ package net.x4a42.volksempfaenger.ui;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProviderBuilder;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -32,6 +37,7 @@ public class DiscoverDetailActivity extends Activity implements
 			.build();
 	private ImageLoader imageLoader;
 	private String feedUrl;
+	private String title;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +55,7 @@ public class DiscoverDetailActivity extends Activity implements
 		Button websiteButton = (Button) findViewById(R.id.button_website);
 
 		Intent intent = getIntent();
-		String title = intent.getStringExtra(GpodderJsonReader.KEY_TITLE);
+		title = intent.getStringExtra(GpodderJsonReader.KEY_TITLE);
 		String description = intent
 				.getStringExtra(GpodderJsonReader.KEY_DESCRIPTION);
 		String logo = intent.getStringExtra(GpodderJsonReader.KEY_SCALED_LOGO);
@@ -77,8 +83,7 @@ public class DiscoverDetailActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_add:
-			new AddFeedTask(getApplicationContext()).executeOnExecutor(
-					AsyncTask.THREAD_POOL_EXECUTOR, feedUrl);
+			handleAdd();
 			return true;
 		default:
 			return ActivityHelper.handleGlobalMenu(this, item);
@@ -96,6 +101,22 @@ public class DiscoverDetailActivity extends Activity implements
 		inflater.inflate(R.menu.discover_detail, menu);
 		ActivityHelper.addGlobalMenu(this, menu);
 		return true;
+	}
+
+	private void handleAdd()
+	{
+		PodcastDaoWrapper podcastDao = new PodcastDaoBuilder().build(this);
+		Podcast podcast = podcastDao.getByFeedUrl(feedUrl);
+		if (podcast == null)
+		{
+			podcast = podcastDao.newPodcast(feedUrl);
+			podcastDao.insert(podcast);
+		}
+
+		FeedSyncServiceIntentProvider intentProvider
+				= new FeedSyncServiceIntentProviderBuilder().build(this);
+
+		startService(intentProvider.getSyncIntent(podcast));
 	}
 
 }

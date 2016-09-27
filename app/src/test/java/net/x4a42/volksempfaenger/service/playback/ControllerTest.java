@@ -2,6 +2,11 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.data.entity.enclosure.Enclosure;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.List;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTest
 {
@@ -17,21 +24,30 @@ public class ControllerTest
     @Mock MediaPlayer               mediaPlayer;
     @Mock AudioFocusManager         audioFocusManager;
     @Mock AudioBecomingNoisyManager audioBecomingNoisyManager;
-    @Mock PlaybackItem              playbackItem;
+    @Mock Episode                   playbackEpisode;
+    @Mock EpisodePosition           episodePosition;
+    @Mock List<Enclosure>           list;
+    @Mock Enclosure                 enclosure;
     @Mock PlaybackEventListener     playbackEventListener;
-    String                          file                      = "this-is-my-file";
+    @Mock EpisodePositionDaoWrapper episodePositionDao;
+    String                          url                       = "this-is-my-url";
     int                             seekToPosition            = 123;
     Controller                      controller;
 
     @Before
     public void setUp() throws Exception
     {
+        Mockito.when(playbackEpisode.getEnclosures()).thenReturn(list);
+        Mockito.when(list.get(0)).thenReturn(enclosure);
+        Mockito.when(enclosure.getUrl()).thenReturn(url);
+        Mockito.when(episodePositionDao.getOrCreate(playbackEpisode)).thenReturn(episodePosition);
+        Mockito.when(episodePosition.getPosition()).thenReturn(seekToPosition);
         controller = Mockito.spy(new Controller(playbackEventBroadcaster,
-                                                                mediaPlayer,
-                                                                audioFocusManager,
-                                                                audioBecomingNoisyManager)
-                                                 .setListener(playbackEventListener));
-        Mockito.when(playbackItem.getPath()).thenReturn(file);
+                                                mediaPlayer,
+                                                audioFocusManager,
+                                                audioBecomingNoisyManager,
+                                                episodePositionDao)
+                                         .setListener(playbackEventListener));
     }
 
     //
@@ -43,9 +59,9 @@ public class ControllerTest
     {
         InOrder inOrder = Mockito.inOrder(playbackEventListener, playbackEventBroadcaster, mediaPlayer);
 
-        controller.open(playbackItem);
+        controller.open(playbackEpisode);
 
-        inOrder.verify(mediaPlayer).setDataSource(file);
+        inOrder.verify(mediaPlayer).setDataSource(url);
         inOrder.verify(mediaPlayer).prepareAsync();
     }
 
@@ -75,7 +91,7 @@ public class ControllerTest
     @Test
     public void stopPreparedPrepared() throws Exception
     {
-        controller.open(playbackItem);
+        controller.open(playbackEpisode);
         controller.onPrepared(mediaPlayer);
         controller.stop();
 
@@ -109,7 +125,7 @@ public class ControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
-        controller.open(playbackItem);
+        controller.open(playbackEpisode);
         controller.onPrepared(mediaPlayer);
         controller.movePosition(5);
 
@@ -133,7 +149,7 @@ public class ControllerTest
         Mockito.when(mediaPlayer.getCurrentPosition()).thenReturn(10);
         Mockito.when(mediaPlayer.getDuration()).thenReturn(20);
 
-        controller.open(playbackItem);
+        controller.open(playbackEpisode);
         controller.onPrepared(mediaPlayer);
         controller.movePosition(15);
 
@@ -157,13 +173,10 @@ public class ControllerTest
     @Test
     public void onPrepared() throws Exception
     {
-        int duration = 10;
-        Mockito.when(playbackItem.getDurationListenedAtStart()).thenReturn(duration);
-
-        controller.open(playbackItem);
+        controller.open(playbackEpisode);
         controller.onPrepared(mediaPlayer);
 
-        Mockito.verify(playbackItem).getDurationListenedAtStart();
+        Mockito.verify(controller).seekTo(seekToPosition);
         Mockito.verify(controller).play();
     }
 

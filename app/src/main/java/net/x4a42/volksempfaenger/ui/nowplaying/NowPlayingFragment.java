@@ -1,19 +1,20 @@
 package net.x4a42.volksempfaenger.ui.nowplaying;
 
 import android.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+
 public class NowPlayingFragment extends Fragment
 {
     private NowPlayingFragmentProxy proxy;
 
-    public void setEpisodeUri(Uri episodeUri)
+    public void setEpisode(Episode episode)
     {
-        proxy.setEpisodeUri(episodeUri);
+        proxy.setEpisode(episode);
     }
 
     @Override

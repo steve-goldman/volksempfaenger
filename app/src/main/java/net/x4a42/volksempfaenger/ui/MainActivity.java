@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.subscriptiongrid.SubscriptionGridFragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;

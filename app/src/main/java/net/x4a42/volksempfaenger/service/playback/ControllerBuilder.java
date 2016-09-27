@@ -4,6 +4,9 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+
 class ControllerBuilder
 {
     public Controller build(Context context)
@@ -13,12 +16,14 @@ class ControllerBuilder
         AudioManager              audioManager               = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         AudioFocusManager         audioFocusManager          = new AudioFocusManager(audioManager);
         AudioBecomingNoisyManager audioBecomingNoisyManager  = new AudioBecomingNoisyManager(context);
+        EpisodePositionDaoWrapper episodePositionDao         = new EpisodePositionDaoBuilder().build(context);
 
         Controller controller
                 = new Controller(playbackEventBroadcaster,
                                  mediaPlayer,
                                  audioFocusManager,
-                                 audioBecomingNoisyManager);
+                                 audioBecomingNoisyManager,
+                                 episodePositionDao);
 
         mediaPlayer.setOnPreparedListener(controller);
         mediaPlayer.setOnCompletionListener(controller);

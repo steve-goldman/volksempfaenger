@@ -65,8 +65,13 @@ public class FeedParser {
 
 		@Override
 		public void onFeedItem(FeedItem feedItem) {
-			feedItems.add(feedItem);
-			feedItem.enclosures.addAll(enclosures);
+			// TODO: this is a hacky way to find buggy feeds
+			if (feedItem.url != null || !enclosures.isEmpty())
+			{
+				feedItems.add(feedItem);
+				feedItem.enclosures.addAll(enclosures);
+			}
+
 			enclosures.clear();
 		}
 

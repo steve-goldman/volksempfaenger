@@ -2,7 +2,6 @@ package net.x4a42.volksempfaenger.ui.nowplaying;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -11,8 +10,10 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import net.x4a42.volksempfaenger.FileBuilder;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
@@ -37,11 +38,13 @@ public class InfoSectionManagerTest
     @Mock PlaybackEventReceiver             playbackEventReceiver;
     @Mock PlaybackServiceFacadeProvider     facadeProvider;
     @Mock PlaybackServiceFacade             facade;
-    @Mock Uri                               episodeUri;
+    @Mock Episode                           episode;
+    @Mock Podcast                           podcast;
     @Mock PlaybackServiceIntentProvider     playbackIntentProvider;
     @Mock Intent                            playPauseIntent;
     @Mock ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
     @Mock Intent                            viewEpisodeIntent;
+    @Mock PodcastPathProvider               podcastPathProvider;
     @Mock View                              view;
     @Mock LinearLayout                      infoLayout;
     @Mock ImageView                         podcastLogo;
@@ -49,9 +52,7 @@ public class InfoSectionManagerTest
     @Mock TextView                          podcastText;
     @Mock ImageButton                       playPauseButton;
     @Mock ImageLoader                       imageLoader;
-    @Mock FileBuilder                       fileBuilder;
     @Mock File                              logoFile;
-    long                                    podcastId                 = 199;
     String                                  title                     = "my-episode-title";
     String                                  podcastTitle              = "my-podcast-title";
     String                                  url                       = "my-url";
@@ -61,12 +62,12 @@ public class InfoSectionManagerTest
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(facade.getPodcastId()).thenReturn(podcastId);
-        Mockito.when(facade.getTitle()).thenReturn(title);
-        Mockito.when(facade.getPodcastTitle()).thenReturn(podcastTitle);
-        Mockito.when(facade.getEpisodeUri()).thenReturn(episodeUri);
+        Mockito.when(facade.getEpisode()).thenReturn(episode);
+        Mockito.when(episode.getPodcast()).thenReturn(podcast);
+        Mockito.when(episode.getTitle()).thenReturn(title);
+        Mockito.when(podcast.getTitle()).thenReturn(podcastTitle);
         Mockito.when(playbackIntentProvider.getPlayPauseIntent()).thenReturn(playPauseIntent);
-        Mockito.when(viewEpisodeIntentProvider.getIntent(episodeUri)).thenReturn(viewEpisodeIntent);
+        Mockito.when(viewEpisodeIntentProvider.getIntent(episode)).thenReturn(viewEpisodeIntent);
         Mockito.when(view.findViewById(R.id.info)).thenReturn(infoLayout);
         Mockito.when(view.findViewById(R.id.logo)).thenReturn(podcastLogo);
         Mockito.when(view.findViewById(R.id.episode)).thenReturn(episodeText);
@@ -74,15 +75,15 @@ public class InfoSectionManagerTest
         Mockito.when(view.findViewById(R.id.info_pause)).thenReturn(playPauseButton);
         Mockito.when(playPauseButton.getContext()).thenReturn(context);
         Mockito.when(infoLayout.getContext()).thenReturn(context);
-        Mockito.when(fileBuilder.build(Mockito.anyString())).thenReturn(logoFile);
+        Mockito.when(podcastPathProvider.getLogoUrl(podcast)).thenReturn(url);
         Mockito.when(logoFile.exists()).thenReturn(true);
         Mockito.when(logoFile.toURI()).thenReturn(uri);
 
         infoSectionManager = new InfoSectionManager(playbackEventReceiver,
                                                     playbackIntentProvider,
                                                     viewEpisodeIntentProvider,
-                                                    imageLoader,
-                                                    fileBuilder)
+                                                    podcastPathProvider,
+                                                    imageLoader)
                 .setFacadeProvider(facadeProvider);
     }
 
