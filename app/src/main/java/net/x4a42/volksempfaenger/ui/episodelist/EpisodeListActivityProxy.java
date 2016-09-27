@@ -1,20 +1,21 @@
 package net.x4a42.volksempfaenger.ui.episodelist;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.view.View;
 
 import net.x4a42.volksempfaenger.R;
 
 public class EpisodeListActivityProxy
 {
-    private final Activity    activity;
-    private final ListManager listManager;
+    private final Activity        activity;
+    private final ListManager     listManager;
 
-    public EpisodeListActivityProxy(Activity    activity,
-                                    ListManager listManager)
+    public EpisodeListActivityProxy(Activity        activity,
+                                    ListManager     listManager)
     {
-        this.activity    = activity;
-        this.listManager = listManager;
+        this.activity        = activity;
+        this.listManager     = listManager;
     }
 
     public void onCreate()

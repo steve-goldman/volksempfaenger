@@ -11,9 +11,9 @@ import android.widget.RemoteViews;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.ui.MainActivity;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivity;
-import net.x4a42.volksempfaenger.ui.ViewSubscriptionActivity;
+import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
 
 class PlaybackNotificationBuilder
 {
@@ -24,16 +24,16 @@ class PlaybackNotificationBuilder
         this.context = context;
     }
 
-    public Notification build(PlaybackItem playbackItem, boolean isPlaying)
+    public Notification build(Episode playbackEpisode, boolean isPlaying)
     {
-        TaskStackBuilder taskStackBuilder = buildTaskStack(context, playbackItem);
-        Bitmap           podcastLogo      = buildPodcastLogo(context, playbackItem);
-        RemoteViews      content          = buildContent(context, playbackItem, podcastLogo, isPlaying);
+        TaskStackBuilder taskStackBuilder = buildTaskStack(context, playbackEpisode);
+        Bitmap           podcastLogo      = buildPodcastLogo(context, playbackEpisode);
+        RemoteViews      content          = buildContent(context, playbackEpisode, podcastLogo, isPlaying);
 
-        return buildNotification(context, playbackItem, taskStackBuilder, content);
+        return buildNotification(context, playbackEpisode, taskStackBuilder, content);
     }
 
-    private TaskStackBuilder buildTaskStack(Context context, PlaybackItem playbackItem)
+    private TaskStackBuilder buildTaskStack(Context context, Episode playbackEpisode)
     {
         // Build back stack as proposed in
         // "Google I/O 2012 - Navigation in Android", see
@@ -45,31 +45,24 @@ class PlaybackNotificationBuilder
         intent = new Intent(context, MainActivity.class);
         taskBuilder.addNextIntent(intent);
 
-        // ViewSubscriptionActivity
-        intent = new Intent(context, ViewSubscriptionActivity.class);
-        intent.setData(playbackItem.getEpisodeUri());
-        taskBuilder.addNextIntent(intent);
-
         // ViewEpisodeActivity
-        intent = new Intent(context, ViewEpisodeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.setData(playbackItem.getEpisodeUri());
+        intent = new ViewEpisodeActivityIntentProviderBuilder().build(context).getIntent(playbackEpisode);
         taskBuilder.addNextIntent(intent);
 
         return taskBuilder;
     }
 
-    private Bitmap buildPodcastLogo(Context context, PlaybackItem playbackItem)
+    private Bitmap buildPodcastLogo(Context context, Episode playbackEpisode)
     {
         // Get the podcast logo and scale it
         Resources res = context.getResources();
-        return Utils.getPodcastLogoBitmap(context, playbackItem.getPodcastId(),
+        return Utils.getPodcastLogoBitmap(context, playbackEpisode.getPodcastId(),
                                           res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
                                           res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height));
 
     }
 
-    private RemoteViews buildContent(Context context, PlaybackItem playbackItem, Bitmap podcastLogo, boolean isPlaying)
+    private RemoteViews buildContent(Context context, Episode playbackEpisode, Bitmap podcastLogo, boolean isPlaying)
     {
         // Build the layout for the notification
         RemoteViews content = new RemoteViews(context.getPackageName(), R.layout.notification_playing);
@@ -79,8 +72,8 @@ class PlaybackNotificationBuilder
             content.setImageViewBitmap(R.id.podcast_logo, podcastLogo);
         }
 
-        content.setTextViewText(R.id.episode_title, playbackItem.getTitle());
-        content.setTextViewText(R.id.podcast_title, playbackItem.getPodcastTitle());
+        content.setTextViewText(R.id.episode_title, playbackEpisode.getTitle());
+        content.setTextViewText(R.id.podcast_title, playbackEpisode.getPodcast().getTitle());
 
         PlaybackServiceIntentProvider intentProvider = new PlaybackServiceIntentProviderBuilder().build(context);
 
@@ -96,7 +89,7 @@ class PlaybackNotificationBuilder
             content.setImageViewResource(R.id.pause, R.drawable.ic_notification_play);
             content.setOnClickPendingIntent(
                     R.id.pause,
-                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(playbackItem.getEpisodeUri()), 0));
+                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(playbackEpisode), 0));
         }
 
         content.setOnClickPendingIntent(
@@ -106,7 +99,7 @@ class PlaybackNotificationBuilder
     }
 
     private Notification buildNotification(Context          context,
-                                           PlaybackItem     playbackItem,
+                                           Episode          playbackEpisode,
                                            TaskStackBuilder taskStackBuilder,
                                            RemoteViews      content)
     {
@@ -114,8 +107,8 @@ class PlaybackNotificationBuilder
                 new Notification.Builder(context)
                         .setContent(content)
                         .setSmallIcon(R.drawable.notification)
-                        .setContentTitle(playbackItem.getTitle())
-                        .setContentText(playbackItem.getPodcastTitle())
+                        .setContentTitle(playbackEpisode.getTitle())
+                        .setContentText(playbackEpisode.getPodcast().getTitle())
                         .setContentIntent(taskStackBuilder.getPendingIntent(0, 0))
                         .setOngoing(true).setWhen(0));
     }

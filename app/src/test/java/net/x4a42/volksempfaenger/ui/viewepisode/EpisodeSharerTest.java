@@ -5,7 +5,8 @@ import android.content.Intent;
 
 import net.x4a42.volksempfaenger.HtmlConverter;
 import net.x4a42.volksempfaenger.IntentBuilder;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class EpisodeSharerTest
 {
@@ -23,21 +22,23 @@ public class EpisodeSharerTest
     @Mock IntentBuilder intentBuilder;
     @Mock Intent        intent;
     @Mock HtmlConverter converter;
-    @Mock EpisodeCursor cursor;
+    @Mock Episode       episode;
+    @Mock Podcast       podcast;
     EpisodeSharer       sharer;
 
     @Before
     public void setUp() throws Exception
     {
         Mockito.when(intentBuilder.build(Intent.ACTION_SEND)).thenReturn(intent);
+        Mockito.when(episode.getPodcast()).thenReturn(podcast);
 
-        sharer = new EpisodeSharer(activity, intentBuilder, converter);
+        sharer = new EpisodeSharer(activity, episode, intentBuilder, converter);
     }
 
     @Test
     public void testShare() throws Exception
     {
-        sharer.share(cursor);
+        sharer.share();
 
         Mockito.verify(intent).setType("text/plain");
         Mockito.verify(intent).putExtra(Mockito.eq(Intent.EXTRA_SUBJECT), Mockito.anyString());

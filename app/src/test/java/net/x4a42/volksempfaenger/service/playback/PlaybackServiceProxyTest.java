@@ -6,6 +6,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +23,6 @@ public class PlaybackServiceProxyTest
     @Mock PlaybackService                    playbackService;
     @Mock BackgroundPositionSaver            positionSaver;
     @Mock Controller                         controller;
-    @Mock PlaybackItemBuilder                playbackItemBuilder;
     @Mock IntentParser                       intentParser;
     @Mock MediaButtonReceiver                mediaButtonReceiver;
     @Mock MediaSessionManager                mediaSessionManager;
@@ -29,10 +30,8 @@ public class PlaybackServiceProxyTest
     @Mock PlaybackNotificationBuilder        notificationBuilder;
     @Mock Notification                       notificationPlaying;
     @Mock Notification                       notificationPaused;
-    @Mock PlaybackItem                       playbackItem;
-    @Mock PlaybackItem                       otherPlaybackItem;
     @Mock Intent                             intent;
-    @Mock Uri                                episodeUri;
+    @Mock Episode                            episode;
     @Mock Uri                                otherEpisodeUri;
     PlaybackServiceProxy                     proxy;
 
@@ -40,21 +39,16 @@ public class PlaybackServiceProxyTest
     public void setUp() throws Exception
     {
         proxy = Mockito.spy(
-                new PlaybackServiceProxy(playbackService,
-                                         positionSaver,
+                new PlaybackServiceProxy(positionSaver,
                                          controller,
-                                         playbackItemBuilder,
                                          intentParser,
                                          mediaButtonReceiver,
                                          mediaSessionManager,
                                          notificationManager,
                                          notificationBuilder));
 
-        Mockito.when(playbackItemBuilder.build(playbackService, episodeUri)).thenReturn(playbackItem);
-        Mockito.when(playbackItem.getEpisodeUri()).thenReturn(episodeUri);
-        Mockito.when(otherPlaybackItem.getEpisodeUri()).thenReturn(otherEpisodeUri);
-        Mockito.when(notificationBuilder.build(playbackItem, true)).thenReturn(notificationPlaying);
-        Mockito.when(notificationBuilder.build(playbackItem, false)).thenReturn(notificationPaused);
+        Mockito.when(notificationBuilder.build(episode, true)).thenReturn(notificationPlaying);
+        Mockito.when(notificationBuilder.build(episode, false)).thenReturn(notificationPaused);
     }
 
     @Test
@@ -70,8 +64,7 @@ public class PlaybackServiceProxyTest
     {
         proxy.onPlay(null);
 
-        Mockito.verify(playbackItemBuilder, Mockito.never()).build(playbackService, episodeUri);
-        Mockito.verify(controller, Mockito.never()).open(playbackItem);
+        Mockito.verify(controller, Mockito.never()).open(episode);
 
         // TODO: check episode status is EPISODE_STATE_LISTENING
     }
@@ -79,10 +72,9 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlayPlayingNoneOrOther() throws Exception
     {
-        proxy.onPlay(episodeUri);
+        proxy.onPlay(episode);
 
-        Mockito.verify(playbackItemBuilder).build(playbackService, episodeUri);
-        Mockito.verify(controller).open(playbackItem);
+        Mockito.verify(controller).open(episode);
 
         // TODO: check episode status is EPISODE_STATE_LISTENING
     }
@@ -90,12 +82,11 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlayPlayingSamePlaying() throws Exception
     {
-        Mockito.when(controller.isPlaybackItemOpen(playbackItem)).thenReturn(true);
+        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
         Mockito.when(controller.isPlaying()).thenReturn(true);
 
-        proxy.onPlay(episodeUri);
+        proxy.onPlay(episode);
 
-        Mockito.verify(playbackItemBuilder).build(playbackService, episodeUri);
         Mockito.verify(controller, Mockito.never()).play();
 
         // TODO: check episode status is EPISODE_STATE_LISTENING
@@ -104,12 +95,11 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlayPlayingSamePaused() throws Exception
     {
-        Mockito.when(controller.isPlaybackItemOpen(playbackItem)).thenReturn(true);
+        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
         Mockito.when(controller.isPlaying()).thenReturn(false);
 
-        proxy.onPlay(episodeUri);
+        proxy.onPlay(episode);
 
-        Mockito.verify(playbackItemBuilder).build(playbackService, episodeUri);
         Mockito.verify(controller).play();
 
         // TODO: check episode status is EPISODE_STATE_LISTENING
@@ -168,7 +158,7 @@ public class PlaybackServiceProxyTest
     @Test
     public void onStop() throws Exception
     {
-        Mockito.when(controller.getPlaybackItem()).thenReturn(playbackItem);
+        Mockito.when(controller.getPlaybackEpisode()).thenReturn(episode);
 
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onStop();
@@ -233,18 +223,18 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlaybackEventPlaying() throws Exception
     {
-        Mockito.when(controller.getPlaybackItem()).thenReturn(playbackItem);
+        Mockito.when(controller.getPlaybackEpisode()).thenReturn(episode);
 
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
 
         Mockito.verify(notificationManager).notify(PlaybackServiceProxy.NotificationId, notificationPlaying);
-        Mockito.verify(positionSaver).start(episodeUri, controller);
+        Mockito.verify(positionSaver).start(episode);
     }
 
     @Test
     public void onPlaybackEventPaused() throws Exception
     {
-        Mockito.when(controller.getPlaybackItem()).thenReturn(playbackItem);
+        Mockito.when(controller.getPlaybackEpisode()).thenReturn(episode);
 
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onPlaybackEvent(PlaybackEvent.PAUSED);
@@ -256,7 +246,7 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlaybackEventEnded() throws Exception
     {
-        Mockito.when(controller.getPlaybackItem()).thenReturn(playbackItem);
+        Mockito.when(controller.getPlaybackEpisode()).thenReturn(episode);
 
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onPlaybackEvent(PlaybackEvent.ENDED);

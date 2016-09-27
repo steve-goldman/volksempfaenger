@@ -8,10 +8,8 @@ import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
 
 class BackgroundPositionSaverBuilder
 {
-    public BackgroundPositionSaver build(Context context)
+    public BackgroundPositionSaver build(PlaybackPositionProvider positionProvider)
     {
-        EpisodeDataHelper episodeDataHelper = new EpisodeDataHelperBuilder().build(context);
-
-        return new BackgroundPositionSaver(episodeDataHelper, new Handler());
+        return new BackgroundPositionSaver(new Handler(), positionProvider);
     }
 }

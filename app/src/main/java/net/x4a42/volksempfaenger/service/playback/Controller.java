@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+
 import java.io.IOException;
 
 /*
@@ -11,10 +13,10 @@ import java.io.IOException;
  */
 
 class Controller implements MediaPlayer.OnPreparedListener,
-                                           MediaPlayer.OnCompletionListener,
-                                           AudioFocusManager.Listener,
-                                           AudioBecomingNoisyManager.Listener,
-                                           PlaybackPositionProvider
+                            MediaPlayer.OnCompletionListener,
+                            AudioFocusManager.Listener,
+                            AudioBecomingNoisyManager.Listener,
+                            PlaybackPositionProvider
 {
     public static final float FullVolume    = 1.0f;
     public static final float DuckedVolume  = 0.1f;
@@ -24,7 +26,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
     private final AudioFocusManager         audioFocusManager;
     private final AudioBecomingNoisyManager audioBecomingNoisyManager;
     private PlaybackEventListener           playbackEventListener;
-    private PlaybackItem                    playbackItem;
+    private Episode                         playbackEpisode;
     private boolean                         inTransientLoss;
     private boolean                         isPrepared;
 
@@ -45,15 +47,15 @@ class Controller implements MediaPlayer.OnPreparedListener,
         return this;
     }
 
-    public PlaybackItem getPlaybackItem()
+    public Episode getPlaybackEpisode()
     {
-        return playbackItem;
+        return playbackEpisode;
     }
 
-    public boolean isPlaybackItemOpen(PlaybackItem playbackItem)
+    public boolean isPlaybackEpisodeOpen(Episode episode)
     {
-        return this.playbackItem != null
-                && this.playbackItem.getEpisodeUri().equals(playbackItem.getEpisodeUri());
+        return playbackEpisode != null
+                && playbackEpisode.get_id().equals(episode.get_id());
     }
 
     @Override
@@ -74,26 +76,26 @@ class Controller implements MediaPlayer.OnPreparedListener,
 
     public boolean isOpen()
     {
-        return playbackItem != null;
+        return playbackEpisode != null;
     }
 
-    public void open(PlaybackItem playbackItem)
+    public void open(Episode episode)
     {
-        if (this.playbackItem != null
-                && this.playbackItem.getEpisodeUri().equals(playbackItem.getEpisodeUri()))
+        if (isPlaybackEpisodeOpen(episode))
         {
             return;
         }
 
-        if (this.playbackItem != null)
+        if (playbackEpisode != null)
         {
             stop();
         }
 
-        this.playbackItem = playbackItem;
+        playbackEpisode = episode;
         try
         {
-            mediaPlayer.setDataSource(playbackItem.getPath());
+            // TODO: path provider
+            mediaPlayer.setDataSource(playbackEpisode.getEnclosures().get(0).getUrl());
         }
         catch (IOException e)
         {
@@ -124,7 +126,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
         }
         audioFocusManager.abandonFocus();
         mediaPlayer.reset();
-        playbackItem = null;
+        playbackEpisode = null;
     }
 
     public void seekTo(int position)
@@ -154,7 +156,8 @@ class Controller implements MediaPlayer.OnPreparedListener,
     public void onPrepared(MediaPlayer mediaPlayer)
     {
         isPrepared = true;
-        seekTo(playbackItem.getDurationListenedAtStart());
+        // TODO: seek to position
+        seekTo(0);
         play();
     }
 

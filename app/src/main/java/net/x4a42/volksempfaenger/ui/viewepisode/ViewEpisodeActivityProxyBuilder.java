@@ -1,16 +1,14 @@
 package net.x4a42.volksempfaenger.ui.viewepisode;
 
 import android.app.FragmentManager;
-import android.net.Uri;
 
 import net.x4a42.volksempfaenger.HtmlConverter;
 import net.x4a42.volksempfaenger.IntentBuilder;
 import net.x4a42.volksempfaenger.NavUtilsWrapper;
 import net.x4a42.volksempfaenger.ToastMaker;
-import net.x4a42.volksempfaenger.data.episode.EpisodeCursorLoader;
-import net.x4a42.volksempfaenger.data.episode.EpisodeCursorLoaderBuilder;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelperBuilder;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
@@ -22,31 +20,26 @@ class ViewEpisodeActivityProxyBuilder
 {
     public ViewEpisodeActivityProxy build(ViewEpisodeActivity activity)
     {
+        IntentParser      intentParser = new IntentParser(activity.getIntent());
+        EpisodeDaoWrapper episodeDao   = new EpisodeDaoBuilder().build(activity);
+        Episode           episode      = episodeDao.getById(intentParser.getEpisodeId());
+
         FragmentManager fragmentManager
                 = activity.getFragmentManager();
 
-        Uri episodeUri
-                = new IntentWrapper(activity.getIntent()).getEpisodeUri();
-
         OptionsMenuManager optionsMenuManager
-                = new OptionsMenuManager(episodeUri, activity.getMenuInflater());
+                = new OptionsMenuManager(episode, activity.getMenuInflater());
 
         PlaybackEventReceiver playbackEventReceiver
                 = new PlaybackEventReceiverBuilder().build();
 
-        EpisodeCursorLoader episodeCursorLoader
-                = new EpisodeCursorLoaderBuilder().build(activity, episodeUri);
-
         HtmlConverter converter         = new HtmlConverter();
 
         Presenter presenter
-                = new Presenter(activity, converter);
+                = new Presenter(activity, episode, converter);
 
         PlaybackServiceIntentProvider intentProvider
                 = new PlaybackServiceIntentProviderBuilder().build(activity);
-
-        EpisodeDataHelper episodeDataHelper
-                = new EpisodeDataHelperBuilder().build(activity);
 
         ToastMaker      toastMaker      = new ToastMaker(activity);
 
@@ -54,23 +47,21 @@ class ViewEpisodeActivityProxyBuilder
 
         IntentBuilder   intentBuilder   = new IntentBuilder();
 
-        EpisodeSharer   sharer          = new EpisodeSharer(activity, intentBuilder, converter);
+        EpisodeSharer   sharer          = new EpisodeSharer(activity, episode, intentBuilder, converter);
 
-        DownloadHelper  downloadHelper  = new DownloadHelperBuilder().build(activity, episodeUri);
+        DownloadHelper  downloadHelper  = new DownloadHelperBuilder().build(activity, episode);
 
         PlaybackServiceConnectionManager connectionManager
                 = new PlaybackServiceConnectionManagerBuilder().build(activity);
 
         ViewEpisodeActivityProxy proxy
                 = new ViewEpisodeActivityProxy(activity,
+                                               episode,
                                                fragmentManager,
-                                               episodeUri,
                                                optionsMenuManager,
                                                playbackEventReceiver,
-                                               episodeCursorLoader,
                                                presenter,
                                                intentProvider,
-                                               episodeDataHelper,
                                                toastMaker,
                                                navUtilsWrapper,
                                                sharer,
@@ -80,12 +71,9 @@ class ViewEpisodeActivityProxyBuilder
 
         optionsMenuManager
                 .setListener(proxy)
-                .setCursorProvider(proxy)
                 .setFacadeProvider(connectionManager);
 
         playbackEventReceiver.setListener(proxy);
-
-        episodeCursorLoader.setListener(proxy);
 
         return proxy;
     }

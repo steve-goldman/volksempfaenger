@@ -7,78 +7,60 @@ import android.widget.TextView;
 import net.x4a42.volksempfaenger.HtmlConverter;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.data.EpisodeCursor;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 class Presenter
 {
     private static final long   MegaByte = 1024 * 1024;
     private final Activity      activity;
+    private final Episode       episode;
     private final HtmlConverter converter;
-    private TextView            title;
-    private TextView            meta;
-    private TextView            description;
 
-    public Presenter(Activity activity,
+    public Presenter(Activity      activity,
+                     Episode       episode,
                      HtmlConverter converter)
     {
         this.activity  = activity;
+        this.episode   = episode;
         this.converter = converter;
     }
 
     public void onCreate()
     {
-        this.title       = (TextView) activity.findViewById(R.id.episode_title);
-        this.meta        = (TextView) activity.findViewById(R.id.episode_meta);
-        this.description = (TextView) activity.findViewById(R.id.episode_description);
+        activity.setTitle(episode.getTitle());
+        ((TextView) activity.findViewById(R.id.episode_title)).setText(episode.getTitle());
+        ((TextView) activity.findViewById(R.id.episode_meta)).setText(getMetaString());
+        updateDescription((TextView) activity.findViewById(R.id.episode_description));
     }
 
-    public void update(EpisodeCursor cursor)
+    private void updateDescription(TextView description)
     {
-        activity.setTitle(cursor.getTitle());
-        updateHeader(cursor);
-        updateDescription(cursor);
-    }
-
-    private void updateHeader(EpisodeCursor cursor)
-    {
-        title.setText(cursor.getTitle());
-        meta.setText(getMetaString(cursor));
-    }
-
-    private void updateDescription(EpisodeCursor cursor)
-    {
-        String description = cursor.getDescription();
-        if (description == null)
+        if (episode.getDescription() == null)
         {
-            this.description.setText("");
+            description.setText("");
             return;
         }
 
-        // TODO: get this static call out of here
-        Spanned spanned = converter.toSpanned(description);
+        Spanned spanned = converter.toSpanned(episode.getDescription());
         // TODO: download images if any
-        this.description.setText(spanned);
+        description.setText(spanned);
     }
 
-    private String getMetaString(EpisodeCursor cursor)
+    private String getMetaString()
     {
-        return getDurationString(cursor) + "  " + getDownloadedString(cursor);
+        return getDurationString() + "  " + getDownloadedString();
     }
 
-    private String getDurationString(EpisodeCursor cursor)
+    private String getDurationString()
     {
-        int duration = cursor.getDurationTotal();
+        // TODO: how to get duration into the data model?
+        int duration = 0;
         return duration > 0 ? Utils.formatTime(duration) : "unknown duration";
     }
 
-    private String getDownloadedString(EpisodeCursor cursor)
+    private String getDownloadedString()
     {
-        long size = cursor.getDownloadTotal();
-        if (size <= 0)
-        {
-            size = cursor.getEnclosureSize();
-        }
-
+        long size = episode.getEnclosures().get(0).getSize();
         return size > 0 ? String.format("%.2f MiB", ((double) size) / MegaByte) : "unknown size";
     }
 }

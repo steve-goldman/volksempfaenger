@@ -1,7 +1,9 @@
 package net.x4a42.volksempfaenger.service.playback;
 
 import android.content.Intent;
-import android.net.Uri;
+
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,22 +15,26 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class IntentParserTest
 {
+    @Mock EpisodeDaoWrapper     episodeDao;
     @Mock IntentParser.Listener listener;
     @Mock Intent                intent;
-    @Mock Uri                   episodeUri;
-    int                         position = 10;
-    int                         offset   = -15;
+    @Mock Episode               episode;
+    long                        episodeId = 158;
+    int                         position  = 10;
+    int                         offset    = -15;
     IntentParser                parser;
 
     @Before
     public void setUp() throws Exception
     {
-        parser = new IntentParser().setListener(listener);
-        Mockito.when(intent.getData()).thenReturn(episodeUri);
+        Mockito.when(intent.getLongExtra(PlaybackServiceIntentProvider.EpisodeIdKey, -1))
+               .thenReturn(episodeId);
+        Mockito.when(episodeDao.getById(episodeId)).thenReturn(episode);
+        parser = new IntentParser(episodeDao).setListener(listener);
     }
 
     @Test
-    public void testParseNoListener() throws Exception
+    public void parseNoListener() throws Exception
     {
         parser.setListener(null);
 
@@ -38,7 +44,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParseNoIntent() throws Exception
+    public void parseNoIntent() throws Exception
     {
         parser.parse(null);
 
@@ -46,7 +52,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParseNoAction() throws Exception
+    public void parseNoAction() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(null);
 
@@ -56,17 +62,17 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParsePlay() throws Exception
+    public void parsePlay() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionPlay);
 
         parser.parse(intent);
 
-        Mockito.verify(listener).onPlay(episodeUri);
+        Mockito.verify(listener).onPlay(episode);
     }
 
     @Test
-    public void testParsePause() throws Exception
+    public void parsePause() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionPause);
 
@@ -76,7 +82,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParsePlayPause() throws Exception
+    public void parsePlayPause() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionPlayPause);
 
@@ -86,7 +92,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParseStop() throws Exception
+    public void parseStop() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionStop);
 
@@ -96,7 +102,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParseSeek() throws Exception
+    public void parseSeek() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionSeek);
         Mockito.when(intent.getIntExtra(PlaybackServiceIntentProvider.PositionKey, 0)).thenReturn(position);
@@ -107,7 +113,7 @@ public class IntentParserTest
     }
 
     @Test
-    public void testParseMove() throws Exception
+    public void parseMove() throws Exception
     {
         Mockito.when(intent.getAction()).thenReturn(PlaybackService.ActionMove);
         Mockito.when(intent.getIntExtra(PlaybackServiceIntentProvider.OffsetKey, 0)).thenReturn(offset);

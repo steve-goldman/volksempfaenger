@@ -7,13 +7,13 @@ class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
     {
-        BackgroundPositionSaver positionSaver
-                = new BackgroundPositionSaverBuilder().build(service);
-
         Controller controller
                 = new ControllerBuilder().build(service);
 
-        IntentParser      intentParser      = new IntentParser();
+        BackgroundPositionSaver positionSaver
+                = new BackgroundPositionSaverBuilder().build(controller);
+
+        IntentParser intentParser = new IntentParserBuilder().build(service);
 
         MediaButtonReceiver mediaButtonReceiver
                 = new MediaButtonReceiverBuilder().build(service);
@@ -28,10 +28,8 @@ class PlaybackServiceProxyBuilder
                 = new PlaybackNotificationBuilder(service);
 
         PlaybackServiceProxy proxy
-                = new PlaybackServiceProxy(service,
-                                           positionSaver,
+                = new PlaybackServiceProxy(positionSaver,
                                            controller,
-                                           new PlaybackItemBuilder(),
                                            intentParser,
                                            mediaButtonReceiver,
                                            mediaSessionManager,

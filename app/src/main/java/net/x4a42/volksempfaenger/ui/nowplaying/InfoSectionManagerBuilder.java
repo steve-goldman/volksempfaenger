@@ -3,9 +3,8 @@ package net.x4a42.volksempfaenger.ui.nowplaying;
 import android.content.Context;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import net.x4a42.volksempfaenger.FileBuilder;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
@@ -14,8 +13,6 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
-
-import java.io.File;
 
 class InfoSectionManagerBuilder
 {
@@ -30,19 +27,17 @@ class InfoSectionManagerBuilder
         ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider
                 = new ViewEpisodeActivityIntentProviderBuilder().build(context);
 
+        PodcastPathProvider podcastPathProvider
+                = new PodcastPathProvider(context);
         ImageLoader imageLoader
                 = new ImageLoaderProvider(context).get();
-
-        // TODO: put "logos" someplace central
-        FileBuilder fileBuilder
-                = new FileBuilder(new File(context.getExternalFilesDir(null), "logos"));
 
         InfoSectionManager infoSectionManager
                 = new InfoSectionManager(playbackEventReceiver,
                                          playbackIntentProvider,
                                          viewEpisodeIntentProvider,
-                                         imageLoader,
-                                         fileBuilder)
+                                         podcastPathProvider,
+                                         imageLoader)
                 .setFacadeProvider(connectionManager);
 
         playbackEventReceiver.setListener(infoSectionManager);
