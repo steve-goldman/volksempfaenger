@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewManager;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class ListManager implements AdapterView.OnItemClickListener

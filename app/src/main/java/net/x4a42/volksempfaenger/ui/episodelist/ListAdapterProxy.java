@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewHolder;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewManager;
 
 import java.util.List;
 

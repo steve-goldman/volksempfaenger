@@ -5,7 +5,6 @@ import android.content.Context;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewManager;
 
 class ListAdapterProxyBuilder
 {

@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.episodelist.view;
+package net.x4a42.volksempfaenger.ui.episodelist;
 
 import android.view.View;
 import android.widget.ImageView;

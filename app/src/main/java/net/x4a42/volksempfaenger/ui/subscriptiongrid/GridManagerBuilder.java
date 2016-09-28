@@ -2,8 +2,8 @@ package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProviderBuilder;
-import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
 
 class GridManagerBuilder
 {

@@ -4,7 +4,7 @@ import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 
-public class EpisodeListActivityProxyBuilder
+class EpisodeListActivityProxyBuilder
 {
     public EpisodeListActivityProxy build(EpisodeListActivity activity)
     {

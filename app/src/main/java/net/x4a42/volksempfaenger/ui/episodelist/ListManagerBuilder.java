@@ -3,8 +3,6 @@ package net.x4a42.volksempfaenger.ui.episodelist;
 import android.content.Context;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewManager;
-import net.x4a42.volksempfaenger.ui.episodelist.view.ListViewManagerBuilder;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
 

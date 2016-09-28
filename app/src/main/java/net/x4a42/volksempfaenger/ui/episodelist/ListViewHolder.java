@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.episodelist.view;
+package net.x4a42.volksempfaenger.ui.episodelist;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -10,7 +10,7 @@ import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.misc.DateFormatter;
 
-public class ListViewHolder
+class ListViewHolder
 {
     private final View                view;
     private final TextView            episodeTitleView;
