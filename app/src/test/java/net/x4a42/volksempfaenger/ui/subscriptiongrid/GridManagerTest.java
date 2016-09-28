@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
 
 import org.junit.Before;
 import org.junit.Test;

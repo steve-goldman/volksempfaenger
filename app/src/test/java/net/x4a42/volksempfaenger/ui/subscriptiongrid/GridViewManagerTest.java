@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.subscriptiongrid.view;
+package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.subscriptiongrid.view;
+package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import net.x4a42.volksempfaenger.R;
 
-public class GridViewManager
+class GridViewManager
 {
     private final GridViewHolderBuilder builder;
     private final LayoutInflater        inflater;

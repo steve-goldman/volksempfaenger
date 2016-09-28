@@ -5,8 +5,6 @@ import android.view.ViewGroup;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewHolder;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
 
 import org.junit.Before;
 import org.junit.Test;

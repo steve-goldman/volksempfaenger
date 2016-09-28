@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.subscriptiongrid.view;
+package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.graphics.Bitmap;
 import android.view.View;
@@ -14,7 +14,7 @@ import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.misc.ImageViewAwareBuilder;
 
-public class GridViewHolder implements ImageLoadingListener
+class GridViewHolder implements ImageLoadingListener
 {
     private final View                  view;
     private final TextView              titleView;
