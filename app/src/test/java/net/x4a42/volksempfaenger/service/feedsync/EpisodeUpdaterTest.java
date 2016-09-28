@@ -2,6 +2,8 @@ package net.x4a42.volksempfaenger.service.feedsync;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
+import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
@@ -18,14 +20,16 @@ import java.util.Date;
 @RunWith(MockitoJUnitRunner.class)
 public class EpisodeUpdaterTest
 {
-    @Mock EpisodeDaoWrapper episodeDao;
-    @Mock EnclosureUpdater  enclosureUpdater;
-    @Mock Episode           episode;
-    @Mock Podcast           podcast;
-    FeedItem                feedItem       = new FeedItem();
-    Enclosure               feedEnclosure1 = new Enclosure();
-    Enclosure               feedEnclosure2 = new Enclosure();
-    EpisodeUpdater          episodeUpdater;
+    @Mock EpisodeDaoWrapper      episodeDao;
+    @Mock PlaylistItemDaoWrapper playlistItemDao;
+    @Mock EnclosureUpdater       enclosureUpdater;
+    @Mock Episode                episode;
+    @Mock Podcast                podcast;
+    @Mock PlaylistItem           playlistItem;
+    FeedItem                     feedItem       = new FeedItem();
+    Enclosure                    feedEnclosure1 = new Enclosure();
+    Enclosure                    feedEnclosure2 = new Enclosure();
+    EpisodeUpdater               episodeUpdater;
 
     @Before
     public void setUp() throws Exception
@@ -36,8 +40,9 @@ public class EpisodeUpdaterTest
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
         Mockito.when(episodeDao.newEpisode(podcast, feedItem.url)).thenReturn(episode);
+        Mockito.when(playlistItemDao.newPlaylistItem(episode)).thenReturn(playlistItem);
         feedItem.date        = new Date();
-        episodeUpdater       = new EpisodeUpdater(episodeDao, enclosureUpdater);
+        episodeUpdater       = new EpisodeUpdater(episodeDao, playlistItemDao, enclosureUpdater);
     }
 
     @Test
@@ -46,6 +51,7 @@ public class EpisodeUpdaterTest
         episodeUpdater.insertOrUpdate(podcast, feedItem);
         verifyCommon();
         Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(playlistItemDao).insert(playlistItem);
     }
 
     @Test

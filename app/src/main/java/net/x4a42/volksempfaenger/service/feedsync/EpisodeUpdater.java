@@ -2,19 +2,24 @@ package net.x4a42.volksempfaenger.service.feedsync;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
+import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 
 class EpisodeUpdater
 {
-    private final EpisodeDaoWrapper episodeDao;
-    private final EnclosureUpdater  enclosureUpdater;
+    private final EpisodeDaoWrapper      episodeDao;
+    private final PlaylistItemDaoWrapper playlistItemDaoWrapper;
+    private final EnclosureUpdater       enclosureUpdater;
 
-    public EpisodeUpdater(EpisodeDaoWrapper episodeDao,
-                          EnclosureUpdater  enclosureUpdater)
+    public EpisodeUpdater(EpisodeDaoWrapper      episodeDao,
+                          PlaylistItemDaoWrapper playlistItemDaoWrapper,
+                          EnclosureUpdater       enclosureUpdater)
     {
-        this.episodeDao       = episodeDao;
-        this.enclosureUpdater = enclosureUpdater;
+        this.episodeDao             = episodeDao;
+        this.playlistItemDaoWrapper = playlistItemDaoWrapper;
+        this.enclosureUpdater       = enclosureUpdater;
     }
 
     public void insertOrUpdate(Podcast podcast, FeedItem feedItem)
@@ -40,10 +45,12 @@ class EpisodeUpdater
     private Episode insertEpisode(Podcast podcast, FeedItem feedItem)
     {
         Episode episode = episodeDao.newEpisode(podcast, feedItem.getUrl());
-
         updateCommonFields(episode, feedItem);
 
         episodeDao.insert(episode);
+
+        PlaylistItem playlistItem = playlistItemDaoWrapper.newPlaylistItem(episode);
+        playlistItemDaoWrapper.insert(playlistItem);
 
         return episode;
     }
