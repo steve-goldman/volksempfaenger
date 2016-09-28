@@ -103,7 +103,7 @@
   <string name="settings_summary_about_flattr">Susține dezvoltarea Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">restrânge</string>
-  <string name="title_tab_playlists">Liste de redare</string>
+  <string name="title_tab_playlist">Liste de redare</string>
   <string name="title_playlist_new">Noutăți</string>
   <string name="title_playlist_listening">În ascultare</string>
   <string name="message_no_episodes">Nu există episoade</string>

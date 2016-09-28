@@ -103,7 +103,7 @@
   <string name="settings_summary_about_flattr">Ayudar en el desarrollo de Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">contraer</string>
-  <string name="title_tab_playlists">Listas de reproducción</string>
+  <string name="title_tab_playlist">Listas de reproducción</string>
   <string name="title_playlist_new">Nuevo</string>
   <string name="title_playlist_listening">Escuchando</string>
   <string name="message_no_episodes">No episodios</string>

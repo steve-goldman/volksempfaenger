@@ -24,6 +24,13 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         return playlistItem;
     }
 
+    public List<PlaylistItem> getAll()
+    {
+        return dao.queryBuilder()
+                  .orderAsc(PlaylistItemDao.Properties.Position)
+                  .listLazy();
+    }
+
     public PlaylistItem getByPosition(long position)
     {
         return dao.queryBuilder()

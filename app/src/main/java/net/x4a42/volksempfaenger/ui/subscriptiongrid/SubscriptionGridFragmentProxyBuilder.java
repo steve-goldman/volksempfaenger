@@ -3,7 +3,7 @@ package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProviderBuilder;
 
-public class SubscriptionGridFragmentProxyBuilder
+class SubscriptionGridFragmentProxyBuilder
 {
     public SubscriptionGridFragmentProxy build(SubscriptionGridFragment fragment)
     {

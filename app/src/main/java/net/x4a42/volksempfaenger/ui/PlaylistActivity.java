@@ -93,7 +93,7 @@ public class PlaylistActivity extends EpisodeListActivity {
 	@Override
 	public void onUpPressed() {
 		Intent intent = NavUtils.getParentActivityIntent(PlaylistActivity.this);
-		intent.putExtra("tag", MainActivity.TAG_PLAYLISTS);
+		intent.putExtra("tag", MainActivity.TAG_PLAYLIST);
 		NavUtils.navigateUpTo(PlaylistActivity.this, intent);
 	}
 

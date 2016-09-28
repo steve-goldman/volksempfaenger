@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.playlist.PlaylistFragment;
 import net.x4a42.volksempfaenger.ui.subscriptiongrid.SubscriptionGridFragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -23,8 +24,7 @@ import android.view.MenuItem;
 public class MainActivity extends Activity implements OnUpPressedCallback {
 
 	public static final String TAG_SUBSCRIPTIONS = "subscriptions";
-	public static final String TAG_DOWNLOADS = "downloads";
-	public static final String TAG_PLAYLISTS = "playlists";
+	public static final String TAG_PLAYLIST       = "playlist";
 
 	private static List<FragmentTab> fragmentTabs;
 
@@ -33,10 +33,8 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 		fragmentTabs.add(new FragmentTab(TAG_SUBSCRIPTIONS,
 				R.string.title_tab_subscriptions,
 				SubscriptionGridFragment.class));
-		fragmentTabs.add(new FragmentTab(TAG_PLAYLISTS,
-				R.string.title_tab_playlists, PlaylistsFragment.class));
-		fragmentTabs.add(new FragmentTab(TAG_DOWNLOADS,
-				R.string.title_tab_downloads, DownloadListFragment.class));
+		fragmentTabs.add(new FragmentTab(TAG_PLAYLIST,
+				R.string.title_tab_playlist, PlaylistFragment.class));
 	}
 
 	private ViewPager viewpager;
