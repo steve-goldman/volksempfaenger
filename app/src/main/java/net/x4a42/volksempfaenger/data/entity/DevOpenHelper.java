@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import net.x4a42.volksempfaenger.data.entity.enclosure.DaoMaster;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDao;
+import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDao;
 
 class DevOpenHelper extends DaoMaster.DevOpenHelper
 {
@@ -19,6 +20,11 @@ class DevOpenHelper extends DaoMaster.DevOpenHelper
         if (oldVersion < 2)
         {
             EpisodePositionDao.createTable(wrap(db), true);
+        }
+
+        if (oldVersion < 3)
+        {
+            PlaylistItemDao.createTable(wrap(db), true);
         }
     }
 }
