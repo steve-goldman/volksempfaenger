@@ -16,11 +16,12 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         this.provider = provider;
     }
 
-    public PlaylistItem newPlaylistItem(Episode episode)
+    public PlaylistItem createPlaylistItem(Episode episode)
     {
         PlaylistItem playlistItem = provider.get();
         playlistItem.setEpisode(episode);
         playlistItem.setPosition(dao.count() + 1);
+        super.insert(playlistItem);
         return playlistItem;
     }
 
@@ -57,8 +58,14 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         for (PlaylistItem behindItem : getBehind(deletedPosition))
         {
             behindItem.setPosition(behindItem.getPosition() - 1);
-            update(behindItem);
+            super.update(behindItem);
         }
+    }
+
+    @Override
+    public long insert(PlaylistItem playlistItem)
+    {
+        throw new UnsupportedOperationException("use createPlaylistItem");
     }
 
     @Override

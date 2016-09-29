@@ -40,7 +40,7 @@ public class EpisodeUpdaterTest
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
         Mockito.when(episodeDao.newEpisode(podcast, feedItem.url)).thenReturn(episode);
-        Mockito.when(playlistItemDao.newPlaylistItem(episode)).thenReturn(playlistItem);
+        Mockito.when(playlistItemDao.createPlaylistItem(episode)).thenReturn(playlistItem);
         feedItem.date        = new Date();
         episodeUpdater       = new EpisodeUpdater(episodeDao, playlistItemDao, enclosureUpdater);
     }

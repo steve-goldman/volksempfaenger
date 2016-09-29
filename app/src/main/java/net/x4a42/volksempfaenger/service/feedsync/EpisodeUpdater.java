@@ -49,8 +49,7 @@ class EpisodeUpdater
 
         episodeDao.insert(episode);
 
-        PlaylistItem playlistItem = playlistItemDaoWrapper.newPlaylistItem(episode);
-        playlistItemDaoWrapper.insert(playlistItem);
+        playlistItemDaoWrapper.createPlaylistItem(episode);
 
         return episode;
     }
