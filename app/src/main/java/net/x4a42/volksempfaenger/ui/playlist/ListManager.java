@@ -19,6 +19,7 @@ class ListManager implements AdapterView.OnItemClickListener
     private final ListAdapterProxy                  listAdapterProxy;
     private final ListViewManager                   listViewManager;
     private final ViewEpisodeActivityIntentProvider intentProvider;
+    private ListView                                listView;
     private TextView                                noEpisodesView;
 
     public ListManager(Context                           context,
@@ -36,7 +37,7 @@ class ListManager implements AdapterView.OnItemClickListener
     {
         View view = inflater.inflate(R.layout.episode_list_default, container, false);
 
-        ListView listView = (ListView) view.findViewById(R.id.episode_list);
+        listView = (ListView) view.findViewById(R.id.playlist_list);
         listView.setOnItemClickListener(this);
         listView.setAdapter(listAdapterProxy.getAdapter());
 
@@ -48,7 +49,16 @@ class ListManager implements AdapterView.OnItemClickListener
     public void refresh()
     {
         listAdapterProxy.refresh();
-        noEpisodesView.setVisibility(listAdapterProxy.isEmpty() ? View.VISIBLE : View.INVISIBLE);
+        if (listAdapterProxy.isEmpty())
+        {
+            noEpisodesView.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
+        }
+        else
+        {
+            noEpisodesView.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void clear()
