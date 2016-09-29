@@ -24,15 +24,25 @@ class GridAdapterProxy
         this.podcastDao      = podcastDao;
     }
 
-    public void onResume()
+    public void refresh()
     {
         list = podcastDao.getAll();
         gridAdapter.addAll(list);
     }
 
-    public void onPause()
+    public void clear()
     {
         gridAdapter.clear();
+    }
+
+    public boolean isEmpty()
+    {
+        return gridAdapter.isEmpty();
+    }
+
+    public GridAdapter getAdapter()
+    {
+        return gridAdapter;
     }
 
     public View getView(int position, View convertView, ViewGroup parent)

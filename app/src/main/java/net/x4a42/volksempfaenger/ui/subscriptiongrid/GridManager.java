@@ -16,29 +16,30 @@ import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvide
 class GridManager implements AdapterView.OnItemClickListener
 {
     private final Context                           context;
-    private final GridAdapter                       gridAdapter;
+    private final GridAdapterProxy                  gridAdapterProxy;
     private final GridViewManager                   gridViewManager;
     private final EpisodeListActivityIntentProvider intentProvider;
+    private GridView                                gridView;
     private TextView                                noSubscriptionsView;
 
     public GridManager(Context                           context,
-                       GridAdapter                       gridAdapter,
+                       GridAdapterProxy                  gridAdapterProxy,
                        GridViewManager                   gridViewManager,
                        EpisodeListActivityIntentProvider intentProvider)
     {
-        this.context         = context;
-        this.gridAdapter     = gridAdapter;
-        this.gridViewManager = gridViewManager;
-        this.intentProvider  = intentProvider;
+        this.context          = context;
+        this.gridAdapterProxy = gridAdapterProxy;
+        this.gridViewManager  = gridViewManager;
+        this.intentProvider   = intentProvider;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
     {
         View view = inflater.inflate(R.layout.subscription_list, container, false);
 
-        GridView gridView = (GridView) view.findViewById(R.id.grid);
+        gridView = (GridView) view.findViewById(R.id.grid);
         gridView.setOnItemClickListener(this);
-        gridView.setAdapter(gridAdapter);
+        gridView.setAdapter(gridAdapterProxy.getAdapter());
 
         noSubscriptionsView = (TextView) view.findViewById(R.id.empty);
 
@@ -47,13 +48,22 @@ class GridManager implements AdapterView.OnItemClickListener
 
     public void onResume()
     {
-        gridAdapter.onResume();
-        noSubscriptionsView.setVisibility(gridAdapter.isEmpty() ? View.VISIBLE : View.INVISIBLE);
+        gridAdapterProxy.refresh();
+        if (gridAdapterProxy.isEmpty())
+        {
+            noSubscriptionsView.setVisibility(View.VISIBLE);
+            gridView.setVisibility(View.GONE);
+        }
+        else
+        {
+            noSubscriptionsView.setVisibility(View.GONE);
+            gridView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void onPause()
     {
-        gridAdapter.onPause();
+        gridAdapterProxy.clear();
     }
 
     @Override

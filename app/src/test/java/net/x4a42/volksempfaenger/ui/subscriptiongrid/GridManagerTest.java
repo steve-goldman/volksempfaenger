@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 public class GridManagerTest
 {
     @Mock Context                           context;
+    @Mock GridAdapterProxy                  gridAdapterProxy;
     @Mock GridAdapter                       gridAdapter;
     @Mock LayoutInflater                    inflater;
     @Mock ViewGroup                         container;
@@ -40,7 +41,8 @@ public class GridManagerTest
                .thenReturn(view);
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
-        gridManager = new GridManager(context, gridAdapter, gridViewManager, intentProvider);
+        Mockito.when(gridAdapterProxy.getAdapter()).thenReturn(gridAdapter);
+        gridManager = new GridManager(context, gridAdapterProxy, gridViewManager, intentProvider);
     }
 
     @Test
@@ -58,27 +60,29 @@ public class GridManagerTest
         gridManager.onCreateView(inflater, container);
         gridManager.onResume();
 
-        Mockito.verify(gridAdapter).onResume();
-        Mockito.verify(noSubscriptionsView).setVisibility(View.INVISIBLE);
+        Mockito.verify(gridAdapterProxy).refresh();
+        Mockito.verify(noSubscriptionsView).setVisibility(View.GONE);
+        Mockito.verify(gridView).setVisibility(View.VISIBLE);
     }
 
     @Test
     public void onResumeEmpty() throws Exception
     {
-        Mockito.when(gridAdapter.isEmpty()).thenReturn(true);
+        Mockito.when(gridAdapterProxy.isEmpty()).thenReturn(true);
 
         gridManager.onCreateView(inflater, container);
         gridManager.onResume();
 
-        Mockito.verify(gridAdapter).onResume();
+        Mockito.verify(gridAdapterProxy).refresh();
         Mockito.verify(noSubscriptionsView).setVisibility(View.VISIBLE);
+        Mockito.verify(gridView).setVisibility(View.GONE);
     }
 
     @Test
     public void onPause() throws Exception
     {
         gridManager.onPause();
-        Mockito.verify(gridAdapter).onPause();
+        Mockito.verify(gridAdapterProxy).clear();
     }
 
     @Test

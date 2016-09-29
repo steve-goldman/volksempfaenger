@@ -7,13 +7,17 @@ import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 
 class GridAdapterProxyBuilder
 {
-    public GridAdapterProxy build(GridAdapter gridAdapter, GridViewManager gridViewManager)
+    public GridAdapterProxy build(Context         context,
+                                  GridViewManager gridViewManager)
     {
-        Context context = gridAdapter.getContext();
+        GridAdapter       gridAdapter = new GridAdapter(context);
+        PodcastDaoWrapper podcastDao  = new PodcastDaoBuilder().build(context);
+        GridAdapterProxy  proxy       = new GridAdapterProxy(gridAdapter,
+                                                             gridViewManager,
+                                                             podcastDao);
 
-        PodcastDaoWrapper podcastDao
-                = new PodcastDaoBuilder().build(context);
+        gridAdapter.setProxy(proxy);
 
-        return new GridAdapterProxy(gridAdapter, gridViewManager, podcastDao);
+        return proxy;
     }
 }

@@ -41,14 +41,14 @@ public class GridAdapterProxyTest
     @Test
     public void onResume() throws Exception
     {
-        proxy.onResume();
+        proxy.refresh();
         Mockito.verify(gridAdapter).addAll(list);
     }
 
     @Test
     public void onPause() throws Exception
     {
-        proxy.onPause();
+        proxy.clear();
         Mockito.verify(gridAdapter).clear();
     }
 

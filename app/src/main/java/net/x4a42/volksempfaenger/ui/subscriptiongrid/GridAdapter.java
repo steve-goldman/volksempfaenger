@@ -23,16 +23,6 @@ class GridAdapter extends ArrayAdapter<Podcast>
         return this;
     }
 
-    public void onResume()
-    {
-        proxy.onResume();
-    }
-
-    public void onPause()
-    {
-        proxy.onPause();
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {

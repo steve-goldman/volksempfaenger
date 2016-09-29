@@ -12,12 +12,12 @@ class GridManagerBuilder
         GridViewManager gridViewManager
                 = new GridViewManagerBuilder().build(context);
 
-        GridAdapter gridAdapter
-                = new GridAdapterBuilder().build(context, gridViewManager);
+        GridAdapterProxy gridAdapterProxy
+                = new GridAdapterProxyBuilder().build(context, gridViewManager);
 
         EpisodeListActivityIntentProvider intentProvider
                 = new EpisodeListActivityIntentProviderBuilder().build(context);
 
-        return new GridManager(context, gridAdapter, gridViewManager, intentProvider);
+        return new GridManager(context, gridAdapterProxy, gridViewManager, intentProvider);
     }
 }
