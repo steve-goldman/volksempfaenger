@@ -26,6 +26,7 @@ class GridAdapterProxy
 
     public void refresh()
     {
+        gridAdapter.clear();
         list = podcastDao.getAll();
         gridAdapter.addAll(list);
     }
@@ -53,6 +54,11 @@ class GridAdapterProxy
         viewHolder.set(podcast);
 
         return viewHolder.getView();
+    }
+
+    public long getItemId(int position)
+    {
+        return list.get(position).get_id();
     }
 
 }

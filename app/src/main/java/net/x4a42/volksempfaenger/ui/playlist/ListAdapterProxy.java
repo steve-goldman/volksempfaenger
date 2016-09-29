@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.ui.playlist;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 
@@ -36,6 +37,7 @@ class ListAdapterProxy
 
     public void refresh()
     {
+        listAdapter.clear();
         list = playlistItemDao.getAll();
         listAdapter.addAll(list);
     }
@@ -47,11 +49,17 @@ class ListAdapterProxy
 
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        ListViewHolder viewHolder = listViewManager.getViewHolder(convertView, parent);
-        PlaylistItem  playlistItem = list.get(position);
+        ListViewHolder viewHolder   = listViewManager.getViewHolder(convertView, parent);
+        PlaylistItem   playlistItem = list.get(position);
 
         viewHolder.set(playlistItem);
 
         return viewHolder.getView();
     }
+
+    public long getItemId(int position)
+    {
+        return list.get(position).get_id();
+    }
+
 }

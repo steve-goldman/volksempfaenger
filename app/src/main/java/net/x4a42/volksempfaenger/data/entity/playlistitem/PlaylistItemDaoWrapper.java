@@ -49,6 +49,13 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         return getListByEpisode(episode).get(0);
     }
 
+    public PlaylistItem getById(long playlistItemId)
+    {
+        return dao.queryBuilder()
+                  .where(PlaylistItemDao.Properties._id.eq(playlistItemId))
+                  .list().get(0);
+    }
+
     @Override
     public void delete(PlaylistItem playlistItem)
     {

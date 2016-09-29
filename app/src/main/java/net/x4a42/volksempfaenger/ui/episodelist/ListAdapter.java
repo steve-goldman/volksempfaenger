@@ -28,4 +28,16 @@ class ListAdapter extends ArrayAdapter<Episode>
     {
         return proxy.getView(position, convertView, parent);
     }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return proxy.getItemId(position);
+    }
+
+    @Override
+    public boolean hasStableIds()
+    {
+        return true;
+    }
 }

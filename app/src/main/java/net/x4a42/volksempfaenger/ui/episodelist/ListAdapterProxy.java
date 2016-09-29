@@ -40,6 +40,7 @@ class ListAdapterProxy
 
     public void refresh()
     {
+        listAdapter.clear();
         list = episodeDao.getAll(podcast);
         listAdapter.addAll(list);
     }
@@ -57,5 +58,10 @@ class ListAdapterProxy
         viewHolder.set(episode);
 
         return viewHolder.getView();
+    }
+
+    public long getItemId(int position)
+    {
+        return list.get(position).get_id();
     }
 }
