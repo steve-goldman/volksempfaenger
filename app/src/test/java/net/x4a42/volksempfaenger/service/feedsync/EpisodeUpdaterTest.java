@@ -51,7 +51,7 @@ public class EpisodeUpdaterTest
         episodeUpdater.insertOrUpdate(podcast, feedItem);
         verifyCommon();
         Mockito.verify(episodeDao).insert(episode);
-        Mockito.verify(playlistItemDao).insert(playlistItem);
+        Mockito.verify(playlistItemDao).createPlaylistItem(episode);
     }
 
     @Test
