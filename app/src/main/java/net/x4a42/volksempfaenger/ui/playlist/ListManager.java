@@ -35,13 +35,13 @@ class ListManager implements AdapterView.OnItemClickListener
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
     {
-        View view = inflater.inflate(R.layout.episode_list_default, container, false);
+        View view = inflater.inflate(R.layout.playlist, container, false);
 
         listView = (ListView) view.findViewById(R.id.playlist_list);
         listView.setOnItemClickListener(this);
         listView.setAdapter(listAdapterProxy.getAdapter());
 
-        noEpisodesView = (TextView) view.findViewById(R.id.empty);
+        noEpisodesView = (TextView) view.findViewById(R.id.playlist_empty);
 
         return view;
     }
