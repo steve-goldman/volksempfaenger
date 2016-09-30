@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.mobeta.android.dslv.DragSortListView;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ToastMaker;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
@@ -33,18 +34,21 @@ class ListManager implements AdapterView.OnItemClickListener,
     private final ListAdapterProxy                  listAdapterProxy;
     private final ViewEpisodeActivityIntentProvider intentProvider;
     private final Playlist                          playlist;
+    private final ToastMaker                        toastMaker;
     private DragSortListView                        listView;
     private TextView                                noEpisodesView;
 
     public ListManager(Context                           context,
                        ListAdapterProxy                  listAdapterProxy,
                        ViewEpisodeActivityIntentProvider intentProvider,
-                       Playlist                          playlist)
+                       Playlist                          playlist,
+                       ToastMaker                        toastMaker)
     {
         this.context          = context;
         this.listAdapterProxy = listAdapterProxy;
         this.intentProvider   = intentProvider;
         this.playlist         = playlist;
+        this.toastMaker       = toastMaker;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
@@ -151,6 +155,12 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void drop(int fromPosition, int toPosition)
     {
+        if (playlist.isPlaying() && (fromPosition == 0 || toPosition == 0))
+        {
+            toastMaker.showTextShort(context.getString(R.string.toast_cannot_change_playing_episode));
+            return;
+        }
+
         playlist.moveItem(fromPosition, toPosition);
         listAdapterProxy.refresh();
     }

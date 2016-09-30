@@ -164,5 +164,6 @@
     <string name="playlist_context_title">%d selected</string>
     <string name="episode_list_context_title">%d selected</string>
     <string name="toast_episode_enqueued">The episode will start after the current episode ends.</string>
+    <string name="toast_cannot_change_playing_episode">Cannot change the episode that is playing.</string>
 
 </resources>

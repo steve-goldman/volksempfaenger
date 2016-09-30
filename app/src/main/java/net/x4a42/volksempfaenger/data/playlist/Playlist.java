@@ -42,6 +42,11 @@ public class Playlist
         unsetSkipped(getCurrentEpisode());
     }
 
+    public boolean isPlaying()
+    {
+        return isPlaying;
+    }
+
     public synchronized boolean isEmpty()
     {
         return playlistItemDao.getAll().isEmpty();
