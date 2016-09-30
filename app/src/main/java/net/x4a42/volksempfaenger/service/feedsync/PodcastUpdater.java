@@ -45,9 +45,10 @@ class PodcastUpdater
 
     private void updateEpisodes(Podcast podcast, Feed feed)
     {
+        boolean firstSync = podcast.getEpisodes().isEmpty();
         for (FeedItem feedItem : feed.items)
         {
-            episodeUpdater.insertOrUpdate(podcast, feedItem);
+            episodeUpdater.insertOrUpdate(podcast, feedItem, firstSync);
         }
     }
 }

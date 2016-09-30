@@ -21,18 +21,18 @@ class EpisodeUpdater
         this.enclosureUpdater       = enclosureUpdater;
     }
 
-    public void insertOrUpdate(Podcast podcast, FeedItem feedItem)
+    public void insertOrUpdate(Podcast podcast, FeedItem feedItem, boolean firstSync)
     {
-        Episode episode = insertOrUpdateEpisode(podcast, feedItem);
+        Episode episode = insertOrUpdateEpisode(podcast, feedItem, firstSync);
         insertOrUpdateEnclosures(episode, feedItem);
     }
 
-    private Episode insertOrUpdateEpisode(Podcast podcast, FeedItem feedItem)
+    private Episode insertOrUpdateEpisode(Podcast podcast, FeedItem feedItem, boolean firstSync)
     {
         Episode episode = episodeDao.getByUrl(feedItem.getUrl());
         if (episode == null)
         {
-            return insertEpisode(podcast, feedItem);
+            return insertEpisode(podcast, feedItem, firstSync);
         }
         else
         {
@@ -41,14 +41,17 @@ class EpisodeUpdater
         }
     }
 
-    private Episode insertEpisode(Podcast podcast, FeedItem feedItem)
+    private Episode insertEpisode(Podcast podcast, FeedItem feedItem, boolean firstSync)
     {
-        Episode episode = episodeDao.newEpisode(podcast, feedItem.getUrl());
+        boolean anyPodcastEpisodes = !podcast.getEpisodes().isEmpty();
+        Episode episode            = episodeDao.newEpisode(podcast, feedItem.getUrl());
         updateCommonFields(episode, feedItem);
-
         episodeDao.insert(episode);
 
-        playlist.addEpisode(episode);
+        if (!firstSync || !anyPodcastEpisodes)
+        {
+            playlist.addEpisode(episode);
+        }
 
         return episode;
     }

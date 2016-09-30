@@ -1,5 +1,6 @@
 package net.x4a42.volksempfaenger.service.feedsync;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.feedparser.Feed;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.List;
+
 @RunWith(MockitoJUnitRunner.class)
 public class PodcastUpdaterTest
 {
@@ -22,6 +25,7 @@ public class PodcastUpdaterTest
     @Mock LogoDownloaderBuilder logoDownloaderBuilder;
     @Mock LogoDownloader        logoDownloader;
     @Mock Podcast               podcast;
+    @Mock List<Episode>         episodes;
     long                        now       = 100;
     Feed                        feed      = new Feed();
     FeedItem                    feedItem1 = new FeedItem();
@@ -33,6 +37,7 @@ public class PodcastUpdaterTest
     {
         Mockito.when(nowProvider.get()).thenReturn(now);
         Mockito.when(logoDownloaderBuilder.build(podcast, feed)).thenReturn(logoDownloader);
+        Mockito.when(podcast.getEpisodes()).thenReturn(episodes);
         feed.title       = "my-title";
         feed.description = "my-description";
         feed.website     = "my-website";
@@ -45,15 +50,29 @@ public class PodcastUpdaterTest
     }
 
     @Test
-    public void update() throws Exception
+    public void updateFirstSync() throws Exception
+    {
+        Mockito.when(episodes.isEmpty()).thenReturn(true);
+        podcastUpdater.update(podcast, feed);
+        Mockito.verify(podcast).setTitle(feed.title);
+        Mockito.verify(podcast).setDescription(feed.description);
+        Mockito.verify(podcast).setWebsite(feed.website);
+        Mockito.verify(podcast).setLastUpdate(now);
+        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem1, true);
+        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem2, true);
+        Mockito.verify(logoDownloader).download();
+    }
+
+    @Test
+    public void updateNotFirstSync() throws Exception
     {
         podcastUpdater.update(podcast, feed);
         Mockito.verify(podcast).setTitle(feed.title);
         Mockito.verify(podcast).setDescription(feed.description);
         Mockito.verify(podcast).setWebsite(feed.website);
         Mockito.verify(podcast).setLastUpdate(now);
-        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem1);
-        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem2);
+        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem1, false);
+        Mockito.verify(episodeUpdater).insertOrUpdate(podcast, feedItem2, false);
         Mockito.verify(logoDownloader).download();
     }
 }

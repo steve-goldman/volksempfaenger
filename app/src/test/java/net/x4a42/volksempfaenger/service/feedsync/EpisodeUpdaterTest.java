@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EpisodeUpdaterTest
@@ -25,6 +26,7 @@ public class EpisodeUpdaterTest
     @Mock EnclosureUpdater       enclosureUpdater;
     @Mock Episode                episode;
     @Mock Podcast                podcast;
+    @Mock List<Episode>          episodes;
     @Mock PlaylistItem           playlistItem;
     FeedItem                     feedItem       = new FeedItem();
     Enclosure                    feedEnclosure1 = new Enclosure();
@@ -40,24 +42,44 @@ public class EpisodeUpdaterTest
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
         Mockito.when(episodeDao.newEpisode(podcast, feedItem.url)).thenReturn(episode);
+        Mockito.when(podcast.getEpisodes()).thenReturn(episodes);
         feedItem.date        = new Date();
         episodeUpdater       = new EpisodeUpdater(episodeDao, playlist, enclosureUpdater);
     }
 
     @Test
-    public void insert() throws Exception
+    public void insertNotFirstSync() throws Exception
     {
-        episodeUpdater.insertOrUpdate(podcast, feedItem);
+        episodeUpdater.insertOrUpdate(podcast, feedItem, false);
         verifyCommon();
         Mockito.verify(episodeDao).insert(episode);
         Mockito.verify(playlist).addEpisode(episode);
     }
 
     @Test
+    public void insertFirstSyncEmpty() throws Exception
+    {
+        Mockito.when(episodes.isEmpty()).thenReturn(true);
+        episodeUpdater.insertOrUpdate(podcast, feedItem, true);
+        verifyCommon();
+        Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(playlist).addEpisode(episode);
+    }
+
+    @Test
+    public void insertFirstSyncNotEmpty() throws Exception
+    {
+        episodeUpdater.insertOrUpdate(podcast, feedItem, true);
+        verifyCommon();
+        Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(playlist, Mockito.never()).addEpisode(episode);
+    }
+
+    @Test
     public void update() throws Exception
     {
         Mockito.when(episodeDao.getByUrl(feedItem.url)).thenReturn(episode);
-        episodeUpdater.insertOrUpdate(podcast, feedItem);
+        episodeUpdater.insertOrUpdate(podcast, feedItem, false);
         verifyCommon();
         Mockito.verify(episodeDao).update(episode);
     }
