@@ -132,7 +132,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         }
         else
         {
-            controller.play();
+            onPlay();
         }
     }
 
