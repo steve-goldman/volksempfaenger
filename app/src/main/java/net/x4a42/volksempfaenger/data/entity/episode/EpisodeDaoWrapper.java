@@ -24,6 +24,15 @@ public class EpisodeDaoWrapper extends DaoWrapperBase<Episode>
         return episode;
     }
 
+    @Override
+    public long insert(Episode episode)
+    {
+        // invalidate the episodes relation in the podcast, in case anyone looks at it again
+        long id = super.insert(episode);
+        episode.getPodcast().resetEpisodes();
+        return id;
+    }
+
     public List<Episode> getAll(Podcast podcast)
     {
         return dao.queryBuilder()
