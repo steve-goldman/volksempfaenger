@@ -175,6 +175,7 @@ class InfoSectionManager implements PlaybackEventListener,
                         R.drawable.ic_media_pause : R.drawable.ic_media_play);
 
         String url = podcastPathProvider.getLogoUrl(podcast);
+        podcastLogo.setImageResource(android.R.color.transparent);
         imageLoader.displayImage(url, podcastLogo);
     }
 
