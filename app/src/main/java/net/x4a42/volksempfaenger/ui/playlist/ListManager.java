@@ -19,12 +19,15 @@ import com.mobeta.android.dslv.DragSortListView;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class ListManager implements AdapterView.OnItemClickListener,
                              AbsListView.MultiChoiceModeListener,
                              DragSortListView.DropListener,
-                             DragSortListView.RemoveListener
+                             DragSortListView.RemoveListener,
+                             PlaybackEventListener
 {
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
@@ -163,4 +166,13 @@ class ListManager implements AdapterView.OnItemClickListener,
         listAdapterProxy.refresh();
     }
 
+    //
+    // PlaybackEventListener
+    //
+
+    @Override
+    public void onPlaybackEvent(PlaybackEvent playbackEvent)
+    {
+        listAdapterProxy.refresh();
+    }
 }

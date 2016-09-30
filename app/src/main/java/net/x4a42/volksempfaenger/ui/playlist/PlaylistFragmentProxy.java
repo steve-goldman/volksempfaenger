@@ -5,16 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+
 class PlaylistFragmentProxy
 {
-    private final Fragment    fragment;
-    private final ListManager listManager;
+    private final ListManager           listManager;
+    private final PlaybackEventReceiver receiver;
 
-    public PlaylistFragmentProxy(Fragment    fragment,
-                                 ListManager listManager)
+    public PlaylistFragmentProxy(ListManager           listManager,
+                                 PlaybackEventReceiver receiver)
     {
-        this.fragment    = fragment;
         this.listManager = listManager;
+        this.receiver    = receiver;
     }
 
     public void onCreate()
@@ -31,11 +33,13 @@ class PlaylistFragmentProxy
 
     public void onResume()
     {
+        receiver.subscribe();
         listManager.refresh();
     }
 
     public void onPause()
     {
+        receiver.unsubscribe();
         listManager.clear();
     }
 }
