@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_episode_list_play_next"
+        android:title="@string/episode_list_context_menu_play_next"/>
+</menu>

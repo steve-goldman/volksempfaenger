@@ -20,6 +20,7 @@
     <string name="menu_feedback">Feedback</string>
     <string name="menu_play">Play</string>
     <string name="playlist_context_menu_remove">Remove</string>
+    <string name="episode_list_context_menu_play_next">Play Next</string>
     <string name="context_delete">Delete</string>
     <string name="hint_http">http://</string>
     <string name="yes">Yes</string>
@@ -159,5 +160,6 @@
     <string name="message_export_failed">Failed to export your podcasts!</string>
 
     <string name="playlist_context_title">%d selected</string>
+    <string name="episode_list_context_title">%d selected</string>
 
 </resources>
