@@ -93,6 +93,14 @@ class PlaybackNotificationBuilder
         }
 
         content.setOnClickPendingIntent(
+                R.id.next,
+                PendingIntent.getService(context, 0, intentProvider.getNextIntent(), 0));
+
+        content.setOnClickPendingIntent(
+                R.id.skip,
+                PendingIntent.getService(context, 0, intentProvider.getSkipIntent(), 0));
+
+        content.setOnClickPendingIntent(
                 R.id.collapse, PendingIntent.getService(context, 0, intentProvider.getStopIntent(), 0));
 
         return content;

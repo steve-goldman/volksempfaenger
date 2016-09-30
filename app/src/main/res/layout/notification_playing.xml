@@ -55,9 +55,22 @@
         android:src="@drawable/ic_notification_pause" />
 
     <ImageButton
+        android:id="@+id/skip"
+        style="@style/NotificationButton"
+        android:contentDescription="@string/finish_later"
+        android:src="@drawable/ic_skip_notification_button" />
+
+    <ImageButton
+        android:id="@+id/next"
+        style="@style/NotificationButton"
+        android:contentDescription="@string/next_episode"
+        android:src="@drawable/ic_next_notification_button" />
+
+    <ImageButton
         android:id="@+id/collapse"
         style="@style/NotificationButton.Collapse"
         android:contentDescription="@string/notification_collapse"
-        android:src="@drawable/ic_notification_collapse" />
+        android:src="@drawable/ic_notification_collapse"
+        android:visibility="gone"/>
 
 </LinearLayout>
