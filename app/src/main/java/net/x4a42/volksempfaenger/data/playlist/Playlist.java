@@ -39,11 +39,7 @@ public class Playlist
     public void setPlaying(boolean isPlaying)
     {
         this.isPlaying  = isPlaying;
-        Episode episode = getCurrentEpisode();
-        if (skippedEpisodeDao.hasEpisode(episode))
-        {
-            skippedEpisodeDao.delete(episode);
-        }
+        unsetSkipped(getCurrentEpisode());
     }
 
     public synchronized boolean isEmpty()
@@ -100,6 +96,7 @@ public class Playlist
     public synchronized void removeItem(int position)
     {
         PlaylistItem playlistItem = playlistItemDao.getByPosition(position);
+        unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.delete(playlistItem);
     }
 
@@ -108,6 +105,7 @@ public class Playlist
         for (long playlistItemId : playlistItemIds)
         {
             PlaylistItem playlistItem = playlistItemDao.getById(playlistItemId);
+            unsetSkipped(playlistItem.getEpisode());
             playlistItemDao.delete(playlistItem);
         }
     }
@@ -115,6 +113,7 @@ public class Playlist
     public synchronized void moveItem(int fromPosition, int toPosition)
     {
         PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
+        unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.move(playlistItem, toPosition);
     }
 
@@ -172,5 +171,13 @@ public class Playlist
             return true;
         }
         return false;
+    }
+
+    private void unsetSkipped(Episode episode)
+    {
+        if (skippedEpisodeDao.hasEpisode(episode))
+        {
+            skippedEpisodeDao.delete(episode);
+        }
     }
 }
