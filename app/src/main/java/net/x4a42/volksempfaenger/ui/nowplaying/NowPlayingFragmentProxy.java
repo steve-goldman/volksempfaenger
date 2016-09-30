@@ -118,18 +118,9 @@ class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listen
             return;
         }
 
-        if (episode != null && facade.isEpisodeOpen(episode))
-        {
-            seekBarManager.show();
-            controlButtonsManager.show();
-            infoSectionManager.hide();
-        }
-        else
-        {
-            seekBarManager.hide();
-            controlButtonsManager.hide();
-            infoSectionManager.show();
-        }
+        seekBarManager.show();
+        controlButtonsManager.show();
+        infoSectionManager.show();
     }
 
 }

@@ -86,7 +86,7 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlayOpenNotPlaying() throws Exception
     {
-        Mockito.when(controller.isOpen()).thenReturn(true);
+        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
 
         proxy.onPlay();
 
@@ -97,7 +97,7 @@ public class PlaybackServiceProxyTest
     @Test
     public void onPlayOpenPlaying() throws Exception
     {
-        Mockito.when(controller.isOpen()).thenReturn(true);
+        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
         Mockito.when(controller.isPlaying()).thenReturn(true);
 
         proxy.onPlay();

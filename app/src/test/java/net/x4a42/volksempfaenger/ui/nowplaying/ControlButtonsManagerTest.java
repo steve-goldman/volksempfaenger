@@ -30,11 +30,15 @@ public class ControlButtonsManagerTest
     @Mock Intent                           playPauseIntent;
     @Mock Intent                           rewindIntent;
     @Mock Intent                           fastForwardIntent;
+    @Mock Intent                           nextIntent;
+    @Mock Intent                           skipIntent;
     @Mock View                             view;
     @Mock LinearLayout                     controlsLayout;
     @Mock ImageButton                      rewindButton;
     @Mock ImageButton                      playPauseButton;
     @Mock ImageButton                      fastForwardButton;
+    @Mock ImageButton                      nextButton;
+    @Mock ImageButton                      skipButton;
     @Mock PlaybackServiceFacadeProvider    facadeProvider;
     @Mock PlaybackServiceFacade            facade;
     int                                    offset                = 20;
@@ -47,12 +51,18 @@ public class ControlButtonsManagerTest
         Mockito.when(view.findViewById(R.id.back)).thenReturn(rewindButton);
         Mockito.when(view.findViewById(R.id.pause)).thenReturn(playPauseButton);
         Mockito.when(view.findViewById(R.id.forward)).thenReturn(fastForwardButton);
+        Mockito.when(view.findViewById(R.id.next)).thenReturn(nextButton);
+        Mockito.when(view.findViewById(R.id.skip)).thenReturn(skipButton);
         Mockito.when(rewindButton.getContext()).thenReturn(context);
         Mockito.when(playPauseButton.getContext()).thenReturn(context);
         Mockito.when(fastForwardButton.getContext()).thenReturn(context);
+        Mockito.when(nextButton.getContext()).thenReturn(context);
+        Mockito.when(skipButton.getContext()).thenReturn(context);
         Mockito.when(intentProvider.getPlayPauseIntent()).thenReturn(playPauseIntent);
         Mockito.when(intentProvider.getMoveIntent(-offset)).thenReturn(rewindIntent);
         Mockito.when(intentProvider.getMoveIntent(offset)).thenReturn(fastForwardIntent);
+        Mockito.when(intentProvider.getNextIntent()).thenReturn(nextIntent);
+        Mockito.when(intentProvider.getSkipIntent()).thenReturn(skipIntent);
         Mockito.when(facadeProvider.getFacade()).thenReturn(facade);
 
         controlButtonsManager = Mockito.spy(
@@ -156,6 +166,24 @@ public class ControlButtonsManagerTest
         controlButtonsManager.onClick(fastForwardButton);
 
         Mockito.verify(context).startService(fastForwardIntent);
+    }
+
+    @Test
+    public void onNext() throws Exception
+    {
+        controlButtonsManager.onCreateView(view);
+        controlButtonsManager.onClick(nextButton);
+
+        Mockito.verify(context).startService(nextIntent);
+    }
+
+    @Test
+    public void onSkip() throws Exception
+    {
+        controlButtonsManager.onCreateView(view);
+        controlButtonsManager.onClick(skipButton);
+
+        Mockito.verify(context).startService(skipIntent);
     }
 
     //

@@ -58,7 +58,7 @@ public class PlaybackServiceIntentProvider
         return intentFactory.create(PlaybackService.ActionNext);
     }
 
-    public Intent getDownIntent()
+    public Intent getSkipIntent()
     {
         return intentFactory.create(PlaybackService.ActionSkip);
     }

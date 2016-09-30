@@ -2,7 +2,6 @@ package net.x4a42.volksempfaenger.ui.nowplaying;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,7 +18,6 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class InfoSectionManager implements PlaybackEventListener,
@@ -27,7 +25,6 @@ class InfoSectionManager implements PlaybackEventListener,
                                     PlaybackServiceConnectionManager.Listener
 {
     private final PlaybackEventReceiver             playbackEventReceiver;
-    private final PlaybackServiceIntentProvider     playbackIntentProvider;
     private final ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
     private final PodcastPathProvider               podcastPathProvider;
     private final ImageLoader                       imageLoader;
@@ -36,16 +33,13 @@ class InfoSectionManager implements PlaybackEventListener,
     private ImageView                               podcastLogo;
     private TextView                                episodeText;
     private TextView                                podcastText;
-    private ImageButton                             playPauseButton;
 
     public InfoSectionManager(PlaybackEventReceiver             playbackEventReceiver,
-                              PlaybackServiceIntentProvider     playbackIntentProvider,
                               ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider,
                               PodcastPathProvider               podcastPathProvider,
                               ImageLoader                       imageLoader)
     {
         this.playbackEventReceiver     = playbackEventReceiver;
-        this.playbackIntentProvider    = playbackIntentProvider;
         this.viewEpisodeIntentProvider = viewEpisodeIntentProvider;
         this.podcastPathProvider       = podcastPathProvider;
         this.imageLoader               = imageLoader;
@@ -63,10 +57,8 @@ class InfoSectionManager implements PlaybackEventListener,
         podcastLogo     = (ImageView)    view.findViewById(R.id.logo);
         episodeText     = (TextView)     view.findViewById(R.id.episode);
         podcastText     = (TextView)     view.findViewById(R.id.podcast);
-        playPauseButton = (ImageButton)  view.findViewById(R.id.info_pause);
 
         infoLayout.setOnClickListener(this);
-        playPauseButton.setOnClickListener(this);
 
         update();
     }
@@ -113,10 +105,6 @@ class InfoSectionManager implements PlaybackEventListener,
         {
             handleInfoClicked(v.getContext());
         }
-        else if (playPauseButton.equals(v))
-        {
-            handlePlayPauseClicked(v.getContext());
-        }
     }
 
     //
@@ -145,11 +133,6 @@ class InfoSectionManager implements PlaybackEventListener,
                 facadeProvider.getFacade().getEpisode()));
     }
 
-    private void handlePlayPauseClicked(Context context)
-    {
-        context.startService(playbackIntentProvider.getPlayPauseIntent());
-    }
-
     private void update()
     {
         PlaybackServiceFacade facade  = facadeProvider.getFacade();
@@ -170,9 +153,6 @@ class InfoSectionManager implements PlaybackEventListener,
 
         episodeText.setText(episode.getTitle());
         podcastText.setText(podcast.getTitle());
-        playPauseButton.setImageResource(
-                facade.isPlaying() ?
-                        R.drawable.ic_media_pause : R.drawable.ic_media_play);
 
         String url = podcastPathProvider.getLogoUrl(podcast);
         podcastLogo.setImageResource(android.R.color.transparent);

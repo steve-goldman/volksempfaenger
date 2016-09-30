@@ -26,7 +26,7 @@ class ControlButtonsManager implements PlaybackEventListener,
     private ImageButton                            playPauseButton;
     private ImageButton                            fastForwardButton;
     private ImageButton                            nextButton;
-    private ImageButton                            downButton;
+    private ImageButton                            skipButton;
 
     public ControlButtonsManager(PlaybackEventReceiver            playbackEventReceiver,
                                  PlaybackServiceIntentProvider    intentProvider,
@@ -50,13 +50,13 @@ class ControlButtonsManager implements PlaybackEventListener,
         playPauseButton   = (ImageButton)  view.findViewById(R.id.pause);
         fastForwardButton = (ImageButton)  view.findViewById(R.id.forward);
         nextButton        = (ImageButton)  view.findViewById(R.id.next);
-        downButton        = (ImageButton)  view.findViewById(R.id.down);
+        skipButton        = (ImageButton)  view.findViewById(R.id.skip);
 
         rewindButton.setOnClickListener(this);
         playPauseButton.setOnClickListener(this);
         fastForwardButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
-        downButton.setOnClickListener(this);
+        skipButton.setOnClickListener(this);
 
         setNotPlaying();
     }
@@ -123,9 +123,9 @@ class ControlButtonsManager implements PlaybackEventListener,
         {
             handleNext(v.getContext());
         }
-        else if (downButton.equals(v))
+        else if (skipButton.equals(v))
         {
-            handleDown(v.getContext());
+            handleSkip(v.getContext());
         }
     }
 
@@ -182,9 +182,9 @@ class ControlButtonsManager implements PlaybackEventListener,
         context.startService(intentProvider.getNextIntent());
     }
 
-    private void handleDown(Context context)
+    private void handleSkip(Context context)
     {
-        context.startService(intentProvider.getDownIntent());
+        context.startService(intentProvider.getSkipIntent());
     }
 
 }

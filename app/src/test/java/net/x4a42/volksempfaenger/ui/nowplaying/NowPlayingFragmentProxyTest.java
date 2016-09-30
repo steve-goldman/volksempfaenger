@@ -124,7 +124,7 @@ public class NowPlayingFragmentProxyTest
     }
 
     @Test
-    public void onPlaybackServiceConnectedOpenToSame() throws Exception
+    public void onPlaybackServiceConnectedOpen() throws Exception
     {
         Mockito.when(connectionManager.getFacade()).thenReturn(facade);
         Mockito.when(facade.isOpen()).thenReturn(true);
@@ -136,22 +136,6 @@ public class NowPlayingFragmentProxyTest
         Mockito.verify(infoSectionManager).onPlaybackServiceConnected();
         Mockito.verify(seekBarManager).show();
         Mockito.verify(controlButtonsManager).show();
-        Mockito.verify(infoSectionManager).hide();
-    }
-
-    @Test
-    public void onPlaybackServiceConnectedOpenToOther() throws Exception
-    {
-        Mockito.when(connectionManager.getFacade()).thenReturn(facade);
-        Mockito.when(facade.isOpen()).thenReturn(true);
-        Mockito.when(facade.getEpisode()).thenReturn(otherEpisode);
-
-        proxy.onPlaybackServiceConnected();
-
-        Mockito.verify(controlButtonsManager).onPlaybackServiceConnected();
-        Mockito.verify(infoSectionManager).onPlaybackServiceConnected();
-        Mockito.verify(seekBarManager).hide();
-        Mockito.verify(controlButtonsManager).hide();
         Mockito.verify(infoSectionManager).show();
     }
 

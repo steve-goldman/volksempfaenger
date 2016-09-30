@@ -55,11 +55,6 @@
                 android:text="@string/podcast" />
         </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/info_pause"
-            style="@style/NowPlaying.Button"
-            android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_pause" />
     </LinearLayout>
 
     <LinearLayout
@@ -140,7 +135,7 @@
         </ImageButton>
 
         <ImageButton
-            android:id="@+id/down"
+            android:id="@+id/skip"
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/finish_later"
