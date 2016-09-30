@@ -3,18 +3,14 @@ package net.x4a42.volksempfaenger.ui.playlist;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
-
-import java.util.List;
 
 class ListAdapterProxy
 {
     private final ListAdapter            listAdapter;
     private final ListViewManager        listViewManager;
     private final PlaylistItemDaoWrapper playlistItemDao;
-    private List<PlaylistItem>           list;
 
     public ListAdapterProxy(ListAdapter            listAdapter,
                             ListViewManager        listViewManager,
@@ -38,8 +34,7 @@ class ListAdapterProxy
     public void refresh()
     {
         listAdapter.clear();
-        list = playlistItemDao.getAll();
-        listAdapter.addAll(list);
+        listAdapter.addAll(playlistItemDao.getAll());
     }
 
     public void clear()
@@ -50,7 +45,7 @@ class ListAdapterProxy
     public View getView(int position, View convertView, ViewGroup parent)
     {
         ListViewHolder viewHolder   = listViewManager.getViewHolder(convertView, parent);
-        PlaylistItem   playlistItem = list.get(position);
+        PlaylistItem   playlistItem = listAdapter.getItem(position);
 
         viewHolder.set(playlistItem);
 

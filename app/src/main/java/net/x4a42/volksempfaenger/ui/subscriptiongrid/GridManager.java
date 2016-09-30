@@ -11,26 +11,27 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 
 class GridManager implements AdapterView.OnItemClickListener
 {
     private final Context                           context;
     private final GridAdapterProxy                  gridAdapterProxy;
-    private final GridViewManager                   gridViewManager;
     private final EpisodeListActivityIntentProvider intentProvider;
+    private final PodcastDaoWrapper                 podcastDao;
     private GridView                                gridView;
     private TextView                                noSubscriptionsView;
 
     public GridManager(Context                           context,
                        GridAdapterProxy                  gridAdapterProxy,
-                       GridViewManager                   gridViewManager,
-                       EpisodeListActivityIntentProvider intentProvider)
+                       EpisodeListActivityIntentProvider intentProvider,
+                       PodcastDaoWrapper                 podcastDao)
     {
         this.context          = context;
         this.gridAdapterProxy = gridAdapterProxy;
-        this.gridViewManager  = gridViewManager;
         this.intentProvider   = intentProvider;
+        this.podcastDao       = podcastDao;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
@@ -69,7 +70,7 @@ class GridManager implements AdapterView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        Podcast podcast = gridViewManager.getViewHolder(view).getPodcast();
+        Podcast podcast = podcastDao.getById(id);
         Intent  intent  = intentProvider.getIntent(podcast);
         context.startActivity(intent);
     }

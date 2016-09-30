@@ -9,26 +9,27 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class ListManager implements AdapterView.OnItemClickListener
 {
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
-    private final ListViewManager                   listViewManager;
     private final ViewEpisodeActivityIntentProvider intentProvider;
+    private final EpisodeDaoWrapper                 episodeDao;
     private ListView                                listView;
     private TextView                                noEpisodesView;
 
     public ListManager(Context                           context,
                        ListAdapterProxy                  listAdapterProxy,
-                       ListViewManager                   listViewManager,
-                       ViewEpisodeActivityIntentProvider intentProvider)
+                       ViewEpisodeActivityIntentProvider intentProvider,
+                       EpisodeDaoWrapper                 episodeDao)
     {
         this.context          = context;
         this.listAdapterProxy = listAdapterProxy;
-        this.listViewManager  = listViewManager;
         this.intentProvider   = intentProvider;
+        this.episodeDao       = episodeDao;
     }
 
     public void init(View view)
@@ -63,7 +64,7 @@ class ListManager implements AdapterView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        Episode episode = listViewManager.getViewHolder(view).getEpisode();
+        Episode episode = episodeDao.getById(id);
         Intent  intent  = intentProvider.getIntent(episode);
         context.startActivity(intent);
     }

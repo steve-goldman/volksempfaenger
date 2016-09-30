@@ -7,9 +7,11 @@ import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 
 class GridAdapterProxyBuilder
 {
-    public GridAdapterProxy build(Context         context,
-                                  GridViewManager gridViewManager)
+    public GridAdapterProxy build(Context         context)
     {
+        GridViewManager gridViewManager
+                = new GridViewManagerBuilder().build(context);
+
         GridAdapter       gridAdapter = new GridAdapter(context);
         PodcastDaoWrapper podcastDao  = new PodcastDaoBuilder().build(context);
         GridAdapterProxy  proxy       = new GridAdapterProxy(gridAdapter,

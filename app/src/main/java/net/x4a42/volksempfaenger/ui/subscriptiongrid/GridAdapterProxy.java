@@ -6,14 +6,11 @@ import android.view.ViewGroup;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 
-import java.util.List;
-
 class GridAdapterProxy
 {
     private final GridAdapter       gridAdapter;
     private final GridViewManager   gridViewManager;
     private final PodcastDaoWrapper podcastDao;
-    private List<Podcast>           list;
 
     public GridAdapterProxy(GridAdapter        gridAdapter,
                             GridViewManager    gridViewManager,
@@ -27,8 +24,7 @@ class GridAdapterProxy
     public void refresh()
     {
         gridAdapter.clear();
-        list = podcastDao.getAll();
-        gridAdapter.addAll(list);
+        gridAdapter.addAll(podcastDao.getAll());
     }
 
     public void clear()
@@ -49,7 +45,7 @@ class GridAdapterProxy
     public View getView(int position, View convertView, ViewGroup parent)
     {
         GridViewHolder viewHolder = gridViewManager.getViewHolder(convertView, parent);
-        Podcast        podcast    = list.get(position);
+        Podcast        podcast    = gridAdapter.getItem(position);
 
         viewHolder.set(podcast);
 
@@ -58,7 +54,7 @@ class GridAdapterProxy
 
     public long getItemId(int position)
     {
-        return list.get(position).get_id();
+        return gridAdapter.getItem(position).get_id();
     }
 
 }

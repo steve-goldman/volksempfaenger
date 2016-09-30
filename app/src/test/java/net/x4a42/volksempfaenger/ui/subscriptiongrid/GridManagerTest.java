@@ -8,6 +8,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class GridManagerTest
     @Mock View                              view;
     @Mock GridView                          gridView;
     @Mock TextView                          noSubscriptionsView;
-    @Mock GridViewManager                   gridViewManager;
+    @Mock PodcastDaoWrapper                 podcastDaoWrapper;
     @Mock EpisodeListActivityIntentProvider intentProvider;
     GridManager                             gridManager;
 
@@ -42,7 +43,7 @@ public class GridManagerTest
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
         Mockito.when(gridAdapterProxy.getAdapter()).thenReturn(gridAdapter);
-        gridManager = new GridManager(context, gridAdapterProxy, gridViewManager, intentProvider);
+        gridManager = new GridManager(context, gridAdapterProxy, intentProvider, podcastDaoWrapper);
     }
 
     @Test

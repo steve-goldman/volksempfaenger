@@ -23,7 +23,6 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
 {
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
-    private final ListViewManager                   listViewManager;
     private final ViewEpisodeActivityIntentProvider intentProvider;
     private final PlaylistItemDaoWrapper            playlistItemDao;
     private ListView                                listView;
@@ -31,13 +30,11 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
 
     public ListManager(Context                           context,
                        ListAdapterProxy                  listAdapterProxy,
-                       ListViewManager                   listViewManager,
                        ViewEpisodeActivityIntentProvider intentProvider,
                        PlaylistItemDaoWrapper            playlistItemDao)
     {
         this.context          = context;
         this.listAdapterProxy = listAdapterProxy;
-        this.listViewManager  = listViewManager;
         this.intentProvider   = intentProvider;
         this.playlistItemDao  = playlistItemDao;
     }
@@ -84,7 +81,7 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        PlaylistItem playlistItem = listViewManager.getViewHolder(view).getPlaylistItem();
+        PlaylistItem playlistItem = playlistItemDao.getById(id);
         Intent       intent       = intentProvider.getIntent(playlistItem.getEpisode());
         context.startActivity(intent);
     }

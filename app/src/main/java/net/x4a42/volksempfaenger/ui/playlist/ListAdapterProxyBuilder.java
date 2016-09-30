@@ -7,9 +7,9 @@ import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper
 
 class ListAdapterProxyBuilder
 {
-    public ListAdapterProxy build(Context context,
-                                  ListViewManager listViewManager)
+    public ListAdapterProxy build(Context context)
     {
+        ListViewManager        listViewManager = new ListViewManagerBuilder().build(context);
         ListAdapter            listAdapter     = new ListAdapter(context);
         PlaylistItemDaoWrapper playlistItemDao = new PlaylistItemDaoBuilder().build(context);
         ListAdapterProxy       proxy           = new ListAdapterProxy(listAdapter,

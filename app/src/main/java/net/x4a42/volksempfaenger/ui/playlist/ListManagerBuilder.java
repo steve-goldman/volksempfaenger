@@ -11,10 +11,8 @@ class ListManagerBuilder
 {
     public ListManager build(Context context)
     {
-        ListViewManager listViewManager = new ListViewManagerBuilder().build(context);
-
         ListAdapterProxy listAdapterProxy
-                = new ListAdapterProxyBuilder().build(context, listViewManager);
+                = new ListAdapterProxyBuilder().build(context);
 
         ViewEpisodeActivityIntentProvider intentProvider
                 = new ViewEpisodeActivityIntentProviderBuilder().build(context);
@@ -23,7 +21,6 @@ class ListManagerBuilder
 
         return new ListManager(context,
                                listAdapterProxy,
-                               listViewManager,
                                intentProvider,
                                playlistItemDao);
     }
