@@ -25,6 +25,8 @@ class ControlButtonsManager implements PlaybackEventListener,
     private ImageButton                            rewindButton;
     private ImageButton                            playPauseButton;
     private ImageButton                            fastForwardButton;
+    private ImageButton                            nextButton;
+    private ImageButton                            downButton;
 
     public ControlButtonsManager(PlaybackEventReceiver            playbackEventReceiver,
                                  PlaybackServiceIntentProvider    intentProvider,
@@ -47,10 +49,14 @@ class ControlButtonsManager implements PlaybackEventListener,
         rewindButton      = (ImageButton)  view.findViewById(R.id.back);
         playPauseButton   = (ImageButton)  view.findViewById(R.id.pause);
         fastForwardButton = (ImageButton)  view.findViewById(R.id.forward);
+        nextButton        = (ImageButton)  view.findViewById(R.id.next);
+        downButton        = (ImageButton)  view.findViewById(R.id.down);
 
         rewindButton.setOnClickListener(this);
         playPauseButton.setOnClickListener(this);
         fastForwardButton.setOnClickListener(this);
+        nextButton.setOnClickListener(this);
+        downButton.setOnClickListener(this);
 
         setNotPlaying();
     }
@@ -113,6 +119,14 @@ class ControlButtonsManager implements PlaybackEventListener,
         {
             handleFastForwardClicked(v.getContext());
         }
+        else if (nextButton.equals(v))
+        {
+            handleNext(v.getContext());
+        }
+        else if (downButton.equals(v))
+        {
+            handleDown(v.getContext());
+        }
     }
 
     //
@@ -161,6 +175,16 @@ class ControlButtonsManager implements PlaybackEventListener,
     private void handleFastForwardClicked(Context context)
     {
         context.startService(intentProvider.getMoveIntent(offset));
+    }
+
+    private void handleNext(Context context)
+    {
+        context.startService(intentProvider.getNextIntent());
+    }
+
+    private void handleDown(Context context)
+    {
+        context.startService(intentProvider.getDownIntent());
     }
 
 }

@@ -14,6 +14,8 @@ class IntentParser
         void onStop();
         void onSeek(int position);
         void onMove(int offset);
+        void onNext();
+        void onDown();
     }
 
     private Listener listener;
@@ -62,6 +64,12 @@ class IntentParser
             case PlaybackService.ActionMove:
                 handleMove(intent);
                 break;
+            case PlaybackService.ActionNext:
+                handleNext();
+                break;
+            case PlaybackService.ActionDown:
+                handleDown();
+                break;
             default:
                 Log.e(this, String.format("unexpected action:%s", action));
                 break;
@@ -98,5 +106,15 @@ class IntentParser
     {
         int offset = intent.getIntExtra(PlaybackServiceIntentProvider.OffsetKey, 0);
         listener.onMove(offset);
+    }
+
+    private void handleNext()
+    {
+        listener.onNext();
+    }
+
+    private void handleDown()
+    {
+        listener.onDown();
     }
 }

@@ -52,4 +52,14 @@ public class PlaybackServiceIntentProvider
     {
         return intentFactory.create();
     }
+
+    public Intent getNextIntent()
+    {
+        return intentFactory.create(PlaybackService.ActionNext);
+    }
+
+    public Intent getDownIntent()
+    {
+        return intentFactory.create(PlaybackService.ActionDown);
+    }
 }

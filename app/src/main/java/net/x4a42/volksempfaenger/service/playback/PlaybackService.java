@@ -13,6 +13,8 @@ public class PlaybackService extends Service
     public static final  String ActionStop      = ActionPrefix + "STOP";
     public static final  String ActionSeek      = ActionPrefix + "SEEK";
     public static final  String ActionMove      = ActionPrefix + "MOVE";
+    public static final  String ActionNext      = ActionPrefix + "NEXT";
+    public static final  String ActionDown      = ActionPrefix + "DOWN";
 
     private PlaybackServiceProxy proxy;
 

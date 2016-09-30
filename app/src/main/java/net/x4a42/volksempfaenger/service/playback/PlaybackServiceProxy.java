@@ -162,6 +162,19 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         }
     }
 
+    @Override
+    public void onNext()
+    {
+        // same behavior as if the episode ended
+        handleEnded();
+    }
+
+    @Override
+    public void onDown()
+    {
+        // tODO
+    }
+
     private void handlePlaying()
     {
         updateNotification(true);
