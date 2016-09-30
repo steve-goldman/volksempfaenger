@@ -89,7 +89,7 @@ class PlaybackNotificationBuilder
             content.setImageViewResource(R.id.pause, R.drawable.ic_notification_play);
             content.setOnClickPendingIntent(
                     R.id.pause,
-                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(playbackEpisode), 0));
+                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(), 0));
         }
 
         content.setOnClickPendingIntent(

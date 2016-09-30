@@ -13,10 +13,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ToastMaker;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
-import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class ListManager implements AdapterView.OnItemClickListener,
@@ -28,7 +28,7 @@ class ListManager implements AdapterView.OnItemClickListener,
     private final ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
     private final EpisodeDaoWrapper                 episodeDao;
     private final Playlist                          playlist;
-    private final MainActivityIntentProvider        mainActivityIntentProvider;
+    private final ToastMaker                        toastMaker;
     private ListView                                listView;
     private TextView                                noEpisodesView;
 
@@ -37,14 +37,14 @@ class ListManager implements AdapterView.OnItemClickListener,
                        ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider,
                        EpisodeDaoWrapper                 episodeDao,
                        Playlist                          playlist,
-                       MainActivityIntentProvider        mainActivityIntentProvider)
+                       ToastMaker                        toastMaker)
     {
         this.context                    = context;
         this.listAdapterProxy           = listAdapterProxy;
         this.viewEpisodeIntentProvider  = viewEpisodeIntentProvider;
         this.episodeDao                 = episodeDao;
         this.playlist                   = playlist;
-        this.mainActivityIntentProvider = mainActivityIntentProvider;
+        this.toastMaker                 = toastMaker;
     }
 
     public void init(View view)
@@ -125,9 +125,8 @@ class ListManager implements AdapterView.OnItemClickListener,
         {
             case R.id.item_episode_list_play_next:
             {
-                playlist.playEpisodesNext(listView.getCheckedItemIds());
+                handlePlay();
                 mode.finish();
-                context.startActivity(mainActivityIntentProvider.getIntent());
                 return true;
             }
         }
@@ -139,4 +138,11 @@ class ListManager implements AdapterView.OnItemClickListener,
     {
     }
 
+    private void handlePlay()
+    {
+        if (!playlist.playEpisodesNow(listView.getCheckedItemIds()))
+        {
+            toastMaker.showTextShort(context.getString(R.string.toast_episode_enqueued));
+        }
+    }
 }

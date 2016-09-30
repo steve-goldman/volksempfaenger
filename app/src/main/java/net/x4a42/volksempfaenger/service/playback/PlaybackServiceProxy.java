@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
 
 class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
 {
@@ -18,6 +19,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private final MediaSessionManager                mediaSessionManager;
     private final NotificationManager                notificationManager;
     private final PlaybackNotificationBuilder        notificationBuilder;
+    private final Playlist                           playlist;
 
     public PlaybackServiceProxy(BackgroundPositionSaver            positionSaver,
                                 Controller                         controller,
@@ -25,7 +27,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
                                 MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
                                 NotificationManager                notificationManager,
-                                PlaybackNotificationBuilder        notificationBuilder)
+                                PlaybackNotificationBuilder        notificationBuilder,
+                                Playlist                           playlist)
     {
         this.positionSaver              = positionSaver;
         this.controller                 = controller;
@@ -34,6 +37,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         this.mediaSessionManager        = mediaSessionManager;
         this.notificationManager        = notificationManager;
         this.notificationBuilder        = notificationBuilder;
+        this.playlist                   = playlist;
     }
 
     public int onStartCommand(Intent intent)
@@ -83,20 +87,26 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     }
 
     @Override
-    public void onPlay(Episode episode)
+    public void onPlay()
     {
+        if (playlist.isEmpty())
+        {
+            return;
+        }
+
+        Episode episode = playlist.getCurrentEpisode();
+
         if (controller.isPlaybackEpisodeOpen(episode))
         {
             if (!controller.isPlaying())
             {
                 controller.play();
             }
+            return;
         }
-        else
-        {
-            positionSaver.stop(false);
-            controller.open(episode);
-        }
+
+        positionSaver.stop(false);
+        controller.open(episode);
     }
 
     @Override
@@ -156,18 +166,22 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     {
         updateNotification(true);
         positionSaver.start(controller.getPlaybackEpisode());
+        playlist.setPlaying(true);
     }
 
     private void handlePaused()
     {
         updateNotification(false);
         positionSaver.stop(false);
+        playlist.setPlaying(false);
     }
 
     private void handleEnded()
     {
         notificationManager.cancel(NotificationId);
         positionSaver.stop(true);
+        playlist.episodeEnded();
+        onPlay();
     }
 
     private void updateNotification(boolean isPlaying)

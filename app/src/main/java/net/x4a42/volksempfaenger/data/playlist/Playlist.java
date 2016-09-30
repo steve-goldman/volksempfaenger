@@ -1,25 +1,45 @@
 package net.x4a42.volksempfaenger.data.playlist;
 
+import android.content.Context;
+
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
 import java.util.SortedSet;
 
 public class Playlist
 {
-    private final PlaylistItemDaoWrapper playlistItemDao;
-    private final EpisodeDaoWrapper      episodeDao;
-    private final SortedSet<Long>        episodeIdSet;
+    private final Context                       context;
+    private final PlaylistItemDaoWrapper        playlistItemDao;
+    private final EpisodeDaoWrapper             episodeDao;
+    private final PlaybackServiceIntentProvider intentProvider;
+    private final SortedSet<Long>               episodeIdSet;
+    private boolean                             isPlaying;
 
-    Playlist(PlaylistItemDaoWrapper playlistItemDao,
-             EpisodeDaoWrapper      episodeDao,
-             SortedSet<Long>        episodeIdSet)
+    Playlist(Context                       context,
+             PlaylistItemDaoWrapper        playlistItemDao,
+             EpisodeDaoWrapper             episodeDao,
+             PlaybackServiceIntentProvider intentProvider,
+             SortedSet<Long>               episodeIdSet)
     {
+        this.context         = context;
         this.playlistItemDao = playlistItemDao;
         this.episodeDao      = episodeDao;
+        this.intentProvider  = intentProvider;
         this.episodeIdSet    = episodeIdSet;
+    }
+
+    public void setPlaying(boolean isPlaying)
+    {
+        this.isPlaying = isPlaying;
+    }
+
+    public synchronized boolean isEmpty()
+    {
+        return playlistItemDao.getAll().isEmpty();
     }
 
     public synchronized Episode getCurrentEpisode()
@@ -36,6 +56,13 @@ public class Playlist
     public synchronized void addEpisode(Episode episode)
     {
         playlistItemDao.createPlaylistItem(episode);
+    }
+
+    public synchronized void episodeEnded()
+    {
+        PlaylistItem playlistItem = playlistItemDao.getByPosition(0);
+        playlistItemDao.delete(playlistItem);
+        setPlaying(false);
     }
 
     public synchronized void removeItem(int position)
@@ -64,24 +91,21 @@ public class Playlist
         playlistItemDao.moveToBack(getHead());
     }
 
-    public synchronized void moveEpisodeToHead(Episode episode)
+    public synchronized boolean playEpisodeNow(Episode episode)
     {
-        PlaylistItem playlistItem = playlistItemDao.getByEpisode(episode);
-        playlistItemDao.move(playlistItem, 0);
+        moveEpisode(episode, isPlaying ? 1 : 0);
+        return startPlaybackService();
     }
 
-    public synchronized void playEpisodesNext(long[] episodeIds)
+    public synchronized boolean playEpisodesNow(long[] episodeIds)
     {
         populateEpisodeIdSet(episodeIds);
         for (long episodeId : episodeIdSet)
         {
             Episode episode = episodeDao.getById(episodeId);
-            if (!playlistItemDao.hasEpisode(episode))
-            {
-                playlistItemDao.createPlaylistItem(episode);
-            }
-            moveEpisodeToHead(episode);
+            moveEpisode(episode, isPlaying ? 1 : 0);
         }
+        return startPlaybackService();
     }
 
     private PlaylistItem getHead()
@@ -96,5 +120,30 @@ public class Playlist
         {
             episodeIdSet.add(episodeId);
         }
+    }
+
+    private void moveEpisode(Episode episode, int position)
+    {
+        PlaylistItem playlistItem = getOrCreateItem(episode);
+        playlistItemDao.move(playlistItem, position);
+    }
+
+    private PlaylistItem getOrCreateItem(Episode episode)
+    {
+        if (!playlistItemDao.hasEpisode(episode))
+        {
+            return playlistItemDao.createPlaylistItem(episode);
+        }
+        return playlistItemDao.getByEpisode(episode);
+    }
+    
+    private boolean startPlaybackService()
+    {
+        if (!isPlaying)
+        {
+            context.startService(intentProvider.getPlayIntent());
+            return true;
+        }
+        return false;
     }
 }

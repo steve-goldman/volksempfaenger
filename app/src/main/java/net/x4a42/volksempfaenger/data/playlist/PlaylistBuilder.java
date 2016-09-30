@@ -6,6 +6,8 @@ import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -15,8 +17,9 @@ class PlaylistBuilder
 {
     public Playlist build(Context context)
     {
-        PlaylistItemDaoWrapper playlistItemDao = new PlaylistItemDaoBuilder().build(context);
-        EpisodeDaoWrapper      episodeDao      = new EpisodeDaoBuilder().build(context);
+        PlaylistItemDaoWrapper        playlistItemDao = new PlaylistItemDaoBuilder().build(context);
+        EpisodeDaoWrapper             episodeDao      = new EpisodeDaoBuilder().build(context);
+        PlaybackServiceIntentProvider intentProvider  = new PlaybackServiceIntentProviderBuilder().build(context);
 
         SortedSet<Long> episodeIdSet = new TreeSet<>(new Comparator<Long>()
         {
@@ -27,6 +30,6 @@ class PlaylistBuilder
             }
         });
 
-        return new Playlist(playlistItemDao, episodeDao, episodeIdSet);
+        return new Playlist(context, playlistItemDao, episodeDao, intentProvider, episodeIdSet);
     }
 }
