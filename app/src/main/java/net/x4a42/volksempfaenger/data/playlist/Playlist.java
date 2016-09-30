@@ -43,12 +43,12 @@ public class Playlist
     public synchronized void moveEpisodeToCurrent(Episode episode)
     {
         PlaylistItem playlistItem = playlistItemDao.getByEpisode(episode);
-        playlistItemDao.move(playlistItem, 1);
+        playlistItemDao.move(playlistItem, 0);
     }
 
     private PlaylistItem getHead()
     {
-        return playlistItemDao.getByPosition(1);
+        return playlistItemDao.getByPosition(0);
     }
 
 }

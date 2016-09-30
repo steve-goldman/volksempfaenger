@@ -20,7 +20,7 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
     {
         PlaylistItem playlistItem = provider.get();
         playlistItem.setEpisode(episode);
-        playlistItem.setPosition(dao.count() + 1);
+        playlistItem.setPosition(dao.count());
         super.insert(playlistItem);
         return playlistItem;
     }
