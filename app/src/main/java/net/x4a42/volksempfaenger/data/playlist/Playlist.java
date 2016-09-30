@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.skippedepisode.SkippedEpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
 import java.util.SortedSet;
@@ -15,6 +16,7 @@ public class Playlist
     private final Context                       context;
     private final PlaylistItemDaoWrapper        playlistItemDao;
     private final EpisodeDaoWrapper             episodeDao;
+    private final SkippedEpisodeDaoWrapper      skippedEpisodeDao;
     private final PlaybackServiceIntentProvider intentProvider;
     private final SortedSet<Long>               episodeIdSet;
     private boolean                             isPlaying;
@@ -22,19 +24,26 @@ public class Playlist
     Playlist(Context                       context,
              PlaylistItemDaoWrapper        playlistItemDao,
              EpisodeDaoWrapper             episodeDao,
+             SkippedEpisodeDaoWrapper      skippedEpisodeDao,
              PlaybackServiceIntentProvider intentProvider,
              SortedSet<Long>               episodeIdSet)
     {
-        this.context         = context;
-        this.playlistItemDao = playlistItemDao;
-        this.episodeDao      = episodeDao;
-        this.intentProvider  = intentProvider;
-        this.episodeIdSet    = episodeIdSet;
+        this.context           = context;
+        this.playlistItemDao   = playlistItemDao;
+        this.episodeDao        = episodeDao;
+        this.skippedEpisodeDao = skippedEpisodeDao;
+        this.intentProvider    = intentProvider;
+        this.episodeIdSet      = episodeIdSet;
     }
 
     public void setPlaying(boolean isPlaying)
     {
-        this.isPlaying = isPlaying;
+        this.isPlaying  = isPlaying;
+        Episode episode = getCurrentEpisode();
+        if (skippedEpisodeDao.hasEpisode(episode))
+        {
+            skippedEpisodeDao.delete(episode);
+        }
     }
 
     public synchronized boolean isEmpty()
@@ -60,9 +69,32 @@ public class Playlist
 
     public synchronized void episodeEnded()
     {
+        setPlaying(false);
         PlaylistItem playlistItem = playlistItemDao.getByPosition(0);
         playlistItemDao.delete(playlistItem);
+    }
+
+    public synchronized void episodeSkipped()
+    {
         setPlaying(false);
+        skippedEpisodeDao.create(getCurrentEpisode());
+
+        PlaylistItem lastItem = null;
+        for (PlaylistItem playlistItem : playlistItemDao.getAll())
+        {
+            lastItem        = playlistItem;
+            Episode episode = playlistItem.getEpisode();
+            if (!skippedEpisodeDao.hasEpisode(episode))
+            {
+                moveEpisode(episode, 0);
+                return;
+            }
+        }
+
+        if (lastItem != null)
+        {
+            moveEpisode(lastItem.getEpisode(), 0);
+        }
     }
 
     public synchronized void removeItem(int position)
@@ -84,11 +116,6 @@ public class Playlist
     {
         PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
         playlistItemDao.move(playlistItem, toPosition);
-    }
-
-    public synchronized void moveCurrentItemToBack()
-    {
-        playlistItemDao.moveToBack(getHead());
     }
 
     public synchronized boolean playEpisodeNow(Episode episode)
@@ -136,7 +163,7 @@ public class Playlist
         }
         return playlistItemDao.getByEpisode(episode);
     }
-    
+
     private boolean startPlaybackService()
     {
         if (!isPlaying)

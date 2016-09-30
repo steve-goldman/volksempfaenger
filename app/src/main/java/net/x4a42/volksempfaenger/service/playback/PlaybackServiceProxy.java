@@ -170,9 +170,12 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     }
 
     @Override
-    public void onDown()
+    public void onSkip()
     {
-        // tODO
+        notificationManager.cancel(NotificationId);
+        positionSaver.stop(false);
+        playlist.episodeSkipped();
+        onPlay();
     }
 
     private void handlePlaying()

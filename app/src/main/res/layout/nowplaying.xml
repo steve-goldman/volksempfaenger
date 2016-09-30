@@ -144,7 +144,7 @@
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/finish_later"
-            android:src="@drawable/ic_down_button" >
+            android:src="@drawable/ic_skip_button" >
         </ImageButton>
 
         <ImageButton

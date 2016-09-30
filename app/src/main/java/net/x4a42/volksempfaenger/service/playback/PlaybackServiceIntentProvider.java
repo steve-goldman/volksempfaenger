@@ -60,6 +60,6 @@ public class PlaybackServiceIntentProvider
 
     public Intent getDownIntent()
     {
-        return intentFactory.create(PlaybackService.ActionDown);
+        return intentFactory.create(PlaybackService.ActionSkip);
     }
 }

@@ -49,11 +49,6 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         return getListByEpisodeId(episode.get_id()).get(0);
     }
 
-    public PlaylistItem getByEpisodeId(long episodeId)
-    {
-        return getListByEpisodeId(episodeId).get(0);
-    }
-
     public PlaylistItem getById(long playlistItemId)
     {
         return dao.queryBuilder()
@@ -161,11 +156,6 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
     private List<PlaylistItem> getBehind(long position)
     {
         return getRange(position + 1, -1);
-    }
-
-    private List<PlaylistItem> getInFront(long position)
-    {
-        return getRange(-1, position - 1);
     }
 
     private List<PlaylistItem> getListByEpisodeId(long episodeId)

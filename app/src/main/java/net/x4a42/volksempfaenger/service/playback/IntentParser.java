@@ -15,7 +15,7 @@ class IntentParser
         void onSeek(int position);
         void onMove(int offset);
         void onNext();
-        void onDown();
+        void onSkip();
     }
 
     private Listener listener;
@@ -67,8 +67,8 @@ class IntentParser
             case PlaybackService.ActionNext:
                 handleNext();
                 break;
-            case PlaybackService.ActionDown:
-                handleDown();
+            case PlaybackService.ActionSkip:
+                handleSkip();
                 break;
             default:
                 Log.e(this, String.format("unexpected action:%s", action));
@@ -113,8 +113,8 @@ class IntentParser
         listener.onNext();
     }
 
-    private void handleDown()
+    private void handleSkip()
     {
-        listener.onDown();
+        listener.onSkip();
     }
 }
