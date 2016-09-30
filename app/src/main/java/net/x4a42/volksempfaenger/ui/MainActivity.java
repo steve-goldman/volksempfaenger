@@ -30,11 +30,11 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 
 	static {
 		fragmentTabs = new ArrayList<FragmentTab>(3);
+		fragmentTabs.add(new FragmentTab(TAG_PLAYLIST,
+										 R.string.title_tab_playlist, PlaylistFragment.class));
 		fragmentTabs.add(new FragmentTab(TAG_SUBSCRIPTIONS,
 				R.string.title_tab_subscriptions,
 				SubscriptionGridFragment.class));
-		fragmentTabs.add(new FragmentTab(TAG_PLAYLIST,
-				R.string.title_tab_playlist, PlaylistFragment.class));
 	}
 
 	private ViewPager viewpager;
