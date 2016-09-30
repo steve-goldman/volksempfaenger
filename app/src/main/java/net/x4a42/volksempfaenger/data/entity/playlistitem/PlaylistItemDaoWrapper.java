@@ -64,8 +64,7 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
 
         for (PlaylistItem behindItem : getBehind(deletedPosition))
         {
-            behindItem.setPosition(behindItem.getPosition() - 1);
-            super.update(behindItem);
+            updatePosition(behindItem, behindItem.getPosition() - 1);
         }
     }
 
@@ -94,27 +93,30 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
             return;
         }
 
+        long oldPosition = playlistItem.getPosition();
         // TODO: wrap in transaction?
-        if (newPosition < playlistItem.getPosition())
+        updatePosition(playlistItem, -1);
+        if (newPosition < oldPosition)
         {
-            for (PlaylistItem rangeItem : getRange(playlistItem.getPosition() - 1, newPosition))
+            for (PlaylistItem rangeItem : getRange(oldPosition - 1, newPosition))
             {
-                rangeItem.setPosition(rangeItem.getPosition() + 1);
-                super.update(rangeItem);
+                updatePosition(rangeItem, rangeItem.getPosition() + 1);
             }
         }
         else
         {
-            for (PlaylistItem rangeItem : getRange(playlistItem.getPosition() + 1, newPosition))
+            for (PlaylistItem rangeItem : getRange(oldPosition+ 1, newPosition))
             {
-                rangeItem.setPosition(rangeItem.getPosition() - 1);
-                super.update(rangeItem);
+                updatePosition(rangeItem, rangeItem.getPosition() - 1);
             }
         }
+        updatePosition(playlistItem, newPosition);
+    }
 
+    private void updatePosition(PlaylistItem playlistItem, long newPosition)
+    {
         playlistItem.setPosition(newPosition);
         super.update(playlistItem);
-
     }
 
     private List<PlaylistItem> getRange(long from, long to)
