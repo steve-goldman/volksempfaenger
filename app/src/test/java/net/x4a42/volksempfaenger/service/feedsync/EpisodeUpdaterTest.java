@@ -3,8 +3,8 @@ package net.x4a42.volksempfaenger.service.feedsync;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
-import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.feedparser.Enclosure;
 import net.x4a42.volksempfaenger.feedparser.FeedItem;
 
@@ -21,7 +21,7 @@ import java.util.Date;
 public class EpisodeUpdaterTest
 {
     @Mock EpisodeDaoWrapper      episodeDao;
-    @Mock PlaylistItemDaoWrapper playlistItemDao;
+    @Mock Playlist               playlist;
     @Mock EnclosureUpdater       enclosureUpdater;
     @Mock Episode                episode;
     @Mock Podcast                podcast;
@@ -40,9 +40,8 @@ public class EpisodeUpdaterTest
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
         Mockito.when(episodeDao.newEpisode(podcast, feedItem.url)).thenReturn(episode);
-        Mockito.when(playlistItemDao.createPlaylistItem(episode)).thenReturn(playlistItem);
         feedItem.date        = new Date();
-        episodeUpdater       = new EpisodeUpdater(episodeDao, playlistItemDao, enclosureUpdater);
+        episodeUpdater       = new EpisodeUpdater(episodeDao, playlist, enclosureUpdater);
     }
 
     @Test
@@ -51,7 +50,7 @@ public class EpisodeUpdaterTest
         episodeUpdater.insertOrUpdate(podcast, feedItem);
         verifyCommon();
         Mockito.verify(episodeDao).insert(episode);
-        Mockito.verify(playlistItemDao).createPlaylistItem(episode);
+        Mockito.verify(playlist).addEpisode(episode);
     }
 
     @Test

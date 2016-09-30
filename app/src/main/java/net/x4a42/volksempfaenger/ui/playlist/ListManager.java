@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.mobeta.android.dslv.DragSortListView;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
-import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
 class ListManager implements AdapterView.OnItemClickListener,
@@ -29,19 +29,19 @@ class ListManager implements AdapterView.OnItemClickListener,
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
     private final ViewEpisodeActivityIntentProvider intentProvider;
-    private final PlaylistItemDaoWrapper            playlistItemDao;
+    private final Playlist                          playlist;
     private DragSortListView                        listView;
     private TextView                                noEpisodesView;
 
     public ListManager(Context                           context,
                        ListAdapterProxy                  listAdapterProxy,
                        ViewEpisodeActivityIntentProvider intentProvider,
-                       PlaylistItemDaoWrapper            playlistItemDao)
+                       Playlist                          playlist)
     {
         this.context          = context;
         this.listAdapterProxy = listAdapterProxy;
         this.intentProvider   = intentProvider;
-        this.playlistItemDao  = playlistItemDao;
+        this.playlist         = playlist;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
@@ -88,8 +88,8 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        PlaylistItem playlistItem = playlistItemDao.getById(id);
-        Intent       intent       = intentProvider.getIntent(playlistItem.getEpisode());
+        Episode episode = playlist.getEpisode(position);
+        Intent  intent  = intentProvider.getIntent(episode);
         context.startActivity(intent);
     }
 
@@ -127,8 +127,9 @@ class ListManager implements AdapterView.OnItemClickListener,
         {
             case R.id.item_playlist_remove:
             {
-                handleRemove();
+                playlist.removeItem(listView.getCheckedItemIds());
                 mode.finish();
+                listAdapterProxy.refresh();
                 return true;
             }
         }
@@ -147,13 +148,7 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void drop(int fromPosition, int toPosition)
     {
-        if (fromPosition == toPosition)
-        {
-            return;
-        }
-
-        PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
-        playlistItemDao.move(playlistItem, toPosition);
+        playlist.moveItem(fromPosition, toPosition);
         listAdapterProxy.refresh();
     }
 
@@ -164,18 +159,8 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void remove(int position)
     {
-        PlaylistItem playlistItem = playlistItemDao.getByPosition(position);
-        playlistItemDao.delete(playlistItem);
+        playlist.removeItem(position);
         listAdapterProxy.refresh();
     }
 
-    private void handleRemove()
-    {
-        for (long playlistItemId : listView.getCheckedItemIds())
-        {
-            PlaylistItem playlistItem = playlistItemDao.getById(playlistItemId);
-            playlistItemDao.delete(playlistItem);
-        }
-        listAdapterProxy.refresh();
-    }
 }

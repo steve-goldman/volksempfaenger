@@ -41,12 +41,17 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
 
     public boolean hasEpisode(Episode episode)
     {
-        return !getListByEpisode(episode).isEmpty();
+        return !getListByEpisodeId(episode.get_id()).isEmpty();
     }
 
     public PlaylistItem getByEpisode(Episode episode)
     {
-        return getListByEpisode(episode).get(0);
+        return getListByEpisodeId(episode.get_id()).get(0);
+    }
+
+    public PlaylistItem getByEpisodeId(long episodeId)
+    {
+        return getListByEpisodeId(episodeId).get(0);
     }
 
     public PlaylistItem getById(long playlistItemId)
@@ -163,10 +168,10 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         return getRange(-1, position - 1);
     }
 
-    private List<PlaylistItem> getListByEpisode(Episode episode)
+    private List<PlaylistItem> getListByEpisodeId(long episodeId)
     {
         return dao.queryBuilder()
-                  .where(PlaylistItemDao.Properties.EpisodeId.eq(episode.get_id()))
+                  .where(PlaylistItemDao.Properties.EpisodeId.eq(episodeId))
                   .list();
     }
 
