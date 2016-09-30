@@ -54,7 +54,7 @@ class ListAdapterProxy
 
     public long getItemId(int position)
     {
-        return list.get(position).get_id();
+        return listAdapter.getItem(position).get_id();
     }
 
 }

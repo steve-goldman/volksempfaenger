@@ -36,6 +36,6 @@ class ListViewManager
 
     private View createView(ViewGroup parent)
     {
-        return inflater.inflate(R.layout.episode_list_row, parent, false);
+        return inflater.inflate(R.layout.playlist_row, parent, false);
     }
 }

@@ -4,17 +4,21 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <ListView
+    <com.mobeta.android.dslv.DragSortListView
+        xmlns:dslv="http://schemas.android.com/apk/res-auto"
         android:id="@+id/playlist_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        dslv:float_background_color="@color/listview_item_background_activated"
+        dslv:drag_handle_id="@id/drag_handle"
+        dslv:drag_start_mode="onMove"
+        dslv:remove_enabled="true"
+        dslv:max_drag_scroll_speed="2.5"/>
 
     <TextView
         android:id="@+id/playlist_empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:gravity="center"
         android:text="@string/message_no_playlist"
         android:textAppearance="?android:attr/textAppearanceLarge"/>

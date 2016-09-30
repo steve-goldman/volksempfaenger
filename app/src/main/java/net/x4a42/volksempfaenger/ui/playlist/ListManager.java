@@ -14,18 +14,23 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mobeta.android.dslv.DragSortListView;
+
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
 
-class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener
+class ListManager implements AdapterView.OnItemClickListener,
+                             AbsListView.MultiChoiceModeListener,
+                             DragSortListView.DropListener,
+                             DragSortListView.RemoveListener
 {
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
     private final ViewEpisodeActivityIntentProvider intentProvider;
     private final PlaylistItemDaoWrapper            playlistItemDao;
-    private ListView                                listView;
+    private DragSortListView                        listView;
     private TextView                                noEpisodesView;
 
     public ListManager(Context                           context,
@@ -43,7 +48,9 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
     {
         View view = inflater.inflate(R.layout.playlist, container, false);
 
-        listView = (ListView) view.findViewById(R.id.playlist_list);
+        listView = (DragSortListView) view.findViewById(R.id.playlist_list);
+        listView.setDropListener(this);
+        listView.setRemoveListener(this);
         listView.setOnItemClickListener(this);
         listView.setAdapter(listAdapterProxy.getAdapter());
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -133,6 +140,35 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
     {
     }
 
+    //
+    // DragSortListView.DragListener
+    //
+
+    @Override
+    public void drop(int fromPosition, int toPosition)
+    {
+        if (fromPosition == toPosition)
+        {
+            return;
+        }
+
+        PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
+        playlistItemDao.move(playlistItem, toPosition);
+        listAdapterProxy.refresh();
+    }
+
+    //
+    // DragSortListView.RemoveListener
+    //
+
+    @Override
+    public void remove(int position)
+    {
+        PlaylistItem playlistItem = playlistItemDao.getByPosition(position);
+        playlistItemDao.delete(playlistItem);
+        listAdapterProxy.refresh();
+    }
+
     private void handleRemove()
     {
         for (long playlistItemId : listView.getCheckedItemIds())
@@ -140,7 +176,6 @@ class ListManager implements AdapterView.OnItemClickListener, AbsListView.MultiC
             PlaylistItem playlistItem = playlistItemDao.getById(playlistItemId);
             playlistItemDao.delete(playlistItem);
         }
-
-        refresh();
+        listAdapterProxy.refresh();
     }
 }
