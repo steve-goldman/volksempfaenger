@@ -50,7 +50,12 @@ class ListViewHolder
 
     public void set(PlaylistItem playlistItem)
     {
+        if (this.playlistItem != null && this.playlistItem.get_id() == playlistItem.get_id())
+        {
+            return;
+        }
         this.playlistItem = playlistItem;
+
         setEpisodeTitle();
         setEpisodeDate();
         setLogo();

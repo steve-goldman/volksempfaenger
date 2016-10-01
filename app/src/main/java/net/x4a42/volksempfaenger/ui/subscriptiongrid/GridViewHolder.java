@@ -54,7 +54,12 @@ class GridViewHolder implements ImageLoadingListener
 
     public void set(Podcast podcast)
     {
+        if (this.podcast != null && this.podcast.get_id() == podcast.get_id())
+        {
+            return;
+        }
         this.podcast = podcast;
+
         setTitle();
         setLogo();
     }

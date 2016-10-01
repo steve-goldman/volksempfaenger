@@ -50,7 +50,12 @@ class ListViewHolder
 
     public void set(Episode episode)
     {
+        if (this.episode != null && this.episode.get_id() == episode.get_id())
+        {
+            return;
+        }
         this.episode = episode;
+
         setEpisodeTitle();
         setEpisodeDate();
         setLogo();
