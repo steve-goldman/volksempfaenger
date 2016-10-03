@@ -16,18 +16,22 @@ public class EpisodeDownloadDaoWrapper
         this.provider = provider;
     }
 
+    public List<EpisodeDownload> getAll()
+    {
+        return dao.queryBuilder().listLazy();
+    }
+
     public boolean hasEpisode(Episode episode)
     {
         return !getForEpisode(episode).isEmpty();
     }
 
-    public void delete(Episode episode)
+    public void delete(EpisodeDownload episodeDownload)
     {
-        EpisodeDownload episodeDownload = getForEpisode(episode).get(0);
         dao.delete(episodeDownload);
     }
 
-    public EpisodeDownload create(Episode episode)
+    public EpisodeDownload insert(Episode episode)
     {
         EpisodeDownload episodeDownload = provider.get();
         episodeDownload.setEpisode(episode);

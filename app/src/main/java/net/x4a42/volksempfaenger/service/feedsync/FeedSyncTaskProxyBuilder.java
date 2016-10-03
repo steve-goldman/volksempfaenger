@@ -3,6 +3,8 @@ package net.x4a42.volksempfaenger.service.feedsync;
 import android.content.Context;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -20,6 +22,9 @@ class FeedSyncTaskProxyBuilder
         FeedParserWrapper feedParser = new FeedParserWrapper(reader);
         PodcastUpdater    updater    = new PodcastUpdaterBuilder().build(context);
 
-        return new FeedSyncTaskProxy(podcast, connection, feedParser, updater);
+        PlaylistDownloadServiceIntentProvider intentProvider
+                = new PlaylistDownloadServiceIntentProviderBuilder().build(context);
+
+        return new FeedSyncTaskProxy(context, podcast, connection, feedParser, updater, intentProvider);
     }
 }

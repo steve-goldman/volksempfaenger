@@ -25,6 +25,11 @@ public class PlaylistItemDaoWrapper
         return playlistItem;
     }
 
+    public long count()
+    {
+        return dao.queryBuilder().count();
+    }
+
     public List<PlaylistItem> getAll()
     {
         return dao.queryBuilder()
@@ -92,6 +97,11 @@ public class PlaylistItemDaoWrapper
             }
         }
         updatePosition(playlistItem, newPosition);
+    }
+
+    public List<PlaylistItem> getFirstN(int n)
+    {
+        return getRange(0, n - 1);
     }
 
     private void updatePosition(PlaylistItem playlistItem, long newPosition)
