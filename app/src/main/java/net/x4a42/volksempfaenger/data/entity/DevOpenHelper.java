@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import net.x4a42.volksempfaenger.data.entity.enclosure.DaoMaster;
+import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownload;
+import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDao;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDao;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDao;
 import net.x4a42.volksempfaenger.data.entity.skippedepisode.SkippedEpisodeDao;
@@ -31,6 +33,11 @@ class DevOpenHelper extends DaoMaster.DevOpenHelper
         if (oldVersion < 4)
         {
             SkippedEpisodeDao.createTable(wrap(db), true);
+        }
+
+        if (oldVersion < 5)
+        {
+            EpisodeDownloadDao.createTable(wrap(db), true);
         }
     }
 }
