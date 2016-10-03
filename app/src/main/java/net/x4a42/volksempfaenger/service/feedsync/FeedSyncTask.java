@@ -8,7 +8,7 @@ import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 
 import java.io.IOException;
 
-public class FeedSyncTask extends AsyncTask<Podcast, Void, Void>
+class FeedSyncTask extends AsyncTask<Podcast, Void, Void>
 {
     private final Context context;
 

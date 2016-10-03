@@ -5,7 +5,7 @@ import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 
 import java.net.HttpURLConnection;
 
-public class FeedSyncTaskProxy
+class FeedSyncTaskProxy
 {
     private final Podcast           podcast;
     private final HttpURLConnection feedConnection;
