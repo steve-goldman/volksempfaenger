@@ -1,36 +1,47 @@
 package net.x4a42.volksempfaenger.data.entity.episode;
 
-import net.x4a42.volksempfaenger.data.entity.DaoWrapperBase;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 
 import java.util.List;
 
-public class EpisodeDaoWrapper extends DaoWrapperBase<Episode>
+public class EpisodeDaoWrapper
 {
+    private final EpisodeDao      dao;
     private final EpisodeProvider provider;
 
-    public EpisodeDaoWrapper(EpisodeDao episodeDao,
+    public EpisodeDaoWrapper(EpisodeDao      dao,
                              EpisodeProvider provider)
     {
-        super(episodeDao);
+        this.dao      = dao;
         this.provider = provider;
     }
 
-    public Episode newEpisode(Podcast podcast, String episodeUrl)
+    public Episode insert(Podcast podcast,
+                          String  episodeUrl,
+                          String  title,
+                          String  description,
+                          long    pubDate)
     {
         Episode episode = provider.get();
         episode.setPodcast(podcast);
         episode.setEpisodeUrl(episodeUrl);
+        episode.setTitle(title);
+        episode.setDescription(description);
+        episode.setPubDate(pubDate);
+        dao.insert(episode);
+        episode.getPodcast().resetEpisodes();
         return episode;
     }
 
-    @Override
-    public long insert(Episode episode)
+    public void update(Episode episode,
+                       String  title,
+                       String  description,
+                       long    pubDate)
     {
-        // invalidate the episodes relation in the podcast, in case anyone looks at it again
-        long id = super.insert(episode);
-        episode.getPodcast().resetEpisodes();
-        return id;
+        episode.setTitle(title);
+        episode.setDescription(description);
+        episode.setPubDate(pubDate);
+        dao.update(episode);
     }
 
     public List<Episode> getAll(Podcast podcast)

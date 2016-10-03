@@ -160,7 +160,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
     public void onPrepared(MediaPlayer mediaPlayer)
     {
         isPrepared = true;
-        seekTo(episodePositionDao.getOrCreate(playbackEpisode).getPosition());
+        seekTo(episodePositionDao.getOrInsert(playbackEpisode).getPosition());
         play();
     }
 

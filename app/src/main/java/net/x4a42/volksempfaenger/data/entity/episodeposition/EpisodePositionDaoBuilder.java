@@ -9,10 +9,10 @@ public class EpisodePositionDaoBuilder
 {
     public EpisodePositionDaoWrapper build(Context context)
     {
-        DaoSession              daoSession         = new DaoSessionBuilder().build(context);
-        EpisodePositionDao      episodePositionDao = daoSession.getEpisodePositionDao();
-        EpisodePositionProvider provider           = new EpisodePositionProvider();
+        DaoSession              daoSession = new DaoSessionBuilder().build(context);
+        EpisodePositionDao      dao        = daoSession.getEpisodePositionDao();
+        EpisodePositionProvider provider   = new EpisodePositionProvider();
 
-        return new EpisodePositionDaoWrapper(episodePositionDao, provider);
+        return new EpisodePositionDaoWrapper(dao, provider);
     }
 }

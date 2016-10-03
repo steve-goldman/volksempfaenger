@@ -44,9 +44,11 @@ class EpisodeUpdater
     private Episode insertEpisode(Podcast podcast, FeedItem feedItem, boolean firstSync)
     {
         boolean anyPodcastEpisodes = !podcast.getEpisodes().isEmpty();
-        Episode episode            = episodeDao.newEpisode(podcast, feedItem.getUrl());
-        updateCommonFields(episode, feedItem);
-        episodeDao.insert(episode);
+        Episode episode            = episodeDao.insert(podcast,
+                                                       feedItem.getUrl(),
+                                                       feedItem.title,
+                                                       feedItem.description,
+                                                       feedItem.date.getTime());
 
         if (!firstSync || !anyPodcastEpisodes)
         {
@@ -58,16 +60,7 @@ class EpisodeUpdater
 
     private void updateEpisode(Episode episode, FeedItem feedItem)
     {
-        updateCommonFields(episode, feedItem);
-
-        episodeDao.update(episode);
-    }
-
-    private void updateCommonFields(Episode episode, FeedItem feedItem)
-    {
-        episode.setTitle(feedItem.title);
-        episode.setDescription(feedItem.description);
-        episode.setPubDate(feedItem.date.getTime());
+        episodeDao.update(episode, feedItem.title, feedItem.description, feedItem.date.getTime());
     }
 
     private void insertOrUpdateEnclosures(Episode episode, FeedItem feedItem)

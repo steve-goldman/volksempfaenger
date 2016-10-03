@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class EnclosureUpdaterTest
 {
@@ -30,7 +28,11 @@ public class EnclosureUpdaterTest
         feedEnclosure.url  = "my-url";
         feedEnclosure.mime = "audio/mpeg";
         feedEnclosure.size = 100;
-        Mockito.when(enclosureDao.newEnclosure(episode, feedEnclosure.url)).thenReturn(enclosure);
+        Mockito.when(enclosureDao.insert(episode,
+                                         feedEnclosure.url,
+                                         feedEnclosure.mime,
+                                         feedEnclosure.size))
+               .thenReturn(enclosure);
         enclosureUpdater = new EnclosureUpdater(enclosureDao);
     }
 
@@ -38,8 +40,10 @@ public class EnclosureUpdaterTest
     public void insert() throws Exception
     {
         enclosureUpdater.insertOrUpdate(episode, feedEnclosure);
-        verifyCommon();
-        Mockito.verify(enclosureDao).insert(enclosure);
+        Mockito.verify(enclosureDao).insert(episode,
+                                            feedEnclosure.url,
+                                            feedEnclosure.mime,
+                                            feedEnclosure.size);
     }
 
     @Test
@@ -47,13 +51,6 @@ public class EnclosureUpdaterTest
     {
         Mockito.when(enclosureDao.getByUrl(feedEnclosure.url)).thenReturn(enclosure);
         enclosureUpdater.insertOrUpdate(episode, feedEnclosure);
-        verifyCommon();
-        Mockito.verify(enclosureDao).update(enclosure);
-    }
-
-    private void verifyCommon() throws Exception
-    {
-        Mockito.verify(enclosure).setMimeType(feedEnclosure.mime);
-        Mockito.verify(enclosure).setSize(feedEnclosure.size);
+        Mockito.verify(enclosureDao).update(enclosure, feedEnclosure.mime, feedEnclosure.size);
     }
 }

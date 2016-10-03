@@ -1,25 +1,42 @@
 package net.x4a42.volksempfaenger.data.entity.podcast;
 
-import net.x4a42.volksempfaenger.data.entity.DaoWrapperBase;
+import net.x4a42.volksempfaenger.misc.NowProvider;
 
 import java.util.List;
 
-public class PodcastDaoWrapper extends DaoWrapperBase<Podcast>
+public class PodcastDaoWrapper
 {
+    private final PodcastDao      dao;
     private final PodcastProvider provider;
+    private final NowProvider     nowProvider;
 
-    public PodcastDaoWrapper(PodcastDao podcastDao,
-                             PodcastProvider provider)
+    public PodcastDaoWrapper(PodcastDao      dao,
+                             PodcastProvider provider,
+                             NowProvider     nowProvider)
     {
-        super(podcastDao);
-        this.provider = provider;
+        this.dao         = dao;
+        this.provider    = provider;
+        this.nowProvider = nowProvider;
     }
 
-    public Podcast newPodcast(String feedUrl)
+    public Podcast insert(String feedUrl)
     {
         Podcast podcast = provider.get();
         podcast.setFeedUrl(feedUrl);
+        dao.insert(podcast);
         return podcast;
+    }
+
+    public void update(Podcast podcast,
+                       String  title,
+                       String  description,
+                       String  website)
+    {
+        podcast.setTitle(title);
+        podcast.setDescription(description);
+        podcast.setWebsite(website);
+        podcast.setLastUpdate(nowProvider.get());
+        dao.update(podcast);
     }
 
     public List<Podcast> getAll()

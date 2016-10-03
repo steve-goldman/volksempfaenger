@@ -109,8 +109,7 @@ public class DiscoverDetailActivity extends Activity implements
 		Podcast podcast = podcastDao.getByFeedUrl(feedUrl);
 		if (podcast == null)
 		{
-			podcast = podcastDao.newPodcast(feedUrl);
-			podcastDao.insert(podcast);
+			podcast = podcastDao.insert(feedUrl);
 		}
 
 		FeedSyncServiceIntentProvider intentProvider

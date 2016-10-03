@@ -8,10 +8,10 @@ public class EnclosureDaoBuilder
 {
     public EnclosureDaoWrapper build(Context context)
     {
-        DaoSession        daoSession   = new DaoSessionBuilder().build(context);
-        EnclosureDao      enclosureDao = daoSession.getEnclosureDao();
-        EnclosureProvider provider     = new EnclosureProvider();
+        DaoSession        daoSession = new DaoSessionBuilder().build(context);
+        EnclosureDao      dao        = daoSession.getEnclosureDao();
+        EnclosureProvider provider   = new EnclosureProvider();
 
-        return new EnclosureDaoWrapper(enclosureDao, provider);
+        return new EnclosureDaoWrapper(dao, provider);
     }
 }

@@ -1,18 +1,18 @@
 package net.x4a42.volksempfaenger.data.entity.playlistitem;
 
-import net.x4a42.volksempfaenger.data.entity.DaoWrapperBase;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 import java.util.List;
 
-public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
+public class PlaylistItemDaoWrapper
 {
+    private final PlaylistItemDao      dao;
     private final PlaylistItemProvider provider;
 
-    public PlaylistItemDaoWrapper(PlaylistItemDao      playlistItemDao,
+    public PlaylistItemDaoWrapper(PlaylistItemDao      dao,
                                   PlaylistItemProvider provider)
     {
-        super(playlistItemDao);
+        this.dao      = dao;
         this.provider = provider;
     }
 
@@ -21,7 +21,7 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
         PlaylistItem playlistItem = provider.get();
         playlistItem.setEpisode(episode);
         playlistItem.setPosition(dao.count());
-        super.insert(playlistItem);
+        dao.insert(playlistItem);
         return playlistItem;
     }
 
@@ -56,34 +56,15 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
                   .list().get(0);
     }
 
-    @Override
     public void delete(PlaylistItem playlistItem)
     {
         long deletedPosition = playlistItem.getPosition();
-        super.delete(playlistItem);
+        dao.delete(playlistItem);
 
         for (PlaylistItem behindItem : getBehind(deletedPosition))
         {
             updatePosition(behindItem, behindItem.getPosition() - 1);
         }
-    }
-
-    @Override
-    public long insert(PlaylistItem playlistItem)
-    {
-        throw new UnsupportedOperationException("use createPlaylistItem");
-    }
-
-    @Override
-    public void update(PlaylistItem playlistItem)
-    {
-        throw new UnsupportedOperationException("use move");
-    }
-
-    public void moveToBack(PlaylistItem playlistItem)
-    {
-        long newPosition = dao.count();
-        move(playlistItem, newPosition);
     }
 
     public void move(PlaylistItem playlistItem, long newPosition)
@@ -116,7 +97,7 @@ public class PlaylistItemDaoWrapper extends DaoWrapperBase<PlaylistItem>
     private void updatePosition(PlaylistItem playlistItem, long newPosition)
     {
         playlistItem.setPosition(newPosition);
-        super.update(playlistItem);
+        dao.update(playlistItem);
     }
 
     private List<PlaylistItem> getRange(long from, long to)

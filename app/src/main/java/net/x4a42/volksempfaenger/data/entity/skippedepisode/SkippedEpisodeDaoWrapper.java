@@ -1,18 +1,18 @@
 package net.x4a42.volksempfaenger.data.entity.skippedepisode;
 
-import net.x4a42.volksempfaenger.data.entity.DaoWrapperBase;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 import java.util.List;
 
-public class SkippedEpisodeDaoWrapper extends DaoWrapperBase<SkippedEpisode>
+public class SkippedEpisodeDaoWrapper
 {
+    private final SkippedEpisodeDao      dao;
     private final SkippedEpisodeProvider provider;
 
-    public SkippedEpisodeDaoWrapper(SkippedEpisodeDao      skippedEpisodeDao,
+    public SkippedEpisodeDaoWrapper(SkippedEpisodeDao      dao,
                                     SkippedEpisodeProvider provider)
     {
-        super(skippedEpisodeDao);
+        this.dao      = dao;
         this.provider = provider;
     }
 
@@ -24,18 +24,18 @@ public class SkippedEpisodeDaoWrapper extends DaoWrapperBase<SkippedEpisode>
     public void delete(Episode episode)
     {
         SkippedEpisode skippedEpisode = getForEpisode(episode).get(0);
-        delete(skippedEpisode);
+        dao.delete(skippedEpisode);
     }
 
     public SkippedEpisode create(Episode episode)
     {
         SkippedEpisode skippedEpisode = provider.get();
         skippedEpisode.setEpisode(episode);
-        insert(skippedEpisode);
+        dao.insert(skippedEpisode);
         return skippedEpisode;
     }
 
-    public List<SkippedEpisode> getForEpisode(Episode episode)
+    private List<SkippedEpisode> getForEpisode(Episode episode)
     {
         return dao.queryBuilder()
                   .where(SkippedEpisodeDao.Properties.EpisodeId.eq(episode.get_id()))

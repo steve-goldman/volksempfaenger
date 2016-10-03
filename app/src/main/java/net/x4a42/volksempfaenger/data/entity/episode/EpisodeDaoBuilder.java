@@ -10,9 +10,9 @@ public class EpisodeDaoBuilder
     public EpisodeDaoWrapper build(Context context)
     {
         DaoSession      daoSession = new DaoSessionBuilder().build(context);
-        EpisodeDao      episodeDao = daoSession.getEpisodeDao();
+        EpisodeDao      dao        = daoSession.getEpisodeDao();
         EpisodeProvider provider   = new EpisodeProvider();
 
-        return new EpisodeDaoWrapper(episodeDao, provider);
+        return new EpisodeDaoWrapper(dao, provider);
     }
 }

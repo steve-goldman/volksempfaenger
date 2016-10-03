@@ -40,15 +40,6 @@ public class EpisodeDaoWrapperTest
     }
 
     @Test
-    public void newEpisode() throws Exception
-    {
-        Episode newEpisode = daoWrapper.newEpisode(podcast, url);
-        assertEquals(episode, newEpisode);
-        Mockito.verify(episode).setPodcast(podcast);
-        Mockito.verify(episode).setEpisodeUrl(url);
-    }
-
-    @Test
     public void getByUrl() throws Exception
     {
         Mockito.when(queryBuilder.list()).thenReturn(matchingList);

@@ -29,7 +29,7 @@ public class BackgroundPositionSaverTest
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(episodePositionDao.getOrCreate(episode)).thenReturn(episodePosition);
+        Mockito.when(episodePositionDao.getOrInsert(episode)).thenReturn(episodePosition);
         Mockito.when(positionProvider.getPosition()).thenReturn(position);
         backgroundSaver = new BackgroundPositionSaver(handler, positionProvider, episodePositionDao);
     }
@@ -58,8 +58,7 @@ public class BackgroundPositionSaverTest
         backgroundSaver.start(episode);
         backgroundSaver.stop(false);
 
-        Mockito.verify(episodePosition).setPosition(position);
-        Mockito.verify(episodePositionDao).insertOrReplace(episodePosition);
+        Mockito.verify(episodePositionDao).update(episodePosition, position);
         Mockito.verify(handler).removeCallbacks(backgroundSaver);
     }
 

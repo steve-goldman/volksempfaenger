@@ -9,10 +9,10 @@ public class PlaylistItemDaoBuilder
 {
     public PlaylistItemDaoWrapper build(Context context)
     {
-        DaoSession           daoSession      = new DaoSessionBuilder().build(context);
-        PlaylistItemDao      playlistItemDao = daoSession.getPlaylistItemDao();
-        PlaylistItemProvider provider        = new PlaylistItemProvider();
+        DaoSession           daoSession = new DaoSessionBuilder().build(context);
+        PlaylistItemDao      dao        = daoSession.getPlaylistItemDao();
+        PlaylistItemProvider provider   = new PlaylistItemProvider();
 
-        return new PlaylistItemDaoWrapper(playlistItemDao, provider);
+        return new PlaylistItemDaoWrapper(dao, provider);
     }
 }

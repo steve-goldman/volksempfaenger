@@ -1,5 +1,7 @@
 package net.x4a42.volksempfaenger.data.entity.podcast;
 
+import net.x4a42.volksempfaenger.misc.NowProvider;
+
 import org.greenrobot.greendao.query.QueryBuilder;
 import org.greenrobot.greendao.query.WhereCondition;
 import org.junit.Before;
@@ -21,6 +23,7 @@ public class PodcastDaoWrapperTest
     @Mock PodcastProvider       provider;
     @Mock Podcast               podcast;
     @Mock QueryBuilder<Podcast> queryBuilder;
+    @Mock NowProvider           nowProvider;
     List<Podcast>               matchingList = new ArrayList<>();
     List<Podcast>               emptyList    = new ArrayList<>();
     long                        podcastId    = 10;
@@ -34,13 +37,13 @@ public class PodcastDaoWrapperTest
         Mockito.when(provider.get()).thenReturn(podcast);
         Mockito.when(podcastDao.queryBuilder()).thenReturn(queryBuilder);
         Mockito.when(queryBuilder.where(Mockito.any(WhereCondition.class))).thenReturn(queryBuilder);
-        daoWrapper = new PodcastDaoWrapper(podcastDao, provider);
+        daoWrapper = new PodcastDaoWrapper(podcastDao, provider, nowProvider);
     }
 
     @Test
     public void newPodcast() throws Exception
     {
-        Podcast newPodcast = daoWrapper.newPodcast(url);
+        Podcast newPodcast = daoWrapper.insert(url);
         assertEquals(podcast, newPodcast);
         Mockito.verify(podcast).setFeedUrl(url);
     }

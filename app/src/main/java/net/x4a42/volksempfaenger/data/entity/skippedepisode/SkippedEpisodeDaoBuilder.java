@@ -9,10 +9,10 @@ public class SkippedEpisodeDaoBuilder
 {
     public SkippedEpisodeDaoWrapper build(Context context)
     {
-        DaoSession             daoSession        = new DaoSessionBuilder().build(context);
-        SkippedEpisodeDao      skippedEpisodeDao = daoSession.getSkippedEpisodeDao();
-        SkippedEpisodeProvider provider          = new SkippedEpisodeProvider();
+        DaoSession             daoSession = new DaoSessionBuilder().build(context);
+        SkippedEpisodeDao      dao        = daoSession.getSkippedEpisodeDao();
+        SkippedEpisodeProvider provider   = new SkippedEpisodeProvider();
 
-        return new SkippedEpisodeDaoWrapper(skippedEpisodeDao, provider);
+        return new SkippedEpisodeDaoWrapper(dao, provider);
     }
 }

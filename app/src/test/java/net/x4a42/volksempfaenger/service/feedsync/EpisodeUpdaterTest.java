@@ -39,9 +39,15 @@ public class EpisodeUpdaterTest
         feedItem.title       = "my-title";
         feedItem.description = "my-description";
         feedItem.url         = "my-url";
+        feedItem.date        = new Date();
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
-        Mockito.when(episodeDao.newEpisode(podcast, feedItem.url)).thenReturn(episode);
+        Mockito.when(episodeDao.insert(podcast,
+                                       feedItem.url,
+                                       feedItem.title,
+                                       feedItem.description,
+                                       feedItem.date.getTime()))
+               .thenReturn(episode);
         Mockito.when(podcast.getEpisodes()).thenReturn(episodes);
         feedItem.date        = new Date();
         episodeUpdater       = new EpisodeUpdater(episodeDao, playlist, enclosureUpdater);
@@ -51,8 +57,11 @@ public class EpisodeUpdaterTest
     public void insertNotFirstSync() throws Exception
     {
         episodeUpdater.insertOrUpdate(podcast, feedItem, false);
-        verifyCommon();
-        Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(episodeDao).insert(podcast,
+                                          feedItem.url,
+                                          feedItem.title,
+                                          feedItem.description,
+                                          feedItem.date.getTime());
         Mockito.verify(playlist).addEpisode(episode);
     }
 
@@ -61,8 +70,11 @@ public class EpisodeUpdaterTest
     {
         Mockito.when(episodes.isEmpty()).thenReturn(true);
         episodeUpdater.insertOrUpdate(podcast, feedItem, true);
-        verifyCommon();
-        Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(episodeDao).insert(podcast,
+                                          feedItem.url,
+                                          feedItem.title,
+                                          feedItem.description,
+                                          feedItem.date.getTime());
         Mockito.verify(playlist).addEpisode(episode);
     }
 
@@ -70,8 +82,11 @@ public class EpisodeUpdaterTest
     public void insertFirstSyncNotEmpty() throws Exception
     {
         episodeUpdater.insertOrUpdate(podcast, feedItem, true);
-        verifyCommon();
-        Mockito.verify(episodeDao).insert(episode);
+        Mockito.verify(episodeDao).insert(podcast,
+                                          feedItem.url,
+                                          feedItem.title,
+                                          feedItem.description,
+                                          feedItem.date.getTime());
         Mockito.verify(playlist, Mockito.never()).addEpisode(episode);
     }
 
@@ -80,16 +95,9 @@ public class EpisodeUpdaterTest
     {
         Mockito.when(episodeDao.getByUrl(feedItem.url)).thenReturn(episode);
         episodeUpdater.insertOrUpdate(podcast, feedItem, false);
-        verifyCommon();
-        Mockito.verify(episodeDao).update(episode);
-    }
-
-    private void verifyCommon() throws Exception
-    {
-        Mockito.verify(episode).setTitle(feedItem.title);
-        Mockito.verify(episode).setDescription(feedItem.description);
-        Mockito.verify(episode).setPubDate(feedItem.date.getTime());
-        Mockito.verify(enclosureUpdater).insertOrUpdate(episode, feedEnclosure1);
-        Mockito.verify(enclosureUpdater).insertOrUpdate(episode, feedEnclosure2);
+        Mockito.verify(episodeDao).update(episode,
+                                          feedItem.title,
+                                          feedItem.description,
+                                          feedItem.date.getTime());
     }
 }

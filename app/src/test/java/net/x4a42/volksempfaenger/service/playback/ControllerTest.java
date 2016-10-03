@@ -40,7 +40,7 @@ public class ControllerTest
         Mockito.when(playbackEpisode.getEnclosures()).thenReturn(list);
         Mockito.when(list.get(0)).thenReturn(enclosure);
         Mockito.when(enclosure.getUrl()).thenReturn(url);
-        Mockito.when(episodePositionDao.getOrCreate(playbackEpisode)).thenReturn(episodePosition);
+        Mockito.when(episodePositionDao.getOrInsert(playbackEpisode)).thenReturn(episodePosition);
         Mockito.when(episodePosition.getPosition()).thenReturn(seekToPosition);
         controller = Mockito.spy(new Controller(playbackEventBroadcaster,
                                                 mediaPlayer,
