@@ -49,7 +49,7 @@ public class FeedSyncServiceProxyTest
     public void onStartCommand() throws Exception
     {
         int value = proxy.onStartCommand(intent);
-        assertEquals(Service.START_STICKY, value);
+        assertEquals(Service.START_NOT_STICKY, value);
         Mockito.verify(intentParser).parse(intent);
     }
 

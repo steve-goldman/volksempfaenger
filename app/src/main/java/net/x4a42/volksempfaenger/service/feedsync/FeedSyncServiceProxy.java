@@ -34,7 +34,7 @@ class FeedSyncServiceProxy implements IntentParser.Listener
     public int onStartCommand(Intent intent)
     {
         intentParser.parse(intent);
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     @Override
