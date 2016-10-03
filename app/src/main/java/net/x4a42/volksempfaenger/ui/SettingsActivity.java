@@ -17,6 +17,7 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 import android.widget.EditText;
@@ -114,14 +115,20 @@ public class SettingsActivity extends PreferenceActivity
 
 		private PreferenceScreen prefScreen;
 		private EditTextPreference prefLocation;
+		private EditTextPreference prefQueueCount;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+			editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, "");
+			editor.apply();
 			addPreferencesFromResource(R.xml.preference_storage);
 			prefScreen = getPreferenceScreen();
 			prefLocation = (EditTextPreference) prefScreen
 					.findPreference(PreferenceKeys.STORAGE_LOCATION);
+			prefQueueCount = (EditTextPreference) prefScreen
+					.findPreference(PreferenceKeys.DOWNLOADED_QUEUE_COUNT);
 		}
 
 		@Override
@@ -147,10 +154,25 @@ public class SettingsActivity extends PreferenceActivity
 		}
 
 		@Override
-		public void onSharedPreferenceChanged(
-				SharedPreferences sharedPreferences, String key) {
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 			if (key.equals(PreferenceKeys.STORAGE_LOCATION)) {
 				prefLocation.setSummary(prefLocation.getText());
+			}
+			else if (key.equals(PreferenceKeys.DOWNLOADED_QUEUE_COUNT))
+			{
+				try
+				{
+					//noinspection ResultOfMethodCallIgnored
+					Integer.parseInt(prefQueueCount.getText());
+				}
+				catch (NumberFormatException e)
+				{
+					String text = "" + getResources().getInteger(R.integer.default_downloaded_queue_count);
+					SharedPreferences.Editor editor = sharedPreferences.edit();
+					editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, text);
+					editor.apply();
+					prefQueueCount.setText(text);
+				}
 			}
 		}
 

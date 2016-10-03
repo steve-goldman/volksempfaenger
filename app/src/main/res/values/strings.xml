@@ -56,6 +56,8 @@
     <string name="settings_download_concurrent">Concurrent downloads</string>
     <string name="settings_storage">Storage</string>
     <string name="settings_storage_location">Storage Location</string>
+    <string name="settings_downloaded_queue_count">Downloaded Queue Length</string>
+    <string name="settings_downloaded_queue_count_summary">Keep this many episodes downloaded, based on your playlist</string>
     <string name="settings_about">About</string>
     <string name="settings_about_version">Version</string>
     <string name="settings_about_website">Website</string>

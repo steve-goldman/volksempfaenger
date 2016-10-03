@@ -27,6 +27,12 @@ public class Preferences
                           context.getString(R.string.settings_default_download_charging));
     }
 
+    public int getDownloadedQueueCount()
+    {
+        return getInt(PreferenceKeys.DOWNLOADED_QUEUE_COUNT,
+                      context.getResources().getInteger(R.integer.default_downloaded_queue_count));
+    }
+
     private boolean getBoolean(String key, String defaultValue)
     {
         return getBoolean(key, Boolean.valueOf(defaultValue));
@@ -35,5 +41,10 @@ public class Preferences
     private boolean getBoolean(String key, boolean defaultValue)
     {
         return preferences.getBoolean(key, defaultValue);
+    }
+
+    private int getInt(String key, int defaultValue)
+    {
+        return Integer.parseInt(preferences.getString(key, "" + defaultValue));
     }
 }

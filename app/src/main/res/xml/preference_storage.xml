@@ -3,6 +3,12 @@
     android:title="@string/settings_storage" >
 
     <EditTextPreference
+        android:key="downloaded_queue_count"
+        android:title="@string/settings_downloaded_queue_count"
+        android:summary="@string/settings_downloaded_queue_count_summary"
+        android:numeric="integer" />
+
+    <EditTextPreference
         android:key="storage_location"
         android:title="@string/settings_storage_location" />
 

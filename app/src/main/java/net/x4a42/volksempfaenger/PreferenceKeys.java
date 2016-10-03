@@ -16,4 +16,5 @@ public final class PreferenceKeys {
 	public static final String FLATTR_USERNAME = "flattr_username";
 	public static final String FLATTR_ACCESS_TOKEN = "flattr_access_token";
 	public static final String FLATTR_AUTO = "flattr_auto";
+	public static final String DOWNLOADED_QUEUE_COUNT = "downloaded_queue_count";
 }

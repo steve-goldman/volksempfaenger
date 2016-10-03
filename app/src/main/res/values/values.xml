@@ -44,4 +44,6 @@
     <integer name="image_loader_memory_cache_size">1048576</integer>
     <integer name="image_loader_disk_cache_size">20971520</integer>
 
+    <integer name="default_downloaded_queue_count">20</integer>
+
 </resources>
