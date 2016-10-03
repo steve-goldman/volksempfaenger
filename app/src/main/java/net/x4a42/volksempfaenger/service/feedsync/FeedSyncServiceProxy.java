@@ -1,24 +1,20 @@
 package net.x4a42.volksempfaenger.service.feedsync;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 
 class FeedSyncServiceProxy implements IntentParser.Listener
 {
-    private final Context             context;
-    private final IntentParser        intentParser;
-    private final FeedSyncTaskBuilder taskBuilder;
+    private final IntentParser         intentParser;
+    private final FeedSyncTaskProvider taskProvider;
 
-    public FeedSyncServiceProxy(Context             context,
-                                IntentParser        intentParser,
-                                FeedSyncTaskBuilder taskBuilder)
+    public FeedSyncServiceProxy(IntentParser         intentParser,
+                                FeedSyncTaskProvider taskProvider)
     {
-        this.context      = context;
         this.intentParser = intentParser;
-        this.taskBuilder  = taskBuilder;
+        this.taskProvider = taskProvider;
     }
 
     public void onCreate()
@@ -40,6 +36,6 @@ class FeedSyncServiceProxy implements IntentParser.Listener
     @Override
     public void onSync(Podcast podcast)
     {
-        taskBuilder.build(context).execute(podcast);
+        taskProvider.get().execute(podcast);
     }
 }

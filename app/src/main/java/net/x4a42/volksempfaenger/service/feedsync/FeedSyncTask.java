@@ -1,6 +1,5 @@
 package net.x4a42.volksempfaenger.service.feedsync;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import net.x4a42.volksempfaenger.Log;
@@ -10,11 +9,11 @@ import java.io.IOException;
 
 class FeedSyncTask extends AsyncTask<Podcast, Void, Void>
 {
-    private final Context context;
+    private final FeedSyncTaskProxyBuilder taskProxyBuilder;
 
-    public FeedSyncTask(Context context)
+    public FeedSyncTask(FeedSyncTaskProxyBuilder taskProxyBuilder)
     {
-        this.context = context;
+        this.taskProxyBuilder = taskProxyBuilder;
     }
 
     @Override
@@ -22,7 +21,7 @@ class FeedSyncTask extends AsyncTask<Podcast, Void, Void>
     {
         try
         {
-            new FeedSyncTaskProxyBuilder().build(context, params[0]).doInBackground();
+            taskProxyBuilder.build(params[0]).doInBackground();
         }
         catch (IOException e)
         {

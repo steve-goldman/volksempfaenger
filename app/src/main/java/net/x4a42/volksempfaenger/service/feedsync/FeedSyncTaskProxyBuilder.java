@@ -12,7 +12,14 @@ import java.net.HttpURLConnection;
 
 class FeedSyncTaskProxyBuilder
 {
-    public FeedSyncTaskProxy build(Context context, Podcast podcast) throws IOException
+    private final Context context;
+
+    public FeedSyncTaskProxyBuilder(Context context)
+    {
+        this.context = context;
+    }
+
+    public FeedSyncTaskProxy build(Podcast podcast) throws IOException
     {
         FeedConnectionProvider connectionProvider
                 = new FeedConnectionProviderBuilder().build(context, podcast.getFeedUrl());
