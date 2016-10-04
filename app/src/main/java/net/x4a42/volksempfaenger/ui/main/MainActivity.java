@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui;
+package net.x4a42.volksempfaenger.ui.main;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +38,7 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	}
 
 	private ViewPager viewpager;
+	private OptionsMenuManager optionsMenuManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

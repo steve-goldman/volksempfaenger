@@ -58,6 +58,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         {
             mediaSessionManager.destroy();
         }
+        playlist.setPlaying(false);
     }
 
     public IBinder onBind()
@@ -121,12 +122,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     @Override
     public void onPlayPause()
     {
-        if (!controller.isOpen())
-        {
-            return;
-        }
-
-        if (controller.isPlaying())
+        if (controller.isOpen() && controller.isPlaying())
         {
             controller.pause();
         }

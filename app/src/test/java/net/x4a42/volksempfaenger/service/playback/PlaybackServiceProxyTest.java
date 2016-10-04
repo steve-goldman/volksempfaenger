@@ -131,8 +131,7 @@ public class PlaybackServiceProxyTest
     {
         proxy.onPlayPause();
 
-        Mockito.verify(controller).isOpen();
-        Mockito.verifyNoMoreInteractions(controller);
+        Mockito.verify(proxy).onPlay();
     }
 
     @Test

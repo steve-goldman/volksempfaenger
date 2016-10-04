@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.ui.subscriptiongrid;
+package net.x4a42.volksempfaenger.ui.main;
 
 import android.view.Menu;
 import android.view.MenuInflater;
