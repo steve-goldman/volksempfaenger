@@ -10,6 +10,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
@@ -74,6 +75,15 @@ class ControlButtonsManager implements PlaybackEventListener,
     public void onResume()
     {
         playbackEventReceiver.subscribe();
+        PlaybackServiceFacade facade = facadeProvider.getFacade();
+        if (facade != null && facade.isPlaying())
+        {
+            setPlaying();
+        }
+        else
+        {
+            setNotPlaying();
+        }
     }
 
     public void onPause()
