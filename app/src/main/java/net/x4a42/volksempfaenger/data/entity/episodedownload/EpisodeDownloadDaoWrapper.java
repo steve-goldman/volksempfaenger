@@ -26,16 +26,21 @@ public class EpisodeDownloadDaoWrapper
         return !getForEpisode(episode).isEmpty();
     }
 
+    public EpisodeDownload getByEpisode(Episode episode)
+    {
+        return getForEpisode(episode).get(0);
+    }
+
     public void delete(EpisodeDownload episodeDownload)
     {
         dao.delete(episodeDownload);
     }
 
-    public EpisodeDownload insert(Episode episode)
+    public EpisodeDownload insert(Episode episode, long downloadId)
     {
         EpisodeDownload episodeDownload = provider.get();
         episodeDownload.setEpisode(episode);
-        episodeDownload.setDownloadId(-1);
+        episodeDownload.setDownloadId(downloadId);
         dao.insert(episodeDownload);
         return episodeDownload;
     }

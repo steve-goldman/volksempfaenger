@@ -8,6 +8,8 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoB
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatusBuilder;
 
 class PlaylistDownloadTaskProxyBuilder
 {
@@ -20,12 +22,16 @@ class PlaylistDownloadTaskProxyBuilder
 
     public PlaylistDownloadTaskProxy build()
     {
-        Preferences                   preferences        = new PreferencesBuilder().build(context);
-        PlaylistItemDaoWrapper        playlistItemDao    = new PlaylistItemDaoBuilder().build(context);
-        EpisodeDownloadDaoWrapper     episodeDownloadDao = new EpisodeDownloadDaoBuilder().build(context);
+        Preferences               preferences            = new PreferencesBuilder().build(context);
+        PlaylistItemDaoWrapper    playlistItemDao        = new PlaylistItemDaoBuilder().build(context);
+        EpisodeDownloadDaoWrapper episodeDownloadDao     = new EpisodeDownloadDaoBuilder().build(context);
+        DownloadManagerAdapter    downloadManagerAdapter = new DownloadManagerAdapterBuilder().build(context);
+        ConnectivityStatus        connectivityStatus     = new ConnectivityStatusBuilder().build(context);
 
         return new PlaylistDownloadTaskProxy(preferences,
                                              playlistItemDao,
-                                             episodeDownloadDao);
+                                             episodeDownloadDao,
+                                             downloadManagerAdapter,
+                                             connectivityStatus);
     }
 }
