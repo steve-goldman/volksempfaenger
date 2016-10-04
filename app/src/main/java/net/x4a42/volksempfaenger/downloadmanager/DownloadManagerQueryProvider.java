@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.downloadmanager;
 
 import android.app.DownloadManager;
 

@@ -6,6 +6,7 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownload;
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 
 class PlaylistDownloadTaskProxy

@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.downloadmanager;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -7,7 +7,7 @@ import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.PreferencesBuilder;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathProvider;
 
-class DownloadManagerAdapterBuilder
+public class DownloadManagerAdapterBuilder
 {
     public DownloadManagerAdapter build(Context context)
     {

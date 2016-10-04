@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.downloadmanager;
 
 import android.app.DownloadManager;
 import android.database.Cursor;
@@ -9,7 +9,7 @@ import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathProvider;
 
-class DownloadManagerAdapter
+public class DownloadManagerAdapter
 {
     private final DownloadManager               downloadManager;
     private final DownloadManagerRequestBuilder requestBuilder;

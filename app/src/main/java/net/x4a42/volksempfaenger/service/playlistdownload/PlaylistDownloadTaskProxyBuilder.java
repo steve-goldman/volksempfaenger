@@ -8,6 +8,8 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoB
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
+import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
+import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapterBuilder;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatusBuilder;
 
