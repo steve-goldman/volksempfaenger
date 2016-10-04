@@ -104,31 +104,53 @@ public class Playlist
         }
     }
 
-    public synchronized void removeItem(int position)
+    public synchronized boolean removeItem(int position)
     {
+        if (isPlaying && position == 0)
+        {
+            return false;
+        }
+
         PlaylistItem playlistItem = playlistItemDao.getByPosition(position);
         unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.delete(playlistItem);
         startDownloadService();
+        return true;
     }
 
-    public synchronized void removeItem(long[] playlistItemIds)
+    public synchronized boolean removeItem(long[] playlistItemIds)
     {
+        boolean success = true;
+
         for (long playlistItemId : playlistItemIds)
         {
             PlaylistItem playlistItem = playlistItemDao.getById(playlistItemId);
-            unsetSkipped(playlistItem.getEpisode());
-            playlistItemDao.delete(playlistItem);
+            if (!isPlaying || playlistItem.getPosition() != 0)
+            {
+                unsetSkipped(playlistItem.getEpisode());
+                playlistItemDao.delete(playlistItem);
+            }
+            else
+            {
+                success = false;
+            }
         }
         startDownloadService();
+        return success;
     }
 
-    public synchronized void moveItem(int fromPosition, int toPosition)
+    public synchronized boolean moveItem(int fromPosition, int toPosition)
     {
+        if (isPlaying && fromPosition == 0)
+        {
+            return false;
+        }
+
         PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
         unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.move(playlistItem, toPosition);
         startDownloadService();
+        return true;
     }
 
     public synchronized boolean playEpisodeNow(Episode episode)

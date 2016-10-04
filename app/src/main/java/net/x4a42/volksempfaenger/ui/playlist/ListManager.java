@@ -134,7 +134,10 @@ class ListManager implements AdapterView.OnItemClickListener,
         {
             case R.id.item_playlist_remove:
             {
-                playlist.removeItem(listView.getCheckedItemIds());
+                if (!playlist.removeItem(listView.getCheckedItemIds()))
+                {
+                    toastMaker.showTextShort(context.getString(R.string.toast_cannot_change_playing_episode));
+                }
                 mode.finish();
                 listAdapterProxy.refresh();
                 return true;
@@ -155,13 +158,12 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void drop(int fromPosition, int toPosition)
     {
-        if (playlist.isPlaying() && (fromPosition == 0 || toPosition == 0))
+        if (!playlist.moveItem(fromPosition, toPosition))
         {
             toastMaker.showTextShort(context.getString(R.string.toast_cannot_change_playing_episode));
             return;
         }
 
-        playlist.moveItem(fromPosition, toPosition);
         listAdapterProxy.refresh();
     }
 
@@ -172,7 +174,12 @@ class ListManager implements AdapterView.OnItemClickListener,
     @Override
     public void remove(int position)
     {
-        playlist.removeItem(position);
+        if (!playlist.removeItem(position))
+        {
+            toastMaker.showTextShort(context.getString(R.string.toast_cannot_change_playing_episode));
+            return;
+        }
+
         listAdapterProxy.refresh();
     }
 
