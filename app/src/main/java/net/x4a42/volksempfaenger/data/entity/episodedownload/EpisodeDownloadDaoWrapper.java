@@ -35,7 +35,7 @@ public class EpisodeDownloadDaoWrapper
     {
         EpisodeDownload episodeDownload = provider.get();
         episodeDownload.setEpisode(episode);
-        episodeDownload.setStatus(EpisodeDownload.Status.QUEUED);
+        episodeDownload.setDownloadId(-1);
         dao.insert(episodeDownload);
         return episodeDownload;
     }

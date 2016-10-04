@@ -32,7 +32,8 @@ public class EpisodeDownload
     @ToOne(joinProperty = "episodeId")
     private Episode episode;
 
-    private int status;
+    @NotNull
+    private long downloadId;
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -42,11 +43,11 @@ public class EpisodeDownload
     @Generated(hash = 964347892)
     private transient EpisodeDownloadDao myDao;
 
-    @Generated(hash = 1161351688)
-    public EpisodeDownload(Long _id, long episodeId, int status) {
+    @Generated(hash = 390530085)
+    public EpisodeDownload(Long _id, long episodeId, long downloadId) {
         this._id = _id;
         this.episodeId = episodeId;
-        this.status = status;
+        this.downloadId = downloadId;
     }
 
     @Generated(hash = 585949355)
@@ -69,12 +70,12 @@ public class EpisodeDownload
         this.episodeId = episodeId;
     }
 
-    public int getStatus() {
-        return this.status;
+    public long getDownloadId() {
+        return this.downloadId;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setDownloadId(long downloadId) {
+        this.downloadId = downloadId;
     }
 
     @Generated(hash = 1965513091)
