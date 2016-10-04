@@ -1,6 +1,6 @@
 package net.x4a42.volksempfaenger.receiver;
 
-import net.x4a42.volksempfaenger.ui.MainActivity;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import net.x4a42.volksempfaenger.IntentBuilder;
-import net.x4a42.volksempfaenger.ui.MainActivity;
 
 public class MainActivityIntentProvider
 {

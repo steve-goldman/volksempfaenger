@@ -6,6 +6,8 @@ import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.CursorLoader;

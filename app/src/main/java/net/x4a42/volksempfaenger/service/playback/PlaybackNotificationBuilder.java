@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.ui.MainActivity;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
 
 class PlaybackNotificationBuilder

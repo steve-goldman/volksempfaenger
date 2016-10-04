@@ -1,13 +1,5 @@
 package net.x4a42.volksempfaenger.ui.main;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.ui.playlist.PlaylistFragment;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.SubscriptionGridFragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -21,7 +13,22 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity implements OnUpPressedCallback {
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManagerBuilder;
+import net.x4a42.volksempfaenger.ui.ExternalStorageHelper;
+import net.x4a42.volksempfaenger.ui.OnUpPressedCallback;
+import net.x4a42.volksempfaenger.ui.playlist.PlaylistFragment;
+import net.x4a42.volksempfaenger.ui.subscriptiongrid.SubscriptionGridFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends Activity implements OnUpPressedCallback
+{
 
 	public static final String TAG_SUBSCRIPTIONS = "subscriptions";
 	public static final String TAG_PLAYLIST       = "playlist";
@@ -38,12 +45,22 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	}
 
 	private ViewPager viewpager;
-	private OptionsMenuManager optionsMenuManager;
+	private OptionsMenuManager menuManager;
+	private PlaybackServiceConnectionManager connectionManager;
+	private PlaybackEventReceiver playbackEventReceiver;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+		connectionManager = new PlaybackServiceConnectionManagerBuilder().build(this);
+		menuManager = new OptionsMenuManagerBuilder().build(this, connectionManager);
+		connectionManager.setListener(menuManager);
+		connectionManager.onCreate();
+
+		playbackEventReceiver = new PlaybackEventReceiverBuilder().build();
+		playbackEventReceiver.setListener(menuManager);
 
 		// initialize ViewPager
 		viewpager = (ViewPager) findViewById(R.id.viewpager);
@@ -87,6 +104,13 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	}
 
 	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		connectionManager.onDestroy();
+	}
+
+	@Override
 	public void onNewIntent(Intent intent) {
 		setIntent(intent);
 
@@ -104,34 +128,26 @@ public class MainActivity extends Activity implements OnUpPressedCallback {
 	@Override
 	public void onResume() {
 		super.onResume();
+		playbackEventReceiver.subscribe();
+		invalidateOptionsMenu();
 		ExternalStorageHelper.assertExternalStorageReadable(this);
 	}
 
 	@Override
+	public void onPause()
+	{
+		super.onPause();
+		playbackEventReceiver.unsubscribe();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		ActivityHelper.addGlobalMenu(this, menu);
-		{
-			// Add debug menu item if
-			// /sdcard/Android/data/net.x4a42.volksempfaenger/debug/ exists
-			File ext = getExternalFilesDir(null);
-			if (ext != null) {
-				File debugDir = new File(ext.getParent(), "debug");
-				if (debugDir != null && debugDir.isDirectory()) {
-					MenuItem item = menu.add("Debug");
-					item.setIntent(new Intent(this, DebugActivity.class));
-					Log.v(this, "Found " + debugDir + ". Enabling debug mode.");
-				} else {
-					Log.v(this, "Did not find " + debugDir
-							+ ". Disabling debug mode.");
-				}
-			}
-		}
-		return true;
+		return menuManager.onCreateOptionsMenu(menu, getMenuInflater());
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		return ActivityHelper.handleGlobalMenu(this, item);
+		return menuManager.onOptionsItemSelected(item);
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {

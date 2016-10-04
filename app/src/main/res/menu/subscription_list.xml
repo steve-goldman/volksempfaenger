@@ -2,6 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/item_play"
+        android:icon="@drawable/ic_media_play"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_play"/>
+    <item
+        android:id="@+id/item_pause"
+        android:icon="@drawable/ic_media_pause"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_pause"/>
+    <item
         android:id="@+id/item_add"
         android:icon="@drawable/ic_action_add"
         android:showAsAction="ifRoom"
@@ -11,4 +21,9 @@
         android:icon="@drawable/ic_action_refresh"
         android:showAsAction="ifRoom"
         android:title="@string/menu_update"/>
+
+    <item
+        android:id="@+id/item_settings"
+        android:orderInCategory="1000"
+        android:title="@string/menu_settings"/>
 </menu>

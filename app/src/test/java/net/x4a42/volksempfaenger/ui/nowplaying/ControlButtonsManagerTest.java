@@ -99,6 +99,7 @@ public class ControlButtonsManagerTest
     @Test
     public void onResume() throws Exception
     {
+        controlButtonsManager.onCreateView(view);
         controlButtonsManager.onResume();
 
         Mockito.verify(playbackEventReceiver).subscribe();
