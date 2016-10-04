@@ -49,7 +49,6 @@ public class EpisodeUpdaterTest
                                        feedItem.date.getTime()))
                .thenReturn(episode);
         Mockito.when(podcast.getEpisodes()).thenReturn(episodes);
-        feedItem.date        = new Date();
         episodeUpdater       = new EpisodeUpdater(episodeDao, playlist, enclosureUpdater);
     }
 
