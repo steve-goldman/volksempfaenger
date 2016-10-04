@@ -8,32 +8,36 @@ import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.data.entity.skippedepisode.SkippedEpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProvider;
 
 import java.util.SortedSet;
 
 public class Playlist
 {
-    private final Context                       context;
-    private final PlaylistItemDaoWrapper        playlistItemDao;
-    private final EpisodeDaoWrapper             episodeDao;
-    private final SkippedEpisodeDaoWrapper      skippedEpisodeDao;
-    private final PlaybackServiceIntentProvider intentProvider;
-    private final SortedSet<Long>               episodeIdSet;
-    private boolean                             isPlaying;
+    private final Context                               context;
+    private final PlaylistItemDaoWrapper                playlistItemDao;
+    private final EpisodeDaoWrapper                     episodeDao;
+    private final SkippedEpisodeDaoWrapper              skippedEpisodeDao;
+    private final PlaybackServiceIntentProvider         playbackIntentProvider;
+    private final SortedSet<Long>                       episodeIdSet;
+    private final PlaylistDownloadServiceIntentProvider downloadIntentProvider;
+    private boolean                                     isPlaying;
 
-    Playlist(Context                       context,
-             PlaylistItemDaoWrapper        playlistItemDao,
-             EpisodeDaoWrapper             episodeDao,
-             SkippedEpisodeDaoWrapper      skippedEpisodeDao,
-             PlaybackServiceIntentProvider intentProvider,
-             SortedSet<Long>               episodeIdSet)
+    Playlist(Context                               context,
+             PlaylistItemDaoWrapper                playlistItemDao,
+             EpisodeDaoWrapper                     episodeDao,
+             SkippedEpisodeDaoWrapper              skippedEpisodeDao,
+             PlaybackServiceIntentProvider         playbackIntentProvider,
+             PlaylistDownloadServiceIntentProvider downloadIntentProvider,
+             SortedSet<Long>                       episodeIdSet)
     {
-        this.context           = context;
-        this.playlistItemDao   = playlistItemDao;
-        this.episodeDao        = episodeDao;
-        this.skippedEpisodeDao = skippedEpisodeDao;
-        this.intentProvider    = intentProvider;
-        this.episodeIdSet      = episodeIdSet;
+        this.context                = context;
+        this.playlistItemDao        = playlistItemDao;
+        this.episodeDao             = episodeDao;
+        this.skippedEpisodeDao      = skippedEpisodeDao;
+        this.playbackIntentProvider = playbackIntentProvider;
+        this.episodeIdSet           = episodeIdSet;
+        this.downloadIntentProvider = downloadIntentProvider;
     }
 
     public void setPlaying(boolean isPlaying)
@@ -66,6 +70,7 @@ public class Playlist
     public synchronized void addEpisode(Episode episode)
     {
         playlistItemDao.createPlaylistItem(episode);
+        startDownloadService();
     }
 
     public synchronized void episodeEnded()
@@ -73,6 +78,7 @@ public class Playlist
         setPlaying(false);
         PlaylistItem playlistItem = playlistItemDao.getByPosition(0);
         playlistItemDao.delete(playlistItem);
+        startDownloadService();
     }
 
     public synchronized void episodeSkipped()
@@ -103,6 +109,7 @@ public class Playlist
         PlaylistItem playlistItem = playlistItemDao.getByPosition(position);
         unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.delete(playlistItem);
+        startDownloadService();
     }
 
     public synchronized void removeItem(long[] playlistItemIds)
@@ -113,6 +120,7 @@ public class Playlist
             unsetSkipped(playlistItem.getEpisode());
             playlistItemDao.delete(playlistItem);
         }
+        startDownloadService();
     }
 
     public synchronized void moveItem(int fromPosition, int toPosition)
@@ -120,6 +128,7 @@ public class Playlist
         PlaylistItem playlistItem = playlistItemDao.getByPosition(fromPosition);
         unsetSkipped(playlistItem.getEpisode());
         playlistItemDao.move(playlistItem, toPosition);
+        startDownloadService();
     }
 
     public synchronized boolean playEpisodeNow(Episode episode)
@@ -155,24 +164,23 @@ public class Playlist
 
     private void moveEpisode(Episode episode, int position)
     {
-        PlaylistItem playlistItem = getOrCreateItem(episode);
+        PlaylistItem playlistItem = playlistItemDao.hasEpisode(episode) ?
+                playlistItemDao.getByEpisode(episode) : playlistItemDao.createPlaylistItem(episode);
+
         playlistItemDao.move(playlistItem, position);
+        startDownloadService();
     }
 
-    private PlaylistItem getOrCreateItem(Episode episode)
+    private void startDownloadService()
     {
-        if (!playlistItemDao.hasEpisode(episode))
-        {
-            return playlistItemDao.createPlaylistItem(episode);
-        }
-        return playlistItemDao.getByEpisode(episode);
+        context.startService(downloadIntentProvider.getRunIntent());
     }
 
     private boolean startPlaybackService()
     {
         if (!isPlaying)
         {
-            context.startService(intentProvider.getPlayIntent());
+            context.startService(playbackIntentProvider.getPlayIntent());
             return true;
         }
         return false;

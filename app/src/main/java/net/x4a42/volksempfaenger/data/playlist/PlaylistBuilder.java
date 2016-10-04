@@ -10,6 +10,8 @@ import net.x4a42.volksempfaenger.data.entity.skippedepisode.SkippedEpisodeDaoBui
 import net.x4a42.volksempfaenger.data.entity.skippedepisode.SkippedEpisodeDaoWrapper;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -19,10 +21,13 @@ class PlaylistBuilder
 {
     public Playlist build(Context context)
     {
-        PlaylistItemDaoWrapper        playlistItemDao   = new PlaylistItemDaoBuilder().build(context);
-        EpisodeDaoWrapper             episodeDao        = new EpisodeDaoBuilder().build(context);
-        SkippedEpisodeDaoWrapper      skippedEpisodeDao = new SkippedEpisodeDaoBuilder().build(context);
-        PlaybackServiceIntentProvider intentProvider    = new PlaybackServiceIntentProviderBuilder().build(context);
+        PlaylistItemDaoWrapper        playlistItemDao        = new PlaylistItemDaoBuilder().build(context);
+        EpisodeDaoWrapper             episodeDao             = new EpisodeDaoBuilder().build(context);
+        SkippedEpisodeDaoWrapper      skippedEpisodeDao      = new SkippedEpisodeDaoBuilder().build(context);
+        PlaybackServiceIntentProvider playbackIntentProvider = new PlaybackServiceIntentProviderBuilder().build(context);
+
+        PlaylistDownloadServiceIntentProvider downloadIntentProvider
+                = new PlaylistDownloadServiceIntentProviderBuilder().build(context);
 
         SortedSet<Long> episodeIdSet = new TreeSet<>(new Comparator<Long>()
         {
@@ -37,7 +42,8 @@ class PlaylistBuilder
                             playlistItemDao,
                             episodeDao,
                             skippedEpisodeDao,
-                            intentProvider,
+                            playbackIntentProvider,
+                            downloadIntentProvider,
                             episodeIdSet);
     }
 }
