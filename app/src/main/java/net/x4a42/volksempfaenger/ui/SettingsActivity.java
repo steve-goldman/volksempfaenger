@@ -7,6 +7,9 @@ import java.util.List;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -105,6 +108,11 @@ public class SettingsActivity extends PreferenceActivity
 				SharedPreferences sharedPreferences, String key) {
 			if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
 				prefInterval.setSummary(prefInterval.getEntry().toString());
+			}
+			else if (key.equals(PreferenceKeys.DOWNLOAD_WIFI))
+			{
+				Intent intent = new PlaylistDownloadServiceIntentProviderBuilder().build(getContext()).getRunIntent();
+				getContext().startService(intent);
 			}
 		}
 
