@@ -32,7 +32,7 @@ public class EpisodeDownload
     @ToOne(joinProperty = "episodeId")
     private Episode episode;
 
-    @NotNull
+    @Index
     private long downloadId;
 
     /** Used to resolve relations */

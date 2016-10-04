@@ -45,6 +45,16 @@ public class DownloadManagerAdapter
         return getStatus(downloadId) == DownloadManager.STATUS_RUNNING;
     }
 
+    public boolean isSuccess(long downloadId)
+    {
+        return getStatus(downloadId) == DownloadManager.STATUS_SUCCESSFUL;
+    }
+
+    public boolean isFailed(long downloadId)
+    {
+        return getStatus(downloadId) == DownloadManager.STATUS_FAILED;
+    }
+
     private int getReason(long downloadId)
     {
         return getInt(downloadId, DownloadManager.COLUMN_REASON);

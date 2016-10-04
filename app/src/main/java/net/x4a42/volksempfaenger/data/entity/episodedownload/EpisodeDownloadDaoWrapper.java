@@ -23,12 +23,17 @@ public class EpisodeDownloadDaoWrapper
 
     public boolean hasEpisode(Episode episode)
     {
-        return !getForEpisode(episode).isEmpty();
+        return !getEpisodeList(episode).isEmpty();
     }
 
-    public EpisodeDownload getByEpisode(Episode episode)
+    public boolean hasDownloadId(long downloadId)
     {
-        return getForEpisode(episode).get(0);
+        return !getDownloadIdList(downloadId).isEmpty();
+    }
+
+    public EpisodeDownload getByDownloadId(long downloadId)
+    {
+        return getDownloadIdList(downloadId).get(0);
     }
 
     public void delete(EpisodeDownload episodeDownload)
@@ -45,10 +50,17 @@ public class EpisodeDownloadDaoWrapper
         return episodeDownload;
     }
 
-    private List<EpisodeDownload> getForEpisode(Episode episode)
+    private List<EpisodeDownload> getEpisodeList(Episode episode)
     {
         return dao.queryBuilder()
                   .where(EpisodeDownloadDao.Properties.EpisodeId.eq(episode.get_id()))
+                  .list();
+    }
+
+    private List<EpisodeDownload> getDownloadIdList(long downloadId)
+    {
+        return dao.queryBuilder()
+                  .where(EpisodeDownloadDao.Properties.DownloadId.eq(downloadId))
                   .list();
     }
 }

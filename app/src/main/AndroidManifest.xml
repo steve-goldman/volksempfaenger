@@ -180,9 +180,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receiver.DownloadCompleteReceiver"
-            tools:ignore="ExportedReceiver" >
+        <receiver android:name=".receiver.downloadcomplete.DownloadCompleteReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
