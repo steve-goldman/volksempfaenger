@@ -7,7 +7,6 @@ import net.x4a42.volksempfaenger.data.enclosure.EnclosureMetadata;
 import net.x4a42.volksempfaenger.data.internal.DeleteHelper;
 import net.x4a42.volksempfaenger.data.internal.InsertHelper;
 import net.x4a42.volksempfaenger.data.internal.QueryHelper;
-import net.x4a42.volksempfaenger.data.internal.SyncDownloadThread;
 import net.x4a42.volksempfaenger.data.internal.UpdateHelper;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -47,7 +46,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	private InsertHelper insertHelper;
 	private UpdateHelper updateHelper;
 	private DeleteHelper deleteHelper;
-	private SyncDownloadThread syncDownloadThread;
+	//private SyncDownloadThread syncDownloadThread;
 
 	@Override
 	public boolean onCreate() {
@@ -58,8 +57,8 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 		updateHelper = new UpdateHelper(dbHelper);
 		deleteHelper = new DeleteHelper(dbHelper);
 
-		syncDownloadThread = new SyncDownloadThread(getContext(), dbHelper);
-		syncDownloadThread.start();
+		//syncDownloadThread = new SyncDownloadThread(getContext(), dbHelper);
+		//syncDownloadThread.start();
 
 		return true;
 	}
@@ -67,7 +66,7 @@ public class VolksempfaengerContentProvider extends ContentProvider {
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		syncDownloadThread.stop();
+		//syncDownloadThread.stop();
 	}
 
 	private static long parseId(Uri uri) {
