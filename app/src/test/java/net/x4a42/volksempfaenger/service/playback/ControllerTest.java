@@ -2,8 +2,8 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
 
-import net.x4a42.volksempfaenger.data.entity.enclosure.Enclosure;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.List;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTest
 {
@@ -26,10 +24,9 @@ public class ControllerTest
     @Mock AudioBecomingNoisyManager audioBecomingNoisyManager;
     @Mock Episode                   playbackEpisode;
     @Mock EpisodePosition           episodePosition;
-    @Mock List<Enclosure>           list;
-    @Mock Enclosure                 enclosure;
     @Mock PlaybackEventListener     playbackEventListener;
     @Mock EpisodePositionDaoWrapper episodePositionDao;
+    @Mock EpisodePathResolver       pathResolver;
     String                          url                       = "this-is-my-url";
     int                             seekToPosition            = 123;
     Controller                      controller;
@@ -37,16 +34,15 @@ public class ControllerTest
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(playbackEpisode.getEnclosures()).thenReturn(list);
-        Mockito.when(list.get(0)).thenReturn(enclosure);
-        Mockito.when(enclosure.getUrl()).thenReturn(url);
+        Mockito.when(pathResolver.resolveUrl(playbackEpisode)).thenReturn(url);
         Mockito.when(episodePositionDao.getOrInsert(playbackEpisode)).thenReturn(episodePosition);
         Mockito.when(episodePosition.getPosition()).thenReturn(seekToPosition);
         controller = Mockito.spy(new Controller(playbackEventBroadcaster,
                                                 mediaPlayer,
                                                 audioFocusManager,
                                                 audioBecomingNoisyManager,
-                                                episodePositionDao)
+                                                episodePositionDao,
+                                                pathResolver)
                                          .setListener(playbackEventListener));
     }
 

@@ -3,6 +3,7 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.media.MediaPlayer;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
     private final AudioFocusManager         audioFocusManager;
     private final AudioBecomingNoisyManager audioBecomingNoisyManager;
     private final EpisodePositionDaoWrapper episodePositionDao;
+    private final EpisodePathResolver       pathResolver;
     private PlaybackEventListener           playbackEventListener;
     private Episode                         playbackEpisode;
     private boolean                         inTransientLoss;
@@ -36,13 +38,15 @@ class Controller implements MediaPlayer.OnPreparedListener,
                       MediaPlayer               mediaPlayer,
                       AudioFocusManager         audioFocusManager,
                       AudioBecomingNoisyManager audioBecomingNoisyManager,
-                      EpisodePositionDaoWrapper episodePositionDao)
+                      EpisodePositionDaoWrapper episodePositionDao,
+                      EpisodePathResolver       pathResolver)
     {
         this.playbackEventBroadcaster  = playbackEventBroadcaster;
         this.mediaPlayer               = mediaPlayer;
         this.audioFocusManager         = audioFocusManager;
         this.audioBecomingNoisyManager = audioBecomingNoisyManager;
         this.episodePositionDao        = episodePositionDao;
+        this.pathResolver              = pathResolver;
     }
 
     public Controller setListener(PlaybackEventListener playbackEventListener)
@@ -98,8 +102,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
         playbackEpisode = episode;
         try
         {
-            // TODO: path provider
-            mediaPlayer.setDataSource(playbackEpisode.getEnclosures().get(0).getUrl());
+            mediaPlayer.setDataSource(pathResolver.resolveUrl(playbackEpisode));
         }
         catch (IOException e)
         {

@@ -3,18 +3,25 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.app.NotificationManager;
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.data.playlist.PlaylistProvider;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiverBuilder;
 
 class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
     {
+        EpisodePositionDaoWrapper episodePositionDao
+                = new EpisodePositionDaoBuilder().build(service);
+
         Controller controller
-                = new ControllerBuilder().build(service);
+                = new ControllerBuilder().build(service, episodePositionDao);
 
         BackgroundPositionSaver positionSaver
-                = new BackgroundPositionSaverBuilder().build(service, controller);
+                = new BackgroundPositionSaverBuilder().build(controller, episodePositionDao);
 
         IntentParser intentParser = new IntentParser();
 

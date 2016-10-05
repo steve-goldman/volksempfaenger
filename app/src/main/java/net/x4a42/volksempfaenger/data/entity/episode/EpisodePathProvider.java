@@ -19,7 +19,7 @@ public class EpisodePathProvider extends PathProviderBase
         return makeUri(getEpisodeUrl(episode));
     }
 
-    private String getEpisodeUrl(Episode episode)
+    public String getEpisodeUrl(Episode episode)
     {
         return makeUrl(getEpisodeFile(episode));
     }
