@@ -15,9 +15,14 @@ public class EpisodePathResolver
         this.episodeDownloadDao     = episodeDownloadDao;
     }
 
+    public boolean resolvesToFile(Episode episode)
+    {
+        return episodeDownloadDao.hasSuccessfulDownload(episode);
+    }
+
     public String resolveUrl(Episode episode)
     {
-        if (episodeDownloadDao.hasSuccessfulDownload(episode))
+        if (resolvesToFile(episode))
         {
             Log.d(this, "playing from local file");
             return pathProvider.getEpisodeUrl(episode);

@@ -2,10 +2,13 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,18 +21,21 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTest
 {
-    @Mock PlaybackEventBroadcaster  playbackEventBroadcaster;
-    @Mock MediaPlayer               mediaPlayer;
-    @Mock AudioFocusManager         audioFocusManager;
-    @Mock AudioBecomingNoisyManager audioBecomingNoisyManager;
-    @Mock Episode                   playbackEpisode;
-    @Mock EpisodePosition           episodePosition;
-    @Mock PlaybackEventListener     playbackEventListener;
-    @Mock EpisodePositionDaoWrapper episodePositionDao;
-    @Mock EpisodePathResolver       pathResolver;
-    String                          url                       = "this-is-my-url";
-    int                             seekToPosition            = 123;
-    Controller                      controller;
+    @Mock PlaybackEventBroadcaster       playbackEventBroadcaster;
+    @Mock MediaPlayer                    mediaPlayer;
+    @Mock AudioFocusManager              audioFocusManager;
+    @Mock AudioBecomingNoisyManager      audioBecomingNoisyManager;
+    @Mock Episode                        playbackEpisode;
+    @Mock EpisodePosition                episodePosition;
+    @Mock PlaybackEventListener          playbackEventListener;
+    @Mock EpisodePositionDaoWrapper      episodePositionDao;
+    @Mock EpisodePathResolver            pathResolver;
+    @Mock ConnectivityStatus             connectivityStatus;
+    @Mock Preferences                    preferences;
+    @Mock PreferenceChangedEventReceiver preferenceChangedEventReceiver;
+    String                               url                       = "this-is-my-url";
+    int                                  seekToPosition            = 123;
+    Controller                           controller;
 
     @Before
     public void setUp() throws Exception
@@ -42,7 +48,10 @@ public class ControllerTest
                                                 audioFocusManager,
                                                 audioBecomingNoisyManager,
                                                 episodePositionDao,
-                                                pathResolver)
+                                                pathResolver,
+                                                connectivityStatus,
+                                                preferences,
+                                                preferenceChangedEventReceiver)
                                          .setListener(playbackEventListener));
     }
 
@@ -59,6 +68,16 @@ public class ControllerTest
 
         inOrder.verify(mediaPlayer).setDataSource(url);
         inOrder.verify(mediaPlayer).prepareAsync();
+    }
+
+    @Test
+    public void openStreamingNoWifi() throws Exception
+    {
+        Mockito.when(preferences.streamWifiOnly()).thenReturn(true);
+
+        controller.open(playbackEpisode);
+
+        Mockito.verifyNoMoreInteractions(mediaPlayer);
     }
 
     @Test

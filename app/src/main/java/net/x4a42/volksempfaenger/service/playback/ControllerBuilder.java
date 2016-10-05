@@ -4,10 +4,16 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.Preferences;
+import net.x4a42.volksempfaenger.PreferencesBuilder;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolverBuilder;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatusBuilder;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiver;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiverBuilder;
 
 class ControllerBuilder
 {
@@ -20,6 +26,11 @@ class ControllerBuilder
         AudioBecomingNoisyManager audioBecomingNoisyManager  = new AudioBecomingNoisyManager(context);
         EpisodePositionDaoWrapper episodePositionDao         = new EpisodePositionDaoBuilder().build(context);
         EpisodePathResolver       pathResolver               = new EpisodePathResolverBuilder().build(context);
+        ConnectivityStatus        connectivityStatus         = new ConnectivityStatusBuilder().build(context);
+        Preferences               preferences                = new PreferencesBuilder().build(context);
+
+        PreferenceChangedEventReceiver preferenceChangedEventReceiver
+                = new PreferenceChangedEventReceiverBuilder().build();
 
         Controller controller
                 = new Controller(playbackEventBroadcaster,
@@ -27,13 +38,17 @@ class ControllerBuilder
                                  audioFocusManager,
                                  audioBecomingNoisyManager,
                                  episodePositionDao,
-                                 pathResolver);
+                                 pathResolver,
+                                 connectivityStatus,
+                                 preferences,
+                                 preferenceChangedEventReceiver);
 
         mediaPlayer.setOnPreparedListener(controller);
         mediaPlayer.setOnCompletionListener(controller);
         audioFocusManager.setListener(controller);
         audioBecomingNoisyManager.setListener(controller);
         audioBecomingNoisyManager.start();
+        preferenceChangedEventReceiver.setListener(controller);
 
         return controller;
     }

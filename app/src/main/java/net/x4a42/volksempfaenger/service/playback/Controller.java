@@ -2,9 +2,13 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.media.MediaPlayer;
 
+import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventListener;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiver;
 
 import java.io.IOException;
 
@@ -18,35 +22,46 @@ class Controller implements MediaPlayer.OnPreparedListener,
                             MediaPlayer.OnCompletionListener,
                             AudioFocusManager.Listener,
                             AudioBecomingNoisyManager.Listener,
-                            PlaybackPositionProvider
+                            PlaybackPositionProvider,
+                            PreferenceChangedEventListener
 {
     public static final float FullVolume    = 1.0f;
     public static final float DuckedVolume  = 0.1f;
 
-    private final PlaybackEventBroadcaster  playbackEventBroadcaster;
-    private final MediaPlayer               mediaPlayer;
-    private final AudioFocusManager         audioFocusManager;
-    private final AudioBecomingNoisyManager audioBecomingNoisyManager;
-    private final EpisodePositionDaoWrapper episodePositionDao;
-    private final EpisodePathResolver       pathResolver;
-    private PlaybackEventListener           playbackEventListener;
-    private Episode                         playbackEpisode;
-    private boolean                         inTransientLoss;
-    private boolean                         isPrepared;
+    private final PlaybackEventBroadcaster       playbackEventBroadcaster;
+    private final MediaPlayer                    mediaPlayer;
+    private final AudioFocusManager              audioFocusManager;
+    private final AudioBecomingNoisyManager      audioBecomingNoisyManager;
+    private final EpisodePositionDaoWrapper      episodePositionDao;
+    private final EpisodePathResolver            pathResolver;
+    private final ConnectivityStatus             connectivityStatus;
+    private final Preferences                    preferences;
+    private final PreferenceChangedEventReceiver preferenceChangedEventReceiver;
+    private PlaybackEventListener                playbackEventListener;
+    private Episode                              playbackEpisode;
+    private boolean                              inTransientLoss;
+    private boolean                              isPrepared;
+    private boolean                              isStreaming;
 
-    public Controller(PlaybackEventBroadcaster  playbackEventBroadcaster,
-                      MediaPlayer               mediaPlayer,
-                      AudioFocusManager         audioFocusManager,
-                      AudioBecomingNoisyManager audioBecomingNoisyManager,
-                      EpisodePositionDaoWrapper episodePositionDao,
-                      EpisodePathResolver       pathResolver)
+    public Controller(PlaybackEventBroadcaster       playbackEventBroadcaster,
+                      MediaPlayer                    mediaPlayer,
+                      AudioFocusManager              audioFocusManager,
+                      AudioBecomingNoisyManager      audioBecomingNoisyManager,
+                      EpisodePositionDaoWrapper      episodePositionDao,
+                      EpisodePathResolver            pathResolver,
+                      ConnectivityStatus             connectivityStatus,
+                      Preferences                    preferences,
+                      PreferenceChangedEventReceiver preferenceChangedEventReceiver)
     {
-        this.playbackEventBroadcaster  = playbackEventBroadcaster;
-        this.mediaPlayer               = mediaPlayer;
-        this.audioFocusManager         = audioFocusManager;
-        this.audioBecomingNoisyManager = audioBecomingNoisyManager;
-        this.episodePositionDao        = episodePositionDao;
-        this.pathResolver              = pathResolver;
+        this.playbackEventBroadcaster       = playbackEventBroadcaster;
+        this.mediaPlayer                    = mediaPlayer;
+        this.audioFocusManager              = audioFocusManager;
+        this.audioBecomingNoisyManager      = audioBecomingNoisyManager;
+        this.episodePositionDao             = episodePositionDao;
+        this.pathResolver                   = pathResolver;
+        this.connectivityStatus             = connectivityStatus;
+        this.preferences                    = preferences;
+        this.preferenceChangedEventReceiver = preferenceChangedEventReceiver;
     }
 
     public Controller setListener(PlaybackEventListener playbackEventListener)
@@ -99,6 +114,16 @@ class Controller implements MediaPlayer.OnPreparedListener,
             stop();
         }
 
+        if (!pathResolver.resolvesToFile(episode))
+        {
+            if (preferences.streamWifiOnly() && !connectivityStatus.isWifiConnected())
+            {
+                return;
+            }
+            isStreaming = true;
+            preferenceChangedEventReceiver.subscribe();
+        }
+
         playbackEpisode = episode;
         try
         {
@@ -131,6 +156,13 @@ class Controller implements MediaPlayer.OnPreparedListener,
             mediaPlayer.stop();
             isPrepared = false;
         }
+
+        if (isStreaming)
+        {
+            preferenceChangedEventReceiver.unsubscribe();
+            isStreaming = false;
+        }
+
         audioFocusManager.abandonFocus();
         mediaPlayer.reset();
         playbackEpisode = null;
@@ -232,6 +264,16 @@ class Controller implements MediaPlayer.OnPreparedListener,
         {
             pause();
         }
+    }
+
+    //
+    // PreferenceChangedEventListener
+    //
+
+    @Override
+    public void onPreferenceChanged()
+    {
+        System.out.println("ON PREFERENCE CHANGED!");
     }
 
     //
