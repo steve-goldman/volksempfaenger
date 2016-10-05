@@ -14,6 +14,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProvider;
+import net.x4a42.volksempfaenger.ui.settings.SettingsActivityIntentProvider;
 
 class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                                     PlaybackEventListener
@@ -22,6 +23,7 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
     private final NavUtilsWrapper                       navUtilsWrapper;
     private final AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider;
     private final PlaybackServiceIntentProvider         playbackIntentProvider;
+    private final SettingsActivityIntentProvider        settingsIntentProvider;
     private final PlaybackServiceFacadeProvider         facadeProvider;
     private boolean                                     created;
     private MenuItem                                    play;
@@ -31,12 +33,14 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                               NavUtilsWrapper                       navUtilsWrapper,
                               AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider,
                               PlaybackServiceIntentProvider         playbackIntentProvider,
+                              SettingsActivityIntentProvider        settingsIntentProvider,
                               PlaybackServiceFacadeProvider         facadeProvider)
     {
         this.context                       = context;
         this.navUtilsWrapper               = navUtilsWrapper;
         this.addSubscriptionIntentProvider = addSubscriptionIntentProvider;
         this.playbackIntentProvider        = playbackIntentProvider;
+        this.settingsIntentProvider        = settingsIntentProvider;
         this.facadeProvider                = facadeProvider;
     }
 
@@ -64,6 +68,9 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                 return true;
             case R.id.item_update:
                 //
+                return true;
+            case R.id.item_settings:
+                context.startActivity(settingsIntentProvider.get());
                 return true;
             case android.R.id.home:
                 navUtilsWrapper.navigateUpFromSameTask();
