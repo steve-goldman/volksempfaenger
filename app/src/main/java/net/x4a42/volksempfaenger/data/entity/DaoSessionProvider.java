@@ -8,15 +8,27 @@ import net.x4a42.volksempfaenger.data.entity.enclosure.DaoSession;
 
 import org.greenrobot.greendao.database.Database;
 
-public class DaoSessionBuilder
+public class DaoSessionProvider
 {
+    private final Context                  context;
     private static DaoMaster.DevOpenHelper openHelper;
+    private static DaoSession              instance;
 
-    public DaoSession build(Context context)
+    public DaoSessionProvider(Context context)
     {
-        DaoMaster.DevOpenHelper helper = getHelper(context);
-        Database                db     = helper.getWritableDb();
-        return new DaoMaster(db).newSession();
+        this.context = context;
+    }
+
+    public DaoSession get()
+    {
+        if (instance == null)
+        {
+            DaoMaster.DevOpenHelper helper = getHelper(context);
+            Database                db     = helper.getWritableDb();
+            instance = new DaoMaster(db).newSession();
+        }
+
+        return instance;
     }
 
     private synchronized DaoMaster.DevOpenHelper getHelper(Context context)
