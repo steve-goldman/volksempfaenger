@@ -8,8 +8,11 @@ import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEvent;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventListener;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;
 
-class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
+class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener, EpisodeDownloadEventListener
 {
     public static final int                          NotificationId = 0x59d54313;
     private final BackgroundPositionSaver            positionSaver;
@@ -20,6 +23,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private final NotificationManager                notificationManager;
     private final PlaybackNotificationBuilder        notificationBuilder;
     private final Playlist                           playlist;
+    private final EpisodeDownloadEventReceiver       episodeDownloadEventReceiver;
 
     public PlaybackServiceProxy(BackgroundPositionSaver            positionSaver,
                                 Controller                         controller,
@@ -28,16 +32,23 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
                                 MediaSessionManager                mediaSessionManager,
                                 NotificationManager                notificationManager,
                                 PlaybackNotificationBuilder        notificationBuilder,
-                                Playlist                           playlist)
+                                Playlist                           playlist,
+                                EpisodeDownloadEventReceiver       episodeDownloadEventReceiver)
     {
-        this.positionSaver              = positionSaver;
-        this.controller                 = controller;
-        this.intentParser               = intentParser;
-        this.mediaButtonReceiver        = mediaButtonReceiver;
-        this.mediaSessionManager        = mediaSessionManager;
-        this.notificationManager        = notificationManager;
-        this.notificationBuilder        = notificationBuilder;
-        this.playlist                   = playlist;
+        this.positionSaver                = positionSaver;
+        this.controller                   = controller;
+        this.intentParser                 = intentParser;
+        this.mediaButtonReceiver          = mediaButtonReceiver;
+        this.mediaSessionManager          = mediaSessionManager;
+        this.notificationManager          = notificationManager;
+        this.notificationBuilder          = notificationBuilder;
+        this.playlist                     = playlist;
+        this.episodeDownloadEventReceiver = episodeDownloadEventReceiver;
+    }
+
+    public void onCreate()
+    {
+        episodeDownloadEventReceiver.subscribe();
     }
 
     public int onStartCommand(Intent intent)
@@ -52,6 +63,7 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
 
     public void onDestroy()
     {
+        episodeDownloadEventReceiver.unsubscribe();
         controller.destroy();
         mediaButtonReceiver.destroy();
         if (mediaSessionManager != null)
@@ -171,6 +183,20 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         notificationManager.cancel(NotificationId);
         positionSaver.stop(false);
         playlist.episodeSkipped();
+        onPlay();
+    }
+
+    @Override
+    public void onEpisodeDownloadEvent(EpisodeDownloadEvent event)
+    {
+        if (!controller.isPlaybackEpisodeOpen(event.getEpisode()))
+        {
+            return;
+        }
+
+        notificationManager.cancel(NotificationId);
+        positionSaver.stop(false);
+        controller.stop();
         onPlay();
     }
 

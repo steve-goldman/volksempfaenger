@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class PlaybackServiceProxyTest
     @Mock Episode                            episode;
     @Mock Uri                                otherEpisodeUri;
     @Mock Playlist                           playlist;
+    @Mock EpisodeDownloadEventReceiver       episodeDownloadEventReceiver;
     PlaybackServiceProxy                     proxy;
 
     @Before
@@ -48,7 +50,8 @@ public class PlaybackServiceProxyTest
                                          mediaSessionManager,
                                          notificationManager,
                                          notificationBuilder,
-                                         playlist));
+                                         playlist,
+                                         episodeDownloadEventReceiver));
 
         Mockito.when(notificationBuilder.build(episode, true)).thenReturn(notificationPlaying);
         Mockito.when(notificationBuilder.build(episode, false)).thenReturn(notificationPaused);

@@ -35,7 +35,6 @@ public class DownloadManagerAdapter
 
     public boolean isPausedForWifi(long downloadId)
     {
-        System.out.println(String.format("id:%d status:%d reason:%d", downloadId, getStatus(downloadId), getReason(downloadId)));
         return getStatus(downloadId) == DownloadManager.STATUS_PAUSED
                 && getReason(downloadId) == DownloadManager.PAUSED_WAITING_FOR_NETWORK;
     }

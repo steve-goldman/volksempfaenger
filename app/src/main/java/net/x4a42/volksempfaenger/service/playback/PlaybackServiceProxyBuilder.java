@@ -39,6 +39,9 @@ class PlaybackServiceProxyBuilder
 
         Playlist playlist = new PlaylistProvider(service).get();
 
+        EpisodeDownloadEventReceiver episodeDownloadEventReceiver
+                = new EpisodeDownloadEventReceiverBuilder().build();
+
         PlaybackServiceProxy proxy
                 = new PlaybackServiceProxy(positionSaver,
                                            controller,
@@ -47,10 +50,12 @@ class PlaybackServiceProxyBuilder
                                            mediaSessionManager,
                                            notificationManager,
                                            playbackNotificationBuilder,
-                                           playlist);
+                                           playlist,
+                                           episodeDownloadEventReceiver);
 
         controller.setListener(proxy);
         intentParser.setListener(proxy);
+        episodeDownloadEventReceiver.setListener(proxy);
 
         return proxy;
     }

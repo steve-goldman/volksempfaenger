@@ -23,6 +23,7 @@ public class PlaybackService extends Service
     {
         super.onCreate();
         proxy = new PlaybackServiceProxyBuilder().build(this);
+        proxy.onCreate();
     }
 
     @Override
