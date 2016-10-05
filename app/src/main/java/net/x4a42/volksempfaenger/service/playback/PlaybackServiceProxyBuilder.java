@@ -5,8 +5,8 @@ import android.content.Context;
 
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.data.playlist.PlaylistProvider;
-import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;
-import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiverBuilder;
+import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventReceiver;
+import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventReceiverBuilder;
 
 class PlaybackServiceProxyBuilder
 {

@@ -9,7 +9,7 @@ import android.net.Uri;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;
+import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventReceiver;
 
 import org.junit.Before;
 import org.junit.Test;

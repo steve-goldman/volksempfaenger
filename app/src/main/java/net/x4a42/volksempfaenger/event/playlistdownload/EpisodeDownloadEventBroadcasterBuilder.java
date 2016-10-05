@@ -1,10 +1,10 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.event.playlistdownload;
 
 import android.content.Context;
 
 import org.greenrobot.eventbus.EventBus;
 
-class EpisodeDownloadEventBroadcasterBuilder
+public class EpisodeDownloadEventBroadcasterBuilder
 {
     public EpisodeDownloadEventBroadcaster build(Context context)
     {

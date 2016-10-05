@@ -1,10 +1,10 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.event.playlistdownload;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 import org.greenrobot.eventbus.EventBus;
 
-class EpisodeDownloadEventBroadcaster
+public class EpisodeDownloadEventBroadcaster
 {
     private final EventBus                    eventBus;
     private final EpisodeDownloadEventBuilder builder;
