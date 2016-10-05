@@ -1,6 +1,7 @@
 package net.x4a42.volksempfaenger.data.entity.episodedownload;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 
 import java.util.List;
 
@@ -8,12 +9,16 @@ public class EpisodeDownloadDaoWrapper
 {
     private final EpisodeDownloadDao      dao;
     private final EpisodeDownloadProvider provider;
+    private final DownloadManagerAdapter  downloadManagerAdapter;
+
 
     public EpisodeDownloadDaoWrapper(EpisodeDownloadDao      dao,
-                                     EpisodeDownloadProvider provider)
+                                     EpisodeDownloadProvider provider,
+                                     DownloadManagerAdapter  downloadManagerAdapter)
     {
-        this.dao      = dao;
-        this.provider = provider;
+        this.dao                    = dao;
+        this.provider               = provider;
+        this.downloadManagerAdapter = downloadManagerAdapter;
     }
 
     public List<EpisodeDownload> getAll()
@@ -26,7 +31,18 @@ public class EpisodeDownloadDaoWrapper
         return !getEpisodeList(episode).isEmpty();
     }
 
-    public EpisodeDownload getByEpisode(Episode episode)
+    public boolean hasSuccessfulDownload(Episode episode)
+    {
+        if (!hasEpisode(episode))
+        {
+            return false;
+        }
+
+        EpisodeDownload episodeDownload = getByEpisode(episode);
+        return downloadManagerAdapter.isSuccess(episodeDownload.getDownloadId());
+    }
+
+    private EpisodeDownload getByEpisode(Episode episode)
     {
         return getEpisodeList(episode).get(0);
     }
