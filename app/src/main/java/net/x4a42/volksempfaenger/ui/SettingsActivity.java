@@ -16,9 +16,9 @@ import android.preference.PreferenceScreen;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEvent;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventBroadcaster;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventBroadcasterBuilder;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEvent;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcaster;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcasterBuilder;
 import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
 
 import java.util.Collection;

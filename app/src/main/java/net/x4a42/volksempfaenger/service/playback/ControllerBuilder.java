@@ -12,10 +12,10 @@ import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoB
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcaster;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcasterBuilder;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventReceiver;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventReceiverBuilder;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatusBuilder;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiver;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiverBuilder;
 
 class ControllerBuilder
 {

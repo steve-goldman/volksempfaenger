@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.preferences;
+package net.x4a42.volksempfaenger.event.preferencechanged;
 
 public interface PreferenceChangedEventListener
 {

@@ -9,9 +9,9 @@ import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoW
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcaster;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventListener;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventReceiver;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventListener;
-import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventReceiver;
 
 import java.io.IOException;
 
