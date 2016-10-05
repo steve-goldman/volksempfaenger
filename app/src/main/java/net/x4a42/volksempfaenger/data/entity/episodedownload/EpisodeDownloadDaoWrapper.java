@@ -26,6 +26,11 @@ public class EpisodeDownloadDaoWrapper
         return !getEpisodeList(episode).isEmpty();
     }
 
+    public EpisodeDownload getByEpisode(Episode episode)
+    {
+        return getEpisodeList(episode).get(0);
+    }
+
     public boolean hasDownloadId(long downloadId)
     {
         return !getDownloadIdList(downloadId).isEmpty();
