@@ -104,18 +104,18 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_settings"
-            android:parentActivityName=".ui.MainActivity"
+            android:parentActivityName=".ui.main.MainActivity"
             android:theme="@style/Theme.Settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.ViewSubscriptionActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.viewepisode.ViewEpisodeActivity"
@@ -126,10 +126,10 @@
         </activity>
         <activity
             android:name=".ui.episodelist.EpisodeListActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.PlaylistActivity"
