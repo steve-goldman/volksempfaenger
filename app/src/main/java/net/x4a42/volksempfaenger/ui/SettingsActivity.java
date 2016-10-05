@@ -1,15 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import net.x4a42.volksempfaenger.PreferenceKeys;
-import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProvider;
-import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,8 +12,15 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.text.InputType;
-import android.widget.EditText;
+
+import net.x4a42.volksempfaenger.PreferenceKeys;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 public class SettingsActivity extends PreferenceActivity
 {
@@ -64,12 +61,6 @@ public class SettingsActivity extends PreferenceActivity
 			prefScreen = getPreferenceScreen();
 			prefInterval = (ListPreference) prefScreen
 					.findPreference(PreferenceKeys.DOWNLOAD_INTERVAL);
-
-			// TODO(#113) Use NumberPicker instead
-			EditText concurrentEditText = ((EditTextPreference) prefScreen
-					.findPreference(PreferenceKeys.DOWNLOAD_CONCURRENT))
-					.getEditText();
-			concurrentEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		}
 
 		@Override
@@ -111,8 +102,8 @@ public class SettingsActivity extends PreferenceActivity
 			}
 			else if (key.equals(PreferenceKeys.DOWNLOAD_WIFI))
 			{
-				Intent intent = new PlaylistDownloadServiceIntentProviderBuilder().build(getContext()).getRunIntent();
-				getContext().startService(intent);
+				Intent intent = new PlaylistDownloadServiceIntentProviderBuilder().build(getActivity()).getRunIntent();
+				getActivity().startService(intent);
 			}
 		}
 
@@ -128,7 +119,7 @@ public class SettingsActivity extends PreferenceActivity
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
 			editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, "");
 			editor.apply();
 			addPreferencesFromResource(R.xml.preference_storage);

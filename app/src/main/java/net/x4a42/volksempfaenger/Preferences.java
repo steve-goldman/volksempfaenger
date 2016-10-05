@@ -21,10 +21,10 @@ public class Preferences
                           context.getString(R.string.settings_default_download_wifi));
     }
 
-    public boolean downloadChargingOnly()
+    public boolean streamWifiOnly()
     {
-        return getBoolean(PreferenceKeys.DOWNLOAD_CHARGING,
-                          context.getString(R.string.settings_default_download_charging));
+        return getBoolean(PreferenceKeys.STREAM_WIFI,
+                          context.getString(R.string.settings_default_stream_wifi));
     }
 
     public int getDownloadedQueueCount()
