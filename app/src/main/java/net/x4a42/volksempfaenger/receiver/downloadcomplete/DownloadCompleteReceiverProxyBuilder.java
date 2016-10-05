@@ -6,7 +6,7 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoB
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapterBuilder;
-import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventBuilder;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 

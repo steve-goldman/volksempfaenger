@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.event.playlistdownload;
+package net.x4a42.volksempfaenger.event.episodedownload;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 

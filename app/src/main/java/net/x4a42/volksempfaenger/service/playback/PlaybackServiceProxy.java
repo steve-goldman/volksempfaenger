@@ -10,9 +10,9 @@ import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
-import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEvent;
-import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventListener;
-import net.x4a42.volksempfaenger.event.playlistdownload.EpisodeDownloadEventReceiver;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventListener;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiver;
 
 class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener, EpisodeDownloadEventListener
 {
