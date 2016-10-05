@@ -18,31 +18,31 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
 
 class InfoSectionManager implements PlaybackEventListener,
                                     View.OnClickListener,
                                     PlaybackServiceConnectionManager.Listener
 {
-    private final PlaybackEventReceiver             playbackEventReceiver;
-    private final ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
-    private final PodcastPathProvider               podcastPathProvider;
-    private final ImageLoader                       imageLoader;
-    private PlaybackServiceFacadeProvider           facadeProvider;
-    private LinearLayout                            infoLayout;
-    private ImageView                               podcastLogo;
-    private TextView                                episodeText;
-    private TextView                                podcastText;
+    private final PlaybackEventReceiver      playbackEventReceiver;
+    private final MainActivityIntentProvider mainIntentProvider;
+    private final PodcastPathProvider        podcastPathProvider;
+    private final ImageLoader                imageLoader;
+    private PlaybackServiceFacadeProvider    facadeProvider;
+    private LinearLayout                     infoLayout;
+    private ImageView                        podcastLogo;
+    private TextView                         episodeText;
+    private TextView                         podcastText;
 
-    public InfoSectionManager(PlaybackEventReceiver             playbackEventReceiver,
-                              ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider,
-                              PodcastPathProvider               podcastPathProvider,
-                              ImageLoader                       imageLoader)
+    public InfoSectionManager(PlaybackEventReceiver      playbackEventReceiver,
+                              MainActivityIntentProvider mainIntentProvider,
+                              PodcastPathProvider        podcastPathProvider,
+                              ImageLoader                imageLoader)
     {
-        this.playbackEventReceiver     = playbackEventReceiver;
-        this.viewEpisodeIntentProvider = viewEpisodeIntentProvider;
-        this.podcastPathProvider       = podcastPathProvider;
-        this.imageLoader               = imageLoader;
+        this.playbackEventReceiver = playbackEventReceiver;
+        this.mainIntentProvider    = mainIntentProvider;
+        this.podcastPathProvider   = podcastPathProvider;
+        this.imageLoader           = imageLoader;
     }
 
     public InfoSectionManager setFacadeProvider(PlaybackServiceFacadeProvider facadeProvider)
@@ -129,8 +129,7 @@ class InfoSectionManager implements PlaybackEventListener,
 
     private void handleInfoClicked(Context context)
     {
-        context.startActivity(viewEpisodeIntentProvider.getIntent(
-                facadeProvider.getFacade().getEpisode()));
+        context.startActivity(mainIntentProvider.getIntent());
     }
 
     private void update()

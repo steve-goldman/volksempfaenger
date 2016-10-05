@@ -9,8 +9,8 @@ import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProviderBuilder;
 
 class InfoSectionManagerBuilder
 {
@@ -19,8 +19,8 @@ class InfoSectionManagerBuilder
         PlaybackEventReceiver playbackEventReceiver
                 = new PlaybackEventReceiverBuilder().build();
 
-        ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider
-                = new ViewEpisodeActivityIntentProviderBuilder().build(context);
+        MainActivityIntentProvider mainIntentProvider
+                = new MainActivityIntentProviderBuilder().build(context);
 
         PodcastPathProvider podcastPathProvider
                 = new PodcastPathProvider(context);
@@ -29,7 +29,7 @@ class InfoSectionManagerBuilder
 
         InfoSectionManager infoSectionManager
                 = new InfoSectionManager(playbackEventReceiver,
-                                         viewEpisodeIntentProvider,
+                                         mainIntentProvider,
                                          podcastPathProvider,
                                          imageLoader)
                 .setFacadeProvider(connectionManager);
