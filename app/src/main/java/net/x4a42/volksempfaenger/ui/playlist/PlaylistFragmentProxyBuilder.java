@@ -1,7 +1,7 @@
 package net.x4a42.volksempfaenger.ui.playlist;
 
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 
 class PlaylistFragmentProxyBuilder
 {

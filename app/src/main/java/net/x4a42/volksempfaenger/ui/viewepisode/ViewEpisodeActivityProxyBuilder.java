@@ -3,18 +3,13 @@ package net.x4a42.volksempfaenger.ui.viewepisode;
 import android.app.FragmentManager;
 
 import net.x4a42.volksempfaenger.HtmlConverter;
-import net.x4a42.volksempfaenger.IntentBuilder;
-import net.x4a42.volksempfaenger.NavUtilsWrapper;
-import net.x4a42.volksempfaenger.ToastMaker;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManagerBuilder;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
 
 class ViewEpisodeActivityProxyBuilder
 {

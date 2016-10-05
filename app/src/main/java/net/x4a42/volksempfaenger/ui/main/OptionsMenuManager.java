@@ -7,8 +7,8 @@ import android.view.MenuItem;
 
 import net.x4a42.volksempfaenger.NavUtilsWrapper;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;

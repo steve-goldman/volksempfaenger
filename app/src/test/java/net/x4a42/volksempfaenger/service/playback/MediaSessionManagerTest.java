@@ -4,6 +4,9 @@ import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
 
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

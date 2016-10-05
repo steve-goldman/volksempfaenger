@@ -9,7 +9,7 @@ import junit.framework.Assert;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.ui.nowplaying.NowPlayingFragment;

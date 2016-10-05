@@ -1,8 +1,8 @@
-package net.x4a42.volksempfaenger.service.playback;
+package net.x4a42.volksempfaenger.event.playback;
 
 import org.greenrobot.eventbus.EventBus;
 
-class PlaybackEventBroadcaster
+public class PlaybackEventBroadcaster
 {
     private final EventBus eventBus;
 

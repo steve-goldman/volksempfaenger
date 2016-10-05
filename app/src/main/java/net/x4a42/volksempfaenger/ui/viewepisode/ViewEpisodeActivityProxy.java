@@ -6,7 +6,7 @@ import android.view.MenuItem;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.ui.nowplaying.NowPlayingFragment;
 
@@ -16,7 +16,7 @@ class ViewEpisodeActivityProxy
     private final Episode                          episode;
     private final FragmentManager                  fragmentManager;
     private final OptionsMenuManager               optionsMenuManager;
-    private final PlaybackEventReceiver            playbackEventReceiver;
+    private final PlaybackEventReceiver playbackEventReceiver;
     private final Presenter                        presenter;
     private final PlaybackServiceConnectionManager connectionManager;
 

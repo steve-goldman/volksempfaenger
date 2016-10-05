@@ -1,11 +1,10 @@
 package net.x4a42.volksempfaenger.ui.playlist;
 
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 
 class PlaylistFragmentProxy
 {

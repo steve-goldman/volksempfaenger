@@ -5,9 +5,9 @@ import android.content.Context;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProviderBuilder;

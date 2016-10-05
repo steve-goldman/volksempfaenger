@@ -1,4 +1,4 @@
-package net.x4a42.volksempfaenger.service.playback;
+package net.x4a42.volksempfaenger.event.playback;
 
 public interface PlaybackEventListener
 {

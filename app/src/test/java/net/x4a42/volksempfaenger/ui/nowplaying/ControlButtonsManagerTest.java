@@ -7,8 +7,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;

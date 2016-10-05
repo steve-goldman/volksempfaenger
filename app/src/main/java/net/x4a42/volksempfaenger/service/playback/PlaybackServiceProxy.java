@@ -8,6 +8,8 @@ import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEvent;
 import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventListener;
 import net.x4a42.volksempfaenger.service.playlistdownload.EpisodeDownloadEventReceiver;

@@ -14,9 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManagerBuilder;
 import net.x4a42.volksempfaenger.ui.ExternalStorageHelper;
