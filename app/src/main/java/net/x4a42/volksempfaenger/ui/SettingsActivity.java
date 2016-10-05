@@ -16,6 +16,9 @@ import android.preference.PreferenceScreen;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEvent;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventBroadcaster;
+import net.x4a42.volksempfaenger.preferences.PreferenceChangedEventBroadcasterBuilder;
 import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
 
 import java.util.Collection;
@@ -53,10 +56,12 @@ public class SettingsActivity extends PreferenceActivity
 
 		private PreferenceScreen prefScreen;
 		private ListPreference prefInterval;
+		private PreferenceChangedEventBroadcaster broadcaster;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			broadcaster = new PreferenceChangedEventBroadcasterBuilder().build();
 			addPreferencesFromResource(R.xml.preference_download);
 			prefScreen = getPreferenceScreen();
 			prefInterval = (ListPreference) prefScreen
@@ -105,6 +110,7 @@ public class SettingsActivity extends PreferenceActivity
 				Intent intent = new PlaylistDownloadServiceIntentProviderBuilder().build(getActivity()).getRunIntent();
 				getActivity().startService(intent);
 			}
+			broadcaster.broadcast(new PreferenceChangedEvent());
 		}
 
 	}
@@ -115,10 +121,12 @@ public class SettingsActivity extends PreferenceActivity
 		private PreferenceScreen prefScreen;
 		private EditTextPreference prefLocation;
 		private EditTextPreference prefQueueCount;
+		private PreferenceChangedEventBroadcaster broadcaster;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			broadcaster = new PreferenceChangedEventBroadcasterBuilder().build();
 			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
 			editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, "");
 			editor.apply();
@@ -173,6 +181,7 @@ public class SettingsActivity extends PreferenceActivity
 					prefQueueCount.setText(text);
 				}
 			}
+			broadcaster.broadcast(new PreferenceChangedEvent());
 		}
 
 	}
