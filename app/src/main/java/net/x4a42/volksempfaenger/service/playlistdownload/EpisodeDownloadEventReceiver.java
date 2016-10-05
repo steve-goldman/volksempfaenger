@@ -5,15 +5,15 @@ import org.greenrobot.eventbus.Subscribe;
 
 public class EpisodeDownloadEventReceiver
 {
-    private final EventBus          eventBus;
-    private EpisodeDownloadListener listener;
+    private final EventBus               eventBus;
+    private EpisodeDownloadEventListener listener;
 
     public EpisodeDownloadEventReceiver(EventBus eventBus)
     {
         this.eventBus = eventBus;
     }
 
-    public EpisodeDownloadEventReceiver setListener(EpisodeDownloadListener listener)
+    public EpisodeDownloadEventReceiver setListener(EpisodeDownloadEventListener listener)
     {
         this.listener = listener;
         return this;

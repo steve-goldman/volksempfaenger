@@ -1,6 +1,6 @@
 package net.x4a42.volksempfaenger.service.playlistdownload;
 
-public interface EpisodeDownloadListener
+public interface EpisodeDownloadEventListener
 {
     void onEpisodeDownloadEvent(EpisodeDownloadEvent event);
 }
