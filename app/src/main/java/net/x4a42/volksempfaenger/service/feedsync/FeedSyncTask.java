@@ -28,7 +28,6 @@ class FeedSyncTask extends AsyncTask<Podcast, Void, Void>
             // TODO
             Log.e(this, e.getMessage());
         }
-
         return null;
     }
 }

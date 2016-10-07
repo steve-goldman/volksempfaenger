@@ -5,7 +5,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import net.x4a42.volksempfaenger.NavUtilsWrapper;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
@@ -13,6 +12,7 @@ import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManag
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.syncall.SyncAllServiceIntentProvider;
 import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.settings.SettingsActivityIntentProvider;
 
@@ -20,8 +20,8 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                                     PlaybackEventListener
 {
     private final Context                               context;
-    private final NavUtilsWrapper                       navUtilsWrapper;
     private final AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider;
+    private final SyncAllServiceIntentProvider          syncAllIntentProvider;
     private final PlaybackServiceIntentProvider         playbackIntentProvider;
     private final SettingsActivityIntentProvider        settingsIntentProvider;
     private final PlaybackServiceFacadeProvider         facadeProvider;
@@ -30,15 +30,15 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
     private MenuItem                                    pause;
 
     public OptionsMenuManager(Context                               context,
-                              NavUtilsWrapper                       navUtilsWrapper,
                               AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider,
+                              SyncAllServiceIntentProvider          syncAllIntentProvider,
                               PlaybackServiceIntentProvider         playbackIntentProvider,
                               SettingsActivityIntentProvider        settingsIntentProvider,
                               PlaybackServiceFacadeProvider         facadeProvider)
     {
         this.context                       = context;
-        this.navUtilsWrapper               = navUtilsWrapper;
         this.addSubscriptionIntentProvider = addSubscriptionIntentProvider;
+        this.syncAllIntentProvider         = syncAllIntentProvider;
         this.playbackIntentProvider        = playbackIntentProvider;
         this.settingsIntentProvider        = settingsIntentProvider;
         this.facadeProvider                = facadeProvider;
@@ -67,7 +67,7 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                 context.startActivity(addSubscriptionIntentProvider.get());
                 return true;
             case R.id.item_update:
-                //
+                context.startService(syncAllIntentProvider.getSyncIntent());
                 return true;
             case R.id.item_settings:
                 context.startActivity(settingsIntentProvider.get());

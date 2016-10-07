@@ -171,6 +171,7 @@
         <service android:name=".service.playback.PlaybackService" />
         <service android:name=".service.FlattrService" />
         <service android:name=".service.feedsync.FeedSyncService" />
+        <service android:name=".service.syncall.SyncAllService" />
         <service android:name=".service.playlistdownload.PlaylistDownloadService" />
 
         <receiver
