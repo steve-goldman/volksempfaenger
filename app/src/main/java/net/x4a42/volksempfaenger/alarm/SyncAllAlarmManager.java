@@ -21,6 +21,14 @@ public class SyncAllAlarmManager
         this.pendingIntent = pendingIntent;
     }
 
+    public void scheduleIfFirstTime()
+    {
+        if (!preferences.isSyncAlarmScheduled())
+        {
+            reschedule();
+        }
+    }
+
     public void reschedule()
     {
         long interval = preferences.getSyncInterval();
@@ -36,5 +44,6 @@ public class SyncAllAlarmManager
                                          interval,
                                          interval,
                                          pendingIntent);
+        preferences.setSyncAlarmScheduled();
     }
 }

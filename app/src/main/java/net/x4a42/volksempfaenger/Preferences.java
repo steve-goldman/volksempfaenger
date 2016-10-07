@@ -35,7 +35,20 @@ public class Preferences
 
     public long getSyncInterval()
     {
-        return getInt(PreferenceKeys.DOWNLOAD_INTERVAL, context.getString(R.string.settings_default_download_interval));
+        return getInt(PreferenceKeys.DOWNLOAD_INTERVAL,
+                      context.getString(R.string.settings_default_download_interval));
+    }
+
+    public boolean isSyncAlarmScheduled()
+    {
+        return getBoolean(PreferenceKeys.SYNC_ALARM_SCHEDULED, false);
+    }
+
+    public void setSyncAlarmScheduled()
+    {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(PreferenceKeys.SYNC_ALARM_SCHEDULED, true);
+        editor.apply();
     }
 
     private boolean getBoolean(String key, String defaultValue)

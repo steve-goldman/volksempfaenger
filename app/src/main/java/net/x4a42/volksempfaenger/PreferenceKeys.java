@@ -18,4 +18,5 @@ public final class PreferenceKeys {
 	public static final String FLATTR_ACCESS_TOKEN = "flattr_access_token";
 	public static final String FLATTR_AUTO = "flattr_auto";
 	public static final String DOWNLOADED_QUEUE_COUNT = "downloaded_queue_count";
+	public static final String SYNC_ALARM_SCHEDULED = "sync_alarm_scheduled";
 }

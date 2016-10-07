@@ -2,7 +2,7 @@
 <!-- values not to be translated -->
 <resources>
 
-    <string name="settings_default_download_interval">0</string>
+    <string name="settings_default_download_interval">14400000</string>
     <string name="settings_default_download_auto">true</string>
     <string name="settings_default_download_wifi">true</string>
     <string name="settings_default_stream_wifi">false</string>
