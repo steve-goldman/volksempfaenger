@@ -42,8 +42,11 @@ public class Playlist
 
     public void setPlaying(boolean isPlaying)
     {
-        this.isPlaying  = isPlaying;
-        unsetSkipped(getCurrentEpisode());
+        if (isPlaying)
+        {
+            unsetSkipped(getCurrentEpisode());
+        }
+        this.isPlaying = isPlaying;
     }
 
     public boolean isPlaying()
