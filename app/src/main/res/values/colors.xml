@@ -7,8 +7,5 @@
     <color name="borderless_button_pressed">#ff33b5e5</color>
     <color name="borderless_button_focused">#ff0099cc</color>
     <color name="listview_item_background_activated">#aa33b5e5</color>
-    <color name="flattr_button">#FF8CB55B</color>
-    <color name="flattr_button_focused">#FF8CB55B</color>
-    <color name="flattr_button_pressed">#FFED8F24</color>
 
 </resources>

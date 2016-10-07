@@ -100,8 +100,6 @@
   <string name="menu_website">Verkkosivu</string>
   <string name="message_import_started">Tuonti aloitettiin…</string>
   <string name="settings_about_libraries">Kirjastot</string>
-  <string name="settings_summary_about_flattr">Tue Volksempfängerin kehitystä</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">pienennä</string>
   <string name="title_tab_playlist">Soittolistat</string>
   <string name="title_playlist_new">Uusi</string>
@@ -122,23 +120,6 @@
   <string name="button_retry">Yritä uudelleen</string>
   <string name="message_error_loading">Lataus epäonnistui</string>
   <string name="unknown_error_occured">tapahtui tuntematon virhe</string>
-  <string name="settings_summary_flattr">Flattr-asetukset</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Yhdistä Flattr-palveluun</string>
-  <string name="settings_summary_flattr_auth">Salli %s jaksosen tukemiseen Flattr-palvelussa</string>
-  <string name="flattr_connected_to">Yhdistetty &lt;b&gt;%s&lt;/b&gt; Flattr-palvelussa</string>
-  <string name="flattr_connecting">Yhdistetään…</string>
-  <string name="settings_flattr_auto">Tue automaattisesti Flattr-palvelussa</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Ei koskaan</item>
-    <item>Aloitetut jaksot</item>
-    <item>Loppuun toistetut jaksot</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Valtuutusvirhe</string>
-  <string name="message_error_flattr_authorization">Flattr-valtuutus epäonnistui</string>
-  <string name="title_flattr_no_account">Ei Flattr-tiliä</string>
-  <string name="message_flattr_no_account">Flattr-tili täytyy lisätä, pystyäksesi tukemaan jaksoja.</string>
   <string name="message_no_website">Ei verkkosivua</string>
   <string name="error_download_mobile_disabled">Lataaminen mobiiliverkossa on poissa käytöstä</string>
 </resources>

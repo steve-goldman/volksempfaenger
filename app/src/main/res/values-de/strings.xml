@@ -100,8 +100,6 @@
   <string name="menu_website">Website</string>
   <string name="message_import_started">Import gestartet…</string>
   <string name="settings_about_libraries">Libraries</string>
-  <string name="settings_summary_about_flattr">Unterstütze die Entwicklung von Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">einklappen</string>
   <string name="title_tab_playlist">Playlisten</string>
   <string name="title_playlist_new">Neu</string>
@@ -122,23 +120,6 @@
   <string name="button_retry">Erneut versuchen</string>
   <string name="message_error_loading">Laden fehlgeschlagen</string>
   <string name="unknown_error_occured">Ein unbekannter Fehler ist aufgetreten.</string>
-  <string name="settings_summary_flattr">Flattr Einstellungen</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Mit Flattr verbinden</string>
-  <string name="settings_summary_flattr_auth">%s erlauben Episode zu flattrn</string>
-  <string name="flattr_connected_to">Verbunden mit &lt;b&gt;%s&lt;/b&gt; auf Flattr</string>
-  <string name="flattr_connecting">Verbinde…</string>
-  <string name="settings_flattr_auto">Automatisch flattrn</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Nie</item>
-    <item>Begonnene Episoden</item>
-    <item>Beendete Episoden</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Authorisierungsfehler</string>
-  <string name="message_error_flattr_authorization">Flattr-Authorisierung fehlgeschlagen</string>
-  <string name="title_flattr_no_account">Kein Flattr-Account</string>
-  <string name="message_flattr_no_account">Du musst einen Flattr-Account hinzufügen, um Episoden flattrn zu können.</string>
   <string name="message_no_website">Keine Website</string>
   <string name="error_download_mobile_disabled">Herunterladen über das Mobilfunknetz ist deaktiviert</string>
   <string name="menu_select_all">Alle auswählen</string>

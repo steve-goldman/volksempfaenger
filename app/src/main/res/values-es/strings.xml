@@ -100,8 +100,6 @@
   <string name="menu_website">Sitio Web</string>
   <string name="message_import_started">Importación iniciada...</string>
   <string name="settings_about_libraries">Librerias</string>
-  <string name="settings_summary_about_flattr">Ayudar en el desarrollo de Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">contraer</string>
   <string name="title_tab_playlist">Listas de reproducción</string>
   <string name="title_playlist_new">Nuevo</string>
@@ -122,23 +120,6 @@
   <string name="button_retry">Reintentar</string>
   <string name="message_error_loading">Carga falló</string>
   <string name="unknown_error_occured">Un error desconocido a ocurrido.</string>
-  <string name="settings_summary_flattr">Configuración Flattr</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Conectar a Flattr</string>
-  <string name="settings_summary_flattr_auth">Permitir \"%s\" a episodios de flattr</string>
-  <string name="flattr_connected_to">Conectado a &lt;b&gt;%s&lt;/b&gt; en Flattr</string>
-  <string name="flattr_connecting">Conectando...</string>
-  <string name="settings_flattr_auto">Flattr automaticamente</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Nunca</item>
-    <item>Episodios iniciados</item>
-    <item>Episodios finalizados</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Error de autorización</string>
-  <string name="message_error_flattr_authorization">Autorización Flattr falló</string>
-  <string name="title_flattr_no_account">No cuenta Flattr</string>
-  <string name="message_flattr_no_account">Tiene que agregar su cuenta Flattr para episodios flattr</string>
   <string name="message_no_website">No pagina web</string>
   <string name="error_download_mobile_disabled">Descarga en red móvil desactivada</string>
   <string name="menu_select_all">Seleccionar todo</string>

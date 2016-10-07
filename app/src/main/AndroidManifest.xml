@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".VolksempfaengerApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -74,33 +73,13 @@
                 <data android:mimeType="application/xml" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.DebugActivity" />
         <activity
-            android:name=".ui.DeleteSubscriptionActivity"
-            android:label="@string/title_delete_subscription"
-            android:theme="@style/Theme.Dialog" />
-        <activity
-            android:name=".ui.ExternalStorageMissingActivity"
-            android:theme="@style/Theme.CriticalError" />
-        <activity
-            android:name=".ui.ImportFileActivity"
-            android:label="@string/import_to_volksempfaenger"
-            android:theme="@style/Theme.Dialog"
-            tools:ignore="ExportedActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:mimeType="application/xml" />
-                <data android:mimeType="text/xml" />
-                <data android:mimeType="text/x-opml" />
-            </intent-filter>
+            android:name=".ui.viewepisode.ViewEpisodeActivity"
+            android:parentActivityName=".ui.episodelist.EpisodeListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.episodelist.EpisodeListActivity" />
         </activity>
-        <activity
-            android:name=".ui.LicenseActivity"
-            android:theme="@android:style/Theme.Holo.DialogWhenLarge" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_settings"
@@ -111,32 +90,11 @@
                 android:value=".ui.main.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.ViewSubscriptionActivity"
-            android:parentActivityName=".ui.main.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.main.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.viewepisode.ViewEpisodeActivity"
-            android:parentActivityName=".ui.ViewSubscriptionActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ViewSubscriptionActivity" />
-        </activity>
-        <activity
             android:name=".ui.episodelist.EpisodeListActivity"
             android:parentActivityName=".ui.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.main.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.PlaylistActivity"
-            android:parentActivityName=".ui.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.DiscoverDetailActivity"
@@ -153,23 +111,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.AddSubscriptionActivity" />
         </activity>
-        <activity android:name=".ui.SettingsActivity$FlattrCallbackProxyActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="net.x4a42.volksempfaenger" />
-                <data android:host="callback.oauth.flattr" />
-            </intent-filter>
-        </activity>
-
-        <service android:name=".service.CleanCacheService" />
-        <service android:name=".service.DownloadService" />
-        <service android:name=".service.UpdateService" />
         <service android:name=".service.playback.PlaybackService" />
-        <service android:name=".service.FlattrService" />
         <service android:name=".service.feedsync.FeedSyncService" />
         <service android:name=".service.syncall.SyncAllService" />
         <service android:name=".service.playlistdownload.PlaylistDownloadService" />
@@ -190,26 +132,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receiver.DownloadNotificationClickedReceiver"
-            tools:ignore="ExportedReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".receiver.MediaButtonEventReceiver" />
-        <receiver
-            android:name=".receiver.BackgroundErrorReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="net.x4a42.volksempfaenger.BACKGROUND_ERROR" />
-            </intent-filter>
-        </receiver>
 
-        <provider
-            android:name=".data.VolksempfaengerContentProvider"
-            android:authorities="net.x4a42.volksempfaenger"
-            android:exported="false" />
     </application>
 
 </manifest>

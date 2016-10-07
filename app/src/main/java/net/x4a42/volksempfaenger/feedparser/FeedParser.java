@@ -275,16 +275,6 @@ public class FeedParser {
 					}
 					break;
 				case PAYMENT:
-					if (safePeek(Tag.ATOM_ENTRY) || safePeek(Tag.RSS_ITEM)) {
-						String url = atts.getValue(ATOM_ATTR_HREF);
-						try {
-							if (new URL(url).getHost().equals("flattr.com")) {
-								feedItem.flattrUrl = url;
-							}
-						} catch (MalformedURLException e) {
-							// ignore if url is malformed
-						}
-					}
 					break;
 				default:
 					break;

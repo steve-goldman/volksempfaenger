@@ -5,7 +5,6 @@ import android.os.Handler;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
-import net.x4a42.volksempfaenger.data.episode.EpisodeDataHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +16,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class BackgroundPositionSaverTest
 {
-    @Mock EpisodeDataHelper               episodeDataHelper;
     @Mock Handler                         handler;
     @Mock Episode                         episode;
     @Mock EpisodePositionDaoWrapper       episodePositionDao;

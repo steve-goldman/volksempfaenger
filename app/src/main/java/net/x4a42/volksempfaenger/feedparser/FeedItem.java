@@ -7,7 +7,7 @@ import java.util.List;
 public class FeedItem {
 	private static final String HMSPattern = "^(\\d+):(\\d+):(\\d+)$";
 	private static final String MSPattern  = "^(\\d+):(\\d+)$";
-	public String title, url, description, itemId, flattrUrl;
+	public String title, url, description, itemId;
 	public Feed feed;
 	public Date date;
 	public List<Enclosure> enclosures = new ArrayList<Enclosure>();
