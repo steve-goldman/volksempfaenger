@@ -100,8 +100,6 @@
   <string name="menu_website">Site web</string>
   <string name="message_import_started">Import commencé…</string>
   <string name="settings_about_libraries">Bibliothèques</string>
-  <string name="settings_summary_about_flattr">Soutenir le développement de Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">effondrement</string>
   <string name="title_tab_playlist">Playlists</string>
   <string name="title_playlist_new">Nouveau</string>
@@ -122,19 +120,4 @@
   <string name="button_retry">Recommencer</string>
   <string name="message_error_loading">Chargement échoué</string>
   <string name="unknown_error_occured">Une erreur inconnue s\'est produite</string>
-  <string name="settings_summary_flattr">Paramètres de Flattr</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Connecter à Flattr</string>
-  <string name="settings_summary_flattr_auth">Autoriser %s à rémunérer les créateurs avec Flattr </string>
-  <string name="flattr_connected_to">Connecté à &lt;b&gt;%s&lt;/b&gt; sur Flattr</string>
-  <string name="flattr_connecting">Connexion…</string>
-  <string name="settings_flattr_auto">Rémunérer par Flattr automatiquement</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Jamais</item>
-    <item>Épisodes commencés</item>
-    <item>Épisodes finis</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Erreur d\'authentification</string>
-  <string name="message_error_flattr_authorization">Authentification à Flattr échouée</string>
 </resources>

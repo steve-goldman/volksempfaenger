@@ -8,13 +8,5 @@
         android:fragment="net.x4a42.volksempfaenger.ui.SettingsActivity$StorageFragment"
         android:summary="@string/settings_summary_storage"
         android:title="@string/settings_storage" />
-    <header
-        android:fragment="net.x4a42.volksempfaenger.ui.FlattrSettingsFragment"
-        android:summary="@string/settings_summary_flattr"
-        android:title="@string/settings_flattr" />
-    <header
-        android:fragment="net.x4a42.volksempfaenger.ui.SettingsActivity$AboutFragment"
-        android:summary="@string/settings_summary_about"
-        android:title="@string/settings_about" />
 
 </preference-headers>

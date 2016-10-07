@@ -100,8 +100,6 @@
   <string name="menu_website">Página da web</string>
   <string name="message_import_started">Importação iniciada…</string>
   <string name="settings_about_libraries">Bibliotecas</string>
-  <string name="settings_summary_about_flattr">Contribuir com o desenvolvimento de Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">encolher</string>
   <string name="title_tab_playlist">Listas</string>
   <string name="title_playlist_new">Novos</string>
@@ -122,23 +120,6 @@
   <string name="button_retry">Tentar novamente</string>
   <string name="message_error_loading">Falha ao carregar</string>
   <string name="unknown_error_occured">Ocorreu um erro.</string>
-  <string name="settings_summary_flattr">Configurações do Flattr</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Conectar ao Flattr</string>
-  <string name="settings_summary_flattr_auth">Permitir que %s marque episódios no Flattr</string>
-  <string name="flattr_connected_to">Conectado a &lt;b&gt;%s&lt;/b&gt; no Flattr</string>
-  <string name="flattr_connecting">Conectando...</string>
-  <string name="settings_flattr_auto">Marcar automaticamente no Flattr</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Nunca</item>
-    <item>Episódios iniciados</item>
-    <item>Episódios finalizados</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Erro de Autorização</string>
-  <string name="message_error_flattr_authorization">Falha na autorização do Flattr</string>
-  <string name="title_flattr_no_account">Não há uma conta Flattr </string>
-  <string name="message_flattr_no_account">Para marcar episódios no Flattr é necessário que uma conta esteja conectada.</string>
   <string name="message_no_website">Não há página da web</string>
   <string name="error_download_mobile_disabled">O download pela rede móvel está desabilitado</string>
   <string name="menu_select_all">Selecionar todos</string>

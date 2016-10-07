@@ -1,21 +1,18 @@
 package net.x4a42.volksempfaenger.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.alarm.SyncAllAlarmManagerBuilder;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEvent;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcaster;
@@ -146,8 +143,8 @@ public class SettingsActivity extends PreferenceActivity
 
 			CharSequence storageLocation = prefLocation.getText();
 			if (storageLocation == null) {
-				storageLocation = VolksempfaengerApplication
-						.getDefaultStorageLocation();
+				storageLocation = Environment.getExternalStoragePublicDirectory(
+						Environment.DIRECTORY_PODCASTS).getAbsolutePath();
 			}
 			prefLocation.setSummary(storageLocation);
 
@@ -186,41 +183,6 @@ public class SettingsActivity extends PreferenceActivity
 			broadcaster.broadcast(new PreferenceChangedEvent());
 		}
 
-	}
-
-	public static class AboutFragment extends SettingsFragment {
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preference_about);
-
-			PreferenceScreen prefScreen = getPreferenceScreen();
-			VolksempfaengerApplication application = (VolksempfaengerApplication) getActivity()
-					.getApplication();
-
-			Preference version = prefScreen
-					.findPreference(PreferenceKeys.ABOUT_VERSION);
-			version.setSummary(application.getVersionName());
-		}
-
-	}
-
-	public static class FlattrCallbackProxyActivity extends Activity {
-		@Override
-		public void onStart() {
-			super.onStart();
-			Uri uri = getIntent().getData();
-			if (uri != null) {
-				Intent intent = new Intent(this, SettingsActivity.class);
-				intent.putExtra(EXTRA_SHOW_FRAGMENT,
-						FlattrSettingsFragment.class.getName());
-				Bundle bundle = new Bundle();
-				bundle.putString("callback", uri.toString());
-				intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle);
-				startActivity(intent);
-			}
-		}
 	}
 
 }

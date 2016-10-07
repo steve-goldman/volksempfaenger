@@ -6,8 +6,9 @@ import java.util.HashMap;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -63,7 +64,7 @@ public class SearchActivity extends Activity implements OnUpPressedCallback,
 		retryButton = (Button) findViewById(R.id.button_retry);
 		retryButton.setOnClickListener(this);
 
-		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
+		imageLoader = new ImageLoaderProvider(this).get();
 
 		// Get the intent, verify the action and get the query
 		Intent intent = getIntent();

@@ -1,24 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
-import net.x4a42.volksempfaenger.net.Downloader;
-import net.x4a42.volksempfaenger.ui.main.MainActivity;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
@@ -56,6 +37,24 @@ import android.widget.TextView.OnEditorActionListener;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
+import net.x4a42.volksempfaenger.net.Downloader;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddSubscriptionActivity extends Activity implements
 													  OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
@@ -114,7 +113,7 @@ public class AddSubscriptionActivity extends Activity implements
 		tagSpinner.setAdapter(tagAdapter);
 		tagSpinner.setOnItemSelectedListener(this);
 
-		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
+		imageLoader = new ImageLoaderProvider(this).get();
 
 		url = getToplistUrl();
 		loadPopularList();
@@ -299,15 +298,15 @@ public class AddSubscriptionActivity extends Activity implements
 
 	private void submitSearch() {
 		String text = searchEntry.getText().toString();
-		if (text.startsWith("http://") || text.startsWith("https://")) {
-			new AddFeedTask(getApplicationContext()).executeOnExecutor(
-					AsyncTask.THREAD_POOL_EXECUTOR, text);
-			finish();
-		} else {
+		//if (text.startsWith("http://") || text.startsWith("https://")) {
+		//	new AddFeedTask(getApplicationContext()).executeOnExecutor(
+		//			AsyncTask.THREAD_POOL_EXECUTOR, text);
+		//	finish();
+		//} else {
 			Intent intent = new Intent(this, SearchActivity.class);
 			intent.putExtra("query", text);
 			startActivity(intent);
-		}
+		//}
 	}
 
 	private void setLoading(boolean loading) {

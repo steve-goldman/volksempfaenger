@@ -53,10 +53,6 @@
             android:key="about_license"
             android:summary="@string/settings_summary_about_license"
             android:title="@string/settings_about_license" />
-        <Preference
-            android:key="about_flattr"
-            android:summary="@string/settings_summary_about_flattr"
-            android:title="@string/settings_about_flattr" />
     </PreferenceScreen>
 
 </PreferenceScreen>

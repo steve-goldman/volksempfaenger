@@ -1,15 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
-import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
-import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
-import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
-import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
-import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProviderBuilder;
-import net.x4a42.volksempfaenger.ui.OnUpPressedCallback;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -29,6 +19,15 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
+import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
+import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProviderBuilder;
+
 public class DiscoverDetailActivity extends Activity implements
 													 OnUpPressedCallback
 {
@@ -37,9 +36,7 @@ public class DiscoverDetailActivity extends Activity implements
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
 			.cacheOnDisc().imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
 			.build();
-	private ImageLoader imageLoader;
 	private String feedUrl;
-	private String title;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,7 @@ public class DiscoverDetailActivity extends Activity implements
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		imageLoader = ((VolksempfaengerApplication) getApplication()).imageLoader;
+		ImageLoader imageLoader = new ImageLoaderProvider(this).get();
 
 		TextView titleView = (TextView) findViewById(R.id.podcast_title);
 		TextView descriptionView = (TextView) findViewById(R.id.podcast_description);
@@ -57,7 +54,7 @@ public class DiscoverDetailActivity extends Activity implements
 		Button websiteButton = (Button) findViewById(R.id.button_website);
 
 		Intent intent = getIntent();
-		title = intent.getStringExtra(GpodderJsonReader.KEY_TITLE);
+		String title = intent.getStringExtra(GpodderJsonReader.KEY_TITLE);
 		String description = intent
 				.getStringExtra(GpodderJsonReader.KEY_DESCRIPTION);
 		String logo = intent.getStringExtra(GpodderJsonReader.KEY_SCALED_LOGO);

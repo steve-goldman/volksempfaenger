@@ -100,8 +100,6 @@
   <string name="menu_website">Sito web</string>
   <string name="message_import_started">Importazione iniziata...</string>
   <string name="settings_about_libraries">Librerie</string>
-  <string name="settings_summary_about_flattr">Supporta lo sviluppo di Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">riduci</string>
   <string name="title_tab_playlist">Liste di riproduzione</string>
   <string name="title_playlist_new">Nuovo</string>
@@ -122,23 +120,6 @@
   <string name="button_retry">Indietro</string>
   <string name="message_error_loading">Caricamento fallito</string>
   <string name="unknown_error_occured">È occorso un errore sconosciuto.</string>
-  <string name="settings_summary_flattr">Impostazioni di Flattr</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Connetti a Flattr</string>
-  <string name="settings_summary_flattr_auth">Permetti %s alle puntate di flattr</string>
-  <string name="flattr_connected_to">Connesso a &lt;b&gt;%s&lt;/b&gt; su Flattr</string>
-  <string name="flattr_connecting">In connessione...</string>
-  <string name="settings_flattr_auto">Flattr automaticamente</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Mai</item>
-    <item>Puntate in corso</item>
-    <item>Puntate terminate</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Errore di autorizzazione</string>
-  <string name="message_error_flattr_authorization">Autenticazione a Flattr fallita</string>
-  <string name="title_flattr_no_account">Nessun account Flattr</string>
-  <string name="message_flattr_no_account">Hai aggiunto il tuo account Flattr alle puntate flattr</string>
   <string name="message_no_website">Nessun sito web</string>
   <string name="error_download_mobile_disabled">Il download su rete mobile è disabilitato</string>
 </resources>

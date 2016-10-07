@@ -36,10 +36,4 @@
         android:layout_height="wrap_content"
         android:text="Start DownloadService" />
 
-    <Button
-        android:id="@+id/button_startflattr"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start FlattrService" />
-
 </LinearLayout>

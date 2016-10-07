@@ -1,25 +1,34 @@
 package net.x4a42.volksempfaenger.net;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import android.content.Context;
+import android.net.http.HttpResponseCache;
 
 import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
-import android.content.Context;
-import android.net.http.HttpResponseCache;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Downloader {
 	private static final int CONNECTION_TIMEOUT = 30000;
 
 	private Context context;
 	private static HttpResponseCache cache;
+	private String versionName;
 
 	public Downloader(Context context) {
 		this.context = context;
+		try
+		{
+			versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+		}
+		catch (Exception e)
+		{
+			versionName = "this-version";
+		}
 		initCache();
 	}
 
@@ -48,8 +57,7 @@ public class Downloader {
 
 	public String getUserAgent() {
 		String name = context.getString(R.string.app_name_ascii);
-		String version = VolksempfaengerApplication.getPackageInfo(context).versionName;
-		return String.format("%s/%s", name, version);
+		return String.format("%s/%s", name, versionName);
 	}
 
 	public HttpURLConnection getConnection(String url) throws IOException {

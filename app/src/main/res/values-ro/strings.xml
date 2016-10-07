@@ -100,8 +100,6 @@
   <string name="menu_website">Website</string>
   <string name="message_import_started">Import pornit...</string>
   <string name="settings_about_libraries">Biblioteci</string>
-  <string name="settings_summary_about_flattr">Susține dezvoltarea Volksempfänger</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">restrânge</string>
   <string name="title_tab_playlist">Liste de redare</string>
   <string name="title_playlist_new">Noutăți</string>
@@ -122,17 +120,4 @@
   <string name="button_retry">Reîncercare</string>
   <string name="message_error_loading">Încărcarea a eșuat</string>
   <string name="unknown_error_occured">S-a produs o eroare</string>
-  <string name="settings_summary_flattr">Setări Flattr</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Conectare la Flattr</string>
-  <string name="settings_summary_flattr_auth">Permite %s pentru episoade flattr</string>
-  <string name="flattr_connected_to">Conectat la &lt;b&gt;%s&lt;/b&gt; pe Flattr</string>
-  <string name="flattr_connecting">Conectare...</string>
-  <string name="settings_flattr_auto">Flattr automat</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Niciodată</item>
-    <item>Episoade începute</item>
-    <item>Episoade ascultate</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
 </resources>

@@ -114,8 +114,6 @@
     <string name="menu_website">Website</string>
     <string name="message_import_started">Import started…</string>
     <string name="settings_about_libraries">Libraries</string>
-    <string name="settings_summary_about_flattr">Support the development of Volksempfänger</string>
-    <string name="settings_about_flattr">Flattr</string>
     <string name="notification_collapse">collapse</string>
     <string name="title_tab_playlist">Playlist</string>
     <string name="title_playlist_new">New</string>
@@ -136,25 +134,6 @@
     <string name="button_retry">Retry</string>
     <string name="message_error_loading">Loading failed</string>
     <string name="unknown_error_occured">An unknown error occurred.</string>
-    <string name="settings_summary_flattr">Flattr settings</string>
-    <string name="settings_flattr">Flattr</string>
-    <string name="button_flattr_auth">Connect to Flattr</string>
-    <string name="settings_summary_flattr_auth">Allow %s to flattr episodes</string>
-    <string name="flattr_connected_to">Connected to &lt;b>%s&lt;/b> on Flattr</string>
-    <string name="flattr_connecting">Connecting…</string>
-    <string name="settings_flattr_auto">Flattr automatically</string>
-
-    <string-array name="settings_flattr_auto_choices">
-        <item>Never</item>
-        <item>Started episodes</item>
-        <item>Finished episodes</item>
-    </string-array>
-
-    <string name="button_flattr">Flattr</string>
-    <string name="title_error_flattr_authorization">Authorization Error</string>
-    <string name="message_error_flattr_authorization">Flattr authorization failed</string>
-    <string name="title_flattr_no_account">No Flattr account</string>
-    <string name="message_flattr_no_account">You have to add your Flattr account to flattr episodes.</string>
     <string name="message_no_website">No website</string>
     <string name="error_download_mobile_disabled">Downloading over mobile networks is disabled</string>
     <string name="menu_select_all">Select all</string>

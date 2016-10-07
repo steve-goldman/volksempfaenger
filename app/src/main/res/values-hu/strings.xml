@@ -100,8 +100,6 @@
   <string name="menu_website">Weboldal</string>
   <string name="message_import_started">Importálás…</string>
   <string name="settings_about_libraries">Könyvtárak</string>
-  <string name="settings_summary_about_flattr">Támogassa a Volksempfänger fejlesztését</string>
-  <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">összecsuk</string>
   <string name="title_tab_playlist">Listák</string>
   <string name="title_playlist_new">Új</string>
@@ -122,19 +120,6 @@
   <string name="button_retry">Ismét</string>
   <string name="message_error_loading">Betöltés sikertelen</string>
   <string name="unknown_error_occured">ismeretlen hiba történt.</string>
-  <string name="settings_summary_flattr">Flattr beállítások</string>
-  <string name="settings_flattr">Flattr</string>
-  <string name="button_flattr_auth">Flattr bejelentkezés</string>
-  <string name="flattr_connecting">Kapcsolódás…</string>
-  <string-array name="settings_flattr_auto_choices">
-    <item>Soha</item>
-    <item>Megkezdett epizódok</item>
-    <item>Befejezett epizódok</item>
-  </string-array>
-  <string name="button_flattr">Flattr</string>
-  <string name="title_error_flattr_authorization">Azonosítási hiba</string>
-  <string name="message_error_flattr_authorization">Flattr bejelentkezés sikertelen</string>
-  <string name="title_flattr_no_account">Nincs Flattr fiókja</string>
   <string name="message_no_website">Nincs weboldal</string>
   <string name="error_download_mobile_disabled">Nem engedélyezte a letöltést mobilhálózaton keresztül</string>
 </resources>

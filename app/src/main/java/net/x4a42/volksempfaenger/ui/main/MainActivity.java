@@ -19,7 +19,6 @@ import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManagerBuilder;
-import net.x4a42.volksempfaenger.ui.ExternalStorageHelper;
 import net.x4a42.volksempfaenger.ui.OnUpPressedCallback;
 import net.x4a42.volksempfaenger.ui.playlist.PlaylistFragment;
 import net.x4a42.volksempfaenger.ui.subscriptiongrid.SubscriptionGridFragment;
@@ -132,7 +131,6 @@ public class MainActivity extends Activity implements OnUpPressedCallback
 		super.onResume();
 		playbackEventReceiver.subscribe();
 		invalidateOptionsMenu();
-		ExternalStorageHelper.assertExternalStorageReadable(this);
 	}
 
 	@Override

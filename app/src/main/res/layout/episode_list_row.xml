@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:ignore="Overdraw" >
 
-    <net.x4a42.volksempfaenger.ui.PodcastLogoView
+    <ImageView
         android:id="@+id/podcast_logo"
         style="@style/PodcastLogo.Small"
         android:layout_alignParentLeft="true"
