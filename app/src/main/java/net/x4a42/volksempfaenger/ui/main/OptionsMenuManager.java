@@ -73,7 +73,6 @@ class OptionsMenuManager implements PlaybackServiceConnectionManager.Listener,
                 context.startActivity(settingsIntentProvider.get());
                 return true;
             case android.R.id.home:
-                navUtilsWrapper.navigateUpFromSameTask();
                 return true;
         }
         return false;
