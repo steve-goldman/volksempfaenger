@@ -39,6 +39,19 @@ public class Preferences
                       context.getString(R.string.settings_default_download_interval));
     }
 
+    public String getSyncIntervalStr(long interval)
+    {
+        String[] values = context.getResources().getStringArray(R.array.settings_interval_values);
+        for (int i = 0; i < values.length; i++)
+        {
+            if (interval == Integer.parseInt(values[i]))
+            {
+                return context.getResources().getStringArray(R.array.settings_interval_choices)[i];
+            }
+        }
+        return "";
+    }
+
     public boolean isSyncAlarmScheduled()
     {
         return getBoolean(PreferenceKeys.SYNC_ALARM_SCHEDULED, false);
