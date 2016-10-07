@@ -20,6 +20,8 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.ToastMaker;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventListener;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
@@ -28,7 +30,8 @@ class ListManager implements AdapterView.OnItemClickListener,
                              AbsListView.MultiChoiceModeListener,
                              DragSortListView.DropListener,
                              DragSortListView.RemoveListener,
-                             PlaybackEventListener
+                             PlaybackEventListener,
+                             EpisodeDownloadEventListener
 {
     private final Context                           context;
     private final ListAdapterProxy                  listAdapterProxy;
@@ -189,6 +192,16 @@ class ListManager implements AdapterView.OnItemClickListener,
 
     @Override
     public void onPlaybackEvent(PlaybackEvent playbackEvent)
+    {
+        listAdapterProxy.refresh();
+    }
+
+    //
+    // EpisodeDownloadEventListener
+    //
+
+    @Override
+    public void onEpisodeDownloadEvent(EpisodeDownloadEvent event)
     {
         listAdapterProxy.refresh();
     }

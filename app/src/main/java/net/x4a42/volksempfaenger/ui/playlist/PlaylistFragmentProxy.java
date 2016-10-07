@@ -4,24 +4,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiver;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 
 class PlaylistFragmentProxy
 {
-    private final ListManager           listManager;
-    private final PlaybackEventReceiver receiver;
+    private final ListManager                  listManager;
+    private final PlaybackEventReceiver        playbackEventReceiver;
+    private final EpisodeDownloadEventReceiver downloadEventReceiver;
 
-    public PlaylistFragmentProxy(ListManager           listManager,
-                                 PlaybackEventReceiver receiver)
+    public PlaylistFragmentProxy(ListManager                  listManager,
+                                 PlaybackEventReceiver        playbackEventReceiver,
+                                 EpisodeDownloadEventReceiver downloadEventReceiver)
     {
-        this.listManager = listManager;
-        this.receiver    = receiver;
+        this.listManager           = listManager;
+        this.playbackEventReceiver = playbackEventReceiver;
+        this.downloadEventReceiver = downloadEventReceiver;
     }
 
     public void onCreate()
     {
-        // TODO: set up options menu?
-        //fragment.setHasOptionsMenu(true);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -32,13 +34,15 @@ class PlaylistFragmentProxy
 
     public void onResume()
     {
-        receiver.subscribe();
+        playbackEventReceiver.subscribe();
+        downloadEventReceiver.subscribe();
         listManager.refresh();
     }
 
     public void onPause()
     {
-        receiver.unsubscribe();
+        playbackEventReceiver.unsubscribe();
+        downloadEventReceiver.unsubscribe();
         listManager.clear();
     }
 }
