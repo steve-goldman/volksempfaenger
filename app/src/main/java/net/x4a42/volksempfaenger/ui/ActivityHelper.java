@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.ui.settings.SettingsActivity;
 
 public class ActivityHelper {
 
