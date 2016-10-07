@@ -15,16 +15,6 @@ class PlaylistDownloadServiceProxy implements IntentParser.Listener
         this.playlistDownloadTaskProvider = playlistDownloadTaskProvider;
     }
 
-    public void onCreate()
-    {
-
-    }
-
-    public void onDestroy()
-    {
-
-    }
-
     public int onStartCommand(Intent intent)
     {
         intentParser.parse(intent);

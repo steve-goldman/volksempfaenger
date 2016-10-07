@@ -1,21 +1,21 @@
-package net.x4a42.volksempfaenger.service.playlistdownload;
+package net.x4a42.volksempfaenger.service.syncall;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-public class PlaylistDownloadService extends Service
+public class SyncAllService extends Service
 {
-    private static final String ActionPrefix = "net.x4a42.volksempfaenger.intent.playlistdownload.";
-    public static final  String ActionRun    = ActionPrefix + "RUN";
-    private PlaylistDownloadServiceProxy proxy;
+    private static final String ActionPrefix = "net.x4a42.volksempfaenger.intent.syncall.";
+    public static final  String ActionSync   = ActionPrefix + "SYNC";
+    private SyncAllServiceProxy proxy;
 
     @Override
     public void onCreate()
     {
         super.onCreate();
-        proxy = new PlaylistDownloadServiceProxyBuilder().build(this);
+        proxy = new SyncAllServiceProxyBuilder().build(this);
     }
 
     @Override

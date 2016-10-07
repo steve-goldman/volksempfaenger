@@ -10,4 +10,9 @@ public class PendingIntentBuilder
     {
         return PendingIntent.getService(context, requestCode, intent, flags);
     }
+
+    public PendingIntent buildBroadcast(Context context, int requestCode, Intent intent, int flags)
+    {
+        return PendingIntent.getBroadcast(context, requestCode, intent, flags);
+    }
 }

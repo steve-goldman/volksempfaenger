@@ -34,18 +34,6 @@ public class FeedSyncServiceProxyTest
     }
 
     @Test
-    public void onCreate() throws Exception
-    {
-        proxy.onCreate();
-    }
-
-    @Test
-    public void onDestroy() throws Exception
-    {
-        proxy.onDestroy();
-    }
-
-    @Test
     public void onStartCommand() throws Exception
     {
         int value = proxy.onStartCommand(intent);
