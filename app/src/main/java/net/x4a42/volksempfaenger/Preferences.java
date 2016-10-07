@@ -33,6 +33,11 @@ public class Preferences
                       context.getResources().getInteger(R.integer.default_downloaded_queue_count));
     }
 
+    public long getSyncInterval()
+    {
+        return getInt(PreferenceKeys.DOWNLOAD_INTERVAL, context.getString(R.string.settings_default_download_interval));
+    }
+
     private boolean getBoolean(String key, String defaultValue)
     {
         return getBoolean(key, Boolean.valueOf(defaultValue));
@@ -41,6 +46,11 @@ public class Preferences
     private boolean getBoolean(String key, boolean defaultValue)
     {
         return preferences.getBoolean(key, defaultValue);
+    }
+
+    private int getInt(String key, String defaultValue)
+    {
+        return getInt(key, Integer.parseInt(defaultValue));
     }
 
     private int getInt(String key, int defaultValue)

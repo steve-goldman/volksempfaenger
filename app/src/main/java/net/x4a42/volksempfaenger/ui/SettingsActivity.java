@@ -16,6 +16,7 @@ import android.preference.PreferenceScreen;
 import net.x4a42.volksempfaenger.PreferenceKeys;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.alarm.SyncAllAlarmManagerBuilder;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEvent;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcaster;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcasterBuilder;
@@ -104,6 +105,7 @@ public class SettingsActivity extends PreferenceActivity
 				SharedPreferences sharedPreferences, String key) {
 			if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
 				prefInterval.setSummary(prefInterval.getEntry().toString());
+				new SyncAllAlarmManagerBuilder().build(getActivity()).reschedule();
 			}
 			else if (key.equals(PreferenceKeys.DOWNLOAD_WIFI))
 			{

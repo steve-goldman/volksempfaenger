@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 
+import net.x4a42.volksempfaenger.Log;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
@@ -28,6 +29,7 @@ class SyncAllServiceProxy implements IntentParser.Listener
 
     public int onStartCommand(Intent intent)
     {
+        Log.d(this, "initiating sync all");
         intentParser.parse(intent);
         return Service.START_NOT_STICKY;
     }

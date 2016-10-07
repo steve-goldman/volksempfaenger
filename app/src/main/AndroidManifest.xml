@@ -175,8 +175,7 @@
         <service android:name=".service.playlistdownload.PlaylistDownloadService" />
 
         <receiver
-            android:name=".receiver.BootCompletedReceiver"
-            tools:ignore="ExportedReceiver" >
+            android:name=".receiver.bootcompleted.BootCompletedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
