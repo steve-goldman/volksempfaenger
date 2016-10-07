@@ -16,13 +16,12 @@ public class FeedSyncService extends Service
     {
         super.onCreate();
         proxy = new FeedSyncServiceProxyBuilder().build(this);
-        proxy.onCreate();
     }
 
     @Override
     public void onDestroy()
     {
-        proxy.onDestroy();
+        super.onDestroy();
         proxy = null;
     }
 

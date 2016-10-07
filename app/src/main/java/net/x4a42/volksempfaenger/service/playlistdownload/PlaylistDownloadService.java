@@ -16,13 +16,12 @@ public class PlaylistDownloadService extends Service
     {
         super.onCreate();
         proxy = new PlaylistDownloadServiceProxyBuilder().build(this);
-        proxy.onCreate();
     }
 
     @Override
     public void onDestroy()
     {
-        proxy.onDestroy();
+        super.onDestroy();
         proxy = null;
     }
 

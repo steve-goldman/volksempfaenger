@@ -17,16 +17,6 @@ class FeedSyncServiceProxy implements IntentParser.Listener
         this.taskProvider = taskProvider;
     }
 
-    public void onCreate()
-    {
-
-    }
-
-    public void onDestroy()
-    {
-
-    }
-
     public int onStartCommand(Intent intent)
     {
         intentParser.parse(intent);
