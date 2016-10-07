@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
 import net.x4a42.volksempfaenger.misc.DateFormatter;
@@ -68,7 +69,13 @@ class ListViewHolder
 
     private void setEpisodeDate()
     {
-        episodeDateView.setText(dateFormatter.format(episode.getPubDate()));
+        String text = dateFormatter.format(episode.getPubDate());
+        // TODO: make this its own view element
+        if (episode.getDuration() > 0)
+        {
+            text += " " + Utils.formatTimeFriendly((int) episode.getDuration());
+        }
+        episodeDateView.setText(text);
     }
 
     private void setLogo()

@@ -20,7 +20,8 @@ public class EpisodeDaoWrapper
                           String  episodeUrl,
                           String  title,
                           String  description,
-                          long    pubDate)
+                          long    pubDate,
+                          long    duration)
     {
         Episode episode = provider.get();
         episode.setPodcast(podcast);
@@ -28,6 +29,7 @@ public class EpisodeDaoWrapper
         episode.setTitle(title);
         episode.setDescription(description);
         episode.setPubDate(pubDate);
+        episode.setDuration(duration);
         dao.insert(episode);
         episode.getPodcast().resetEpisodes();
         return episode;
@@ -36,11 +38,13 @@ public class EpisodeDaoWrapper
     public void update(Episode episode,
                        String  title,
                        String  description,
-                       long    pubDate)
+                       long    pubDate,
+                       long    duration)
     {
         episode.setTitle(title);
         episode.setDescription(description);
         episode.setPubDate(pubDate);
+        episode.setDuration(duration);
         dao.update(episode);
     }
 

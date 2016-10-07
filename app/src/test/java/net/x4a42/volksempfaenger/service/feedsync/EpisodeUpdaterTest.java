@@ -40,13 +40,15 @@ public class EpisodeUpdaterTest
         feedItem.description = "my-description";
         feedItem.url         = "my-url";
         feedItem.date        = new Date();
+        feedItem.duration    = 1000;
         feedItem.enclosures.add(feedEnclosure1);
         feedItem.enclosures.add(feedEnclosure2);
         Mockito.when(episodeDao.insert(podcast,
                                        feedItem.url,
                                        feedItem.title,
                                        feedItem.description,
-                                       feedItem.date.getTime()))
+                                       feedItem.date.getTime(),
+                                       feedItem.duration))
                .thenReturn(episode);
         Mockito.when(podcast.getEpisodes()).thenReturn(episodes);
         episodeUpdater       = new EpisodeUpdater(episodeDao, playlist, enclosureUpdater);
@@ -60,7 +62,8 @@ public class EpisodeUpdaterTest
                                           feedItem.url,
                                           feedItem.title,
                                           feedItem.description,
-                                          feedItem.date.getTime());
+                                          feedItem.date.getTime(),
+                                          feedItem.duration);
         Mockito.verify(playlist).addEpisode(episode);
     }
 
@@ -73,7 +76,8 @@ public class EpisodeUpdaterTest
                                           feedItem.url,
                                           feedItem.title,
                                           feedItem.description,
-                                          feedItem.date.getTime());
+                                          feedItem.date.getTime(),
+                                          feedItem.duration);
         Mockito.verify(playlist).addEpisode(episode);
     }
 
@@ -85,7 +89,8 @@ public class EpisodeUpdaterTest
                                           feedItem.url,
                                           feedItem.title,
                                           feedItem.description,
-                                          feedItem.date.getTime());
+                                          feedItem.date.getTime(),
+                                          feedItem.duration);
         Mockito.verify(playlist, Mockito.never()).addEpisode(episode);
     }
 
@@ -97,6 +102,7 @@ public class EpisodeUpdaterTest
         Mockito.verify(episodeDao).update(episode,
                                           feedItem.title,
                                           feedItem.description,
-                                          feedItem.date.getTime());
+                                          feedItem.date.getTime(),
+                                          feedItem.duration);
     }
 }

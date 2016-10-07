@@ -42,6 +42,8 @@ public class Episode
 
     private Long pubDate;
 
+    private long duration;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -50,15 +52,16 @@ public class Episode
     @Generated(hash = 494421999)
     private transient EpisodeDao myDao;
 
-    @Generated(hash = 611928901)
+    @Generated(hash = 1833104106)
     public Episode(Long _id, long podcastId, String episodeUrl, String title,
-            String description, Long pubDate) {
+            String description, Long pubDate, long duration) {
         this._id = _id;
         this.podcastId = podcastId;
         this.episodeUrl = episodeUrl;
         this.title = title;
         this.description = description;
         this.pubDate = pubDate;
+        this.duration = duration;
     }
 
     @Generated(hash = 1336866052)
@@ -113,6 +116,14 @@ public class Episode
         this.pubDate = pubDate;
     }
 
+    public long getDuration() {
+        return this.duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     @Generated(hash = 86411217)
     private transient Long podcast__resolvedKey;
 
@@ -150,6 +161,34 @@ public class Episode
     }
 
     /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 1033180182)
+    public List<Enclosure> getEnclosures() {
+        if (enclosures == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            EnclosureDao targetDao = daoSession.getEnclosureDao();
+            List<Enclosure> enclosuresNew = targetDao._queryEpisode_Enclosures(_id);
+            synchronized (this) {
+                if(enclosures == null) {
+                    enclosures = enclosuresNew;
+                }
+            }
+        }
+        return enclosures;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 1844152894)
+    public synchronized void resetEnclosures() {
+        enclosures = null;
+    }
+
+    /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
      * Entity must attached to an entity context.
      */
@@ -183,34 +222,6 @@ public class Episode
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.update(this);
-    }
-
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 1033180182)
-    public List<Enclosure> getEnclosures() {
-        if (enclosures == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            EnclosureDao targetDao = daoSession.getEnclosureDao();
-            List<Enclosure> enclosuresNew = targetDao._queryEpisode_Enclosures(_id);
-            synchronized (this) {
-                if(enclosures == null) {
-                    enclosures = enclosuresNew;
-                }
-            }
-        }
-        return enclosures;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 1844152894)
-    public synchronized void resetEnclosures() {
-        enclosures = null;
     }
 
     /** called by internal mechanisms, do not call yourself. */

@@ -48,7 +48,8 @@ class EpisodeUpdater
                                                        feedItem.getUrl(),
                                                        feedItem.title,
                                                        feedItem.description,
-                                                       feedItem.date.getTime());
+                                                       feedItem.date.getTime(),
+                                                       feedItem.duration);
 
         if (!firstSync || !anyPodcastEpisodes)
         {
@@ -60,7 +61,11 @@ class EpisodeUpdater
 
     private void updateEpisode(Episode episode, FeedItem feedItem)
     {
-        episodeDao.update(episode, feedItem.title, feedItem.description, feedItem.date.getTime());
+        episodeDao.update(episode,
+                          feedItem.title,
+                          feedItem.description,
+                          feedItem.date.getTime(),
+                          feedItem.duration);
     }
 
     private void insertOrUpdateEnclosures(Episode episode, FeedItem feedItem)
