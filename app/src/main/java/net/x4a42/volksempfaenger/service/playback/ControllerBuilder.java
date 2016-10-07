@@ -10,6 +10,8 @@ import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolverBuilder;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.event.connectivitychanged.ConnectivityChangedEventReceiver;
+import net.x4a42.volksempfaenger.event.connectivitychanged.ConnectivityChangedEventReceiverBuilder;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcaster;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcasterBuilder;
 import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventReceiver;
@@ -31,6 +33,9 @@ class ControllerBuilder
         ConnectivityStatus        connectivityStatus         = new ConnectivityStatusBuilder().build(context);
         Preferences               preferences                = new PreferencesBuilder().build(context);
 
+        ConnectivityChangedEventReceiver connectivityChangedEventReceiver
+                = new ConnectivityChangedEventReceiverBuilder().build();
+
         PreferenceChangedEventReceiver preferenceChangedEventReceiver
                 = new PreferenceChangedEventReceiverBuilder().build();
 
@@ -42,6 +47,7 @@ class ControllerBuilder
                                  episodePositionDao,
                                  pathResolver,
                                  connectivityStatus,
+                                 connectivityChangedEventReceiver,
                                  preferences,
                                  preferenceChangedEventReceiver);
 
@@ -50,6 +56,7 @@ class ControllerBuilder
         audioFocusManager.setListener(controller);
         audioBecomingNoisyManager.setListener(controller);
         audioBecomingNoisyManager.start();
+        connectivityChangedEventReceiver.setListener(controller);
         preferenceChangedEventReceiver.setListener(controller);
 
         return controller;

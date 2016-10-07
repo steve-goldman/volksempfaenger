@@ -7,6 +7,7 @@ import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePosition;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.event.connectivitychanged.ConnectivityChangedEventReceiver;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcaster;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
@@ -24,21 +25,22 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTest
 {
-    @Mock PlaybackEventBroadcaster       playbackEventBroadcaster;
-    @Mock MediaPlayer                    mediaPlayer;
-    @Mock AudioFocusManager              audioFocusManager;
-    @Mock AudioBecomingNoisyManager      audioBecomingNoisyManager;
-    @Mock Episode                        playbackEpisode;
-    @Mock EpisodePosition                episodePosition;
-    @Mock PlaybackEventListener          playbackEventListener;
-    @Mock EpisodePositionDaoWrapper      episodePositionDao;
-    @Mock EpisodePathResolver            pathResolver;
-    @Mock ConnectivityStatus             connectivityStatus;
-    @Mock Preferences                    preferences;
-    @Mock PreferenceChangedEventReceiver preferenceChangedEventReceiver;
-    String                               url                       = "this-is-my-url";
-    int                                  seekToPosition            = 123;
-    Controller                           controller;
+    @Mock PlaybackEventBroadcaster         playbackEventBroadcaster;
+    @Mock MediaPlayer                      mediaPlayer;
+    @Mock AudioFocusManager                audioFocusManager;
+    @Mock AudioBecomingNoisyManager        audioBecomingNoisyManager;
+    @Mock Episode                          playbackEpisode;
+    @Mock EpisodePosition                  episodePosition;
+    @Mock PlaybackEventListener            playbackEventListener;
+    @Mock EpisodePositionDaoWrapper        episodePositionDao;
+    @Mock EpisodePathResolver              pathResolver;
+    @Mock ConnectivityStatus               connectivityStatus;
+    @Mock ConnectivityChangedEventReceiver connectivityChangedEventReceiver;
+    @Mock Preferences                      preferences;
+    @Mock PreferenceChangedEventReceiver   preferenceChangedEventReceiver;
+    String                                 url                       = "this-is-my-url";
+    int                                    seekToPosition            = 123;
+    Controller                             controller;
 
     @Before
     public void setUp() throws Exception
@@ -53,6 +55,7 @@ public class ControllerTest
                                                 episodePositionDao,
                                                 pathResolver,
                                                 connectivityStatus,
+                                                connectivityChangedEventReceiver,
                                                 preferences,
                                                 preferenceChangedEventReceiver)
                                          .setListener(playbackEventListener));

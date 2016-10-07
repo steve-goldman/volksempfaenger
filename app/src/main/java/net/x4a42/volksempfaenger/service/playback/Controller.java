@@ -6,6 +6,8 @@ import net.x4a42.volksempfaenger.Preferences;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.episode.EpisodePathResolver;
 import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoWrapper;
+import net.x4a42.volksempfaenger.event.connectivitychanged.ConnectivityChangedEventListener;
+import net.x4a42.volksempfaenger.event.connectivitychanged.ConnectivityChangedEventReceiver;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventBroadcaster;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
@@ -26,45 +28,49 @@ class Controller implements MediaPlayer.OnPreparedListener,
                             AudioFocusManager.Listener,
                             AudioBecomingNoisyManager.Listener,
                             PlaybackPositionProvider,
-                            PreferenceChangedEventListener
+                            PreferenceChangedEventListener,
+                            ConnectivityChangedEventListener
 {
     public static final float FullVolume    = 1.0f;
     public static final float DuckedVolume  = 0.1f;
 
-    private final PlaybackEventBroadcaster       playbackEventBroadcaster;
-    private final MediaPlayer                    mediaPlayer;
-    private final AudioFocusManager              audioFocusManager;
-    private final AudioBecomingNoisyManager      audioBecomingNoisyManager;
-    private final EpisodePositionDaoWrapper      episodePositionDao;
-    private final EpisodePathResolver            pathResolver;
-    private final ConnectivityStatus             connectivityStatus;
-    private final Preferences                    preferences;
-    private final PreferenceChangedEventReceiver preferenceChangedEventReceiver;
-    private PlaybackEventListener                playbackEventListener;
-    private Episode                              playbackEpisode;
-    private boolean                              inTransientLoss;
-    private boolean                              isPrepared;
-    private boolean                              isStreaming;
+    private final PlaybackEventBroadcaster         playbackEventBroadcaster;
+    private final MediaPlayer                      mediaPlayer;
+    private final AudioFocusManager                audioFocusManager;
+    private final AudioBecomingNoisyManager        audioBecomingNoisyManager;
+    private final EpisodePositionDaoWrapper        episodePositionDao;
+    private final EpisodePathResolver              pathResolver;
+    private final ConnectivityStatus               connectivityStatus;
+    private final ConnectivityChangedEventReceiver connectivityChangedEventReceiver;
+    private final Preferences                      preferences;
+    private final PreferenceChangedEventReceiver   preferenceChangedEventReceiver;
+    private PlaybackEventListener                  playbackEventListener;
+    private Episode                                playbackEpisode;
+    private boolean                                inTransientLoss;
+    private boolean                                isPrepared;
+    private boolean                                isStreaming;
 
-    public Controller(PlaybackEventBroadcaster       playbackEventBroadcaster,
-                      MediaPlayer                    mediaPlayer,
-                      AudioFocusManager              audioFocusManager,
-                      AudioBecomingNoisyManager      audioBecomingNoisyManager,
-                      EpisodePositionDaoWrapper      episodePositionDao,
-                      EpisodePathResolver            pathResolver,
-                      ConnectivityStatus             connectivityStatus,
-                      Preferences                    preferences,
-                      PreferenceChangedEventReceiver preferenceChangedEventReceiver)
+    public Controller(PlaybackEventBroadcaster         playbackEventBroadcaster,
+                      MediaPlayer                      mediaPlayer,
+                      AudioFocusManager                audioFocusManager,
+                      AudioBecomingNoisyManager        audioBecomingNoisyManager,
+                      EpisodePositionDaoWrapper        episodePositionDao,
+                      EpisodePathResolver              pathResolver,
+                      ConnectivityStatus               connectivityStatus,
+                      ConnectivityChangedEventReceiver connectivityChangedEventReceiver,
+                      Preferences                      preferences,
+                      PreferenceChangedEventReceiver   preferenceChangedEventReceiver)
     {
-        this.playbackEventBroadcaster       = playbackEventBroadcaster;
-        this.mediaPlayer                    = mediaPlayer;
-        this.audioFocusManager              = audioFocusManager;
-        this.audioBecomingNoisyManager      = audioBecomingNoisyManager;
-        this.episodePositionDao             = episodePositionDao;
-        this.pathResolver                   = pathResolver;
-        this.connectivityStatus             = connectivityStatus;
-        this.preferences                    = preferences;
-        this.preferenceChangedEventReceiver = preferenceChangedEventReceiver;
+        this.playbackEventBroadcaster         = playbackEventBroadcaster;
+        this.mediaPlayer                      = mediaPlayer;
+        this.audioFocusManager                = audioFocusManager;
+        this.audioBecomingNoisyManager        = audioBecomingNoisyManager;
+        this.episodePositionDao               = episodePositionDao;
+        this.pathResolver                     = pathResolver;
+        this.connectivityStatus               = connectivityStatus;
+        this.connectivityChangedEventReceiver = connectivityChangedEventReceiver;
+        this.preferences                      = preferences;
+        this.preferenceChangedEventReceiver   = preferenceChangedEventReceiver;
     }
 
     public Controller setListener(PlaybackEventListener playbackEventListener)
@@ -124,6 +130,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
                 return;
             }
             isStreaming = true;
+            connectivityChangedEventReceiver.subscribe();
             preferenceChangedEventReceiver.subscribe();
         }
 
@@ -162,6 +169,7 @@ class Controller implements MediaPlayer.OnPreparedListener,
 
         if (isStreaming)
         {
+            connectivityChangedEventReceiver.unsubscribe();
             preferenceChangedEventReceiver.unsubscribe();
             isStreaming = false;
         }
@@ -276,12 +284,34 @@ class Controller implements MediaPlayer.OnPreparedListener,
     @Override
     public void onPreferenceChanged()
     {
-        System.out.println("ON PREFERENCE CHANGED!");
+        checkStreamingPlayback();
+    }
+
+    //
+    // ConnectivityChangedEventListener
+    //
+
+    @Override
+    public void onConnectivityChanged()
+    {
+        checkStreamingPlayback();
     }
 
     //
     // helper methods
     //
+
+    private void checkStreamingPlayback()
+    {
+        if (preferences.streamWifiOnly() && !connectivityStatus.isWifiConnected())
+        {
+            if (isPlaying())
+            {
+                pause();
+            }
+            stop();
+        }
+    }
 
     private void callListeners(PlaybackEvent playbackEvent)
     {

@@ -185,6 +185,11 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.connectivitychange.ConnectivityChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".receiver.DownloadNotificationClickedReceiver"
             tools:ignore="ExportedReceiver" >
