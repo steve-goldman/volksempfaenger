@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.ui.MainActivity;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
 import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
 
 class PlaybackNotificationBuilder
@@ -89,8 +89,16 @@ class PlaybackNotificationBuilder
             content.setImageViewResource(R.id.pause, R.drawable.ic_notification_play);
             content.setOnClickPendingIntent(
                     R.id.pause,
-                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(playbackEpisode), 0));
+                    PendingIntent.getService(context, 0, intentProvider.getPlayIntent(), 0));
         }
+
+        content.setOnClickPendingIntent(
+                R.id.next,
+                PendingIntent.getService(context, 0, intentProvider.getNextIntent(), 0));
+
+        content.setOnClickPendingIntent(
+                R.id.skip,
+                PendingIntent.getService(context, 0, intentProvider.getSkipIntent(), 0));
 
         content.setOnClickPendingIntent(
                 R.id.collapse, PendingIntent.getService(context, 0, intentProvider.getStopIntent(), 0));

@@ -17,6 +17,8 @@ import net.x4a42.volksempfaenger.Utils;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import net.x4a42.volksempfaenger.net.Downloader;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
@@ -56,7 +58,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class AddSubscriptionActivity extends Activity implements
-		OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
+													  OnUpPressedCallback, OnItemClickListener, OnFocusChangeListener,
 		OnEditorActionListener, OnClickListener, OnItemSelectedListener,
 		TextWatcher {
 
@@ -177,7 +179,6 @@ public class AddSubscriptionActivity extends Activity implements
 	@Override
 	public void onUpPressed() {
 		Intent intent = NavUtils.getParentActivityIntent(this);
-		intent.putExtra("tag", MainActivity.TAG_SUBSCRIPTIONS);
 		NavUtils.navigateUpTo(this, intent);
 	}
 

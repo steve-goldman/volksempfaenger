@@ -21,10 +21,16 @@ public class Preferences
                           context.getString(R.string.settings_default_download_wifi));
     }
 
-    public boolean downloadChargingOnly()
+    public boolean streamWifiOnly()
     {
-        return getBoolean(PreferenceKeys.DOWNLOAD_CHARGING,
-                          context.getString(R.string.settings_default_download_charging));
+        return getBoolean(PreferenceKeys.STREAM_WIFI,
+                          context.getString(R.string.settings_default_stream_wifi));
+    }
+
+    public int getDownloadedQueueCount()
+    {
+        return getInt(PreferenceKeys.DOWNLOADED_QUEUE_COUNT,
+                      context.getResources().getInteger(R.integer.default_downloaded_queue_count));
     }
 
     private boolean getBoolean(String key, String defaultValue)
@@ -35,5 +41,10 @@ public class Preferences
     private boolean getBoolean(String key, boolean defaultValue)
     {
         return preferences.getBoolean(key, defaultValue);
+    }
+
+    private int getInt(String key, int defaultValue)
+    {
+        return Integer.parseInt(preferences.getString(key, "" + defaultValue));
     }
 }

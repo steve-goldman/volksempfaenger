@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +36,8 @@ public class PlaybackServiceProxyTest
     @Mock Intent                             intent;
     @Mock Episode                            episode;
     @Mock Uri                                otherEpisodeUri;
+    @Mock Playlist                           playlist;
+    @Mock EpisodeDownloadEventReceiver       episodeDownloadEventReceiver;
     PlaybackServiceProxy                     proxy;
 
     @Before
@@ -45,10 +50,13 @@ public class PlaybackServiceProxyTest
                                          mediaButtonReceiver,
                                          mediaSessionManager,
                                          notificationManager,
-                                         notificationBuilder));
+                                         notificationBuilder,
+                                         playlist,
+                                         episodeDownloadEventReceiver));
 
         Mockito.when(notificationBuilder.build(episode, true)).thenReturn(notificationPlaying);
         Mockito.when(notificationBuilder.build(episode, false)).thenReturn(notificationPaused);
+        Mockito.when(playlist.getCurrentEpisode()).thenReturn(episode);
     }
 
     @Test
@@ -60,50 +68,46 @@ public class PlaybackServiceProxyTest
     }
 
     @Test
-    public void onPlayNoEpisodeNoneOpen() throws Exception
+    public void onPlayEmptyPlaylist() throws Exception
     {
-        proxy.onPlay(null);
+        Mockito.when(playlist.isEmpty()).thenReturn(true);
 
-        Mockito.verify(controller, Mockito.never()).open(episode);
+        proxy.onPlay();
 
-        // TODO: check episode status is EPISODE_STATE_LISTENING
+        Mockito.verify(controller, Mockito.never()).play();
+        Mockito.verify(controller, Mockito.never()).open(Mockito.any(Episode.class));
     }
 
     @Test
-    public void onPlayPlayingNoneOrOther() throws Exception
+    public void onPlayNotOpen() throws Exception
     {
-        proxy.onPlay(episode);
+        proxy.onPlay();
 
-        Mockito.verify(positionSaver).stop(false);
+        Mockito.verify(controller, Mockito.never()).play();
         Mockito.verify(controller).open(episode);
-
-        // TODO: check episode status is EPISODE_STATE_LISTENING
     }
 
     @Test
-    public void onPlayPlayingSamePlaying() throws Exception
+    public void onPlayOpenNotPlaying() throws Exception
+    {
+        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
+
+        proxy.onPlay();
+
+        Mockito.verify(controller).play();
+        Mockito.verify(controller, Mockito.never()).open(Mockito.any(Episode.class));
+    }
+
+    @Test
+    public void onPlayOpenPlaying() throws Exception
     {
         Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
         Mockito.when(controller.isPlaying()).thenReturn(true);
 
-        proxy.onPlay(episode);
+        proxy.onPlay();
 
         Mockito.verify(controller, Mockito.never()).play();
-
-        // TODO: check episode status is EPISODE_STATE_LISTENING
-    }
-
-    @Test
-    public void onPlayPlayingSamePaused() throws Exception
-    {
-        Mockito.when(controller.isPlaybackEpisodeOpen(episode)).thenReturn(true);
-        Mockito.when(controller.isPlaying()).thenReturn(false);
-
-        proxy.onPlay(episode);
-
-        Mockito.verify(controller).play();
-
-        // TODO: check episode status is EPISODE_STATE_LISTENING
+        Mockito.verify(controller, Mockito.never()).open(Mockito.any(Episode.class));
     }
 
     @Test
@@ -131,8 +135,7 @@ public class PlaybackServiceProxyTest
     {
         proxy.onPlayPause();
 
-        Mockito.verify(controller).isOpen();
-        Mockito.verifyNoMoreInteractions(controller);
+        Mockito.verify(proxy).onPlay();
     }
 
     @Test
@@ -142,7 +145,7 @@ public class PlaybackServiceProxyTest
 
         proxy.onPlayPause();
 
-        Mockito.verify(controller).play();
+        Mockito.verify(proxy).onPlay();
     }
 
     @Test
@@ -240,7 +243,8 @@ public class PlaybackServiceProxyTest
         proxy.onPlaybackEvent(PlaybackEvent.PLAYING);
         proxy.onPlaybackEvent(PlaybackEvent.PAUSED);
 
-        Mockito.verify(notificationManager).notify(PlaybackServiceProxy.NotificationId, notificationPaused);
+        Mockito.verify(notificationManager).notify(PlaybackServiceProxy.NotificationId,
+                                                   notificationPaused);
         Mockito.verify(positionSaver).stop(false);
     }
 
@@ -254,5 +258,6 @@ public class PlaybackServiceProxyTest
 
         Mockito.verify(notificationManager).cancel(PlaybackServiceProxy.NotificationId);
         Mockito.verify(positionSaver).stop(true);
+        Mockito.verify(proxy).onPlay();
     }
 }

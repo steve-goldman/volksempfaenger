@@ -28,23 +28,11 @@ class EnclosureUpdater
 
     private void insertEnclosure(Episode episode, net.x4a42.volksempfaenger.feedparser.Enclosure feedEnclosure)
     {
-        Enclosure enclosure = enclosureDao.newEnclosure(episode, feedEnclosure.url);
-
-        updateCommonFields(enclosure, feedEnclosure);
-
-        enclosureDao.insert(enclosure);
+        enclosureDao.insert(episode, feedEnclosure.url, feedEnclosure.mime, feedEnclosure.size);
     }
 
     private void updateEnclosure(Enclosure enclosure, net.x4a42.volksempfaenger.feedparser.Enclosure feedEnclosure)
     {
-        updateCommonFields(enclosure, feedEnclosure);
-
-        enclosureDao.update(enclosure);
-    }
-
-    private void updateCommonFields(Enclosure enclosure, net.x4a42.volksempfaenger.feedparser.Enclosure feedEnclosure)
-    {
-        enclosure.setMimeType(feedEnclosure.mime);
-        enclosure.setSize(feedEnclosure.size);
+        enclosureDao.update(enclosure, feedEnclosure.mime, feedEnclosure.size);
     }
 }

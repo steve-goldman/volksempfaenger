@@ -2,24 +2,23 @@ package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
+import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProviderBuilder;
-import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManagerBuilder;
 
 class GridManagerBuilder
 {
     public GridManager build(Context context)
     {
-        GridViewManager gridViewManager
-                = new GridViewManagerBuilder().build(context);
-
-        GridAdapter gridAdapter
-                = new GridAdapterBuilder().build(context, gridViewManager);
+        GridAdapterProxy gridAdapterProxy
+                = new GridAdapterProxyBuilder().build(context);
 
         EpisodeListActivityIntentProvider intentProvider
                 = new EpisodeListActivityIntentProviderBuilder().build(context);
 
-        return new GridManager(context, gridAdapter, gridViewManager, intentProvider);
+        PodcastDaoWrapper podcastDao = new PodcastDaoBuilder().build(context);
+
+        return new GridManager(context, gridAdapterProxy, intentProvider, podcastDao);
     }
 }

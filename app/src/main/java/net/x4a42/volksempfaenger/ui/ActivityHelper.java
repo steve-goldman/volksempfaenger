@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import net.x4a42.volksempfaenger.Constants;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.ui.OnUpPressedCallback;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;

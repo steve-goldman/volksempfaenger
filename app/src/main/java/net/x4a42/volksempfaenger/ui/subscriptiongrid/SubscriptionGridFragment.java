@@ -53,15 +53,4 @@ public class SubscriptionGridFragment extends Fragment
         proxy = null;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        proxy.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        return proxy.onOptionsItemSelected(item);
-    }
 }

@@ -2,30 +2,19 @@ package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProvider;
-
-class SubscriptionGridFragmentProxy implements OptionsMenuManager.Listener
+class SubscriptionGridFragmentProxy
 {
-    private final Fragment                              fragment;
-    private final GridManager                           gridManager;
-    private final OptionsMenuManager                    menuManager;
-    private final AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider;
+    private final Fragment    fragment;
+    private final GridManager gridManager;
 
-    public SubscriptionGridFragmentProxy(Fragment                              fragment,
-                                         GridManager                           gridManager,
-                                         OptionsMenuManager                    menuManager,
-                                         AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider)
+    public SubscriptionGridFragmentProxy(Fragment    fragment,
+                                         GridManager gridManager)
     {
-        this.fragment                      = fragment;
-        this.gridManager                   = gridManager;
-        this.menuManager                   = menuManager;
-        this.addSubscriptionIntentProvider = addSubscriptionIntentProvider;
+        this.fragment    = fragment;
+        this.gridManager = gridManager;
     }
 
     public void onCreate()
@@ -50,32 +39,6 @@ class SubscriptionGridFragmentProxy implements OptionsMenuManager.Listener
     }
 
     public void onDestroy()
-    {
-
-    }
-
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        menuManager.onCreateOptionsMenu(menu, inflater);
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        return menuManager.onOptionsItemSelected(item);
-    }
-
-    //
-    // OptionsMenuManager.Listener
-    //
-
-    @Override
-    public void onAddSubscription()
-    {
-        fragment.startActivity(addSubscriptionIntentProvider.get());
-    }
-
-    @Override
-    public void onUpdateSubscriptions()
     {
 
     }

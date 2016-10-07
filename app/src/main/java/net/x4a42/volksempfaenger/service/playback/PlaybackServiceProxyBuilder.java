@@ -3,6 +3,11 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.app.NotificationManager;
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.data.playlist.PlaylistProvider;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiver;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiverBuilder;
+
 class PlaybackServiceProxyBuilder
 {
     public PlaybackServiceProxy build(PlaybackService service)
@@ -13,7 +18,7 @@ class PlaybackServiceProxyBuilder
         BackgroundPositionSaver positionSaver
                 = new BackgroundPositionSaverBuilder().build(service, controller);
 
-        IntentParser intentParser = new IntentParserBuilder().build(service);
+        IntentParser intentParser = new IntentParser();
 
         MediaButtonReceiver mediaButtonReceiver
                 = new MediaButtonReceiverBuilder().build(service);
@@ -27,6 +32,11 @@ class PlaybackServiceProxyBuilder
         PlaybackNotificationBuilder playbackNotificationBuilder
                 = new PlaybackNotificationBuilder(service);
 
+        Playlist playlist = new PlaylistProvider(service).get();
+
+        EpisodeDownloadEventReceiver episodeDownloadEventReceiver
+                = new EpisodeDownloadEventReceiverBuilder().build();
+
         PlaybackServiceProxy proxy
                 = new PlaybackServiceProxy(positionSaver,
                                            controller,
@@ -34,10 +44,13 @@ class PlaybackServiceProxyBuilder
                                            mediaButtonReceiver,
                                            mediaSessionManager,
                                            notificationManager,
-                                           playbackNotificationBuilder);
+                                           playbackNotificationBuilder,
+                                           playlist,
+                                           episodeDownloadEventReceiver);
 
         controller.setListener(proxy);
         intentParser.setListener(proxy);
+        episodeDownloadEventReceiver.setListener(proxy);
 
         return proxy;
     }

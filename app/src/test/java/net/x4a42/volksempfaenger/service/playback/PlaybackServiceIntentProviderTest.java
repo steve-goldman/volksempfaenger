@@ -3,8 +3,6 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.content.Intent;
 import android.net.Uri;
 
-import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +17,6 @@ public class PlaybackServiceIntentProviderTest
 {
     @Mock PlaybackServiceIntentFactory  intentFactory;
     @Mock Intent                        createdIntent;
-    @Mock Episode                       episode;
-    Long                                episodeId = 158L;
     PlaybackServiceIntentProvider       intentProvider;
 
     @Before
@@ -31,17 +27,15 @@ public class PlaybackServiceIntentProviderTest
         Mockito.when(createdIntent.setData(Mockito.any(Uri.class))).thenReturn(createdIntent);
         Mockito.when(createdIntent.putExtra(Mockito.anyString(), Mockito.anyInt())).thenReturn(createdIntent);
         Mockito.when(createdIntent.putExtra(Mockito.anyString(), Mockito.any(Long.class))).thenReturn(createdIntent);
-        Mockito.when(episode.get_id()).thenReturn(episodeId);
         intentProvider = new PlaybackServiceIntentProvider(intentFactory);
     }
 
     @Test
     public void getPlayIntent() throws Exception
     {
-        Intent intent     = intentProvider.getPlayIntent(episode);
+        Intent intent     = intentProvider.getPlayIntent();
 
         Mockito.verify(intentFactory).create(PlaybackService.ActionPlay);
-        Mockito.verify(createdIntent).putExtra(PlaybackServiceIntentProvider.EpisodeIdKey, episodeId);
         assertEquals(createdIntent, intent);
     }
 

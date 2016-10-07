@@ -7,10 +7,13 @@ class FeedSyncServiceProxyBuilder
         IntentParser intentParser
                 = new IntentParserBuilder().build(service);
 
-        FeedSyncTaskBuilder taskBuilder
-                = new FeedSyncTaskBuilder();
+        FeedSyncTaskProxyBuilder taskProxyBuilder
+                = new FeedSyncTaskProxyBuilder(service);
 
-        FeedSyncServiceProxy proxy = new FeedSyncServiceProxy(service, intentParser, taskBuilder);
+        FeedSyncTaskProvider taskProvider
+                = new FeedSyncTaskProvider(service, taskProxyBuilder);
+
+        FeedSyncServiceProxy proxy = new FeedSyncServiceProxy(intentParser, taskProvider);
 
         intentParser.setListener(proxy);
 

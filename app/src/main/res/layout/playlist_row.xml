@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@color/listview_item_background"
+                android:orientation="vertical"
+                tools:ignore="Overdraw" >
+
+    <ImageView
+        android:id="@id/drag_handle"
+        android:background="@drawable/drag_handle"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/podcast_logo"
+        style="@style/PodcastLogo.Small"
+        android:layout_toRightOf="@id/drag_handle"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/episode_title"
+        style="@android:style/TextAppearance.Holo.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_large"
+        android:layout_marginTop="@dimen/padding_small"
+        android:layout_toRightOf="@id/podcast_logo"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-condensed"
+        android:scrollHorizontally="true"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/episode_date"
+        style="@android:style/TextAppearance.Holo.Small.Inverse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/episode_title"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:layout_marginRight="@dimen/padding_medium"
+        android:layout_toRightOf="@id/podcast_logo"
+        android:paddingBottom="@dimen/padding_small"
+        android:singleLine="true" />
+
+    <ImageView
+        android:id="@+id/badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/badge_episode_new" />
+
+</RelativeLayout>

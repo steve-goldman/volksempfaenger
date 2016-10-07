@@ -53,9 +53,7 @@ class Presenter
 
     private String getDurationString()
     {
-        // TODO: how to get duration into the data model?
-        int duration = 0;
-        return duration > 0 ? Utils.formatTime(duration) : "unknown duration";
+        return episode.getDuration() > 0 ? Utils.formatTimeFriendly((int) episode.getDuration()) : "unknown duration";
     }
 
     private String getDownloadedString()

@@ -6,10 +6,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
+import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
 
@@ -25,6 +26,8 @@ class ControlButtonsManager implements PlaybackEventListener,
     private ImageButton                            rewindButton;
     private ImageButton                            playPauseButton;
     private ImageButton                            fastForwardButton;
+    private ImageButton                            nextButton;
+    private ImageButton                            skipButton;
 
     public ControlButtonsManager(PlaybackEventReceiver            playbackEventReceiver,
                                  PlaybackServiceIntentProvider    intentProvider,
@@ -47,10 +50,14 @@ class ControlButtonsManager implements PlaybackEventListener,
         rewindButton      = (ImageButton)  view.findViewById(R.id.back);
         playPauseButton   = (ImageButton)  view.findViewById(R.id.pause);
         fastForwardButton = (ImageButton)  view.findViewById(R.id.forward);
+        nextButton        = (ImageButton)  view.findViewById(R.id.next);
+        skipButton        = (ImageButton)  view.findViewById(R.id.skip);
 
         rewindButton.setOnClickListener(this);
         playPauseButton.setOnClickListener(this);
         fastForwardButton.setOnClickListener(this);
+        nextButton.setOnClickListener(this);
+        skipButton.setOnClickListener(this);
 
         setNotPlaying();
     }
@@ -68,6 +75,15 @@ class ControlButtonsManager implements PlaybackEventListener,
     public void onResume()
     {
         playbackEventReceiver.subscribe();
+        PlaybackServiceFacade facade = facadeProvider.getFacade();
+        if (facade != null && facade.isPlaying())
+        {
+            setPlaying();
+        }
+        else
+        {
+            setNotPlaying();
+        }
     }
 
     public void onPause()
@@ -112,6 +128,14 @@ class ControlButtonsManager implements PlaybackEventListener,
         else if (fastForwardButton.equals(v))
         {
             handleFastForwardClicked(v.getContext());
+        }
+        else if (nextButton.equals(v))
+        {
+            handleNext(v.getContext());
+        }
+        else if (skipButton.equals(v))
+        {
+            handleSkip(v.getContext());
         }
     }
 
@@ -161,6 +185,16 @@ class ControlButtonsManager implements PlaybackEventListener,
     private void handleFastForwardClicked(Context context)
     {
         context.startService(intentProvider.getMoveIntent(offset));
+    }
+
+    private void handleNext(Context context)
+    {
+        context.startService(intentProvider.getNextIntent());
+    }
+
+    private void handleSkip(Context context)
+    {
+        context.startService(intentProvider.getSkipIntent());
     }
 
 }

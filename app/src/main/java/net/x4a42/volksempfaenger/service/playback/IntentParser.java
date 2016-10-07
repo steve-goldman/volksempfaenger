@@ -3,28 +3,22 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.content.Intent;
 
 import net.x4a42.volksempfaenger.Log;
-import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDaoWrapper;
 
 class IntentParser
 {
     public interface Listener
     {
-        void onPlay(Episode episode);
+        void onPlay();
         void onPause();
         void onPlayPause();
         void onStop();
         void onSeek(int position);
         void onMove(int offset);
+        void onNext();
+        void onSkip();
     }
 
-    private final EpisodeDaoWrapper episodeDao;
     private Listener listener;
-
-    public IntentParser(EpisodeDaoWrapper episodeDao)
-    {
-        this.episodeDao = episodeDao;
-    }
 
     public IntentParser setListener(Listener listener)
     {
@@ -53,7 +47,7 @@ class IntentParser
         switch (action)
         {
             case PlaybackService.ActionPlay:
-                handlePlay(intent);
+                handlePlay();
                 break;
             case PlaybackService.ActionPause:
                 handlePause();
@@ -70,17 +64,21 @@ class IntentParser
             case PlaybackService.ActionMove:
                 handleMove(intent);
                 break;
+            case PlaybackService.ActionNext:
+                handleNext();
+                break;
+            case PlaybackService.ActionSkip:
+                handleSkip();
+                break;
             default:
                 Log.e(this, String.format("unexpected action:%s", action));
                 break;
         }
     }
 
-    private void handlePlay(Intent intent)
+    private void handlePlay()
     {
-        long    episodeId = intent.getLongExtra(PlaybackServiceIntentProvider.EpisodeIdKey, -1);
-        Episode episode   = episodeDao.getById(episodeId);
-        listener.onPlay(episode);
+        listener.onPlay();
     }
 
     private void handlePause()
@@ -108,5 +106,15 @@ class IntentParser
     {
         int offset = intent.getIntExtra(PlaybackServiceIntentProvider.OffsetKey, 0);
         listener.onMove(offset);
+    }
+
+    private void handleNext()
+    {
+        listener.onNext();
+    }
+
+    private void handleSkip()
+    {
+        listener.onSkip();
     }
 }

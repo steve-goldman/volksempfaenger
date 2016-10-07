@@ -3,6 +3,9 @@ package net.x4a42.volksempfaenger.service.playback;
 import android.content.Context;
 import android.media.session.MediaSession;
 
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
+
 class MediaSessionManagerBuilder
 {
     public MediaSessionManager build(Context context)

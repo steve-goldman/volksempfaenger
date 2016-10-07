@@ -31,8 +31,9 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     // jsoup HTML parser library @ http://jsoup.org/
     compile 'org.jsoup:jsoup:1.9.2'
+    compile 'asia.ivity.android:drag-sort-listview:1.0'
 }
 
 greendao {
-    schemaVersion 2
+    schemaVersion 5
 }

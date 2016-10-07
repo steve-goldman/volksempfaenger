@@ -2,8 +2,6 @@ package net.x4a42.volksempfaenger.service.playback;
 
 import android.content.Intent;
 
-import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-
 /*
     Use this class if you want to create an intent to send to the PlaybackService
     to make it play, pause, or stop.
@@ -11,7 +9,6 @@ import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 
 public class PlaybackServiceIntentProvider
 {
-    public static final String                 EpisodeIdKey = "episodeId";
     public static final String                 PositionKey  = "position";
     public static final String                 OffsetKey    = "offset";
     private final PlaybackServiceIntentFactory intentFactory;
@@ -21,10 +18,9 @@ public class PlaybackServiceIntentProvider
         this.intentFactory = intentFactory;
     }
 
-    public Intent getPlayIntent(Episode episode)
+    public Intent getPlayIntent()
     {
-        return intentFactory.create(PlaybackService.ActionPlay)
-                            .putExtra(EpisodeIdKey, episode.get_id());
+        return intentFactory.create(PlaybackService.ActionPlay);
     }
 
     public Intent getPauseIntent()
@@ -55,5 +51,15 @@ public class PlaybackServiceIntentProvider
     public Intent getBindIntent()
     {
         return intentFactory.create();
+    }
+
+    public Intent getNextIntent()
+    {
+        return intentFactory.create(PlaybackService.ActionNext);
+    }
+
+    public Intent getSkipIntent()
+    {
+        return intentFactory.create(PlaybackService.ActionSkip);
     }
 }

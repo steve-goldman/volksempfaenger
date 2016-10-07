@@ -13,6 +13,8 @@ public class PlaybackService extends Service
     public static final  String ActionStop      = ActionPrefix + "STOP";
     public static final  String ActionSeek      = ActionPrefix + "SEEK";
     public static final  String ActionMove      = ActionPrefix + "MOVE";
+    public static final  String ActionNext      = ActionPrefix + "NEXT";
+    public static final  String ActionSkip      = ActionPrefix + "SKIP";
 
     private PlaybackServiceProxy proxy;
 
@@ -21,6 +23,7 @@ public class PlaybackService extends Service
     {
         super.onCreate();
         proxy = new PlaybackServiceProxyBuilder().build(this);
+        proxy.onCreate();
     }
 
     @Override

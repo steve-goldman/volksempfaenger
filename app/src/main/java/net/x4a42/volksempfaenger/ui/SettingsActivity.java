@@ -1,12 +1,5 @@
 package net.x4a42.volksempfaenger.ui;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import net.x4a42.volksempfaenger.PreferenceKeys;
-import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.VolksempfaengerApplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,9 +10,20 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.text.InputType;
-import android.widget.EditText;
+
+import net.x4a42.volksempfaenger.PreferenceKeys;
+import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.VolksempfaengerApplication;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEvent;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcaster;
+import net.x4a42.volksempfaenger.event.preferencechanged.PreferenceChangedEventBroadcasterBuilder;
+import net.x4a42.volksempfaenger.service.playlistdownload.PlaylistDownloadServiceIntentProviderBuilder;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 public class SettingsActivity extends PreferenceActivity
 {
@@ -52,20 +56,16 @@ public class SettingsActivity extends PreferenceActivity
 
 		private PreferenceScreen prefScreen;
 		private ListPreference prefInterval;
+		private PreferenceChangedEventBroadcaster broadcaster;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			broadcaster = new PreferenceChangedEventBroadcasterBuilder().build();
 			addPreferencesFromResource(R.xml.preference_download);
 			prefScreen = getPreferenceScreen();
 			prefInterval = (ListPreference) prefScreen
 					.findPreference(PreferenceKeys.DOWNLOAD_INTERVAL);
-
-			// TODO(#113) Use NumberPicker instead
-			EditText concurrentEditText = ((EditTextPreference) prefScreen
-					.findPreference(PreferenceKeys.DOWNLOAD_CONCURRENT))
-					.getEditText();
-			concurrentEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		}
 
 		@Override
@@ -105,6 +105,12 @@ public class SettingsActivity extends PreferenceActivity
 			if (key.equals(PreferenceKeys.DOWNLOAD_INTERVAL)) {
 				prefInterval.setSummary(prefInterval.getEntry().toString());
 			}
+			else if (key.equals(PreferenceKeys.DOWNLOAD_WIFI))
+			{
+				Intent intent = new PlaylistDownloadServiceIntentProviderBuilder().build(getActivity()).getRunIntent();
+				getActivity().startService(intent);
+			}
+			broadcaster.broadcast(new PreferenceChangedEvent());
 		}
 
 	}
@@ -114,14 +120,22 @@ public class SettingsActivity extends PreferenceActivity
 
 		private PreferenceScreen prefScreen;
 		private EditTextPreference prefLocation;
+		private EditTextPreference prefQueueCount;
+		private PreferenceChangedEventBroadcaster broadcaster;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			broadcaster = new PreferenceChangedEventBroadcasterBuilder().build();
+			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+			editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, "");
+			editor.apply();
 			addPreferencesFromResource(R.xml.preference_storage);
 			prefScreen = getPreferenceScreen();
 			prefLocation = (EditTextPreference) prefScreen
 					.findPreference(PreferenceKeys.STORAGE_LOCATION);
+			prefQueueCount = (EditTextPreference) prefScreen
+					.findPreference(PreferenceKeys.DOWNLOADED_QUEUE_COUNT);
 		}
 
 		@Override
@@ -147,11 +161,27 @@ public class SettingsActivity extends PreferenceActivity
 		}
 
 		@Override
-		public void onSharedPreferenceChanged(
-				SharedPreferences sharedPreferences, String key) {
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 			if (key.equals(PreferenceKeys.STORAGE_LOCATION)) {
 				prefLocation.setSummary(prefLocation.getText());
 			}
+			else if (key.equals(PreferenceKeys.DOWNLOADED_QUEUE_COUNT))
+			{
+				try
+				{
+					//noinspection ResultOfMethodCallIgnored
+					Integer.parseInt(prefQueueCount.getText());
+				}
+				catch (NumberFormatException e)
+				{
+					String text = "" + getResources().getInteger(R.integer.default_downloaded_queue_count);
+					SharedPreferences.Editor editor = sharedPreferences.edit();
+					editor.putString(PreferenceKeys.DOWNLOADED_QUEUE_COUNT, text);
+					editor.apply();
+					prefQueueCount.setText(text);
+				}
+			}
+			broadcaster.broadcast(new PreferenceChangedEvent());
 		}
 
 	}

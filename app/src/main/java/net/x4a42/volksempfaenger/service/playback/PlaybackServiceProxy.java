@@ -7,8 +7,14 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+import net.x4a42.volksempfaenger.data.playlist.Playlist;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventListener;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventReceiver;
 
-class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener
+class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listener, EpisodeDownloadEventListener
 {
     public static final int                          NotificationId = 0x59d54313;
     private final BackgroundPositionSaver            positionSaver;
@@ -18,6 +24,8 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     private final MediaSessionManager                mediaSessionManager;
     private final NotificationManager                notificationManager;
     private final PlaybackNotificationBuilder        notificationBuilder;
+    private final Playlist                           playlist;
+    private final EpisodeDownloadEventReceiver       episodeDownloadEventReceiver;
 
     public PlaybackServiceProxy(BackgroundPositionSaver            positionSaver,
                                 Controller                         controller,
@@ -25,15 +33,24 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
                                 MediaButtonReceiver                mediaButtonReceiver,
                                 MediaSessionManager                mediaSessionManager,
                                 NotificationManager                notificationManager,
-                                PlaybackNotificationBuilder        notificationBuilder)
+                                PlaybackNotificationBuilder        notificationBuilder,
+                                Playlist                           playlist,
+                                EpisodeDownloadEventReceiver       episodeDownloadEventReceiver)
     {
-        this.positionSaver              = positionSaver;
-        this.controller                 = controller;
-        this.intentParser               = intentParser;
-        this.mediaButtonReceiver        = mediaButtonReceiver;
-        this.mediaSessionManager        = mediaSessionManager;
-        this.notificationManager        = notificationManager;
-        this.notificationBuilder        = notificationBuilder;
+        this.positionSaver                = positionSaver;
+        this.controller                   = controller;
+        this.intentParser                 = intentParser;
+        this.mediaButtonReceiver          = mediaButtonReceiver;
+        this.mediaSessionManager          = mediaSessionManager;
+        this.notificationManager          = notificationManager;
+        this.notificationBuilder          = notificationBuilder;
+        this.playlist                     = playlist;
+        this.episodeDownloadEventReceiver = episodeDownloadEventReceiver;
+    }
+
+    public void onCreate()
+    {
+        episodeDownloadEventReceiver.subscribe();
     }
 
     public int onStartCommand(Intent intent)
@@ -48,12 +65,14 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
 
     public void onDestroy()
     {
+        episodeDownloadEventReceiver.unsubscribe();
         controller.destroy();
         mediaButtonReceiver.destroy();
         if (mediaSessionManager != null)
         {
             mediaSessionManager.destroy();
         }
+        playlist.setPlaying(false);
     }
 
     public IBinder onBind()
@@ -83,20 +102,26 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     }
 
     @Override
-    public void onPlay(Episode episode)
+    public void onPlay()
     {
+        if (playlist.isEmpty())
+        {
+            return;
+        }
+
+        Episode episode = playlist.getCurrentEpisode();
+
         if (controller.isPlaybackEpisodeOpen(episode))
         {
             if (!controller.isPlaying())
             {
                 controller.play();
             }
+            return;
         }
-        else
-        {
-            positionSaver.stop(false);
-            controller.open(episode);
-        }
+
+        positionSaver.stop(false);
+        controller.open(episode);
     }
 
     @Override
@@ -111,18 +136,13 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
     @Override
     public void onPlayPause()
     {
-        if (!controller.isOpen())
-        {
-            return;
-        }
-
-        if (controller.isPlaying())
+        if (controller.isOpen() && controller.isPlaying())
         {
             controller.pause();
         }
         else
         {
-            controller.play();
+            onPlay();
         }
     }
 
@@ -152,22 +172,56 @@ class PlaybackServiceProxy implements PlaybackEventListener, IntentParser.Listen
         }
     }
 
+    @Override
+    public void onNext()
+    {
+        // same behavior as if the episode ended
+        handleEnded();
+    }
+
+    @Override
+    public void onSkip()
+    {
+        notificationManager.cancel(NotificationId);
+        positionSaver.stop(false);
+        playlist.episodeSkipped();
+        onPlay();
+    }
+
+    @Override
+    public void onEpisodeDownloadEvent(EpisodeDownloadEvent event)
+    {
+        if (!controller.isPlaybackEpisodeOpen(event.getEpisode()))
+        {
+            return;
+        }
+
+        notificationManager.cancel(NotificationId);
+        positionSaver.stop(false);
+        controller.stop();
+        onPlay();
+    }
+
     private void handlePlaying()
     {
         updateNotification(true);
         positionSaver.start(controller.getPlaybackEpisode());
+        playlist.setPlaying(true);
     }
 
     private void handlePaused()
     {
         updateNotification(false);
         positionSaver.stop(false);
+        playlist.setPlaying(false);
     }
 
     private void handleEnded()
     {
         notificationManager.cancel(NotificationId);
         positionSaver.stop(true);
+        playlist.episodeEnded();
+        onPlay();
     }
 
     private void updateNotification(boolean isPlaying)

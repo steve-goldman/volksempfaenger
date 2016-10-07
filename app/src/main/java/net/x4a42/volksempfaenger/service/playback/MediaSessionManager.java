@@ -4,6 +4,10 @@ import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
 
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+
 class MediaSessionManager implements PlaybackEventListener
 {
     private final MediaSession          mediaSession;

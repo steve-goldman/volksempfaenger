@@ -1,10 +1,18 @@
 package net.x4a42.volksempfaenger.data.entity.podcast;
 
+import net.x4a42.volksempfaenger.data.entity.episode.Episode;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
+import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.Unique;
 import org.greenrobot.greendao.annotation.Generated;
+
+import java.util.List;
+import org.greenrobot.greendao.DaoException;
+import net.x4a42.volksempfaenger.data.entity.enclosure.DaoSession;
+import net.x4a42.volksempfaenger.data.entity.episode.EpisodeDao;
 
 @Entity
 public class Podcast
@@ -15,6 +23,9 @@ public class Podcast
     @NotNull
     @Unique
     private String feedUrl;
+
+    @ToMany(referencedJoinProperty = "podcastId")
+    private List<Episode> episodes;
 
     private String title;
 
@@ -29,6 +40,14 @@ public class Podcast
     private Long httpLastModified;
 
     private Long httpEtag;
+
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+
+    /** Used for active entity operations. */
+    @Generated(hash = 1372568415)
+    private transient PodcastDao myDao;
 
     @Generated(hash = 445536486)
     public Podcast(Long _id, @NotNull String feedUrl, String title,
@@ -119,5 +138,76 @@ public class Podcast
 
     public void setHttpEtag(Long httpEtag) {
         this.httpEtag = httpEtag;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 15381845)
+    public List<Episode> getEpisodes() {
+        if (episodes == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            EpisodeDao targetDao = daoSession.getEpisodeDao();
+            List<Episode> episodesNew = targetDao._queryPodcast_Episodes(_id);
+            synchronized (this) {
+                if(episodes == null) {
+                    episodes = episodesNew;
+                }
+            }
+        }
+        return episodes;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 1306836270)
+    public synchronized void resetEpisodes() {
+        episodes = null;
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 1942392019)
+    public void refresh() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.refresh(this);
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 713229351)
+    public void update() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.update(this);
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 655073716)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getPodcastDao() : null;
     }
 }

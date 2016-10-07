@@ -5,6 +5,7 @@
     <string name="settings_default_download_interval">0</string>
     <string name="settings_default_download_auto">true</string>
     <string name="settings_default_download_wifi">true</string>
+    <string name="settings_default_stream_wifi">false</string>
     <string name="settings_default_download_charging">false</string>
     <string name="settings_default_download_concurrent">1</string>
     <string name="settings_default_flattr_auto">0</string>
@@ -43,5 +44,7 @@
 
     <integer name="image_loader_memory_cache_size">1048576</integer>
     <integer name="image_loader_disk_cache_size">20971520</integer>
+
+    <integer name="default_downloaded_queue_count">20</integer>
 
 </resources>

@@ -6,7 +6,7 @@ import android.view.View;
 
 import net.x4a42.volksempfaenger.R;
 
-public class EpisodeListActivityProxy
+class EpisodeListActivityProxy
 {
     private final Activity        activity;
     private final ListManager     listManager;

@@ -2,7 +2,6 @@ package net.x4a42.volksempfaenger.ui.nowplaying;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,42 +12,37 @@ import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacadeProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
 
 class InfoSectionManager implements PlaybackEventListener,
                                     View.OnClickListener,
                                     PlaybackServiceConnectionManager.Listener
 {
-    private final PlaybackEventReceiver             playbackEventReceiver;
-    private final PlaybackServiceIntentProvider     playbackIntentProvider;
-    private final ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider;
-    private final PodcastPathProvider               podcastPathProvider;
-    private final ImageLoader                       imageLoader;
-    private PlaybackServiceFacadeProvider           facadeProvider;
-    private LinearLayout                            infoLayout;
-    private ImageView                               podcastLogo;
-    private TextView                                episodeText;
-    private TextView                                podcastText;
-    private ImageButton                             playPauseButton;
+    private final PlaybackEventReceiver      playbackEventReceiver;
+    private final MainActivityIntentProvider mainIntentProvider;
+    private final PodcastPathProvider        podcastPathProvider;
+    private final ImageLoader                imageLoader;
+    private PlaybackServiceFacadeProvider    facadeProvider;
+    private LinearLayout                     infoLayout;
+    private ImageView                        podcastLogo;
+    private TextView                         episodeText;
+    private TextView                         podcastText;
 
-    public InfoSectionManager(PlaybackEventReceiver             playbackEventReceiver,
-                              PlaybackServiceIntentProvider     playbackIntentProvider,
-                              ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider,
-                              PodcastPathProvider               podcastPathProvider,
-                              ImageLoader                       imageLoader)
+    public InfoSectionManager(PlaybackEventReceiver      playbackEventReceiver,
+                              MainActivityIntentProvider mainIntentProvider,
+                              PodcastPathProvider        podcastPathProvider,
+                              ImageLoader                imageLoader)
     {
-        this.playbackEventReceiver     = playbackEventReceiver;
-        this.playbackIntentProvider    = playbackIntentProvider;
-        this.viewEpisodeIntentProvider = viewEpisodeIntentProvider;
-        this.podcastPathProvider       = podcastPathProvider;
-        this.imageLoader               = imageLoader;
+        this.playbackEventReceiver = playbackEventReceiver;
+        this.mainIntentProvider    = mainIntentProvider;
+        this.podcastPathProvider   = podcastPathProvider;
+        this.imageLoader           = imageLoader;
     }
 
     public InfoSectionManager setFacadeProvider(PlaybackServiceFacadeProvider facadeProvider)
@@ -63,10 +57,8 @@ class InfoSectionManager implements PlaybackEventListener,
         podcastLogo     = (ImageView)    view.findViewById(R.id.logo);
         episodeText     = (TextView)     view.findViewById(R.id.episode);
         podcastText     = (TextView)     view.findViewById(R.id.podcast);
-        playPauseButton = (ImageButton)  view.findViewById(R.id.info_pause);
 
         infoLayout.setOnClickListener(this);
-        playPauseButton.setOnClickListener(this);
 
         update();
     }
@@ -113,10 +105,6 @@ class InfoSectionManager implements PlaybackEventListener,
         {
             handleInfoClicked(v.getContext());
         }
-        else if (playPauseButton.equals(v))
-        {
-            handlePlayPauseClicked(v.getContext());
-        }
     }
 
     //
@@ -141,13 +129,7 @@ class InfoSectionManager implements PlaybackEventListener,
 
     private void handleInfoClicked(Context context)
     {
-        context.startActivity(viewEpisodeIntentProvider.getIntent(
-                facadeProvider.getFacade().getEpisode()));
-    }
-
-    private void handlePlayPauseClicked(Context context)
-    {
-        context.startService(playbackIntentProvider.getPlayPauseIntent());
+        context.startActivity(mainIntentProvider.getIntent());
     }
 
     private void update()
@@ -170,11 +152,9 @@ class InfoSectionManager implements PlaybackEventListener,
 
         episodeText.setText(episode.getTitle());
         podcastText.setText(podcast.getTitle());
-        playPauseButton.setImageResource(
-                facade.isPlaying() ?
-                        R.drawable.ic_media_pause : R.drawable.ic_media_play);
 
         String url = podcastPathProvider.getLogoUrl(podcast);
+        podcastLogo.setImageResource(android.R.color.transparent);
         imageLoader.displayImage(url, podcastLogo);
     }
 

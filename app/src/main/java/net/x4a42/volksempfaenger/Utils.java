@@ -204,6 +204,21 @@ public class Utils {
 				+ format.format(seconds2);
 	}
 
+	public static String formatTimeFriendly(int milliseconds) {
+		int seconds = milliseconds / 1000;
+		int hours = seconds / 3600;
+		int minutes = (seconds / 60) - (hours * 60);
+
+		String formatted = "";
+		if (hours > 0)
+		{
+			formatted += hours + "h";
+		}
+		formatted += minutes + "m";
+
+		return formatted;
+	}
+
 	public static String trimmedString(StringBuilder stringBuilder) {
 		final int length = stringBuilder.length();
 		int start, end;

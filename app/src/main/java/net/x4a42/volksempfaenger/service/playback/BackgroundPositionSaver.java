@@ -25,7 +25,7 @@ class BackgroundPositionSaver implements Runnable
 
     public void start(Episode episode)
     {
-        episodePosition = episodePositionDao.getOrCreate(episode);
+        episodePosition = episodePositionDao.getOrInsert(episode);
 
         // TODO: mark listening
 
@@ -61,7 +61,6 @@ class BackgroundPositionSaver implements Runnable
 
     private void save()
     {
-        episodePosition.setPosition(positionProvider.getPosition());
-        episodePositionDao.insertOrReplace(episodePosition);
+        episodePositionDao.update(episodePosition, positionProvider.getPosition());
     }
 }

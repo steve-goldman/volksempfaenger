@@ -1,14 +1,11 @@
 package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-
-import net.x4a42.volksempfaenger.ui.addsubscription.AddSubscriptionActivityIntentProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +19,6 @@ public class SubscriptionGridFragmentProxyTest
 {
     @Mock Fragment                              fragment;
     @Mock GridManager                           gridManager;
-    @Mock OptionsMenuManager                    menuManager;
-    @Mock AddSubscriptionActivityIntentProvider addSubscriptionIntentProvider;
-    @Mock Intent                                intent;
     @Mock LayoutInflater                        inflater;
     @Mock ViewGroup                             container;
     @Mock Menu                                  menu;
@@ -35,12 +29,8 @@ public class SubscriptionGridFragmentProxyTest
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(addSubscriptionIntentProvider.get()).thenReturn(intent);
-
         proxy = new SubscriptionGridFragmentProxy(fragment,
-                                                  gridManager,
-                                                  menuManager,
-                                                  addSubscriptionIntentProvider);
+                                                  gridManager);
     }
 
     @Test
@@ -75,26 +65,5 @@ public class SubscriptionGridFragmentProxyTest
     public void onDestroy() throws Exception
     {
         proxy.onDestroy();
-    }
-
-    @Test
-    public void onCreateOptionsMenu() throws Exception
-    {
-        proxy.onCreateOptionsMenu(menu, menuInflater);
-        Mockito.verify(menuManager).onCreateOptionsMenu(menu, menuInflater);
-    }
-
-    @Test
-    public void onOptionsItemSelected() throws Exception
-    {
-        proxy.onOptionsItemSelected(menuItem);
-        Mockito.verify(menuManager).onOptionsItemSelected(menuItem);
-    }
-
-    @Test
-    public void onAddSubscription() throws Exception
-    {
-        proxy.onAddSubscription();
-        Mockito.verify(fragment).startActivity(intent);
     }
 }

@@ -8,8 +8,8 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
-import net.x4a42.volksempfaenger.ui.episodelist.view.EpisodeListActivityIntentProvider;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
+import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +24,14 @@ import static org.junit.Assert.*;
 public class GridManagerTest
 {
     @Mock Context                           context;
+    @Mock GridAdapterProxy                  gridAdapterProxy;
     @Mock GridAdapter                       gridAdapter;
     @Mock LayoutInflater                    inflater;
     @Mock ViewGroup                         container;
     @Mock View                              view;
     @Mock GridView                          gridView;
     @Mock TextView                          noSubscriptionsView;
-    @Mock GridViewManager                   gridViewManager;
+    @Mock PodcastDaoWrapper                 podcastDaoWrapper;
     @Mock EpisodeListActivityIntentProvider intentProvider;
     GridManager                             gridManager;
 
@@ -41,7 +42,8 @@ public class GridManagerTest
                .thenReturn(view);
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
-        gridManager = new GridManager(context, gridAdapter, gridViewManager, intentProvider);
+        Mockito.when(gridAdapterProxy.getAdapter()).thenReturn(gridAdapter);
+        gridManager = new GridManager(context, gridAdapterProxy, intentProvider, podcastDaoWrapper);
     }
 
     @Test
@@ -59,27 +61,29 @@ public class GridManagerTest
         gridManager.onCreateView(inflater, container);
         gridManager.onResume();
 
-        Mockito.verify(gridAdapter).onResume();
-        Mockito.verify(noSubscriptionsView).setVisibility(View.INVISIBLE);
+        Mockito.verify(gridAdapterProxy).refresh();
+        Mockito.verify(noSubscriptionsView).setVisibility(View.GONE);
+        Mockito.verify(gridView).setVisibility(View.VISIBLE);
     }
 
     @Test
     public void onResumeEmpty() throws Exception
     {
-        Mockito.when(gridAdapter.isEmpty()).thenReturn(true);
+        Mockito.when(gridAdapterProxy.isEmpty()).thenReturn(true);
 
         gridManager.onCreateView(inflater, container);
         gridManager.onResume();
 
-        Mockito.verify(gridAdapter).onResume();
+        Mockito.verify(gridAdapterProxy).refresh();
         Mockito.verify(noSubscriptionsView).setVisibility(View.VISIBLE);
+        Mockito.verify(gridView).setVisibility(View.GONE);
     }
 
     @Test
     public void onPause() throws Exception
     {
         gridManager.onPause();
-        Mockito.verify(gridAdapter).onPause();
+        Mockito.verify(gridAdapterProxy).clear();
     }
 
     @Test

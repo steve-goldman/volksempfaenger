@@ -19,6 +19,9 @@
     <string name="menu_update">Update</string>
     <string name="menu_feedback">Feedback</string>
     <string name="menu_play">Play</string>
+    <string name="menu_pause">Pause</string>
+    <string name="playlist_context_menu_remove">Remove</string>
+    <string name="episode_list_context_menu_play_next">Play Next</string>
     <string name="context_delete">Delete</string>
     <string name="hint_http">http://</string>
     <string name="yes">Yes</string>
@@ -40,6 +43,7 @@
     <string name="message_podcast_feed_storage_exception">StorageException</string>
     <string name="message_podcast_feed_file_not_found_exception">FileNotFoundException</string>
     <string name="message_no_subscriptions">No subscriptions</string>
+    <string name="message_no_playlist">Empty Playlist</string>
     <string name="message_download_started">The download was started</string>
     <string name="message_download_already_running">The download is already running</string>
     <string name="message_download_episode_already_downloaded">This episode has already been downloaded</string>
@@ -48,11 +52,14 @@
     <string name="settings_download">Download</string>
     <string name="settings_download_interval">Refresh interval</string>
     <string name="settings_download_auto">Auto Download</string>
-    <string name="settings_download_wifi">Only on WiFi</string>
+    <string name="settings_download_wifi">Only download on WiFi</string>
+    <string name="settings_stream_wifi">Only stream on WiFi</string>
     <string name="settings_download_charging">Only while charging</string>
     <string name="settings_download_concurrent">Concurrent downloads</string>
     <string name="settings_storage">Storage</string>
     <string name="settings_storage_location">Storage Location</string>
+    <string name="settings_downloaded_queue_count">Downloaded Queue Length</string>
+    <string name="settings_downloaded_queue_count_summary">Keep this many episodes downloaded, based on your playlist</string>
     <string name="settings_about">About</string>
     <string name="settings_about_version">Version</string>
     <string name="settings_about_website">Website</string>
@@ -61,6 +68,7 @@
     <string name="settings_summary_download">Podcast download settings</string>
     <string name="settings_summary_download_auto">Automatically download new episodes</string>
     <string name="settings_summary_download_wifi">Only download new episodes while connected to a WiFi network</string>
+    <string name="settings_summary_stream_wifi">Only stream episodes while connected to a WiFi network</string>
     <string name="settings_summary_download_charging">Only download new episodes while connected to a power source</string>
     <string name="settings_summary_download_concurrent">Maximum number of downloads running at the same time</string>
     <string name="settings_summary_storage">Local podcast storage settings</string>
@@ -96,6 +104,8 @@
     <string name="error_download">download error</string>
     <string name="rewind">Rewind</string>
     <string name="fast_forward">Fast-Forward</string>
+    <string name="finish_later">Finish Later</string>
+    <string name="next_episode">Next Episode</string>
     <string name="message_error_import_unexpected">An unexpected error happened during import</string>
     <string name="title_send_error_report">Send error report</string>
     <string name="report_error">Report</string>
@@ -107,7 +117,7 @@
     <string name="settings_summary_about_flattr">Support the development of Volksempfänger</string>
     <string name="settings_about_flattr">Flattr</string>
     <string name="notification_collapse">collapse</string>
-    <string name="title_tab_playlists">Playlists</string>
+    <string name="title_tab_playlist">Playlist</string>
     <string name="title_playlist_new">New</string>
     <string name="title_playlist_listening">Listening</string>
     <string name="message_no_episodes">No episodes</string>
@@ -155,5 +165,10 @@
     <string name="menu_export">Export</string>
     <string name="message_export_ok">Successfully exported your podcasts to %1$s</string>
     <string name="message_export_failed">Failed to export your podcasts!</string>
+
+    <string name="playlist_context_title">%d selected</string>
+    <string name="episode_list_context_title">%d selected</string>
+    <string name="toast_episode_enqueued">The episode will start after the current episode ends.</string>
+    <string name="toast_cannot_change_playing_episode">Cannot change the episode that is playing.</string>
 
 </resources>

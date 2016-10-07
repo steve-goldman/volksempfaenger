@@ -18,19 +18,19 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class FeedSyncServiceProxyTest
 {
-    @Mock Context             context;
-    @Mock IntentParser        intentParser;
-    @Mock FeedSyncTaskBuilder taskBuilder;
-    @Mock FeedSyncTask        task;
-    @Mock Intent              intent;
-    @Mock Podcast             podcast;
-    FeedSyncServiceProxy      proxy;
+    @Mock Context              context;
+    @Mock IntentParser         intentParser;
+    @Mock FeedSyncTaskProvider taskProvider;
+    @Mock FeedSyncTask         task;
+    @Mock Intent               intent;
+    @Mock Podcast              podcast;
+    FeedSyncServiceProxy       proxy;
 
     @Before
     public void setUp() throws Exception
     {
-        Mockito.when(taskBuilder.build(context)).thenReturn(task);
-        proxy = new FeedSyncServiceProxy(context, intentParser, taskBuilder);
+        Mockito.when(taskProvider.get()).thenReturn(task);
+        proxy = new FeedSyncServiceProxy(intentParser, taskProvider);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class FeedSyncServiceProxyTest
     public void onStartCommand() throws Exception
     {
         int value = proxy.onStartCommand(intent);
-        assertEquals(Service.START_STICKY, value);
+        assertEquals(Service.START_NOT_STICKY, value);
         Mockito.verify(intentParser).parse(intent);
     }
 

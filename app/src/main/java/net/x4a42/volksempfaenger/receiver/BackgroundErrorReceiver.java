@@ -2,7 +2,7 @@ package net.x4a42.volksempfaenger.receiver;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
-import net.x4a42.volksempfaenger.ui.MainActivity;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

@@ -502,6 +502,10 @@ public class FeedParser {
 					&& !currentItemHasITunesSummaryAlternative) {
 				feedItem.description = Utils.trimmedString(buffer);
 			}
+			else if (tag == Tag.ITUNES_DURATION)
+			{
+				feedItem.setDuration(buffer.toString().trim());
+			}
 		}
 
 		private Date parseAtomDate(String datestring)

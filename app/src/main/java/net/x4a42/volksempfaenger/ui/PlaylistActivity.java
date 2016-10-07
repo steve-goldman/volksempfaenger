@@ -6,6 +6,8 @@ import net.x4a42.volksempfaenger.data.Constants;
 import net.x4a42.volksempfaenger.data.DatabaseHelper;
 import net.x4a42.volksempfaenger.data.EpisodeCursor;
 import net.x4a42.volksempfaenger.data.VolksempfaengerContentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivity;
+
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -93,7 +95,7 @@ public class PlaylistActivity extends EpisodeListActivity {
 	@Override
 	public void onUpPressed() {
 		Intent intent = NavUtils.getParentActivityIntent(PlaylistActivity.this);
-		intent.putExtra("tag", MainActivity.TAG_PLAYLISTS);
+		intent.putExtra("tag", MainActivity.TAG_PLAYLIST);
 		NavUtils.navigateUpTo(PlaylistActivity.this, intent);
 	}
 

@@ -313,26 +313,51 @@ public class StringLookup {
 		try {
 			final int length = input.length();
 			switch (input.charAt(0)) {
-			case 's':
-				if (input.startsWith("ummary", 1)) {
-					if (length == 7) {
-						return Tag.ITUNES_SUMMARY;
+				case 's':
+				{
+					if (input.startsWith("ummary", 1))
+					{
+						if (length == 7)
+						{
+							return Tag.ITUNES_SUMMARY;
+						}
+						return Tag.UNKNOWN;
 					}
-					return Tag.UNKNOWN;
-				} else {
+					else
+					{
+						return Tag.UNKNOWN;
+					}
+				}
+				case 'i':
+				{
+					if (input.startsWith("mage", 1))
+					{
+						if (length == 5)
+						{
+							return Tag.ITUNES_IMAGE;
+						}
+						return Tag.UNKNOWN;
+					}
+					else
+					{
+						return Tag.UNKNOWN;
+					}
+				}
+				case 'd':
+				{
+					if (input.startsWith("uration", 1))
+					{
+						return Tag.ITUNES_DURATION;
+					}
+					else
+					{
+						return Tag.UNKNOWN;
+					}
+				}
+				default:
+				{
 					return Tag.UNKNOWN;
 				}
-			case 'i':
-				if (input.startsWith("mage", 1)) {
-					if (length == 5) {
-						return Tag.ITUNES_IMAGE;
-					}
-					return Tag.UNKNOWN;
-				} else {
-					return Tag.UNKNOWN;
-				}
-			default:
-				return Tag.UNKNOWN;
 			}
 		} catch (IndexOutOfBoundsException e) {
 			return Tag.UNKNOWN;

@@ -10,25 +10,15 @@
         android:title="@string/settings_download_interval" />
 
     <CheckBoxPreference
-        android:defaultValue="@string/settings_default_download_auto"
-        android:key="download_auto"
-        android:summary="@string/settings_summary_download_auto"
-        android:title="@string/settings_download_auto" />
-    <CheckBoxPreference
         android:defaultValue="@string/settings_default_download_wifi"
         android:key="download_wifi"
         android:summary="@string/settings_summary_download_wifi"
         android:title="@string/settings_download_wifi" />
-    <CheckBoxPreference
-        android:defaultValue="@string/settings_default_download_charging"
-        android:key="download_charging"
-        android:summary="@string/settings_summary_download_charging"
-        android:title="@string/settings_download_charging" />
 
-    <EditTextPreference
-        android:defaultValue="@string/settings_default_download_concurrent"
-        android:key="download_concurrent"
-        android:summary="@string/settings_summary_download_concurrent"
-        android:title="@string/settings_download_concurrent" />
+    <CheckBoxPreference
+        android:defaultValue="@string/settings_default_stream_wifi"
+        android:key="stream_wifi"
+        android:summary="@string/settings_summary_stream_wifi"
+        android:title="@string/settings_stream_wifi" />
 
 </PreferenceScreen>

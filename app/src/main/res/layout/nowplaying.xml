@@ -20,7 +20,7 @@
         android:focusable="true"
         android:orientation="horizontal" >
 
-        <net.x4a42.volksempfaenger.ui.PodcastLogoView
+        <ImageView
             android:id="@+id/logo"
             style="@style/NowPlaying.Logo" />
 
@@ -55,11 +55,6 @@
                 android:text="@string/podcast" />
         </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/info_pause"
-            style="@style/NowPlaying.Button"
-            android:contentDescription="@string/pause"
-            android:src="@drawable/ic_media_pause" />
     </LinearLayout>
 
     <LinearLayout
@@ -122,6 +117,14 @@
         </ImageButton>
 
         <ImageButton
+            android:id="@+id/forward"
+            style="@style/NowPlaying.Button"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/fast_forward"
+            android:src="@drawable/ic_media_ff" >
+        </ImageButton>
+
+        <ImageButton
             android:id="@+id/pause"
             style="@style/NowPlaying.Button"
             android:layout_width="0dp"
@@ -132,12 +135,21 @@
         </ImageButton>
 
         <ImageButton
-            android:id="@+id/forward"
+            android:id="@+id/skip"
             style="@style/NowPlaying.Button"
             android:layout_gravity="center_vertical"
-            android:contentDescription="@string/fast_forward"
-            android:src="@drawable/ic_media_ff" >
+            android:contentDescription="@string/finish_later"
+            android:src="@drawable/ic_skip_button" >
         </ImageButton>
+
+        <ImageButton
+            android:id="@+id/next"
+            style="@style/NowPlaying.Button"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/next_episode"
+            android:src="@drawable/ic_next_button" >
+        </ImageButton>
+
     </LinearLayout>
 
 </LinearLayout>

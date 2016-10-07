@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.episode.Episode;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEvent;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventListener;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEvent;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventListener;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceFacade;
 
@@ -16,7 +16,7 @@ class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listen
                                          PlaybackEventListener
 {
     private final PlaybackServiceConnectionManager connectionManager;
-    private final PlaybackEventReceiver            playbackEventReceiver;
+    private final PlaybackEventReceiver playbackEventReceiver;
     private final SeekBarManager                   seekBarManager;
     private final ControlButtonsManager            controlButtonsManager;
     private final InfoSectionManager               infoSectionManager;
@@ -118,18 +118,9 @@ class NowPlayingFragmentProxy implements PlaybackServiceConnectionManager.Listen
             return;
         }
 
-        if (episode != null && facade.isEpisodeOpen(episode))
-        {
-            seekBarManager.show();
-            controlButtonsManager.show();
-            infoSectionManager.hide();
-        }
-        else
-        {
-            seekBarManager.hide();
-            controlButtonsManager.hide();
-            infoSectionManager.show();
-        }
+        seekBarManager.show();
+        controlButtonsManager.show();
+        infoSectionManager.show();
     }
 
 }

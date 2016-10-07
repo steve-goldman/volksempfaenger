@@ -41,15 +41,6 @@ public class EnclosureDaoWrapperTest
     }
 
     @Test
-    public void newEnclosure() throws Exception
-    {
-        Enclosure newEnclosure = daoWrapper.newEnclosure(episode, url);
-        assertEquals(enclosure, newEnclosure);
-        Mockito.verify(enclosure).setEpisode(episode);
-        Mockito.verify(enclosure).setUrl(url);
-    }
-
-    @Test
     public void getByUrl() throws Exception
     {
         Mockito.when(queryBuilder.list()).thenReturn(matchingList);

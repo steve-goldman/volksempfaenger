@@ -18,7 +18,7 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.Volksempfaenger" >
-        <activity android:name=".ui.MainActivity" >
+        <activity android:name=".ui.main.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,11 +27,11 @@
         </activity>
         <activity
             android:name=".ui.AddSubscriptionActivity"
-            android:parentActivityName=".ui.MainActivity"
+            android:parentActivityName=".ui.main.MainActivity"
             tools:ignore="ExportedActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -104,18 +104,18 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_settings"
-            android:parentActivityName=".ui.MainActivity"
+            android:parentActivityName=".ui.main.MainActivity"
             android:theme="@style/Theme.Settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.ViewSubscriptionActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.viewepisode.ViewEpisodeActivity"
@@ -126,10 +126,10 @@
         </activity>
         <activity
             android:name=".ui.episodelist.EpisodeListActivity"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.main.MainActivity" />
         </activity>
         <activity
             android:name=".ui.PlaylistActivity"
@@ -171,6 +171,7 @@
         <service android:name=".service.playback.PlaybackService" />
         <service android:name=".service.FlattrService" />
         <service android:name=".service.feedsync.FeedSyncService" />
+        <service android:name=".service.playlistdownload.PlaylistDownloadService" />
 
         <receiver
             android:name=".receiver.BootCompletedReceiver"
@@ -179,11 +180,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receiver.DownloadCompleteReceiver"
-            tools:ignore="ExportedReceiver" >
+        <receiver android:name=".receiver.downloadcomplete.DownloadCompleteReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.connectivitychange.ConnectivityChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
         <receiver

@@ -8,7 +8,7 @@ import net.x4a42.volksempfaenger.data.entity.episodeposition.EpisodePositionDaoW
 
 class BackgroundPositionSaverBuilder
 {
-    public BackgroundPositionSaver build(Context context,
+    public BackgroundPositionSaver build(Context                  context,
                                          PlaybackPositionProvider positionProvider)
     {
         EpisodePositionDaoWrapper episodePositionDao

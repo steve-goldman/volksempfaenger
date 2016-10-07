@@ -103,7 +103,7 @@
   <string name="settings_summary_about_flattr">Támogassa a Volksempfänger fejlesztését</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">összecsuk</string>
-  <string name="title_tab_playlists">Listák</string>
+  <string name="title_tab_playlist">Listák</string>
   <string name="title_playlist_new">Új</string>
   <string name="title_playlist_listening">Hallgatás</string>
   <string name="message_no_episodes">Nincsenek epizódok</string>

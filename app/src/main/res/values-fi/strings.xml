@@ -103,7 +103,7 @@
   <string name="settings_summary_about_flattr">Tue Volksempfängerin kehitystä</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">pienennä</string>
-  <string name="title_tab_playlists">Soittolistat</string>
+  <string name="title_tab_playlist">Soittolistat</string>
   <string name="title_playlist_new">Uusi</string>
   <string name="title_playlist_listening">Kuunnellaan</string>
   <string name="message_no_episodes">Ei jaksoja</string>

@@ -8,6 +8,7 @@ import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
 import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProviderBuilder;
+import net.x4a42.volksempfaenger.ui.OnUpPressedCallback;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,7 +30,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class DiscoverDetailActivity extends Activity implements
-		OnUpPressedCallback {
+													 OnUpPressedCallback
+{
 	private final static DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.default_logo)
 			.showImageForEmptyUri(R.drawable.default_logo).cacheInMemory()
@@ -109,8 +111,7 @@ public class DiscoverDetailActivity extends Activity implements
 		Podcast podcast = podcastDao.getByFeedUrl(feedUrl);
 		if (podcast == null)
 		{
-			podcast = podcastDao.newPodcast(feedUrl);
-			podcastDao.insert(podcast);
+			podcast = podcastDao.insert(feedUrl);
 		}
 
 		FeedSyncServiceIntentProvider intentProvider

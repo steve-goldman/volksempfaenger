@@ -2,15 +2,15 @@ package net.x4a42.volksempfaenger.data.entity.podcast;
 
 import android.content.Context;
 
+import net.x4a42.volksempfaenger.data.entity.PathProviderBase;
+
 import java.io.File;
 
-public class PodcastPathProvider
+public class PodcastPathProvider extends PathProviderBase
 {
-    private final Context context;
-
     public PodcastPathProvider(Context context)
     {
-        this.context = context;
+        super(context);
     }
 
     public File getLogoFile(Podcast podcast)
@@ -25,25 +25,4 @@ public class PodcastPathProvider
         return makeUrl(getLogoFile(podcast));
     }
 
-    private File makeDirs(File file)
-    {
-        File parent = file.getParentFile();
-        //noinspection ResultOfMethodCallIgnored
-        parent.mkdirs();
-        return file;
-    }
-
-    private File joinPath(File base, String... children)
-    {
-        for (String child : children)
-        {
-            base = new File(base, child);
-        }
-        return base;
-    }
-
-    private String makeUrl(File file)
-    {
-        return "file:///" + file.getAbsolutePath();
-    }
 }

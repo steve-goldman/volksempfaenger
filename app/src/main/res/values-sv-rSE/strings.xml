@@ -103,7 +103,7 @@
   <string name="settings_summary_about_flattr">Stöd utvecklingen av Volksempfänger</string>
   <string name="settings_about_flattr">Flattr</string>
   <string name="notification_collapse">kollapsa</string>
-  <string name="title_tab_playlists">Spellistor</string>
+  <string name="title_tab_playlist">Spellistor</string>
   <string name="title_playlist_new">Nya</string>
   <string name="title_playlist_listening">Lyssnar</string>
   <string name="message_no_episodes">Inga avsnitt</string>

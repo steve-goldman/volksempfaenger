@@ -5,14 +5,12 @@ import android.content.Context;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastPathProvider;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
+import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiver;
-import net.x4a42.volksempfaenger.service.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProvider;
-import net.x4a42.volksempfaenger.service.playback.PlaybackServiceIntentProviderBuilder;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProvider;
-import net.x4a42.volksempfaenger.ui.viewepisode.ViewEpisodeActivityIntentProviderBuilder;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProvider;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProviderBuilder;
 
 class InfoSectionManagerBuilder
 {
@@ -21,11 +19,8 @@ class InfoSectionManagerBuilder
         PlaybackEventReceiver playbackEventReceiver
                 = new PlaybackEventReceiverBuilder().build();
 
-        PlaybackServiceIntentProvider playbackIntentProvider
-                = new PlaybackServiceIntentProviderBuilder().build(context);
-
-        ViewEpisodeActivityIntentProvider viewEpisodeIntentProvider
-                = new ViewEpisodeActivityIntentProviderBuilder().build(context);
+        MainActivityIntentProvider mainIntentProvider
+                = new MainActivityIntentProviderBuilder().build(context);
 
         PodcastPathProvider podcastPathProvider
                 = new PodcastPathProvider(context);
@@ -34,8 +29,7 @@ class InfoSectionManagerBuilder
 
         InfoSectionManager infoSectionManager
                 = new InfoSectionManager(playbackEventReceiver,
-                                         playbackIntentProvider,
-                                         viewEpisodeIntentProvider,
+                                         mainIntentProvider,
                                          podcastPathProvider,
                                          imageLoader)
                 .setFacadeProvider(connectionManager);

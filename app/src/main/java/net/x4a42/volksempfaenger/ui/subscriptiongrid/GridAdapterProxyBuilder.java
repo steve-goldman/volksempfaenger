@@ -4,18 +4,22 @@ import android.content.Context;
 
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManager;
-import net.x4a42.volksempfaenger.ui.subscriptiongrid.view.GridViewManagerBuilder;
 
 class GridAdapterProxyBuilder
 {
-    public GridAdapterProxy build(GridAdapter gridAdapter, GridViewManager gridViewManager)
+    public GridAdapterProxy build(Context         context)
     {
-        Context context = gridAdapter.getContext();
+        GridViewManager gridViewManager
+                = new GridViewManagerBuilder().build(context);
 
-        PodcastDaoWrapper podcastDao
-                = new PodcastDaoBuilder().build(context);
+        GridAdapter       gridAdapter = new GridAdapter(context);
+        PodcastDaoWrapper podcastDao  = new PodcastDaoBuilder().build(context);
+        GridAdapterProxy  proxy       = new GridAdapterProxy(gridAdapter,
+                                                             gridViewManager,
+                                                             podcastDao);
 
-        return new GridAdapterProxy(gridAdapter, gridViewManager, podcastDao);
+        gridAdapter.setProxy(proxy);
+
+        return proxy;
     }
 }
