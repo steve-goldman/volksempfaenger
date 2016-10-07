@@ -144,7 +144,7 @@ public class Playlist
 
     public synchronized boolean moveItem(int fromPosition, int toPosition)
     {
-        if (isPlaying && fromPosition == 0)
+        if (isPlaying && (fromPosition == 0 || toPosition == 0))
         {
             return false;
         }
