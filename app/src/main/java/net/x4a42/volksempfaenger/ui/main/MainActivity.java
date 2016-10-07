@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import net.x4a42.volksempfaenger.R;
+import net.x4a42.volksempfaenger.alarm.SyncAllAlarmManagerBuilder;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiver;
 import net.x4a42.volksempfaenger.event.playback.PlaybackEventReceiverBuilder;
 import net.x4a42.volksempfaenger.service.playback.PlaybackServiceConnectionManager;
@@ -57,6 +58,8 @@ public class MainActivity extends Activity implements OnUpPressedCallback
 		menuManager = new OptionsMenuManagerBuilder().build(this, connectionManager);
 		connectionManager.setListener(menuManager);
 		connectionManager.onCreate();
+
+		new SyncAllAlarmManagerBuilder().build(this).scheduleIfFirstTime();
 
 		playbackEventReceiver = new PlaybackEventReceiverBuilder().build();
 		playbackEventReceiver.setListener(menuManager);
