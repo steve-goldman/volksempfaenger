@@ -8,26 +8,21 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownload;
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
-import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBuilder;
-
-import org.greenrobot.eventbus.EventBus;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcaster;
 
 class DownloadCompleteReceiverProxy
 {
-    private final EventBus                    eventBus;
-    private final DownloadManagerAdapter      downloadManagerAdapter;
-    private final EpisodeDownloadDaoWrapper   episodeDownloadDao;
-    private final EpisodeDownloadEventBuilder eventBuilder;
+    private final EpisodeDownloadEventBroadcaster eventBroadcaster;
+    private final DownloadManagerAdapter          downloadManagerAdapter;
+    private final EpisodeDownloadDaoWrapper       episodeDownloadDao;
 
-    public DownloadCompleteReceiverProxy(EventBus                    eventBus,
-                                         DownloadManagerAdapter      downloadManagerAdapter,
-                                         EpisodeDownloadDaoWrapper   episodeDownloadDao,
-                                         EpisodeDownloadEventBuilder eventBuilder)
+    public DownloadCompleteReceiverProxy(EpisodeDownloadEventBroadcaster eventBroadcaster,
+                                         DownloadManagerAdapter          downloadManagerAdapter,
+                                         EpisodeDownloadDaoWrapper       episodeDownloadDao)
     {
-        this.eventBus               = eventBus;
+        this.eventBroadcaster       = eventBroadcaster;
         this.downloadManagerAdapter = downloadManagerAdapter;
         this.episodeDownloadDao     = episodeDownloadDao;
-        this.eventBuilder           = eventBuilder;
     }
 
     public void onReceive(Intent intent)
@@ -61,11 +56,11 @@ class DownloadCompleteReceiverProxy
 
     private void sendSuccessEvent(Episode episode)
     {
-        eventBus.post(eventBuilder.build(episode, EpisodeDownloadEvent.Action.DOWNLOADED));
+        eventBroadcaster.broadcast(episode, EpisodeDownloadEvent.Action.DOWNLOADED);
     }
 
     private void sendFailedEvent(Episode episode)
     {
-        eventBus.post(eventBuilder.build(episode, EpisodeDownloadEvent.Action.FAILED));
+        eventBroadcaster.broadcast(episode, EpisodeDownloadEvent.Action.FAILED);
     }
 }
