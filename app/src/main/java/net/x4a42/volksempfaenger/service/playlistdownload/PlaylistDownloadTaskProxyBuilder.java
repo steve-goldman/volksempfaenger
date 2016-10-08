@@ -10,6 +10,8 @@ import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoBuilder
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapterBuilder;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcaster;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcasterBuilder;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatusBuilder;
 
@@ -24,16 +26,18 @@ class PlaylistDownloadTaskProxyBuilder
 
     public PlaylistDownloadTaskProxy build()
     {
-        Preferences               preferences            = new PreferencesBuilder().build(context);
-        PlaylistItemDaoWrapper    playlistItemDao        = new PlaylistItemDaoBuilder().build(context);
-        EpisodeDownloadDaoWrapper episodeDownloadDao     = new EpisodeDownloadDaoBuilder().build(context);
-        DownloadManagerAdapter    downloadManagerAdapter = new DownloadManagerAdapterBuilder().build(context);
-        ConnectivityStatus        connectivityStatus     = new ConnectivityStatusBuilder().build(context);
+        Preferences                     preferences            = new PreferencesBuilder().build(context);
+        PlaylistItemDaoWrapper          playlistItemDao        = new PlaylistItemDaoBuilder().build(context);
+        EpisodeDownloadDaoWrapper       episodeDownloadDao     = new EpisodeDownloadDaoBuilder().build(context);
+        DownloadManagerAdapter          downloadManagerAdapter = new DownloadManagerAdapterBuilder().build(context);
+        ConnectivityStatus              connectivityStatus     = new ConnectivityStatusBuilder().build(context);
+        EpisodeDownloadEventBroadcaster eventBroadcaster       = new EpisodeDownloadEventBroadcasterBuilder().build(context);
 
         return new PlaylistDownloadTaskProxy(preferences,
                                              playlistItemDao,
                                              episodeDownloadDao,
                                              downloadManagerAdapter,
-                                             connectivityStatus);
+                                             connectivityStatus,
+                                             eventBroadcaster);
     }
 }
