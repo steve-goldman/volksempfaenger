@@ -17,4 +17,10 @@ class PlaylistDownloadTask extends AsyncTask<Void, Void, Void>
         playlistDownloadTaskProxy.doInBackground();
         return null;
     }
+
+    @Override
+    protected void onPostExecute(Void result)
+    {
+        playlistDownloadTaskProxy.onPostExecute();
+    }
 }

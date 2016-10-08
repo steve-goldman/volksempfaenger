@@ -7,27 +7,38 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoW
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItem;
 import net.x4a42.volksempfaenger.data.entity.playlistitem.PlaylistItemDaoWrapper;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcaster;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
+
+import java.util.Collection;
 
 class PlaylistDownloadTaskProxy
 {
-    private final Preferences               preferences;
-    private final PlaylistItemDaoWrapper    playlistItemDao;
-    private final EpisodeDownloadDaoWrapper episodeDownloadDao;
-    private final DownloadManagerAdapter    downloadManagerAdapter;
-    private final ConnectivityStatus        connectivityStatus;
+    private final Preferences                     preferences;
+    private final PlaylistItemDaoWrapper          playlistItemDao;
+    private final EpisodeDownloadDaoWrapper       episodeDownloadDao;
+    private final DownloadManagerAdapter          downloadManagerAdapter;
+    private final ConnectivityStatus              connectivityStatus;
+    private final Collection<Episode>             removedEpisodes;
+    private final EpisodeDownloadEventBroadcaster eventBroadcaster;
 
-    public PlaylistDownloadTaskProxy(Preferences               preferences,
-                                     PlaylistItemDaoWrapper    playlistItemDao,
-                                     EpisodeDownloadDaoWrapper episodeDownloadDao,
-                                     DownloadManagerAdapter    downloadManagerAdapter,
-                                     ConnectivityStatus        connectivityStatus)
+
+    public PlaylistDownloadTaskProxy(Preferences                     preferences,
+                                     PlaylistItemDaoWrapper          playlistItemDao,
+                                     EpisodeDownloadDaoWrapper       episodeDownloadDao,
+                                     DownloadManagerAdapter          downloadManagerAdapter,
+                                     ConnectivityStatus              connectivityStatus,
+                                     Collection<Episode>             removedEpisodes,
+                                     EpisodeDownloadEventBroadcaster eventBroadcaster)
     {
         this.preferences            = preferences;
         this.playlistItemDao        = playlistItemDao;
         this.episodeDownloadDao     = episodeDownloadDao;
         this.downloadManagerAdapter = downloadManagerAdapter;
         this.connectivityStatus     = connectivityStatus;
+        this.removedEpisodes        = removedEpisodes;
+        this.eventBroadcaster       = eventBroadcaster;
     }
 
     public void doInBackground()
@@ -35,6 +46,14 @@ class PlaylistDownloadTaskProxy
         adjustForConnectivity();
         addTopN();
         removeRest();
+    }
+
+    public void onPostExecute()
+    {
+        for (Episode episode : removedEpisodes)
+        {
+            eventBroadcaster.broadcast(episode, EpisodeDownloadEvent.Action.REMOVED);
+        }
     }
 
     private void adjustForConnectivity()
@@ -79,7 +98,7 @@ class PlaylistDownloadTaskProxy
             if (playlistItemDao.hasEpisode(episode))
             {
                 PlaylistItem playlistItem = playlistItemDao.getByEpisode(episode);
-                if (playlistItem.getPosition() > preferences.getDownloadedQueueCount())
+                if (playlistItem.getPosition() >= preferences.getDownloadedQueueCount())
                 {
                     remove(episodeDownload);
                 }
@@ -95,5 +114,6 @@ class PlaylistDownloadTaskProxy
     {
         downloadManagerAdapter.cancel(episodeDownload.getDownloadId());
         episodeDownloadDao.delete(episodeDownload);
+        removedEpisodes.add(episodeDownload.getEpisode());
     }
 }

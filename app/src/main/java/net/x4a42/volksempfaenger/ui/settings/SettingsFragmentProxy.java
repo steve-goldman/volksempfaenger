@@ -71,6 +71,7 @@ class SettingsFragmentProxy implements Preference.OnPreferenceChangeListener
                 break;
             case PreferenceKeys.DOWNLOADED_QUEUE_COUNT:
                 updateQueueCount(Integer.parseInt((String) newValue));
+                fragment.getActivity().startService(playlistDownloadIntentProvider.getRunIntent());
                 break;
         }
         eventBroadcaster.broadcast(eventProvider.get());

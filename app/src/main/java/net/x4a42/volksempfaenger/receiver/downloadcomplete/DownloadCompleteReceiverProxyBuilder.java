@@ -6,27 +6,24 @@ import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoB
 import net.x4a42.volksempfaenger.data.entity.episodedownload.EpisodeDownloadDaoWrapper;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapter;
 import net.x4a42.volksempfaenger.downloadmanager.DownloadManagerAdapterBuilder;
-import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBuilder;
-
-import org.greenrobot.eventbus.EventBus;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcaster;
+import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcasterBuilder;
 
 class DownloadCompleteReceiverProxyBuilder
 {
     public DownloadCompleteReceiverProxy build(Context context)
     {
-        EventBus eventBus = EventBus.getDefault();
-
         DownloadManagerAdapter downloadManagerAdapter
                 = new DownloadManagerAdapterBuilder().build(context);
 
         EpisodeDownloadDaoWrapper episodeDownloadDao
                 = new EpisodeDownloadDaoBuilder().build(context);
 
-        EpisodeDownloadEventBuilder eventBuilder = new EpisodeDownloadEventBuilder();
+        EpisodeDownloadEventBroadcaster eventBroadcaster
+                = new EpisodeDownloadEventBroadcasterBuilder().build(context);
 
-        return new DownloadCompleteReceiverProxy(eventBus,
+        return new DownloadCompleteReceiverProxy(eventBroadcaster,
                                                  downloadManagerAdapter,
-                                                 episodeDownloadDao,
-                                                 eventBuilder);
+                                                 episodeDownloadDao);
     }
 }
