@@ -84,7 +84,7 @@ class PlaylistDownloadTaskProxy
             if (playlistItemDao.hasEpisode(episode))
             {
                 PlaylistItem playlistItem = playlistItemDao.getByEpisode(episode);
-                if (playlistItem.getPosition() > preferences.getDownloadedQueueCount())
+                if (playlistItem.getPosition() >= preferences.getDownloadedQueueCount())
                 {
                     remove(episodeDownload);
                 }
