@@ -11,6 +11,8 @@ import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEvent;
 import net.x4a42.volksempfaenger.event.episodedownload.EpisodeDownloadEventBroadcaster;
 import net.x4a42.volksempfaenger.misc.ConnectivityStatus;
 
+import java.util.Collection;
+
 class PlaylistDownloadTaskProxy
 {
     private final Preferences                     preferences;
@@ -18,13 +20,16 @@ class PlaylistDownloadTaskProxy
     private final EpisodeDownloadDaoWrapper       episodeDownloadDao;
     private final DownloadManagerAdapter          downloadManagerAdapter;
     private final ConnectivityStatus              connectivityStatus;
+    private final Collection<Episode>             removedEpisodes;
     private final EpisodeDownloadEventBroadcaster eventBroadcaster;
+
 
     public PlaylistDownloadTaskProxy(Preferences                     preferences,
                                      PlaylistItemDaoWrapper          playlistItemDao,
                                      EpisodeDownloadDaoWrapper       episodeDownloadDao,
                                      DownloadManagerAdapter          downloadManagerAdapter,
                                      ConnectivityStatus              connectivityStatus,
+                                     Collection<Episode>             removedEpisodes,
                                      EpisodeDownloadEventBroadcaster eventBroadcaster)
     {
         this.preferences            = preferences;
@@ -32,6 +37,7 @@ class PlaylistDownloadTaskProxy
         this.episodeDownloadDao     = episodeDownloadDao;
         this.downloadManagerAdapter = downloadManagerAdapter;
         this.connectivityStatus     = connectivityStatus;
+        this.removedEpisodes        = removedEpisodes;
         this.eventBroadcaster       = eventBroadcaster;
     }
 
@@ -40,6 +46,14 @@ class PlaylistDownloadTaskProxy
         adjustForConnectivity();
         addTopN();
         removeRest();
+    }
+
+    public void onPostExecute()
+    {
+        for (Episode episode : removedEpisodes)
+        {
+            eventBroadcaster.broadcast(episode, EpisodeDownloadEvent.Action.REMOVED);
+        }
     }
 
     private void adjustForConnectivity()
@@ -100,6 +114,6 @@ class PlaylistDownloadTaskProxy
     {
         downloadManagerAdapter.cancel(episodeDownload.getDownloadId());
         episodeDownloadDao.delete(episodeDownload);
-        eventBroadcaster.broadcast(episodeDownload.getEpisode(), EpisodeDownloadEvent.Action.REMOVED);
+        removedEpisodes.add(episodeDownload.getEpisode());
     }
 }
