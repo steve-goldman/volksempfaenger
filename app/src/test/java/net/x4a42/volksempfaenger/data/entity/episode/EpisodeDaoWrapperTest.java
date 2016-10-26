@@ -26,7 +26,8 @@ public class EpisodeDaoWrapperTest
     @Mock QueryBuilder<Episode> queryBuilder;
     List<Episode>               matchingList = new ArrayList<>();
     List<Episode>               emptyList    = new ArrayList<>();
-    String                      url          = "this-is-my-url";
+    String                      title        = "this-is-my-title";
+    long                        pubDate      = 200;
     EpisodeDaoWrapper           daoWrapper;
 
     @Before
@@ -35,21 +36,22 @@ public class EpisodeDaoWrapperTest
         matchingList.add(episode);
         Mockito.when(provider.get()).thenReturn(episode);
         Mockito.when(episodeDao.queryBuilder()).thenReturn(queryBuilder);
-        Mockito.when(queryBuilder.where(Mockito.any(WhereCondition.class))).thenReturn(queryBuilder);
+        Mockito.when(queryBuilder.where(Mockito.any(WhereCondition.class),
+                                        Mockito.any(WhereCondition.class))).thenReturn(queryBuilder);
         daoWrapper = new EpisodeDaoWrapper(episodeDao, provider);
     }
 
     @Test
-    public void getByUrl() throws Exception
+    public void getByTitleAndDate() throws Exception
     {
         Mockito.when(queryBuilder.list()).thenReturn(matchingList);
-        assertEquals(episode, daoWrapper.getByUrl(url));
+        assertEquals(episode, daoWrapper.getByTitleAndDate(title, pubDate));
     }
 
     @Test
-    public void getByUrlNoMatch() throws Exception
+    public void getByTitleAndDateNoMatch() throws Exception
     {
         Mockito.when(queryBuilder.list()).thenReturn(emptyList);
-        assertNull(daoWrapper.getByUrl(url));
+        assertNull(daoWrapper.getByTitleAndDate(title, pubDate));
     }
 }
