@@ -97,7 +97,8 @@ public class EpisodeUpdaterTest
     @Test
     public void update() throws Exception
     {
-        Mockito.when(episodeDao.getByUrl(feedItem.url)).thenReturn(episode);
+        Mockito.when(episodeDao.getByTitleAndDate(feedItem.title,
+                                                  feedItem.date.getTime())).thenReturn(episode);
         episodeUpdater.insertOrUpdate(podcast, feedItem, false);
         Mockito.verify(episodeDao).update(episode,
                                           feedItem.title,

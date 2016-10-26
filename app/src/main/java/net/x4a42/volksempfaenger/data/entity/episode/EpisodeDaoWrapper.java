@@ -62,10 +62,11 @@ public class EpisodeDaoWrapper
                 .list().get(0);
     }
 
-    public Episode getByUrl(String episodeUrl)
+    public Episode getByTitleAndDate(String title, long pubDate)
     {
         List<Episode> list = dao.queryBuilder()
-                                .where(EpisodeDao.Properties.EpisodeUrl.eq(episodeUrl))
+                                .where(EpisodeDao.Properties.Title.eq(title),
+                                       EpisodeDao.Properties.PubDate.eq(pubDate))
                                 .list();
 
         if (list.isEmpty())

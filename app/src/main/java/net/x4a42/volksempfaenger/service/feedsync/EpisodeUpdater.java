@@ -29,7 +29,7 @@ class EpisodeUpdater
 
     private Episode insertOrUpdateEpisode(Podcast podcast, FeedItem feedItem, boolean firstSync)
     {
-        Episode episode = episodeDao.getByUrl(feedItem.getUrl());
+        Episode episode = episodeDao.getByTitleAndDate(feedItem.title, feedItem.date.getTime());
         if (episode == null)
         {
             return insertEpisode(podcast, feedItem, firstSync);
