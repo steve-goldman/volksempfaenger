@@ -62,6 +62,14 @@ public class EpisodeDownloadDaoWrapper
         dao.delete(episodeDownload);
     }
 
+    public void delete(Episode episode)
+    {
+        if (hasEpisode(episode))
+        {
+            delete(getByEpisode(episode));
+        }
+    }
+
     public EpisodeDownload insert(Episode episode, long downloadId)
     {
         EpisodeDownload episodeDownload = provider.get();

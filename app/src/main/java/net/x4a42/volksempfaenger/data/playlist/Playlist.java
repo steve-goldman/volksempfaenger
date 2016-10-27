@@ -142,6 +142,15 @@ public class Playlist
         return success;
     }
 
+    public synchronized void removeEpisode(Episode episode)
+    {
+        if (playlistItemDao.hasEpisode(episode))
+        {
+            PlaylistItem playlistItem = playlistItemDao.getByEpisode(episode);
+            removeItem((int) playlistItem.getPosition());
+        }
+    }
+
     public synchronized boolean moveItem(int fromPosition, int toPosition)
     {
         if (isPlaying && (fromPosition == 0 || toPosition == 0))
@@ -159,7 +168,7 @@ public class Playlist
     public synchronized boolean playEpisodeNow(Episode episode)
     {
         moveEpisode(episode, isPlaying ? 1 : 0);
-        return startPlaybackService();
+        return playbackServicePlay();
     }
 
     public synchronized boolean playEpisodesNow(long[] episodeIds)
@@ -170,7 +179,12 @@ public class Playlist
             Episode episode = episodeDao.getById(episodeId);
             moveEpisode(episode, isPlaying ? 1 : 0);
         }
-        return startPlaybackService();
+        return playbackServicePlay();
+    }
+
+    public synchronized void pause()
+    {
+        playbackServicePause();
     }
 
     private PlaylistItem getHead()
@@ -201,7 +215,7 @@ public class Playlist
         context.startService(downloadIntentProvider.getRunIntent());
     }
 
-    private boolean startPlaybackService()
+    private boolean playbackServicePlay()
     {
         if (!isPlaying)
         {
@@ -211,11 +225,16 @@ public class Playlist
         return false;
     }
 
+    private void playbackServicePause()
+    {
+        if (isPlaying)
+        {
+            context.startService(playbackIntentProvider.getPauseIntent());
+        }
+    }
+
     private void unsetSkipped(Episode episode)
     {
-        if (skippedEpisodeDao.hasEpisode(episode))
-        {
-            skippedEpisodeDao.delete(episode);
-        }
+        skippedEpisodeDao.delete(episode);
     }
 }

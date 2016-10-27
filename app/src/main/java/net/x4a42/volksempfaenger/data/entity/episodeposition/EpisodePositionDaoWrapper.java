@@ -37,6 +37,15 @@ public class EpisodePositionDaoWrapper
         dao.delete(episodePosition);
     }
 
+    public void delete(Episode episode)
+    {
+        List<EpisodePosition> list = getListByEpisode(episode);
+        if (!list.isEmpty())
+        {
+            delete(list.get(0));
+        }
+    }
+
     public void update(EpisodePosition episodePosition, int position)
     {
         episodePosition.setPosition(position);

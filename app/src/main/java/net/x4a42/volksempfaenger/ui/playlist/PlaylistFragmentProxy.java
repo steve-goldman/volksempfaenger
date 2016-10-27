@@ -45,4 +45,12 @@ class PlaylistFragmentProxy
         downloadEventReceiver.unsubscribe();
         listManager.clear();
     }
+
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        if (isVisibleToUser)
+        {
+            listManager.refresh();
+        }
+    }
 }

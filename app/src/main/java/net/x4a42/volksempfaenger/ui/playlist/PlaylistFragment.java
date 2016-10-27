@@ -46,4 +46,15 @@ public class PlaylistFragment extends Fragment
         super.onDestroy();
         proxy = null;
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (proxy != null)
+        {
+            // called before onCreate
+            proxy.setUserVisibleHint(isVisibleToUser);
+        }
+    }
 }

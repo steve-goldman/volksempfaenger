@@ -48,4 +48,9 @@ public class EnclosureDaoWrapper
 
         return list.get(0);
     }
+
+    public void delete(Enclosure enclosure)
+    {
+        dao.delete(enclosure);
+    }
 }
