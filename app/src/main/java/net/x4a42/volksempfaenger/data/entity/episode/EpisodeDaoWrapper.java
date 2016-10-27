@@ -52,6 +52,7 @@ public class EpisodeDaoWrapper
     {
         return dao.queryBuilder()
                 .where(EpisodeDao.Properties.PodcastId.eq(podcast.get_id()))
+                .orderDesc(EpisodeDao.Properties.PubDate)
                 .listLazy();
     }
 
