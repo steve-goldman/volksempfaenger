@@ -56,6 +56,14 @@ public class EpisodeDaoWrapper
                 .listLazy();
     }
 
+    public void deleteAll(Podcast podcast)
+    {
+        for (Episode episode : getAll(podcast))
+        {
+            delete(episode);
+        }
+    }
+
     public Episode getById(long episodeId)
     {
         return dao.queryBuilder()
@@ -76,5 +84,10 @@ public class EpisodeDaoWrapper
         }
 
         return list.get(0);
+    }
+
+    void delete(Episode episode)
+    {
+        dao.delete(episode);
     }
 }

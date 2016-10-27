@@ -23,8 +23,11 @@ public class SkippedEpisodeDaoWrapper
 
     public void delete(Episode episode)
     {
-        SkippedEpisode skippedEpisode = getForEpisode(episode).get(0);
-        dao.delete(skippedEpisode);
+        if (hasEpisode(episode))
+        {
+            SkippedEpisode skippedEpisode = getForEpisode(episode).get(0);
+            dao.delete(skippedEpisode);
+        }
     }
 
     public SkippedEpisode create(Episode episode)

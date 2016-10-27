@@ -65,4 +65,8 @@ public class PodcastDaoWrapper
         return list.get(0);
     }
 
+    void delete(Podcast podcast)
+    {
+        dao.delete(podcast);
+    }
 }

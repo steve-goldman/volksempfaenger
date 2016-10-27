@@ -21,6 +21,7 @@
     <string name="menu_play">Play</string>
     <string name="menu_pause">Pause</string>
     <string name="playlist_context_menu_remove">Remove</string>
+    <string name="subscription_grid_context_menu_delete">Delete</string>
     <string name="episode_list_context_menu_play_next">Play Next</string>
     <string name="context_delete">Delete</string>
     <string name="hint_http">http://</string>

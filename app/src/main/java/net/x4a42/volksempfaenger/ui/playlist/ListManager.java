@@ -73,6 +73,12 @@ class ListManager implements AdapterView.OnItemClickListener,
 
     public void refresh()
     {
+        if (listView == null)
+        {
+            // called before ever creating the view
+            return;
+        }
+
         listAdapterProxy.refresh();
         if (listAdapterProxy.isEmpty())
         {

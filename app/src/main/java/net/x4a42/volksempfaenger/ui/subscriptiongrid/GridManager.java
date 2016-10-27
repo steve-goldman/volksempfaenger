@@ -1,10 +1,15 @@
 package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -12,26 +17,31 @@ import android.widget.TextView;
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDeleter;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 
-class GridManager implements AdapterView.OnItemClickListener
+class GridManager implements AdapterView.OnItemClickListener,
+                             AbsListView.MultiChoiceModeListener
 {
-    private final Context                           context;
+    private final Activity                          activity;
     private final GridAdapterProxy                  gridAdapterProxy;
     private final EpisodeListActivityIntentProvider intentProvider;
     private final PodcastDaoWrapper                 podcastDao;
+    private final PodcastDeleter                    podcastDeleter;
     private GridView                                gridView;
     private TextView                                noSubscriptionsView;
 
-    public GridManager(Context                           context,
+    public GridManager(Activity                          activity,
                        GridAdapterProxy                  gridAdapterProxy,
                        EpisodeListActivityIntentProvider intentProvider,
-                       PodcastDaoWrapper                 podcastDao)
+                       PodcastDaoWrapper                 podcastDao,
+                       PodcastDeleter                    podcastDeleter)
     {
-        this.context          = context;
+        this.activity         = activity;
         this.gridAdapterProxy = gridAdapterProxy;
         this.intentProvider   = intentProvider;
         this.podcastDao       = podcastDao;
+        this.podcastDeleter   = podcastDeleter;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container)
@@ -41,7 +51,8 @@ class GridManager implements AdapterView.OnItemClickListener
         gridView = (GridView) view.findViewById(R.id.grid);
         gridView.setOnItemClickListener(this);
         gridView.setAdapter(gridAdapterProxy.getAdapter());
-
+        gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        gridView.setMultiChoiceModeListener(this);
         noSubscriptionsView = (TextView) view.findViewById(R.id.empty);
 
         return view;
@@ -72,6 +83,59 @@ class GridManager implements AdapterView.OnItemClickListener
     {
         Podcast podcast = podcastDao.getById(id);
         Intent  intent  = intentProvider.getIntent(podcast);
-        context.startActivity(intent);
+        activity.startActivity(intent);
+    }
+
+    @Override
+    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked)
+    {
+        if (gridView.getCheckedItemCount() == 0)
+        {
+            return;
+        }
+
+        Podcast podcast = podcastDao.getById(gridView.getCheckedItemIds()[0]);
+        mode.setTitle(podcast.getTitle());
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu)
+    {
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.subscription_grid_context, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.subscription_grid_delete:
+            {
+                handleDelete();
+                mode.finish();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode)
+    {
+    }
+
+    private void handleDelete()
+    {
+        Podcast podcast = podcastDao.getById(gridView.getCheckedItemIds()[0]);
+        podcastDeleter.delete(podcast);
+        gridAdapterProxy.refresh();
     }
 }

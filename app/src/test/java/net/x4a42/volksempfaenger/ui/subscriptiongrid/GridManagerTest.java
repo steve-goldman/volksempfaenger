@@ -1,6 +1,6 @@
 package net.x4a42.volksempfaenger.ui.subscriptiongrid;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDeleter;
 import net.x4a42.volksempfaenger.ui.episodelist.EpisodeListActivityIntentProvider;
 
 import org.junit.Before;
@@ -23,7 +24,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GridManagerTest
 {
-    @Mock Context                           context;
+    @Mock Activity                          activity;
     @Mock GridAdapterProxy                  gridAdapterProxy;
     @Mock GridAdapter                       gridAdapter;
     @Mock LayoutInflater                    inflater;
@@ -32,6 +33,7 @@ public class GridManagerTest
     @Mock GridView                          gridView;
     @Mock TextView                          noSubscriptionsView;
     @Mock PodcastDaoWrapper                 podcastDaoWrapper;
+    @Mock PodcastDeleter                    podcastDeleter;
     @Mock EpisodeListActivityIntentProvider intentProvider;
     GridManager                             gridManager;
 
@@ -43,7 +45,11 @@ public class GridManagerTest
         Mockito.when(view.findViewById(R.id.grid)).thenReturn(gridView);
         Mockito.when(view.findViewById(R.id.empty)).thenReturn(noSubscriptionsView);
         Mockito.when(gridAdapterProxy.getAdapter()).thenReturn(gridAdapter);
-        gridManager = new GridManager(context, gridAdapterProxy, intentProvider, podcastDaoWrapper);
+        gridManager = new GridManager(activity,
+                                      gridAdapterProxy,
+                                      intentProvider,
+                                      podcastDaoWrapper,
+                                      podcastDeleter);
     }
 
     @Test
