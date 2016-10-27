@@ -18,7 +18,7 @@ import net.x4a42.volksempfaenger.data.entity.enclosure.DaoSession;
 import net.x4a42.volksempfaenger.data.entity.enclosure.EnclosureDao;
 import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDao;
 
-@Entity
+@Entity(indexes = {@Index(value = "podcastId, pubDate DESC")})
 public class Episode
 {
     @Id
