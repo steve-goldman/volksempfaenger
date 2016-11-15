@@ -45,10 +45,6 @@ class PlaybackNotificationBuilder
         intent = new Intent(context, MainActivity.class);
         taskBuilder.addNextIntent(intent);
 
-        // ViewEpisodeActivity
-        intent = new ViewEpisodeActivityIntentProviderBuilder().build(context).getIntent(playbackEpisode);
-        taskBuilder.addNextIntent(intent);
-
         return taskBuilder;
     }
 
