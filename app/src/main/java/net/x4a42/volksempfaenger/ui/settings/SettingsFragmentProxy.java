@@ -63,8 +63,9 @@ class SettingsFragmentProxy implements Preference.OnPreferenceChangeListener
         switch (preference.getKey())
         {
             case PreferenceKeys.DOWNLOAD_INTERVAL:
-                updateInterval(Long.parseLong((String) newValue));
-                syncAllAlarmManager.reschedule();
+                long interval = Long.parseLong((String) newValue);
+                updateInterval(interval);
+                syncAllAlarmManager.reschedule(interval);
                 break;
             case PreferenceKeys.DOWNLOAD_WIFI:
                 fragment.getActivity().startService(playlistDownloadIntentProvider.getRunIntent());
