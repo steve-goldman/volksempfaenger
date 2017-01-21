@@ -31,7 +31,11 @@ public class SyncAllAlarmManager
 
     public void reschedule()
     {
-        long interval = preferences.getSyncInterval();
+        reschedule(preferences.getSyncInterval());
+    }
+
+    public void reschedule(long interval)
+    {
         if (interval == 0)
         {
             Log.d(this, "canceling sync all alarm");

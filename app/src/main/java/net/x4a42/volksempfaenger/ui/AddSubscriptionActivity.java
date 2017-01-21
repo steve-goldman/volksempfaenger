@@ -40,9 +40,15 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import net.x4a42.volksempfaenger.R;
 import net.x4a42.volksempfaenger.Utils;
+import net.x4a42.volksempfaenger.data.entity.podcast.Podcast;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoBuilder;
+import net.x4a42.volksempfaenger.data.entity.podcast.PodcastDaoWrapper;
 import net.x4a42.volksempfaenger.feedparser.GpodderJsonReader;
 import net.x4a42.volksempfaenger.misc.ImageLoaderProvider;
 import net.x4a42.volksempfaenger.net.Downloader;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProvider;
+import net.x4a42.volksempfaenger.service.feedsync.FeedSyncServiceIntentProviderBuilder;
+import net.x4a42.volksempfaenger.ui.main.MainActivityIntentProviderBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -298,15 +304,25 @@ public class AddSubscriptionActivity extends Activity implements
 
 	private void submitSearch() {
 		String text = searchEntry.getText().toString();
-		//if (text.startsWith("http://") || text.startsWith("https://")) {
-		//	new AddFeedTask(getApplicationContext()).executeOnExecutor(
-		//			AsyncTask.THREAD_POOL_EXECUTOR, text);
-		//	finish();
-		//} else {
+		if (text.startsWith("http://") || text.startsWith("https://")) {
+			PodcastDaoWrapper podcastDao = new PodcastDaoBuilder().build(this);
+			Podcast podcast = podcastDao.getByFeedUrl(text);
+			if (podcast == null)
+			{
+				podcast = podcastDao.insert(text);
+			}
+
+			FeedSyncServiceIntentProvider intentProvider
+					= new FeedSyncServiceIntentProviderBuilder().build(this);
+
+			startService(intentProvider.getSyncIntent(podcast));
+
+			startActivity(new MainActivityIntentProviderBuilder().build(this).getIntent());
+		} else {
 			Intent intent = new Intent(this, SearchActivity.class);
 			intent.putExtra("query", text);
 			startActivity(intent);
-		//}
+		}
 	}
 
 	private void setLoading(boolean loading) {
