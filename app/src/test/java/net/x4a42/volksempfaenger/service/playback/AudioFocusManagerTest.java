@@ -79,6 +79,6 @@ public class AudioFocusManagerTest
     {
         audioFocusManager.onAudioFocusChange(AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
 
-        Mockito.verify(listener).onAudioFocusLostTransientlyCanDuck();
+        Mockito.verify(listener).onAudioFocusLostTransiently();
     }
 }
