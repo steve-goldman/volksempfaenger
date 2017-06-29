@@ -226,7 +226,6 @@ public class ControllerTest
     {
         controller.onAudioFocusGained();
 
-        Mockito.verify(mediaPlayer).setVolume(Controller.FullVolume, Controller.FullVolume);
         Mockito.verify(controller, Mockito.never()).play();
     }
 
@@ -277,25 +276,6 @@ public class ControllerTest
         controller.onAudioFocusLostTransiently();
 
         Mockito.verify(controller, Mockito.never()).pause();
-    }
-
-    @Test
-    public void onAudioFocusTransientlyLostCanDuck() throws Exception
-    {
-        Mockito.when(mediaPlayer.isPlaying()).thenReturn(true);
-
-        controller.onAudioFocusLostTransientlyCanDuck();
-
-        Mockito.verify(mediaPlayer).setVolume(Controller.DuckedVolume, Controller.DuckedVolume);
-    }
-
-    @Test
-    public void onAudioFocusTransientlyLostCanDuckNotPlaying() throws Exception
-    {
-        controller.onAudioFocusLostTransientlyCanDuck();
-
-        Mockito.verify(mediaPlayer, Mockito.never()).setVolume(Controller.DuckedVolume,
-                                                               Controller.DuckedVolume);
     }
 
     //

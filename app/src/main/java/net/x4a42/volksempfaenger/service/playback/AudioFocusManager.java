@@ -11,7 +11,6 @@ class AudioFocusManager implements AudioManager.OnAudioFocusChangeListener
         void onAudioFocusGained();
         void onAudioFocusLost();
         void onAudioFocusLostTransiently();
-        void onAudioFocusLostTransientlyCanDuck();
     }
 
     private final AudioManager audioManager;
@@ -107,7 +106,7 @@ class AudioFocusManager implements AudioManager.OnAudioFocusChangeListener
 
     private void handleAudioFocusLossTransientCanDuck()
     {
-        listener.onAudioFocusLostTransientlyCanDuck();
+        listener.onAudioFocusLostTransiently();
     }
 
 }

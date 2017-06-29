@@ -228,7 +228,6 @@ class Controller implements MediaPlayer.OnPreparedListener,
     @Override
     public void onAudioFocusGained()
     {
-        mediaPlayer.setVolume(FullVolume, FullVolume);
         if (inTransientLoss)
         {
             inTransientLoss = false;
@@ -252,15 +251,6 @@ class Controller implements MediaPlayer.OnPreparedListener,
         {
             pause();
             inTransientLoss = true;
-        }
-    }
-
-    @Override
-    public void onAudioFocusLostTransientlyCanDuck()
-    {
-        if (isPlaying())
-        {
-            mediaPlayer.setVolume(DuckedVolume, DuckedVolume);
         }
     }
 
